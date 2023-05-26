@@ -14,12 +14,14 @@ class MoleculeBase(ABC):
     def get_rdkit_mol(self):
         raise NotImplementedError
 
+
 class SMILESMolecule(MoleculeBase):
     def __init__(self, smiles):
         self.smiles = smiles
 
     def get_rdkit_mol(self):
         return Chem.MolFromSmiles(self.smiles)
+
 
 class SELFIESMolecule(MoleculeBase):
     def __init__(self, selfies):
@@ -29,12 +31,15 @@ class SELFIESMolecule(MoleculeBase):
     def get_rdkit_mol(self):
         return Chem.MolFromSmiles(self.smiles_rep)
 
+
 class InChIMolecule(MoleculeBase):
     def __init__(self, inchi):
         self.inchi = inchi
 
     def get_rdkit_mol(self):
         return Chem.MolFromInchi(self.inchi)
+
+
 class Molecule(MoleculeBase):
     def __init__(self, base_string, rep_type="smiles"):
         self.base_string = base_string
@@ -50,12 +55,3 @@ class Molecule(MoleculeBase):
 
     def get_name(self):
         return self.rep_type
-
-
-
-if __name__ == "__main__":
-    smiles = "CCC(Cl)C=C"
-    selfies_form = encoder(smiles)
-    mol = Molecule(selfies_form, "selfies")
-
-    print(mol.get_rdkit_mol())
