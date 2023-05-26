@@ -6,10 +6,13 @@ import random
 """Utility imports."""
 import rdkit
 from rdkit import Chem
+from mordred.RotatableBond import RotatableBondsCount
 from abc import abstractmethod, ABC
 from selfies import decoder, encoder
 
 from collections import namedtuple
+
+from openeye.oechem import OESmilesToMol, OEGraphMol
 
 
 """Abstract classes."""
@@ -137,9 +140,6 @@ class MoleculeFeaturizer(AbstractFeaturizer):
         feature_names += element_features
         feature_values += element_values
 
-        print(element_features)
-        print(element_values)
-
         features = namedtuple(
             "MolecularInformation", feature_names
         )
@@ -175,18 +175,22 @@ class MoleculeFeaturizer(AbstractFeaturizer):
 
         return element_features, element_values
 
-    def featurize(self, molecules):
+    def featurize(self, molecules=None, molecular_info=None):
         if isinstance(molecules, list):
-            features = self.batch_featurize(molecules)
+            features = self.batch_featurize(molecules=molecules, molecular_info_dump=molecular_info)
             features = features[0] if len(features) == 1 else features
         else:
-            features = self.stream_featurize(molecules)
+            features = self.stream_featurize(atomic_info=molecular_info)
 
         return features
 
 
-    def batch_featurize(self, molecules):
-        return [self.featurize(molecule) for molecule in molecules]
+    def batch_featurize(self, molecules=None, molecular_info_dump=None):
+        if molecular_info_dump is None:
+            molecular_info_dump = [
+                self.get_elements_info(molecule=molecule) for molecule in molecules
+            ]
+        return [self.stream_featurize(atomic_info=molecular_info) for molecular_info in molecular_info_dump]
 
     def text_featurize(self, molecule):
         return None
@@ -276,6 +280,11 @@ class MoleculeFeaturizer(AbstractFeaturizer):
         )
         return num_bonds
 
+    def count_rotable_bonds(self, molecule):
+        return RotatableBondsCount()(molecule.rdkit_mol)
+
+
+
     def get_bonds(
         self,
         molecule=None,
@@ -336,7 +345,7 @@ if __name__ == "__main__":
 
         mols = [Molecule(k, v) for k, v in molecular_info.items()]
 
-        print(featurizer.featurize(mols))
+        print(featurizer.featurize(molecules=mols))
         index = random.randint(0, len(mols)-1)
         print(f"Molecule {index} is represented by: ", mols[index].repr_string)
 
@@ -345,3 +354,5 @@ if __name__ == "__main__":
             f"Element {element} appears {featurizer.get_element_frequency(molecule=mols[index],element=element)} times"
         )
         print(mols[index].get_name())
+
+        print(f"Molecule {index} has {featurizer.count_rotable_bonds(mols[index])} rotable bonds.")
