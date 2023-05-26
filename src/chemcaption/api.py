@@ -48,7 +48,7 @@ class AbstractFeaturizer(ABC):
 """Type-based classes."""
 
 
-class SMILESMolecule(MoleculeBase):
+class SMILESMolecule():
     def __init__(self, smiles):
         self.smiles = smiles
 
@@ -56,7 +56,7 @@ class SMILESMolecule(MoleculeBase):
         return Chem.MolFromSmiles(self.smiles)
 
 
-class SELFIESMolecule(MoleculeBase):
+class SELFIESMolecule():
     def __init__(self, selfies):
         self.selfies = selfies
         self.smiles_rep = decoder(selfies)
@@ -65,7 +65,7 @@ class SELFIESMolecule(MoleculeBase):
         return Chem.MolFromSmiles(self.smiles_rep)
 
 
-class InChIMolecule(MoleculeBase):
+class InChIMolecule():
     def __init__(self, inchi):
         self.inchi = inchi
 
