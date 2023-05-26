@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """Main code."""
-
+import random
 
 """Utility imports."""
 import rdkit
@@ -106,15 +106,73 @@ class MoleculeFeaturizer(AbstractFeaturizer):
         self.periodic_table = rdkit.Chem.GetPeriodicTable()
 
     def stream_featurize(self, molecule):
-        features = namedtuple(
-            "features", ["atomic_mass", "molecular_mass", "num_rotatable_bonds", "o"]
-        )
+        """
+        Generates feature vector for Molecule object.
+
+        Parameters
+        ----------
+        molecule [Molecule]: Molecule object.
+
+        Returns
+        -------
+        features [namedtuple]: Tuple containing:
+            atomic_mass [float]: Sum of number of neutrons and number of protons
+
+        """
+        feature_names = [
+            "molecular_mass",
+        ]
+        feature_values = list()
+
         atom_counts = dict()
 
-        atomic_info = self.get_element_info(molecule=molecule)
-        molecular_mass = self.get_molar_mass(atomic_info=atomic_info)
+        atomic_info = self.get_elements_info(molecule=molecule)
 
-        return molecular_mass
+        molecular_mass = self.get_molar_mass(atomic_info=atomic_info)
+        feature_values.append(molecular_mass)
+
+        element_features, element_values = self.get_elemental_profile(atomic_info=atomic_info)
+
+        feature_names += element_features
+        feature_values += element_values
+
+        print(element_features)
+        print(element_values)
+
+        features = namedtuple(
+            "MolecularInformation", feature_names
+        )
+
+        return features(*feature_values)
+
+    def get_elemental_profile(self, molecule=None, atomic_info=None, normalize=True):
+        if atomic_info is None:
+            atomic_info = self.get_elements_info(molecule=molecule)
+        unique_elements = self.get_unique_elements(atomic_info=atomic_info)
+
+        element_features = list()
+        element_values = list()
+        molar_mass = self.get_molar_mass(atomic_info=atomic_info)
+
+        for element in unique_elements:
+            element_features.append(f"{element.lower()}_count")
+            element_count = self.get_element_frequency(element=element, atomic_info=atomic_info)
+            element_values.append(element_count)
+
+            element_features.append(f"{element.lower()}_total_mass")
+            element_mass = self.get_total_element_mass(element=element, atomic_info=atomic_info)
+            element_values.append(element_mass)
+
+            if normalize:
+                element_features.append(f"{element.lower()}_count_proportion")
+                element_values.append(element_count / len(atomic_info))
+
+                element_features.append(f"{element.lower()}_mass_proportion")
+                element_values.append(
+                    self.get_total_element_mass(element=element, atomic_info=atomic_info) / molar_mass
+                )
+
+        return element_features, element_values
 
     def featurize(self, molecules):
         if isinstance(molecules, list):
@@ -125,6 +183,7 @@ class MoleculeFeaturizer(AbstractFeaturizer):
 
         return features
 
+
     def batch_featurize(self, molecules):
         return [self.featurize(molecule) for molecule in molecules]
 
@@ -134,14 +193,15 @@ class MoleculeFeaturizer(AbstractFeaturizer):
     def batch_text_featurize(self, molecules):
         return None
 
-    def get_element_info(self, molecule):
+    def get_elements_info(self, molecule):
         molecule.reveal_hydrogens()
-        atoms_info = namedtuple("information", ["element", "symbol", "atomic_number"])
+        atoms_info = namedtuple("ElementalInformation", ["element", "symbol", "atomic_number", "atomic_mass"])
 
         atoms_info = [
             atoms_info(
                 periodic_table.GetElementName(atom.GetAtomicNum()),
                 periodic_table.GetElementSymbol(atom.GetAtomicNum()),
+                atom.GetAtomicNum(),
                 periodic_table.GetAtomicWeight(atom.GetAtomicNum()),
             )
             for atom in molecule.get_atoms()
@@ -151,10 +211,10 @@ class MoleculeFeaturizer(AbstractFeaturizer):
 
     def get_unique_elements(self, atomic_info=None, molecule=None):
         if atomic_info is None:
-            atomic_info = self.get_element_info(molecule)
+            atomic_info = self.get_elements_info(molecule)
 
-        unique_atoms = [TUPLE[0] for TUPLE in set(atomic_info)]
-        return unique_atoms
+        unique_elements = [TUPLE.element for TUPLE in set(atomic_info)]
+        return unique_elements
 
     def _to_selfies(self, molecule):
         repr_kind = molecule.repr_string
@@ -164,7 +224,7 @@ class MoleculeFeaturizer(AbstractFeaturizer):
             return molecule
         else:
             if repr_type == "inchi":
-                repr_kind = Chem.MolToSmiles(molecule.get_rdkit_mol())
+                repr_kind = Chem.MolToSmiles(molecule.rdkit_mol)
                 repr_kind = encoder(repr_kind)
 
         return Molecule(repr_kind, "selfies")
@@ -175,13 +235,13 @@ class MoleculeFeaturizer(AbstractFeaturizer):
         molecule=None,
     ):
         if atomic_info is None:
-            atomic_info = self.get_element_info(self._to_selfies(molecule))
-        molar_mass = sum([TUPLE.atomic_number for TUPLE in atomic_info])
+            atomic_info = self.get_elements_info(self._to_selfies(molecule))
+        molar_mass = sum([TUPLE.atomic_mass for TUPLE in atomic_info])
         return molar_mass
 
     def get_element_frequency(self, element, molecule=None, atomic_info=None):
         if atomic_info is None:
-            atomic_info = self.get_element_info(molecule=molecule)
+            atomic_info = self.get_elements_info(molecule=molecule)
 
         element, element_index = element.capitalize(), (0 if len(element) > 2 else 1)
 
@@ -193,6 +253,17 @@ class MoleculeFeaturizer(AbstractFeaturizer):
             ]
         )
         return element_count
+
+    def get_total_element_mass(self, element=None, molecule=None, atomic_info=None):
+        element = element.capitalize()
+        if atomic_info is None:
+            atomic_info = self.get_elements_info(molecule=molecule)
+        element_mass = sum(
+            [
+                TUPLE.atomic_mass for TUPLE in atomic_info if (TUPLE.element == element or TUPLE.symbol == element)
+            ]
+        )
+        return element_mass
 
     def count_bonds(self, molecule, bond_type="SINGLE"):
         bond_type = bond_type.upper()
@@ -227,7 +298,7 @@ class MoleculeFeaturizer(AbstractFeaturizer):
 
 
 if __name__ == "__main__":
-    prob = 0.2
+    prob = 0.1
 
     periodic_table = rdkit.Chem.GetPeriodicTable()
 
@@ -247,8 +318,8 @@ if __name__ == "__main__":
         print(f"Molar mass by featurizer = {featurizer.get_molar_mass(molecule=mol)}")
         print(f"Bond distribution: {featurizer.get_bond_distribution(mol)}")
         print(featurizer.featurize(mol))
-        print(
-            featurizer.get_element_info(
+        print("Information on all elements in molecule: ",
+            featurizer.get_elements_info(
                 mol,
             )
         )
@@ -263,10 +334,11 @@ if __name__ == "__main__":
         mols = [Molecule(k, v) for k, v in molecular_info.items()]
 
         print(featurizer.featurize(mols))
-        print(mols[0].repr_string)
+        index = random.randint(0, len(mols)-1)
+        print(f"Molecule {index} is represented by: ", mols[index].repr_string)
 
         element = "n"
         print(
-            f"Element {element} appears {featurizer.get_element_frequency(molecule=mols[0],element=element)} times"
+            f"Element {element} appears {featurizer.get_element_frequency(molecule=mols[index],element=element)} times"
         )
-        print(mols[0].get_name())
+        print(mols[index].get_name())
