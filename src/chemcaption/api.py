@@ -13,8 +13,6 @@ from selfies import decoder, encoder
 
 from collections import namedtuple
 
-from openeye.oechem import OESmilesToMol, OEGraphMol
-
 
 """Abstract classes."""
 
