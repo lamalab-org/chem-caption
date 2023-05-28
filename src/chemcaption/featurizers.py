@@ -352,6 +352,7 @@ class MoleculeFeaturizer(BondFeaturizer, MassFeaturizer, ElementFeaturizer):
                 element_count_proportion (float): Percentage of total number of atoms made up by element.
                 element_mass_proportion (float): Percentage of molecular mass made up by element.
                 num_<BondType>_bond (int): Number of occurrences of each bond type.
+                <BondType>_bond_proportion (float): Fraction/proportion of occurrences of each bond type.
                 num_rotable_bonds (int): Number of rotable bonds in molecule.
                 rotable_bond_proportion (float): Percentage of rotable bonds in molecule.
                 num_non_rotale_bonds (int): Number of non-rotable bond.
