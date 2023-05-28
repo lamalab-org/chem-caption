@@ -1,66 +1,52 @@
 # -*- coding: utf-8 -*-
 
 """Utility imports."""
-import random
+
+from abc import ABC, abstractmethod
+from collections import namedtuple
 
 import rdkit
 from rdkit import Chem
-from rdkit.Chem import rdMolDescriptors, Lipinski
+from rdkit.Chem import Lipinski, rdMolDescriptors
+from selfies import encoder
 
-from abc import abstractmethod, ABC
-from selfies import encoder, decoder
-
-from collections import namedtuple
-
-from molecules import Molecule
-
+from chemcaption.molecules import Molecule
 
 """Abstract classes."""
 
 
-class FeaturizerBase(ABC):
-    """Base class for lower level Featurizers
-
-    Args:
-        None
-
-    Returns:
-        None
-
-    """
-
-    def __init__(self):
-        self.periodic_table = rdkit.Chem.GetPeriodicTable()
-
-
 class AbstractFeaturizer(ABC):
-    """Base class for higher level Featurizer
+    """Base class for lower level Featurizers.
 
     Args:
         None
 
     Returns:
         None
-
     """
 
     def __init__(self):
-        super().__init__()
+        """Initialize periodic table."""
+        self.periodic_table = rdkit.Chem.GetPeriodicTable()
 
     @abstractmethod
     def featurize(self, molecule):
+        """Featurize single Molecule instance."""
         raise NotImplementedError
 
     @abstractmethod
     def text_featurize(self, molecule):
+        """Embed features in Prompt instance."""
         raise NotImplementedError
 
     @abstractmethod
     def batch_featurize(self, molecules):
+        """Featurize both collection of Molecule objects."""
         raise NotImplementedError
 
     @abstractmethod
     def batch_text_featurize(self, molecules):
+        """Embed features in Prompt instance for multiple molecules."""
         raise NotImplementedError
 
 
@@ -73,21 +59,21 @@ Lower level featurizer classes.
 """
 
 
-class BondFeaturizer(FeaturizerBase):
-    """
-    Lower level Featurizer for bond information
-    """
+class BondFeaturizer(AbstractFeaturizer):
+    """Lower level Featurizer for bond information."""
 
     def __init__(self):
+        """Initialize class."""
         super(BondFeaturizer, self).__init__()
 
     def count_bonds(self, molecule, bond_type="ALL"):
         """
-        Counts the frequency of a bond_type in a molecule
+        Count the frequency of a bond_type in a molecule.
 
         Args:
             molecule (Molecule): Molecule representation.
-            bond_type (str): Type of bond to enumerate. If `all`, enumerates all bonds irrespective of type. Default (ALL).
+            bond_type (str): Type of bond to enumerate. If `all`, enumerates all bonds irrespective of type.
+                Default (ALL).
 
         Returns:
             num_bonds (int): Number of occurrences of `bond_type` in molecule.
@@ -105,13 +91,13 @@ class BondFeaturizer(FeaturizerBase):
 
     def count_rotable_bonds(self, molecule):
         """
-        Counts the number of a rotable (single, non-terminal) bonds in a molecule
+        Count the number of rotable (single, non-terminal) bonds in a molecule.
 
         Args:
-            molecule (Molecule): Molecule representation
+            molecule (Molecule): Molecule representation.
 
         Returns:
-            num_rotable (int): Number of rotable bonds in molecule
+            num_rotable (int): Number of rotable bonds in molecule.
         """
         num_rotable = rdMolDescriptors.CalcNumRotatableBonds(molecule.rdkit_mol, strict=True)
         return num_rotable
@@ -121,7 +107,7 @@ class BondFeaturizer(FeaturizerBase):
         molecule=None,
     ):
         """
-        Extracts all individual bonds present in a molecule
+        Extract all individual bonds present in a molecule.
 
         Args:
             molecule (Molecule): Molecule representation.
@@ -134,7 +120,7 @@ class BondFeaturizer(FeaturizerBase):
         return bonds
 
     def get_bond_distribution(self, molecule=None, normalize=True):
-        """Gives a frequency distribution for the bonds present in a molecule.
+        """Return a frequency distribution for the bonds present in a molecule.
 
         Args:
             molecule (Molecule): Molecular representation.
@@ -194,16 +180,16 @@ class BondFeaturizer(FeaturizerBase):
         return Lipinski.NumHDonors(molecule.rdkit_mol)
 
 
-class ElementFeaturizer(FeaturizerBase):
-    """
-    Lower level Featurizer for elemental information.
-    """
+class ElementFeaturizer(AbstractFeaturizer):
+    """Lower level Featurizer for elemental information."""
+
     def __init__(self):
+        """Initialize class."""
         super(ElementFeaturizer, self).__init__()
 
     def get_elements_info(self, molecule):
         """
-        Gets information on all elemental atoms present in a molecule.
+        Get information on all elemental atoms present in a molecule.
 
         Args:
             molecule (Molecule): Molecular representation.
@@ -247,7 +233,7 @@ class ElementFeaturizer(FeaturizerBase):
         if atomic_info is None:
             atomic_info = self.get_elements_info(molecule)
 
-        unique_elements = [TUPLE.element_name for TUPLE in set(atomic_info)]
+        unique_elements = [inner_tuple.element_name for inner_tuple in set(atomic_info)]
         return unique_elements
 
     def get_element_frequency(self, element, molecule=None, atomic_info=None):
@@ -257,7 +243,8 @@ class ElementFeaturizer(FeaturizerBase):
         Args:
             element (str): Element name or symbol.
             molecule (Molecule): Molecular representation.
-            atomic_info (List[namedtuple]): List of ElementalInformation instances containing info on all atomic contents of molecule.
+            atomic_info (List[namedtuple]): List of ElementalInformation instances containing info
+                on all atomic contents of molecule.
 
         Returns:
             element_count (int): Number of occurrences of atoms of `element` in `molecule`.
@@ -278,10 +265,10 @@ class ElementFeaturizer(FeaturizerBase):
 
 
 class MassFeaturizer(ElementFeaturizer):
-    """
-    Lower level Featurizer for mass-related information.
-    """
+    """Lower level Featurizer for mass-related information."""
+
     def __init__(self):
+        """Initialize class."""
         super(MassFeaturizer, self).__init__()
 
     def get_molar_mass(
@@ -293,7 +280,8 @@ class MassFeaturizer(ElementFeaturizer):
         Get the molar mass of a molecule.
 
         Args:
-            atomic_info (List[namedtuple]):  List of ElementalInformation instances containing info on all atomic contents of molecule.
+            atomic_info (List[namedtuple]):  List of ElementalInformation instances containing info on
+                all atomic contents of molecule.
             molecule (Molecule): Molecular representation.
 
         Returns:
@@ -301,7 +289,7 @@ class MassFeaturizer(ElementFeaturizer):
         """
         if atomic_info is None:
             atomic_info = self.get_elements_info(molecule)
-        molar_mass = sum([TUPLE.atomic_mass for TUPLE in atomic_info])
+        molar_mass = sum([inner_tuple.atomic_mass for inner_tuple in atomic_info])
         return molar_mass
 
     def get_total_element_mass(self, element=None, molecule=None, atomic_info=None):
@@ -311,7 +299,8 @@ class MassFeaturizer(ElementFeaturizer):
         Args:
             element (str): String representing name or symbol of element.
             molecule (Molecule): Molecular representation.
-            atomic_info (List[namedtuple]):  List of ElementalInformation instances containing info on all atomic contents of molecule.
+            atomic_info (List[namedtuple]):  List of ElementalInformation instances containing info on
+                all atomic contents of molecule.
 
         Returns:
             element_mass (float): Total mass accounted for by `element` in `molecule`.
@@ -321,9 +310,9 @@ class MassFeaturizer(ElementFeaturizer):
             atomic_info = self.get_elements_info(molecule=molecule)
         element_mass = sum(
             [
-                TUPLE.atomic_mass
-                for TUPLE in atomic_info
-                if (TUPLE.element_name == element or TUPLE.element_symbol == element)
+                inner_tuple.atomic_mass
+                for inner_tuple in atomic_info
+                if (inner_tuple.element_name == element or inner_tuple.element_symbol == element)
             ]
         )
         return element_mass
@@ -333,12 +322,15 @@ class MassFeaturizer(ElementFeaturizer):
 
 
 class MoleculeFeaturizer(BondFeaturizer, MassFeaturizer, ElementFeaturizer):
+    """Molecule-centered Featurizer class."""
+
     def __init__(self):
+        """Initialize class."""
         super(MoleculeFeaturizer, self).__init__()
 
     def stream_featurize(self, molecule=None, atomic_info=None):
         """
-        Generates feature vector for Molecule object.
+        Generate feature vector for Molecule object.
 
         Args:
             molecule (Molecule): Molecule representation.
@@ -415,13 +407,13 @@ class MoleculeFeaturizer(BondFeaturizer, MassFeaturizer, ElementFeaturizer):
                     / molar_mass
                 )
 
-        for BOOL in [True, False]:
+        for norm in [True, False]:
             bond_types, bond_counts = zip(
-                *self.get_bond_distribution(molecule, normalize=BOOL).items()
+                *self.get_bond_distribution(molecule, normalize=norm).items()
             )
             element_features += list(
                 map(
-                    lambda x: f"{x.lower()}_bond_proportion" if BOOL else f"num_{x.lower()}_bonds",
+                    lambda x: f"{x.lower()}_bond_proportion" if norm else f"num_{x.lower()}_bonds",
                     bond_types,
                 )
             )
@@ -466,7 +458,8 @@ class MoleculeFeaturizer(BondFeaturizer, MassFeaturizer, ElementFeaturizer):
             molecular_info (namedtuple): Single or collection of ElementalInformation namedtuple instance(s).
 
         Returns:
-            features (Union[namedtuple, List[namedtuple]): Single or collection of MolecularInformation namedtuple instance(s).
+            features (Union[namedtuple, List[namedtuple]): Single or collection of
+                MolecularInformation namedtuple instance(s).
         """
         if isinstance(molecules, list):
             features = self.batch_featurize(molecules=molecules, molecular_info_dump=molecular_info)
@@ -482,7 +475,8 @@ class MoleculeFeaturizer(BondFeaturizer, MassFeaturizer, ElementFeaturizer):
 
         Args:
             molecules (Molecule): Molecular representation.
-            molecular_info_dump (List[namedtuple]): Collection of ElementalInformation instances containing elemental information for each molecule.
+            molecular_info_dump (List[namedtuple]): Collection of ElementalInformation instances containing
+                elemental information for each molecule.
 
         Returns:
             List[namedtuple]: List of MolecularInformation namedtuple objects for each molecule.
@@ -497,9 +491,11 @@ class MoleculeFeaturizer(BondFeaturizer, MassFeaturizer, ElementFeaturizer):
         ]
 
     def text_featurize(self, molecule):
+        """Embed features in Prompt instance."""
         return None
 
     def batch_text_featurize(self, molecules):
+        """Embed features in Prompt instance for multiple molecules."""
         return None
 
     def _to_selfies(self, molecule):
@@ -514,61 +510,3 @@ class MoleculeFeaturizer(BondFeaturizer, MassFeaturizer, ElementFeaturizer):
                 repr_kind = encoder(repr_kind)
 
         return Molecule(repr_kind, "selfies")
-
-
-if __name__ == "__main__":
-    prob = 0.3
-
-    featurizer = MoleculeFeaturizer()
-
-    if prob > 0.5:
-        inchi = "InChI=1S/C6H5NO2/c8-7(9)6-4-2-1-3-5-6/h1-5H"
-        smiles = "CCC(Cl)C=C"
-        selfies_form = encoder(smiles)
-        repr_type = "inchi"
-        mol = Molecule(inchi, repr_type)
-
-        mol_info = featurizer.get_elements_info(molecule=mol)
-
-        print(f"SMILES: {smiles}")
-        print(f"SMILES -> SELFIES -> SMILES: {decoder(encoder(smiles))}")
-
-        bond_type = "SINGLE"
-        print(
-            f"\n>>> Number of {bond_type.capitalize()} bonds: ",
-            featurizer.count_bonds(mol, bond_type=bond_type.upper()),
-        )
-        print(f"\n>>> Molar mass by featurizer = {featurizer.get_molar_mass(atomic_info=mol_info)}")
-        print(f"\n>>> Bond distribution: {featurizer.get_bond_distribution(molecule=mol,)}")
-        print(f"\n>>> Bond types: {featurizer.get_unique_bond_types(molecule=mol, )}")
-        print("\n>>> Featurizer results: ", featurizer.featurize(mol))
-        print(
-            "\n>>> Information on all elements in molecule: ",
-            featurizer.get_elements_info(
-                mol,
-            ),
-        )
-
-    else:
-        molecular_info = {
-            "InChI=1S/C6H5NO2/c8-7(9)6-4-2-1-3-5-6/h1-5H": "inchi",
-            "InChI=1S/C5H10O4/c6-2-1-4(8)5(9)3-7/h2,4-5,7-9H,1,3H2/t4-,5+/m0/s1": "inchi",
-            "CCC(Cl)C=C": "smiles",
-            "C(C=O)[C@@H]([C@@H](CO)O)O": "smiles",
-            encoder("CCC(Cl)C=C"): "selfies",
-        }
-
-        mols = [Molecule(k, v) for k, v in molecular_info.items()]
-        index = random.randint(0, len(mols) - 1)
-        index = 1
-
-        print("\n>>> Featurizer results: ", featurizer.featurize(molecules=mols)[index])
-        print(f"Molecule {index} is represented by: ", mols[index].repr_string)
-
-        element = "n"
-        print(
-            f"Element {element} appears {featurizer.get_element_frequency(molecule=mols[index],element=element)} times"
-        )
-        print(mols[index].get_name())
-
-        print(f"Molecule {index} has {featurizer.count_rotable_bonds(mols[index])} rotable bonds.")
