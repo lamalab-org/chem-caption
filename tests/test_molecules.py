@@ -2,87 +2,147 @@
 
 """Tests for chemcaption.molecules subpackage."""
 
-import random
-
-from pandas import read_csv
+import pandas as pd
+import pytest
 from rdkit import Chem
 from selfies import decoder, encoder
 
-from chemcaption.featurizers import MoleculeFeaturizer
-from chemcaption.molecules import Molecule
+from chemcaption.molecules import InChIMolecule, SELFIESMolecule, SMILESMolecule
 
-data_bank = read_csv("data/molecular_bank.csv", encoding="latin-1")
+data_bank = pd.read_csv("data/molecular_bank.csv", encoding="latin-1")
+data_bank["smiles"] = data_bank["smiles"].apply(Chem.CanonSmiles)
 molecular_names, molecular_smiles = (
     data_bank["name"].values.tolist(),
     data_bank["smiles"].values.tolist(),
 )
 
 
-
 molecular_bank = {
     k: {
         "smiles": v,
         "selfies": encoder(v),
-        "smiled_selfies": decoder(encoder(v)),
+        "smiled_selfies": Chem.CanonSmiles(decoder(encoder(v))),
         "inchi": Chem.MolToInchi(Chem.MolFromSmiles(v)),
     }
     for k, v in zip(molecular_names, molecular_smiles)
 }
-print(molecular_bank)
 
-if __name__ == "__main__":
-    prob = 0.3
+DISPATCH_MAP = {
+    "smiles": SMILESMolecule,
+    "selfies": SELFIESMolecule,
+    "inchi": InChIMolecule,
+}
 
-    featurizer = MoleculeFeaturizer()
 
-    if prob > 0.5:
-        inchi = "InChI=1S/C6H5NO2/c8-7(9)6-4-2-1-3-5-6/h1-5H"
-        smiles = "CCC(Cl)C=C"
-        selfies_form = encoder(smiles)
-        repr_type = "inchi"
-        mol = Molecule(inchi, repr_type)
+def extract_representation_strings(molecular_bank, in_="smiles", out_="selfies"):
+    """Extract molecule representation strings from data bank."""
+    in_, out_ = in_.lower(), out_.lower()
+    input_output = [(v[in_], v[out_]) for k, v in molecular_bank.items()]
+    return input_output
 
-        mol_info = featurizer.get_elements_info(molecule=mol)
 
-        print(f"SMILES: {smiles}")
-        print(f"SMILES -> SELFIES -> SMILES: {decoder(encoder(smiles))}")
+def _convert_molecule(molecule, to_kind="smiles"):
+    """Convert molecules between representational systems."""
+    to_kind = to_kind.lower()
 
-        bond_type = "SINGLE"
-        print(
-            f"\n>>> Number of {bond_type.capitalize()} bonds: ",
-            featurizer.count_bonds(mol, bond_type=bond_type.upper()),
-        )
-        print(f"\n>>> Molar mass by featurizer = {featurizer.get_molar_mass(atomic_info=mol_info)}")
-        print(f"\n>>> Bond distribution: {featurizer.get_bond_distribution(molecule=mol,)}")
-        print(f"\n>>> Bond types: {featurizer.get_unique_bond_types(molecule=mol, )}")
-        print("\n>>> Featurizer results: ", featurizer.featurize(mol))
-        print(
-            "\n>>> Information on all elements in molecule: ",
-            featurizer.get_elements_info(
-                mol,
-            ),
-        )
-
+    if to_kind == "inchi":
+        representation_string = Chem.MolToInchi(molecule.rdkit_mol)
     else:
-        molecular_info = {
-            "InChI=1S/C6H5NO2/c8-7(9)6-4-2-1-3-5-6/h1-5H": "inchi",
-            "InChI=1S/C5H10O4/c6-2-1-4(8)5(9)3-7/h2,4-5,7-9H,1,3H2/t4-,5+/m0/s1": "inchi",
-            "CCC(Cl)C=C": "smiles",
-            "C(C=O)[C@@H]([C@@H](CO)O)O": "smiles",
-            encoder("CCC(Cl)C=C"): "selfies",
-        }
+        representation_string = Chem.MolToSmiles(molecule.rdkit_mol)
+        representation_string = Chem.CanonSmiles(representation_string)
+        if to_kind == "selfies":
+            representation_string = encoder(representation_string)
 
-        mols = [Molecule(k, v) for k, v in molecular_info.items()]
-        index = random.randint(0, len(mols) - 1)
-        index = 1
+    return DISPATCH_MAP[to_kind](representation_string)
 
-        print("\n>>> Featurizer results: ", featurizer.featurize(molecules=mols)[index])
-        print(f"Molecule {index} is represented by: ", mols[index].repr_string)
 
-        element = "n"
-        print(
-            f"Element {element} appears {featurizer.get_element_frequency(molecule=mols[index],element=element)} times"
-        )
-        print(mols[index].get_name())
+@pytest.mark.parametrize(
+    "test_input, expected",
+    extract_representation_strings(molecular_bank, in_="selfies", out_="smiles"),
+)
+def test_selfies_to_smiles(test_input, expected):
+    """Test conversion from SELFIES to SMILES."""
+    from_kind, to_kind = "selfies", "smiles"
 
-        print(f"Molecule {index} has {featurizer.count_rotable_bonds(mols[index])} rotable bonds.")
+    molecule = DISPATCH_MAP[from_kind](representation_string=test_input)
+    new_molecule = _convert_molecule(molecule, to_kind=to_kind)
+    results = new_molecule.representation_string
+
+    assert results == expected
+
+
+@pytest.mark.parametrize(
+    "test_input, expected",
+    extract_representation_strings(molecular_bank, in_="smiles", out_="selfies"),
+)
+def test_smiles_to_selfies(test_input, expected):
+    """Test conversion from SMILES to SELFIES."""
+    from_kind, to_kind = "smiles", "selfies"
+
+    molecule = DISPATCH_MAP[from_kind](representation_string=test_input)
+    new_molecule = _convert_molecule(molecule, to_kind=to_kind)
+    results = new_molecule.representation_string
+
+    assert results == expected
+
+
+@pytest.mark.parametrize(
+    "test_input, expected",
+    extract_representation_strings(molecular_bank, in_="smiles", out_="inchi"),
+)
+def test_smiles_to_inchi(test_input, expected):
+    """Test conversion from SMILES to InChI."""
+    from_kind, to_kind = "smiles", "inchi"
+
+    molecule = DISPATCH_MAP[from_kind](representation_string=test_input)
+    new_molecule = _convert_molecule(molecule, to_kind=to_kind)
+    results = new_molecule.representation_string
+
+    assert results == expected
+
+
+@pytest.mark.parametrize(
+    "test_input, expected",
+    extract_representation_strings(molecular_bank, in_="inchi", out_="smiles"),
+)
+def test_inchi_to_smiles(test_input, expected):
+    """Test conversion from InChI to SMILES."""
+    from_kind, to_kind = "inchi", "smiles"
+
+    molecule = DISPATCH_MAP[from_kind](representation_string=test_input)
+    new_molecule = _convert_molecule(molecule, to_kind=to_kind)
+    results = Chem.CanonSmiles(new_molecule.representation_string)
+
+    assert results == Chem.CanonSmiles(Chem.MolToSmiles(Chem.MolFromSmiles(expected)))
+
+
+@pytest.mark.parametrize(
+    "test_input, expected",
+    extract_representation_strings(molecular_bank, in_="inchi", out_="selfies"),
+)
+def test_inchi_to_selfies(test_input, expected):
+    """Test conversion from InChI to SELFIES."""
+    from_kind, to_kind = "inchi", "selfies"
+
+    molecule = DISPATCH_MAP[from_kind](
+        representation_string=test_input,
+    )
+    new_molecule = _convert_molecule(molecule, to_kind=to_kind)
+    results = new_molecule.representation_string
+
+    assert results == expected
+
+
+@pytest.mark.parametrize(
+    "test_input, expected",
+    extract_representation_strings(molecular_bank, in_="selfies", out_="inchi"),
+)
+def test_selfies_to_inchi(test_input, expected):
+    """Test conversion from SELFIES to InChI."""
+    from_kind, to_kind = "selfies", "inchi"
+
+    molecule = DISPATCH_MAP[from_kind](representation_string=test_input)
+    new_molecule = _convert_molecule(molecule, to_kind=to_kind)
+    results = new_molecule.representation_string
+
+    assert results == expected

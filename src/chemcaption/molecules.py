@@ -12,102 +12,34 @@ from selfies import decoder
 class MoleculeBase(ABC):
     """Base class for molecular representation."""
 
-    def __init__(self, repr_type):
+    def __init__(
+        self,
+    ):
         """Instantiate base class for molecular representation."""
-        self.repr_type = repr_type
+        # self.representation_name = representation_name
+        self._rdkit_mol = None
+        self.representation_string = None
 
     @abstractmethod
     def get_rdkit_mol(self):
-        """Get molecular representation via rdkit."""
+        """Get molecular representation via rdkit. To be implemented via subclasses."""
         raise NotImplementedError
 
-    @abstractmethod
-    def reveal_hydrogens(self, **kwargs):
-        """Reveal hydrogen atoms in molecular structure."""
-        raise NotImplementedError
+    @property
+    def rdkit_mol(self):
+        """Get molecular representation via rdkit. Getter method."""
+        return self._rdkit_mol
 
-    def get_name(self):
-        """Return name of molecule string representation system."""
-        return self.repr_type
+    @rdkit_mol.setter
+    def rdkit_mol(self, **kwargs):
+        """Set molecular representation via rdkit."""
+        self._rdkit_mol = self.get_rdkit_mol()
+        self.reveal_hydrogens(**kwargs)
+        return
 
-
-"""
-Lower level Molecule classes
-
-1. SMILESMolecule
-2. SELFIESMolecule
-3. InChIMolecule
-"""
-
-
-class SMILESMolecule:
-    """Lower level molecular representation for SMILES string representation."""
-
-    def __init__(self, smiles):
-        """Initialize class."""
-        self.smiles = smiles
-
-    def get_rdkit_mol(self):
-        """Get rdkit molecular representation from SMILES string."""
-        return Chem.MolFromSmiles(self.smiles)
-
-
-class SELFIESMolecule:
-    """Lower level molecular representation for SELFIES string representation."""
-
-    def __init__(self, selfies):
-        """Initialize class."""
-        self.selfies = selfies
-        self.smiles_rep = decoder(selfies)
-
-    def get_rdkit_mol(self):
-        """Get rdkit molecular representation from SELFIES string."""
-        return Chem.MolFromSmiles(self.smiles_rep)
-
-
-class InChIMolecule:
-    """Lower level molecular representation for InChI string representation."""
-
-    def __init__(self, inchi):
-        """Initialize class."""
-        self.inchi = inchi
-
-    def get_rdkit_mol(self):
-        """Get rdkit molecular representation from InChI string."""
-        return Chem.MolFromInchi(self.inchi)
-
-
-"""Mega classes."""
-
-
-class Molecule(MoleculeBase):
-    """Higher order molecular representation."""
-
-    def __init__(self, repr_string, repr_type="smiles"):
-        """Initialize class."""
-        super(Molecule, self).__init__(**dict(repr_type=repr_type))
-        self.repr_string = repr_string
-
-        self.DISPATCH_MAP = {
-            "smiles": SMILESMolecule,
-            "selfies": SELFIESMolecule,
-            "inchi": InChIMolecule,
-        }
-
-        self.molecule = self.DISPATCH_MAP[self.repr_type](self.repr_string)
-        self.rdkit_mol = self.get_rdkit_mol()
-
-    def get_rdkit_mol(self):
-        """
-        Obtain RDKit molecular representation.
-
-        Args:
-            None
-
-        Returns:
-            None
-        """
-        return self.molecule.get_rdkit_mol()
+    def __repr__(self):
+        """Return string representation of molecule object."""
+        return f"{self.__class__.__name__}(REPRESENTATION = '{self.representation_string}')"
 
     def get_atoms(self):
         """
@@ -131,5 +63,58 @@ class Molecule(MoleculeBase):
         Returns:
             None
         """
-        self.rdkit_mol = Chem.rdmolops.AddHs(self.rdkit_mol, **kwargs)
+        self._rdkit_mol = Chem.rdmolops.AddHs(self.rdkit_mol, **kwargs)
         return None
+
+
+"""
+Lower level Molecule classes
+
+1. SMILESMolecule
+2. SELFIESMolecule
+3. InChIMolecule
+"""
+
+
+class SMILESMolecule(MoleculeBase):
+    """Lower level molecular representation for SMILES string representation."""
+
+    def __init__(self, representation_string):
+        """Initialize class."""
+        super().__init__()
+        self.representation_string = Chem.CanonSmiles(representation_string)
+        self._rdkit_mol = self.get_rdkit_mol()
+
+    def get_rdkit_mol(self):
+        """Get rdkit molecular representation from SMILES string."""
+        return Chem.MolFromSmiles(self.representation_string)
+
+
+class SELFIESMolecule(MoleculeBase):
+    """Lower level molecular representation for SELFIES string representation."""
+
+    def __init__(self, representation_string):
+        """Initialize class."""
+        super().__init__()
+        self.representation_string = representation_string
+        self.smiles_rep = decoder(representation_string)
+
+        self._rdkit_mol = self.get_rdkit_mol()
+
+    def get_rdkit_mol(self):
+        """Get rdkit molecular representation from SELFIES string."""
+        return Chem.MolFromSmiles(self.smiles_rep)
+
+
+class InChIMolecule(MoleculeBase):
+    """Lower level molecular representation for InChI string representation."""
+
+    def __init__(self, representation_string):
+        """Initialize class."""
+        super().__init__()
+        self.representation_string = representation_string
+        self._rdkit_mol = self.get_rdkit_mol()
+
+    def get_rdkit_mol(self):
+        """Get rdkit molecular representation from InChI string."""
+        return Chem.MolFromInchi(self.representation_string)

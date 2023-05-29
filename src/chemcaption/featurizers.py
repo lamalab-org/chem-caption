@@ -6,11 +6,7 @@ from abc import ABC, abstractmethod
 from collections import namedtuple
 
 import rdkit
-from rdkit import Chem
 from rdkit.Chem import Lipinski, rdMolDescriptors
-from selfies import encoder
-
-from chemcaption.molecules import Molecule
 
 """Abstract classes."""
 
@@ -497,16 +493,3 @@ class MoleculeFeaturizer(BondFeaturizer, MassFeaturizer, ElementFeaturizer):
     def batch_text_featurize(self, molecules):
         """Embed features in Prompt instance for multiple molecules."""
         return None
-
-    def _to_selfies(self, molecule):
-        repr_kind = molecule.repr_string
-        repr_type = molecule.repr_type
-
-        if repr_type == "selfies":
-            return molecule
-        else:
-            if repr_type == "inchi":
-                repr_kind = Chem.MolToSmiles(molecule.rdkit_mol)
-                repr_kind = encoder(repr_kind)
-
-        return Molecule(repr_kind, "selfies")
