@@ -26,18 +26,18 @@ class MoleculeBase(ABC):
         raise NotImplementedError
 
     @property
-    def rdkit_mol(self):
+    def rdkit_mol(self) -> Chem.Mol:
         """Get molecular representation via rdkit. Getter method."""
         return self._rdkit_mol
 
     @rdkit_mol.setter
-    def rdkit_mol(self, **kwargs):
+    def rdkit_mol(self, **kwargs:dict) -> None:
         """Set molecular representation via rdkit."""
         self._rdkit_mol = self.get_rdkit_mol()
         self.reveal_hydrogens(**kwargs)
         return
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """Return string representation of molecule object."""
         return f"{self.__class__.__name__}(REPRESENTATION = '{self.representation_string}')"
 
@@ -53,7 +53,7 @@ class MoleculeBase(ABC):
         """
         return self.rdkit_mol.GetAtoms()
 
-    def reveal_hydrogens(self, **kwargs):
+    def reveal_hydrogens(self, **kwargs) -> None:
         """
         Explicitly represent hydrogen atoms in molecular structure.
 
@@ -85,7 +85,7 @@ class SMILESMolecule(MoleculeBase):
         self.representation_string = Chem.CanonSmiles(representation_string)
         self._rdkit_mol = self.get_rdkit_mol()
 
-    def get_rdkit_mol(self):
+    def get_rdkit_mol(self) -> Chem.Mol:
         """Get rdkit molecular representation from SMILES string."""
         return Chem.MolFromSmiles(self.representation_string)
 
@@ -101,7 +101,7 @@ class SELFIESMolecule(MoleculeBase):
 
         self._rdkit_mol = self.get_rdkit_mol()
 
-    def get_rdkit_mol(self):
+    def get_rdkit_mol(self) -> Chem.Mol:
         """Get rdkit molecular representation from SELFIES string."""
         return Chem.MolFromSmiles(self.smiles_rep)
 
@@ -115,6 +115,6 @@ class InChIMolecule(MoleculeBase):
         self.representation_string = representation_string
         self._rdkit_mol = self.get_rdkit_mol()
 
-    def get_rdkit_mol(self):
+    def get_rdkit_mol(self) -> Chem.Mol:
         """Get rdkit molecular representation from InChI string."""
         return Chem.MolFromInchi(self.representation_string)

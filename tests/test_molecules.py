@@ -5,7 +5,7 @@
 import pandas as pd
 import pytest
 from rdkit import Chem
-from selfies import decoder, encoder
+from selfies import encoder
 
 from chemcaption.molecules import InChIMolecule, SELFIESMolecule, SMILESMolecule
 
