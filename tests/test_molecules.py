@@ -21,7 +21,6 @@ molecular_bank = {
     k: {
         "smiles": v,
         "selfies": encoder(v),
-        "smiled_selfies": Chem.CanonSmiles(decoder(encoder(v))),
         "inchi": Chem.MolToInchi(Chem.MolFromSmiles(v)),
     }
     for k, v in zip(molecular_names, molecular_smiles)
