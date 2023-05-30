@@ -3,13 +3,11 @@
 """Utility imports."""
 
 from abc import ABC, abstractmethod
-from collections import namedtuple
 from typing import List, Sequence, Union
 
 import numpy as np
 import rdkit
 from rdkit.Chem import Lipinski, rdMolDescriptors
-from selfies import encoder
 
 from chemcaption.molecules import InChIMolecule, SELFIESMolecule, SMILESMolecule
 
@@ -515,280 +513,25 @@ class ElementCountProportionFeaturizer(ElementCountFeaturizer):
         return ["Benedict Oshomah Emoekabu", "Kevin Maik Jablonka"]
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-class BondFeaturizer(AbstractFeaturizer):
-    """Lower level Featurizer for bond information."""
-
-    def __init__(self):
-        """Initialize class."""
-        super(BondFeaturizer, self).__init__()
-
-    def count_bonds(self, molecule, bond_type="ALL"):
-        """
-        Count the frequency of a bond_type in a molecule.
-
-        Args:
-            molecule (Molecule): Molecule representation.
-            bond_type (str): Type of bond to enumerate. If `all`, enumerates all bonds irrespective of type.
-                Default (ALL).
-
-        Returns:
-            num_bonds (int): Number of occurrences of `bond_type` in molecule.
-        """
-        bond_type = bond_type.upper()
-
-        all_bonds = self.get_bonds(molecule)
-
-        if bond_type == "ALL":
-            num_bonds = len(all_bonds)
-        else:
-            num_bonds = len([bond for bond in all_bonds if bond == bond_type])
-
-        return num_bonds
-
-    def count_rotable_bonds(self, molecule):
-        """
-        Count the number of rotable (single, non-terminal) bonds in a molecule.
-
-        Args:
-            molecule (Molecule): Molecule representation.
-
-        Returns:
-            num_rotable (int): Number of rotable bonds in molecule.
-        """
-        num_rotable = rdMolDescriptors.CalcNumRotatableBonds(molecule.rdkit_mol, strict=True)
-        return num_rotable
-
-    def get_bonds(
-        self,
-        molecule=None,
-    ):
-        """
-        Extract all individual bonds present in a molecule.
-
-        Args:
-            molecule (Molecule): Molecule representation.
-
-        Returns:
-            bonds (List[BondType]): List of all bonds present in molecule.
-        """
-        bonds = [str(bond.GetBondType()).split(".")[-1] for bond in molecule.rdkit_mol.GetBonds()]
-
-        return bonds
-
-    def get_bond_distribution(self, molecule=None, normalize=True):
-        """Return a frequency distribution for the bonds present in a molecule.
-
-        Args:
-            molecule (Molecule): Molecular representation.
-            normalize (bool): Normalize the freequency or not. Default (True).
-
-        Returns:
-            bond_distribution (dict[str, int|float]): Map of BondType string representation to BondType frequency.
-
-        """
-        all_bonds = self.get_bonds(molecule)
-        num_bonds = len(all_bonds)
-
-        if normalize:
-            bond_distribution = {bond: all_bonds.count(bond) / num_bonds for bond in all_bonds}
-        else:
-            bond_distribution = {bond: all_bonds.count(bond) for bond in all_bonds}
-
-        return bond_distribution
-
-    def get_unique_bond_types(self, molecule):
-        """
-        Get the unique bond types present in a molecule.
-
-        Args:
-            molecule (Molecule): Molecular representation.
-
-        Returns:
-            unique_bonds (set): Set of unique bonds present in `molecule`.
-        """
-        bonds = self.get_bonds(molecule)
-        unique_bonds = set([str(bond).split(".")[-1] for bond in bonds])
-
-        return unique_bonds
-
-    def count_hydrogen_acceptors(self, molecule):
-        """
-        Get the number of Hydrogen bond acceptors present in a molecule.
-
-        Args:
-            molecule (Molecule): Molecular representation.
-
-        Returns:
-            (int): Number of Hydrogen bond acceptors present in `molecule`.
-        """
-        return Lipinski.NumHAcceptors(molecule.rdkit_mol)
-
-    def count_hydrogen_donors(self, molecule):
-        """
-        Get the number of Hydrogen bond donors present in a molecule.
-
-        Args:
-            molecule (Molecule): Molecular representation.
-
-        Returns:
-            (int): Number of Hydrogen bond donors present in `molecule`.
-        """
-        return Lipinski.NumHDonors(molecule.rdkit_mol)
-
-
-class ElementFeaturizer(AbstractFeaturizer):
-    """Lower level Featurizer for elemental information."""
-
-    def __init__(self):
-        """Initialize class."""
-        super(ElementFeaturizer, self).__init__()
-
-    def get_elements_info(self, molecule):
-        """
-        Get information on all elemental atoms present in a molecule.
-
-        Args:
-            molecule (Molecule): Molecular representation.
-
-        Returns:
-            atoms_info (List(namedtuple)): List of ElementalInformation namedtuple instances containing:
-                element_name (str): Name of element atom is made of.
-                element_symbol (str): Chemical symbol for the element.
-                atomic_number (int): Number of protons in atom nucelus.
-                atomic_mass (float): Number of protons + Number of neutrons
-        """
-        molecule.reveal_hydrogens()
-        atoms_info = namedtuple(
-            "ElementalInformation",
-            ["element_name", "element_symbol", "atomic_number", "atomic_mass"],
-        )
-
-        atoms_info = [
-            atoms_info(
-                self.periodic_table.GetElementName(atom.GetAtomicNum()),
-                self.periodic_table.GetElementSymbol(atom.GetAtomicNum()),
-                atom.GetAtomicNum(),
-                self.periodic_table.GetAtomicWeight(atom.GetAtomicNum()),
-            )
-            for atom in molecule.get_atoms()
-        ]
-
-        return atoms_info
-
-    def get_unique_elements(self, atomic_info=None, molecule=None):
-        """
-        Get unique elements that make up a molecule.
-
-        Args:
-            atomic_info (List[namedtuple]): List of ElementalInformation namedtuples.
-            molecule (Molecule): Molecular representation.
-
-        Returns:
-            unique_elements (List[str]): Unique list of element_names or element_symbols in `molecule`.
-        """
-        if atomic_info is None:
-            atomic_info = self.get_elements_info(molecule)
-
-        unique_elements = [inner_tuple.element_name for inner_tuple in set(atomic_info)]
-        return unique_elements
-
-    def get_element_frequency(self, element, molecule=None, atomic_info=None):
-        """
-        Get the number of times atoms of an element occur in a molecule.
-
-        Args:
-            element (str): Element name or symbol.
-            molecule (Molecule): Molecular representation.
-            atomic_info (List[namedtuple]): List of ElementalInformation instances containing info
-                on all atomic contents of molecule.
-
-        Returns:
-            element_count (int): Number of occurrences of atoms of `element` in `molecule`.
-        """
-        if atomic_info is None:
-            atomic_info = self.get_elements_info(molecule=molecule)
-
-        element, element_index = element.capitalize(), (0 if len(element) > 2 else 1)
-
-        element_count = len(
-            [
-                element_info[element_index]
-                for element_info in atomic_info
-                if element_info[element_index] == element.capitalize()
-            ]
-        )
-        return element_count
-
-
-class MassFeaturizer(ElementFeaturizer):
-    """Lower level Featurizer for mass-related information."""
-
-    def __init__(self):
-        """Initialize class."""
-        super(MassFeaturizer, self).__init__()
-
-    def get_molar_mass(
-        self,
-        atomic_info=None,
-        molecule=None,
-    ):
-        """
-        Get the molar mass of a molecule.
-
-        Args:
-            atomic_info (List[namedtuple]):  List of ElementalInformation instances containing info on
-                all atomic contents of molecule.
-            molecule (Molecule): Molecular representation.
-
-        Returns:
-            molar_mass (float): Molecular mass of `molecule`.
-        """
-        if atomic_info is None:
-            atomic_info = self.get_elements_info(molecule)
-        molar_mass = sum([inner_tuple.atomic_mass for inner_tuple in atomic_info])
-        return molar_mass
-
-    def get_total_element_mass(self, element=None, molecule=None, atomic_info=None):
-        """
-        Get the total mass component of an element in a molecule.
-
-        Args:
-            element (str): String representing name or symbol of element.
-            molecule (Molecule): Molecular representation.
-            atomic_info (List[namedtuple]):  List of ElementalInformation instances containing info on
-                all atomic contents of molecule.
-
-        Returns:
-            element_mass (float): Total mass accounted for by `element` in `molecule`.
-        """
-        element = element.capitalize()
-        if atomic_info is None:
-            atomic_info = self.get_elements_info(molecule=molecule)
-        element_mass = sum(
-            [
-                inner_tuple.atomic_mass
-                for inner_tuple in atomic_info
-                if (inner_tuple.element_name == element or inner_tuple.element_symbol == element)
-            ]
-        )
-        return element_mass
-
+if __name__ == "__main__":
+    from selfies import encoder
+    inchi = "InChI=1S/C6H5NO2/c8-7(9)6-4-2-1-3-5-6/h1-5H"
+    smiles = "CN(C)[C@H]1[C@@H]2C[C@H]3C(=C(O)c4c(O)cccc4[C@@]3(C)O)C(=O)[C@]2(O)C(=O)\C(=C(/O)NCN5CCCC5)C1=O"
+    smiles_2 = 'OC(=O)CCC(O)=O.FC(F)(F)c1ccc2Sc3ccccc3N(CCCN4CCN(CCC5OCCCO5)CC4)c2c1'
+    selfies_form = encoder(smiles)
+    repr_type = "inchi"
+
+    inchi_mol = InChIMolecule(inchi)
+    smiles_mol = SMILESMolecule(smiles)
+    smiles_mol_2 = SMILESMolecule(smiles_2)
+
+    mol_list = [inchi_mol, smiles_mol, smiles_mol_2]
+
+    preset = ["Chromium", "Phosphorus", 'Carbon', "Hydrogen", "F"]
+
+    bond = ElementCountProportionFeaturizer()
+    bond.fit(mol_list)
+
+    #print(bond.featurize(smiles_mol))
+    print(bond.batch_featurize(mol_list))
+    print(bond.feature_labels())
