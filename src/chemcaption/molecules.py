@@ -31,17 +31,16 @@ class MoleculeBase(ABC):
         return self._rdkit_mol
 
     @rdkit_mol.setter
-    def rdkit_mol(self, **kwargs:dict) -> None:
+    def rdkit_mol(self, **kwargs: dict) -> None:
         """Set molecular representation via rdkit."""
         self._rdkit_mol = self.get_rdkit_mol()
-        self.reveal_hydrogens(**kwargs)
         return
 
     def __repr__(self) -> str:
         """Return string representation of molecule object."""
         return f"{self.__class__.__name__}(REPRESENTATION = '{self.representation_string}')"
 
-    def get_atoms(self):
+    def get_atoms(self, hydrogen=True, **kwargs):
         """
         Return atomic representation for all atoms present in molecule.
 
@@ -51,9 +50,9 @@ class MoleculeBase(ABC):
         Returns:
             Sequence[Atom]: Sequence of atoms in `molecule`.
         """
-        return self.rdkit_mol.GetAtoms()
+        return self.reveal_hydrogens(**kwargs).GetAtoms() if hydrogen else self.rdkit_mol.GetAtoms()
 
-    def reveal_hydrogens(self, **kwargs) -> None:
+    def reveal_hydrogens(self, **kwargs) -> Chem.Mol:
         """
         Explicitly represent hydrogen atoms in molecular structure.
 
@@ -63,8 +62,7 @@ class MoleculeBase(ABC):
         Returns:
             None
         """
-        self._rdkit_mol = Chem.rdmolops.AddHs(self.rdkit_mol, **kwargs)
-        return None
+        return Chem.rdmolops.AddHs(self.rdkit_mol, **kwargs)
 
 
 """

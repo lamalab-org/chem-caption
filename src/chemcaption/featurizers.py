@@ -4,9 +4,14 @@
 
 from abc import ABC, abstractmethod
 from collections import namedtuple
+from typing import List, Sequence, Union
 
+import numpy as np
 import rdkit
 from rdkit.Chem import Lipinski, rdMolDescriptors
+from selfies import encoder
+
+from chemcaption.molecules import InChIMolecule, SELFIESMolecule, SMILESMolecule
 
 """Abstract classes."""
 
@@ -24,35 +29,509 @@ class AbstractFeaturizer(ABC):
     def __init__(self):
         """Initialize periodic table."""
         self.periodic_table = rdkit.Chem.GetPeriodicTable()
+        self._label = list()
 
     @abstractmethod
-    def featurize(self, molecule):
+    def featurize(
+        self, molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]
+    ) -> np.array:
         """Featurize single Molecule instance."""
         raise NotImplementedError
 
-    @abstractmethod
+    def batch_featurize(self, molecules) -> np.array:
+        """
+        Featurize a sequence of Molecule objects.
+
+        Args:
+            molecules (Sequence[MoleculeType]): A sequence of molecule representations.
+
+        Returns:
+            np.array: An array of features for each molecule instance.
+        """
+
+        return np.concatenate([self.featurize(molecule) for molecule in molecules])
+
     def text_featurize(self, molecule):
         """Embed features in Prompt instance."""
-        raise NotImplementedError
+        return None
 
-    @abstractmethod
-    def batch_featurize(self, molecules):
-        """Featurize both collection of Molecule objects."""
-        raise NotImplementedError
-
-    @abstractmethod
-    def batch_text_featurize(self, molecules):
+    def batch_text_featurize(
+        self, molecules: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]
+    ):
         """Embed features in Prompt instance for multiple molecules."""
+        return None
+
+    @abstractmethod
+    def implementors(self) -> List[str]:
+        """
+        Return functionality implementors.
+
+        Args:
+            None
+
+        Returns:
+            List[str]: List of implementors.
+        """
         raise NotImplementedError
+
+    @property
+    def label(self):
+        return self._label
+
+    @label.setter
+    def label(self, new_label):
+        self._label = new_label
+        return
+
+    def feature_labels(self) -> List[str]:
+        return self.label
+
+    def citations(self):
+        return None
 
 
 """
 Lower level featurizer classes.
 
-1. BondFeaturizer
-2. ElementFeaturizer
-3. MassFeaturizer
+1. NumRotableBondsFeaturizer
+2. BondRotabilityFeaturizer
+3. HAcceptorCountFeaturizer
+4. HDonorCountFeaturizer
+5. ElementMassFeaturizer
+6. ElementCountFeaturizer
+7. ElementMassProportionFeaturizer
+8. ElementCountProportionFeaturizer
 """
+
+
+class NumRotableBondsFeaturizer(AbstractFeaturizer):
+    def __init__(self):
+        """Count the number of rotable (single, non-terminal) bonds in a molecule."""
+        super().__init__()
+        self.label = ["num_rotable_bonds"]
+
+    def featurize(
+        self, molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]
+    ) -> np.array:
+        """
+        Count the number of rotable (single, non-terminal) bonds in a molecule.
+
+        Args:
+            molecule (Molecule): Molecule representation.
+
+        Returns:
+            num_rotable (np.array): Number of rotable bonds in molecule.
+        """
+        num_rotable = rdMolDescriptors.CalcNumRotatableBonds(molecule.rdkit_mol, strict=True)
+        return np.array([num_rotable])
+
+    def implementors(self):
+        """
+        Return functionality implementors.
+
+        Args:
+            None
+
+        Returns:
+            List[str]: List of implementors.
+        """
+        return ["Benedict Oshomah Emoekabu", "Kevin Maik Jablonka"]
+
+
+class BondRotabilityFeaturizer(AbstractFeaturizer):
+    def __init__(self):
+        super().__init__()
+        self.label = ["rotable_proportion", "non_rotable_proportion"]
+
+    def _get_bond_types(self, molecule):
+        num_bonds = len(molecule.rdkit_mol.GetBonds())
+        num_rotable = rdMolDescriptors.CalcNumRotatableBonds(molecule.rdkit_mol, strict=True)
+        num_non_rotable = num_bonds - num_rotable
+
+        bond_distribution = [num_rotable/num_bonds, num_non_rotable/num_bonds]
+
+        return bond_distribution
+
+    def featurize(
+        self, molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]
+    ) -> np.array:
+        return np.reshape(np.array(self._get_bond_types(molecule=molecule)), newshape=(1, -1))
+
+    def implementors(self):
+        """
+        Return functionality implementors.
+
+        Args:
+            None
+
+        Returns:
+            List[str]: List of implementors.
+        """
+        return ["Benedict Oshomah Emoekabu", "Kevin Maik Jablonka"]
+
+
+class HAcceptorCountFeaturizer(AbstractFeaturizer):
+    def __init__(self):
+        """Get the number of Hydrogen bond acceptors present in a molecule."""
+        super().__init__()
+        self.label = ["num_hydrogen_bond_acceptors"]
+
+    def featurize(
+        self, molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]
+    ) -> np.array:
+        """
+        Get the number of Hydrogen bond acceptors present in a molecule.
+
+        Args:
+            molecule (Molecule): Molecular representation.
+
+        Returns:
+            (np.array): Number of Hydrogen bond acceptors present in `molecule`.
+        """
+        return np.array([Lipinski.NumHAcceptors(molecule.rdkit_mol)])
+
+    def implementors(self) -> List[str]:
+        """
+        Return functionality implementors.
+
+        Args:
+            None
+
+        Returns:
+            List[str]: List of implementors.
+        """
+        return ["Benedict Oshomah Emoekabu", "Kevin Maik Jablonka"]
+
+
+class HDonorCountFeaturizer(AbstractFeaturizer):
+    def __init__(self):
+        """Get the number of Hydrogen bond donors present in a molecule."""
+        super().__init__()
+        self.label = ["num_hydrogen_bond_donors"]
+
+    def featurize(
+        self, molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]
+    ) -> np.array:
+        """
+        Get the number of Hydrogen bond donors present in a molecule.
+
+        Args:
+            molecule (Molecule): Molecular representation.
+
+        Returns:
+            np.array: Number of Hydrogen bond donors present in `molecule`.
+        """
+        return np.array([Lipinski.NumHDonors(molecule.rdkit_mol)])
+
+    def implementors(self) -> List[str]:
+        """
+        Return functionality implementors.
+
+        Args:
+            None
+
+        Returns:
+            List[str]: List of implementors.
+        """
+        return ["Benedict Oshomah Emoekabu", "Kevin Maik Jablonka"]
+
+    def citations(self):
+        return None
+
+
+class MolecularMassFeaturizer(AbstractFeaturizer):
+    def __init__(self):
+        """Get the molecular mass of a molecule."""
+        super().__init__()
+        self.label = ["molecular_mass"]
+
+    def featurize(
+        self,
+        molecule,
+    ) -> np.array:
+        """
+        Get the molecular mass of a molecule.
+
+        Args:
+            molecule (Molecule): Molecular representation.
+
+        Returns:
+            molar_mass (float): Molecular mass of `molecule`.
+        """
+        molar_mass = sum(
+            [
+                self.periodic_table.GetAtomicWeight(atom.GetAtomicNum())
+                for atom in molecule.get_atoms()
+            ]
+        )
+        return np.array([molar_mass])
+
+    def implementors(self) -> List[str]:
+        """
+        Return functionality implementors.
+
+        Args:
+            None
+
+        Returns:
+            List[str]: List of implementors.
+        """
+        return ["Benedict Oshomah Emoekabu", "Kevin Maik Jablonka"]
+
+
+class ElementMassFeaturizer(AbstractFeaturizer):
+    def __init__(self, preset=None):
+        """Get the total mass component of an element in a molecule."""
+        super().__init__()
+
+        if preset is not None:
+            self._preset = list(map(lambda x: x.capitalize(), preset))
+        else:
+            self._preset = [
+                "Carbon", "Hydrogen", "Nitrogen", "Oxygen"
+            ]
+
+        self.label = [element.lower() + "_mass" for element in self.preset]
+
+    @property
+    def preset(self):
+        return self._preset
+
+    @preset.setter
+    def preset(self, new_preset):
+        self._preset = new_preset
+        self.label = [element.lower() + "_mass" for element in self.preset]
+        return
+
+    def fit(self, molecules):
+        if isinstance(molecules, list):
+            unique_elements = set()
+            for molecule in molecules:
+                unique_elements.update(set(self._get_unique_elements(molecule)))
+        else:
+            unique_elements = set(self._get_unique_elements(molecules))
+
+        unique_elements = list(unique_elements)
+        self.preset = unique_elements
+
+        return self
+
+    def _get_element_mass(self, element, molecule):
+        """
+        Get the total mass component of an element in a molecule.
+
+        Args:
+            element (str): String representing element name or symbol.
+            molecule (Molecule): Molecular representation.
+
+        Returns:
+            element_mass (float): Total mass accounted for by `element`` in `molecule`.
+        """
+        if len(element) > 2:
+            element_mass = [
+                self.periodic_table.GetAtomicWeight(atom.GetAtomicNum())
+                for atom in molecule.get_atoms(True)
+                if self.periodic_table.GetElementName(atom.GetAtomicNum()) == element
+            ]
+        else:
+            element_mass = [
+                self.periodic_table.GetAtomicWeight(atom.GetAtomicNum())
+                for atom in molecule.get_atoms(True)
+                if self.periodic_table.GetElementSymbol(atom.GetAtomicNum()) == element
+            ]
+        return sum(element_mass)
+
+    def _get_profile(self, molecule):
+        element_masses = list()
+        for element in self.preset:
+            element_mass = self._get_element_mass(element=element, molecule=molecule)
+            element_masses.append(element_mass)
+
+        return element_masses
+
+    def _get_unique_elements(self, molecule=None):
+        """
+        Get unique elements that make up a molecule.
+
+        Args:
+            atomic_info (List[namedtuple]): List of ElementalInformation namedtuples.
+            molecule (Molecule): Molecular representation.
+
+        Returns:
+            unique_elements (List[str]): Unique list of element_names or element_symbols in `molecule`.
+        """
+
+        unique_elements = [
+            self.periodic_table.GetElementName(atom.GetAtomicNum()).capitalize() for atom in set(molecule.get_atoms(True))
+        ]
+        return unique_elements
+
+    def featurize(
+        self, molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]
+    ) -> np.array:
+        return np.reshape(np.array(self._get_profile(molecule=molecule)), newshape=(1, -1))
+
+    def implementors(self) -> List[str]:
+        """
+        Return functionality implementors.
+
+        Args:
+            None
+
+        Returns:
+            List[str]: List of implementors.
+        """
+        return ["Benedict Oshomah Emoekabu", "Kevin Maik Jablonka"]
+
+
+class ElementMassProportionFeaturizer(ElementMassFeaturizer):
+    def __init__(self, preset=None):
+        super().__init__(preset=preset)
+        print(self.preset)
+        self.label = [element.lower() + "_mass_ratio" for element in self.preset]
+
+    def _get_profile(self, molecule):
+        molar_mass = sum(
+            [
+                self.periodic_table.GetAtomicWeight(atom.GetAtomicNum())
+                for atom in molecule.get_atoms()
+            ]
+        )
+        element_proportions = list()
+        element_labels = list()
+
+        for element in self.preset:
+            element_proportion = self._get_element_mass(element=element, molecule=molecule) / molar_mass
+            element_proportions.append(element_proportion)
+            element_labels.append(element.lower() + "_mass_ratio")
+
+        self.label = element_labels
+
+        return element_proportions
+
+    def featurize(
+        self, molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]
+    ) -> np.array:
+        return np.reshape(np.array(self._get_profile(molecule=molecule)), newshape=(1, -1))
+
+    def implementors(self) -> List[str]:
+        """
+        Return functionality implementors.
+
+        Args:
+            None
+
+        Returns:
+            List[str]: List of implementors.
+        """
+        return ["Benedict Oshomah Emoekabu", "Kevin Maik Jablonka"]
+
+
+class ElementCountFeaturizer(ElementMassFeaturizer):
+    def __init__(self, preset=None):
+        """Get the total mass component of an element in a molecule."""
+        super().__init__(preset=preset)
+
+        self.label = ["num_" + element.lower() + "_atoms" for element in self.preset]
+
+    def _get_atom_count(self, element, molecule):
+        atom_count = len(
+            [
+                atom for atom in molecule.get_atoms() if
+                (
+                        self.periodic_table.GetElementName(atom.GetAtomicNum()) == element or
+                        self.periodic_table.GetElementSymbol(atom.GetAtomicNum()) == element
+                )
+            ]
+        )
+        return atom_count
+
+    def _get_profile(self, molecule):
+        atom_counts = list()
+        for element in self.preset:
+            atom_count = self._get_atom_count(element=element, molecule=molecule)
+            atom_counts.append(atom_count)
+
+        return atom_counts
+
+    def featurize(
+        self, molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]
+    ) -> np.array:
+        return np.array([self._get_profile(molecule=molecule)])
+
+    def implementors(self) -> List[str]:
+        """
+        Return functionality implementors.
+
+        Args:
+            None
+
+        Returns:
+            List[str]: List of implementors.
+        """
+        return ["Benedict Oshomah Emoekabu", "Kevin Maik Jablonka"]
+
+
+class ElementCountProportionFeaturizer(ElementCountFeaturizer):
+    def __init__(self, preset=None):
+        super().__init__(preset=preset)
+        print(self.preset)
+        self.label = [element.lower() + "_atom_ratio" for element in self.preset]
+
+    def _get_profile(self, molecule):
+        molar_mass = sum(
+            [
+                self.periodic_table.GetAtomicWeight(atom.GetAtomicNum())
+                for atom in molecule.get_atoms()
+            ]
+        )
+        element_proportions = list()
+        element_labels = list()
+
+        for element in self.preset:
+            element_proportion = self._get_atom_count(element=element, molecule=molecule) / molar_mass
+            element_proportions.append(element_proportion)
+            element_labels.append(element.lower() + "_atom_ratio")
+
+        self.label = element_labels
+
+        return element_proportions
+
+    def featurize(
+        self, molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]
+    ) -> np.array:
+        return np.reshape(np.array(self._get_profile(molecule=molecule)), newshape=(1, -1))
+
+    def implementors(self) -> List[str]:
+        """
+        Return functionality implementors.
+
+        Args:
+            None
+
+        Returns:
+            List[str]: List of implementors.
+        """
+        return ["Benedict Oshomah Emoekabu", "Kevin Maik Jablonka"]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 class BondFeaturizer(AbstractFeaturizer):
@@ -313,183 +792,3 @@ class MassFeaturizer(ElementFeaturizer):
         )
         return element_mass
 
-
-"""Mega featurizer class."""
-
-
-class MoleculeFeaturizer(BondFeaturizer, MassFeaturizer, ElementFeaturizer):
-    """Molecule-centered Featurizer class."""
-
-    def __init__(self):
-        """Initialize class."""
-        super(MoleculeFeaturizer, self).__init__()
-
-    def stream_featurize(self, molecule=None, atomic_info=None):
-        """
-        Generate feature vector for Molecule object.
-
-        Args:
-            molecule (Molecule): Molecule representation.
-            atomic_info (namedtuple): ElementalInformation instance containing info on all atomic contents of molecule.
-
-        Returns:
-            features [namedtuple]: NamedTuple containing:
-                molecular_mass (float): Molar mass of molecule.
-                element_count (int): Number of atoms of an element present in molecule.
-                element_mass (float): Atomic mass of element * `element_count`.
-                element_count_proportion (float): Percentage of total number of atoms made up by element.
-                element_mass_proportion (float): Percentage of molecular mass made up by element.
-                num_<BondType>_bond (int): Number of occurrences of each bond type.
-                <BondType>_bond_proportion (float): Fraction/proportion of occurrences of each bond type.
-                num_rotable_bonds (int): Number of rotable bonds in molecule.
-                rotable_bond_proportion (float): Percentage of rotable bonds in molecule.
-                num_non_rotale_bonds (int): Number of non-rotable bond.
-                non_rotable_bond_proportion (float): Percentage of non-rotable bonds in molecule.
-                num_hydrogen_donors (int): Number of Hydrogen bond donors in molecule.
-                num_hydrogen_acceptors (int): Number of Hydrogen bond acceptors in molecule.
-
-        """
-        feature_names = [
-            "molecular_mass",
-        ]
-        feature_values = list()
-
-        if atomic_info is None:
-            atomic_info = self.get_elements_info(molecule=molecule)
-
-        molecular_mass = self.get_molar_mass(atomic_info=atomic_info)
-        feature_values.append(molecular_mass)
-
-        element_features, element_values = self._get_elemental_profile(
-            molecule=molecule, atomic_info=atomic_info
-        )
-
-        feature_names += element_features
-        feature_values += element_values
-
-        features = namedtuple("MolecularInformation", feature_names)
-
-        return features(*feature_values)
-
-    def _get_elemental_profile(self, molecule=None, atomic_info=None, normalize=True):
-        if atomic_info is None:
-            atomic_info = self.get_elements_info(molecule=molecule)
-        unique_elements = self.get_unique_elements(atomic_info=atomic_info)
-
-        element_features = list()
-        element_values = list()
-        molar_mass = self.get_molar_mass(atomic_info=atomic_info)
-
-        for element in unique_elements:
-            element_features.append(f"{element.lower()}_count")
-            element_count = self.get_element_frequency(
-                element=element, molecule=molecule, atomic_info=atomic_info
-            )
-            element_values.append(element_count)
-
-            element_features.append(f"{element.lower()}_total_mass")
-            element_mass = self.get_total_element_mass(
-                element=element, molecule=molecule, atomic_info=atomic_info
-            )
-            element_values.append(element_mass)
-
-            if normalize:
-                element_features.append(f"{element.lower()}_count_proportion")
-                element_values.append(element_count / len(atomic_info))
-
-                element_features.append(f"{element.lower()}_mass_proportion")
-                element_values.append(
-                    self.get_total_element_mass(element=element, atomic_info=atomic_info)
-                    / molar_mass
-                )
-
-        for norm in [True, False]:
-            bond_types, bond_counts = zip(
-                *self.get_bond_distribution(molecule, normalize=norm).items()
-            )
-            element_features += list(
-                map(
-                    lambda x: f"{x.lower()}_bond_proportion" if norm else f"num_{x.lower()}_bonds",
-                    bond_types,
-                )
-            )
-            element_values += bond_counts
-
-        num_rotable = self.count_rotable_bonds(molecule=molecule)
-        num_bonds = self.count_bonds(molecule=molecule, bond_type="ALL")
-        num_non_rotable = num_bonds - num_rotable
-
-        rotable_proportion = num_rotable / num_bonds
-        non_rotable_proportion = num_non_rotable / num_bonds
-
-        element_features.append("num_rotable_bonds")
-        element_features.append("rotable_bonds_proportion")
-
-        element_values.append(num_rotable)
-        element_values.append(rotable_proportion)
-
-        element_features.append("num_non_rotable_bonds")
-        element_features.append("non_rotable_bonds_proportion")
-
-        element_values.append(num_non_rotable)
-        element_values.append(non_rotable_proportion)
-
-        element_features.append("num_hydrogen_donors")
-        element_features.append("num_hydrogen_acceptors")
-
-        num_hydrogen_donors = self.count_hydrogen_donors(molecule)
-        num_hydrogen_acceptors = self.count_hydrogen_acceptors(molecule)
-
-        element_values.append(num_hydrogen_donors)
-        element_values.append(num_hydrogen_acceptors)
-
-        return element_features, element_values
-
-    def featurize(self, molecules=None, molecular_info=None):
-        """
-        Featurize both collection of Molecule objects or single Molecule instance.
-
-        Args:
-            molecules (Union[Molecule, List[Molecules]): Single or collection of Molecule instance(s).
-            molecular_info (namedtuple): Single or collection of ElementalInformation namedtuple instance(s).
-
-        Returns:
-            features (Union[namedtuple, List[namedtuple]): Single or collection of
-                MolecularInformation namedtuple instance(s).
-        """
-        if isinstance(molecules, list):
-            features = self.batch_featurize(molecules=molecules, molecular_info_dump=molecular_info)
-            features = features[0] if len(features) == 1 else features
-        else:
-            features = self.stream_featurize(molecule=molecules, atomic_info=molecular_info)
-
-        return features
-
-    def batch_featurize(self, molecules=None, molecular_info_dump=None):
-        """
-        Featurize a collection of Molecule objects.
-
-        Args:
-            molecules (Molecule): Molecular representation.
-            molecular_info_dump (List[namedtuple]): Collection of ElementalInformation instances containing
-                elemental information for each molecule.
-
-        Returns:
-            List[namedtuple]: List of MolecularInformation namedtuple objects for each molecule.
-        """
-        if molecular_info_dump is None:
-            molecular_info_dump = [
-                self.get_elements_info(molecule=molecule) for molecule in molecules
-            ]
-        return [
-            self.stream_featurize(molecule=molecule, atomic_info=molecular_info)
-            for molecule, molecular_info in zip(molecules, molecular_info_dump)
-        ]
-
-    def text_featurize(self, molecule):
-        """Embed features in Prompt instance."""
-        return None
-
-    def batch_text_featurize(self, molecules):
-        """Embed features in Prompt instance for multiple molecules."""
-        return None
