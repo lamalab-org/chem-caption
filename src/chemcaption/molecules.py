@@ -45,7 +45,8 @@ class MoleculeBase(ABC):
         Return atomic representation for all atoms present in molecule.
 
         Args:
-            None
+            hydrogen (bool): Reveal hydrogen atoms or not.
+            **kwargs (dict): Keyword arguments.
 
         Returns:
             Sequence[Atom]: Sequence of atoms in `molecule`.
