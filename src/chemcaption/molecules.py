@@ -16,7 +16,6 @@ class MoleculeBase(ABC):
         self,
     ):
         """Instantiate base class for molecular representation."""
-        # self.representation_name = representation_name
         self._rdkit_mol = None
         self.representation_string = None
 
@@ -53,7 +52,7 @@ class MoleculeBase(ABC):
         """
         return self.reveal_hydrogens(**kwargs).GetAtoms() if hydrogen else self.rdkit_mol.GetAtoms()
 
-    def reveal_hydrogens(self, **kwargs) -> Chem.Mol:
+    def reveal_hydrogens(self, **kwargs: dict) -> Chem.Mol:
         """
         Explicitly represent hydrogen atoms in molecular structure.
 
@@ -78,7 +77,7 @@ Lower level Molecule classes
 class SMILESMolecule(MoleculeBase):
     """Lower level molecular representation for SMILES string representation."""
 
-    def __init__(self, representation_string):
+    def __init__(self, representation_string: str):
         """Initialize class."""
         super().__init__()
         self.representation_string = Chem.CanonSmiles(representation_string)
@@ -92,7 +91,7 @@ class SMILESMolecule(MoleculeBase):
 class SELFIESMolecule(MoleculeBase):
     """Lower level molecular representation for SELFIES string representation."""
 
-    def __init__(self, representation_string):
+    def __init__(self, representation_string: str):
         """Initialize class."""
         super().__init__()
         self.representation_string = representation_string
@@ -108,7 +107,7 @@ class SELFIESMolecule(MoleculeBase):
 class InChIMolecule(MoleculeBase):
     """Lower level molecular representation for InChI string representation."""
 
-    def __init__(self, representation_string):
+    def __init__(self, representation_string: str):
         """Initialize class."""
         super().__init__()
         self.representation_string = representation_string

@@ -17,7 +17,7 @@ from tests.conftests import (
     "test_input, expected",
     extract_representation_strings(MOLECULAR_BANK, in_="selfies", out_="smiles"),
 )
-def test_selfies_to_smiles(test_input, expected):
+def test_selfies_to_smiles(test_input: str, expected: str):
     """Test conversion from SELFIES to SMILES."""
     from_kind, to_kind = "selfies", "smiles"
 
@@ -32,7 +32,7 @@ def test_selfies_to_smiles(test_input, expected):
     "test_input, expected",
     extract_representation_strings(MOLECULAR_BANK, in_="smiles", out_="selfies"),
 )
-def test_smiles_to_selfies(test_input, expected):
+def test_smiles_to_selfies(test_input: str, expected: str):
     """Test conversion from SMILES to SELFIES."""
     from_kind, to_kind = "smiles", "selfies"
 
@@ -47,7 +47,7 @@ def test_smiles_to_selfies(test_input, expected):
     "test_input, expected",
     extract_representation_strings(MOLECULAR_BANK, in_="smiles", out_="inchi"),
 )
-def test_smiles_to_inchi(test_input, expected):
+def test_smiles_to_inchi(test_input: str, expected: str):
     """Test conversion from SMILES to InChI."""
     from_kind, to_kind = "smiles", "inchi"
 
@@ -62,7 +62,7 @@ def test_smiles_to_inchi(test_input, expected):
     "test_input, expected",
     extract_representation_strings(MOLECULAR_BANK, in_="inchi", out_="smiles"),
 )
-def test_inchi_to_smiles(test_input, expected):
+def test_inchi_to_smiles(test_input: str, expected: str):
     """Test conversion from InChI to SMILES."""
     from_kind, to_kind = "inchi", "smiles"
 
@@ -77,7 +77,7 @@ def test_inchi_to_smiles(test_input, expected):
     "test_input, expected",
     extract_representation_strings(MOLECULAR_BANK, in_="inchi", out_="selfies"),
 )
-def test_inchi_to_selfies(test_input, expected):
+def test_inchi_to_selfies(test_input: str, expected: str):
     """Test conversion from InChI to SELFIES."""
     from_kind, to_kind = "inchi", "selfies"
 
@@ -94,7 +94,7 @@ def test_inchi_to_selfies(test_input, expected):
     "test_input, expected",
     extract_representation_strings(MOLECULAR_BANK, in_="selfies", out_="inchi"),
 )
-def test_selfies_to_inchi(test_input, expected):
+def test_selfies_to_inchi(test_input: str, expected: str):
     """Test conversion from SELFIES to InChI."""
     from_kind, to_kind = "selfies", "inchi"
 

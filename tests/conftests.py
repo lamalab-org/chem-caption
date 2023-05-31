@@ -2,6 +2,8 @@
 
 """Global requirements for modular testing."""
 
+from typing import Dict, Union
+
 import pandas as pd
 from rdkit import Chem
 from selfies import encoder
@@ -37,15 +39,28 @@ DISPATCH_MAP = {
 """Utility functions."""
 
 
-def extract_representation_strings(molecular_bank, in_="smiles", out_="selfies"):
+def extract_representation_strings(
+    molecular_bank: Dict[str, str], in_: str = "smiles", out_: str = "selfies"
+):
     """Extract molecule representation strings from data bank."""
     in_, out_ = in_.lower(), out_.lower()
     input_output = [(v[in_], v[out_]) for k, v in molecular_bank.items()]
     return input_output
 
 
-def _convert_molecule(molecule, to_kind="smiles"):
-    """Convert molecules between representational systems."""
+def _convert_molecule(
+    molecule: Union[InChIMolecule, SELFIESMolecule, SMILESMolecule], to_kind: str = "smiles"
+) -> Union[InChIMolecule, SELFIESMolecule, SMILESMolecule]:
+    """Convert molecules between representational systems.
+
+    Args:
+        molecule (Union[InChIMolecule, SELFIESMolecule, SMILESMolecule]): Molecular representation instance.
+        to_kind (str): Target molecular representation system.
+
+    Returns:
+        Union[InChIMolecule, SELFIESMolecule, SMILESMolecule]: New molecular representation instance in `to_kind`
+            representation system.
+    """
     to_kind = to_kind.lower()
 
     if to_kind == "inchi":

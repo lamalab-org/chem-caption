@@ -3,7 +3,7 @@
 """Utility imports."""
 
 from abc import ABC, abstractmethod
-from typing import List, Sequence, Union
+from typing import List, Optional, Sequence, Union
 
 import numpy as np
 import rdkit
@@ -36,19 +36,22 @@ class AbstractFeaturizer(ABC):
         """Featurize single Molecule instance."""
         raise NotImplementedError
 
-    def batch_featurize(self, molecules) -> np.array:
+    def batch_featurize(
+        self, molecules: Sequence[Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]]
+    ) -> np.array:
         """
         Featurize a sequence of Molecule objects.
 
         Args:
-            molecules (Sequence[MoleculeType]): A sequence of molecule representations.
+            molecules (Sequence[Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]]):
+                A sequence of molecule representations.
 
         Returns:
             np.array: An array of features for each molecule instance.
         """
         return np.concatenate([self.featurize(molecule) for molecule in molecules])
 
-    def text_featurize(self, molecule):
+    def text_featurize(self, molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]):
         """Embed features in Prompt instance."""
         return None
 
@@ -72,12 +75,12 @@ class AbstractFeaturizer(ABC):
         raise NotImplementedError
 
     @property
-    def label(self):
+    def label(self) -> List[str]:
         """Get label attribute. Getter method."""
         return self._label
 
     @label.setter
-    def label(self, new_label):
+    def label(self, new_label: List[str]) -> None:
         """Set label attribute. Setter method. Changes instance state.
 
         Args:
@@ -135,7 +138,7 @@ class NumRotableBondsFeaturizer(AbstractFeaturizer):
         num_rotable = rdMolDescriptors.CalcNumRotatableBonds(molecule.rdkit_mol, strict=True)
         return np.array([num_rotable])
 
-    def implementors(self):
+    def implementors(self) -> List[str]:
         """
         Return functionality implementors.
 
@@ -156,7 +159,9 @@ class BondRotabilityFeaturizer(AbstractFeaturizer):
         super().__init__()
         self.label = ["rotable_proportion", "non_rotable_proportion"]
 
-    def _get_bond_types(self, molecule):
+    def _get_bond_types(
+        self, molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]
+    ) -> List[float]:
         """Return distribution of bonds based on rotability.
 
         Args:
@@ -186,7 +191,7 @@ class BondRotabilityFeaturizer(AbstractFeaturizer):
         """
         return np.reshape(np.array(self._get_bond_types(molecule=molecule)), newshape=(1, -1))
 
-    def implementors(self):
+    def implementors(self) -> List[str]:
         """
         Return functionality implementors.
 
@@ -314,7 +319,7 @@ class MolecularMassFeaturizer(AbstractFeaturizer):
 class ElementMassFeaturizer(AbstractFeaturizer):
     """Obtain mass for elements in a molecule."""
 
-    def __init__(self, preset=None):
+    def __init__(self, preset: Optional[List[str]] = None):
         """Get the total mass component of an element in a molecule."""
         super().__init__()
 
@@ -326,12 +331,12 @@ class ElementMassFeaturizer(AbstractFeaturizer):
         self.label = [element.lower() + "_mass" for element in self.preset]
 
     @property
-    def preset(self):
+    def preset(self) -> List[str]:
         """Get molecular preset. Getter method."""
         return self._preset
 
     @preset.setter
-    def preset(self, new_preset):
+    def preset(self, new_preset: List[str]) -> None:
         """Set molecular preset. Setter method.
 
         Args:
@@ -344,11 +349,18 @@ class ElementMassFeaturizer(AbstractFeaturizer):
         self.label = [element.lower() + "_mass" for element in self.preset]
         return
 
-    def fit(self, molecules: Sequence[Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]]):
+    def fit(
+        self,
+        molecules: Union[
+            Union[SMILESMolecule, InChIMolecule, SELFIESMolecule],
+            Sequence[Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]],
+        ],
+    ):
         """Generate preset by exploration of molecule sequence. Updates instance state.
 
         Args:
-            molecules (Sequence[Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]]):
+            molecules (Union[Union[SMILESMolecule, InChIMolecule, SELFIESMolecule],
+                        Sequence[Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]]]):
                 Sequence of molecular instances.
 
         Returns:
@@ -366,13 +378,15 @@ class ElementMassFeaturizer(AbstractFeaturizer):
 
         return self
 
-    def _get_element_mass(self, element, molecule):
+    def _get_element_mass(
+        self, element: str, molecule=Sequence[Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]]
+    ) -> float:
         """
         Get the total mass component of an element in a molecule.
 
         Args:
             element (str): String representing element name or symbol.
-            molecule (Molecule): Molecular representation.
+            molecule (Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]): Molecular representation.
 
         Returns:
             element_mass (float): Total mass accounted for by `element`` in `molecule`.
@@ -391,7 +405,9 @@ class ElementMassFeaturizer(AbstractFeaturizer):
             ]
         return sum(element_mass)
 
-    def _get_profile(self, molecule):
+    def _get_profile(
+        self, molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]
+    ) -> List[float]:
         """Generate molecular profile based of preset attribute.
 
         Args:
@@ -407,12 +423,14 @@ class ElementMassFeaturizer(AbstractFeaturizer):
 
         return element_masses
 
-    def _get_unique_elements(self, molecule=None):
+    def _get_unique_elements(
+        self, molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule] = None
+    ) -> List[str]:
         """
         Get unique elements that make up a molecule.
 
         Args:
-            molecule (Molecule): Molecular representation.
+            molecule (Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]): Molecular representation.
 
         Returns:
             unique_elements (List[str]): Unique list of element_names or element_symbols in `molecule`.
@@ -453,12 +471,14 @@ class ElementMassFeaturizer(AbstractFeaturizer):
 class ElementMassProportionFeaturizer(ElementMassFeaturizer):
     """Obtain mass proportion for elements in a molecule."""
 
-    def __init__(self, preset=None):
+    def __init__(self, preset: Optional[List[str]] = None):
         """Initialize instance."""
         super().__init__(preset=preset)
         self.label = [element.lower() + "_mass_ratio" for element in self.preset]
 
-    def _get_profile(self, molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]):
+    def _get_profile(
+        self, molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]
+    ) -> List[float]:
         """Generate molecular profile based of preset attribute.
 
         Args:
@@ -517,13 +537,15 @@ class ElementMassProportionFeaturizer(ElementMassFeaturizer):
 class ElementCountFeaturizer(ElementMassFeaturizer):
     """Get the total mass component of an element in a molecule."""
 
-    def __init__(self, preset=None):
+    def __init__(self, preset: Optional[List[str]] = None):
         """Initialize class."""
         super().__init__(preset=preset)
 
         self.label = ["num_" + element.lower() + "_atoms" for element in self.preset]
 
-    def _get_atom_count(self, element, molecule):
+    def _get_atom_count(
+        self, element: str, molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]
+    ) -> int:
         """
         Get number of atoms of element in a molecule.
 
@@ -546,7 +568,9 @@ class ElementCountFeaturizer(ElementMassFeaturizer):
         )
         return atom_count
 
-    def _get_profile(self, molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]):
+    def _get_profile(
+        self, molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]
+    ) -> List[int]:
         """Generate number of atoms per element based of preset attribute.
 
         Args:
@@ -592,12 +616,14 @@ class ElementCountFeaturizer(ElementMassFeaturizer):
 class ElementCountProportionFeaturizer(ElementCountFeaturizer):
     """Get the proportion of an element in a molecule by atomic count."""
 
-    def __init__(self, preset=None):
+    def __init__(self, preset: Optional[List[str]] = None):
         """Initialize instance."""
         super().__init__(preset=preset)
         self.label = [element.lower() + "_atom_ratio" for element in self.preset]
 
-    def _get_profile(self, molecule):
+    def _get_profile(
+        self, molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]
+    ) -> List[float]:
         """Generate molecular profile based of preset attribute.
 
         Args:
