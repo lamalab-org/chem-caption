@@ -2,8 +2,9 @@
 
 """Global requirements for modular testing."""
 
-from typing import Dict, Union
+from typing import Union
 
+import numpy as np
 import pandas as pd
 from rdkit import Chem
 from selfies import encoder
@@ -14,6 +15,8 @@ from chemcaption.molecules import InChIMolecule, SELFIESMolecule, SMILESMolecule
 
 
 MOLECULAR_BANK = pd.read_json("data/molecular_bank.json", orient="index")
+PROPERTY_BANK = pd.read_csv("data/pubchem_response.csv")
+
 
 DISPATCH_MAP = {
     "smiles": SMILESMolecule,
@@ -21,7 +24,40 @@ DISPATCH_MAP = {
     "inchi": InChIMolecule,
 }
 
+NAMES = [
+    "MolecularWeight",
+    "ExactMass",
+    "MonoisotopicMass",
+    "HBondDonorCount",
+    "HBondAcceptorCount",
+    "RotatableBondCount",
+    "smiles",
+]
+
+NEW_NAMES = [
+    "molar_mass",
+    "exact_mass",
+    "monoisotopic_mass",
+    "num_hdonors",
+    "num_hacceptors",
+    "num_rotable",
+    "smiles",
+]
+
+NAME_DICT = dict(zip(NAMES, NEW_NAMES))
+PROPERTY_BANK.rename(columns=NAME_DICT, inplace=True)
+PROPERTY_BANK = PROPERTY_BANK.loc[:, NEW_NAMES]
 """Utility functions."""
+
+def extract_molecule_properties(property_bank, property="molar_mass"):
+    """Extract SMILES string and the value of `property`."""
+    smiles_list, property_list = (
+        property_bank["smiles"].values.tolist(),
+        property_bank[property].values.tolist(),
+    )
+    properties = [(k, np.array([v])) for k, v in zip(smiles_list, property_list) if not np.isnan(v)]
+
+    return properties
 
 
 def extract_representation_strings(
@@ -29,7 +65,7 @@ def extract_representation_strings(
 ):
     """Extract molecule representation strings from data bank."""
     in_, out_ = in_.lower(), out_.lower()
-    in_list, out_list = molecular_bank[in_].tolist(),  molecular_bank[out_].tolist()
+    in_list, out_list = molecular_bank[in_].tolist(), molecular_bank[out_].tolist()
     input_output = [(k, v) for k, v in zip(in_list, out_list)]
     return input_output
 
