@@ -12,23 +12,8 @@ from chemcaption.molecules import InChIMolecule, SELFIESMolecule, SMILESMolecule
 
 """Test data."""
 
-data_bank = pd.read_csv("data/molecular_bank.csv", encoding="latin-1")
-data_bank["smiles"] = data_bank["smiles"].apply(Chem.CanonSmiles)
-molecular_names, molecular_smiles = (
-    data_bank["name"].values.tolist(),
-    data_bank["smiles"].values.tolist(),
-)
 
-"""Constant variables."""
-
-MOLECULAR_BANK = {
-    k: {
-        "smiles": v,
-        "selfies": encoder(v),
-        "inchi": Chem.MolToInchi(Chem.MolFromSmiles(v)),
-    }
-    for k, v in zip(molecular_names, molecular_smiles)
-}
+MOLECULAR_BANK = pd.read_json("data/molecular_bank.json", orient="index")
 
 DISPATCH_MAP = {
     "smiles": SMILESMolecule,
@@ -40,11 +25,12 @@ DISPATCH_MAP = {
 
 
 def extract_representation_strings(
-    molecular_bank: Dict[str, str], in_: str = "smiles", out_: str = "selfies"
+    molecular_bank: pd.DataFrame, in_: str = "smiles", out_: str = "selfies"
 ):
     """Extract molecule representation strings from data bank."""
     in_, out_ = in_.lower(), out_.lower()
-    input_output = [(v[in_], v[out_]) for k, v in molecular_bank.items()]
+    in_list, out_list = molecular_bank[in_].tolist(),  molecular_bank[out_].tolist()
+    input_output = [(k, v) for k, v in zip(in_list, out_list)]
     return input_output
 
 

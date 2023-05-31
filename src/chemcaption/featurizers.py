@@ -148,7 +148,7 @@ class NumRotableBondsFeaturizer(AbstractFeaturizer):
         Returns:
             List[str]: List of implementors.
         """
-        return ["Benedict Oshomah Emoekabu", "Kevin Maik Jablonka"]
+        return ["Benedict Oshomah Emoekabu"]
 
 
 class BondRotabilityFeaturizer(AbstractFeaturizer):
@@ -201,7 +201,7 @@ class BondRotabilityFeaturizer(AbstractFeaturizer):
         Returns:
             List[str]: List of implementors.
         """
-        return ["Benedict Oshomah Emoekabu", "Kevin Maik Jablonka"]
+        return ["Benedict Oshomah Emoekabu"]
 
 
 class HAcceptorCountFeaturizer(AbstractFeaturizer):
@@ -236,7 +236,7 @@ class HAcceptorCountFeaturizer(AbstractFeaturizer):
         Returns:
             List[str]: List of implementors.
         """
-        return ["Benedict Oshomah Emoekabu", "Kevin Maik Jablonka"]
+        return ["Benedict Oshomah Emoekabu"]
 
 
 class HDonorCountFeaturizer(AbstractFeaturizer):
@@ -271,7 +271,7 @@ class HDonorCountFeaturizer(AbstractFeaturizer):
         Returns:
             List[str]: List of implementors.
         """
-        return ["Benedict Oshomah Emoekabu", "Kevin Maik Jablonka"]
+        return ["Benedict Oshomah Emoekabu"]
 
 
 class MolecularMassFeaturizer(AbstractFeaturizer):
@@ -313,7 +313,7 @@ class MolecularMassFeaturizer(AbstractFeaturizer):
         Returns:
             List[str]: List of implementors.
         """
-        return ["Benedict Oshomah Emoekabu", "Kevin Maik Jablonka"]
+        return ["Benedict Oshomah Emoekabu"]
 
 
 class ElementMassFeaturizer(AbstractFeaturizer):
@@ -465,7 +465,7 @@ class ElementMassFeaturizer(AbstractFeaturizer):
         Returns:
             List[str]: List of implementors.
         """
-        return ["Benedict Oshomah Emoekabu", "Kevin Maik Jablonka"]
+        return ["Benedict Oshomah Emoekabu"]
 
 
 class ElementMassProportionFeaturizer(ElementMassFeaturizer):
@@ -531,7 +531,7 @@ class ElementMassProportionFeaturizer(ElementMassFeaturizer):
         Returns:
             List[str]: List of implementors.
         """
-        return ["Benedict Oshomah Emoekabu", "Kevin Maik Jablonka"]
+        return ["Benedict Oshomah Emoekabu"]
 
 
 class ElementCountFeaturizer(ElementMassFeaturizer):
@@ -610,7 +610,7 @@ class ElementCountFeaturizer(ElementMassFeaturizer):
         Returns:
             List[str]: List of implementors.
         """
-        return ["Benedict Oshomah Emoekabu", "Kevin Maik Jablonka"]
+        return ["Benedict Oshomah Emoekabu"]
 
 
 class ElementCountProportionFeaturizer(ElementCountFeaturizer):
@@ -676,4 +676,4 @@ class ElementCountProportionFeaturizer(ElementCountFeaturizer):
         Returns:
             List[str]: List of implementors.
         """
-        return ["Benedict Oshomah Emoekabu", "Kevin Maik Jablonka"]
+        return ["Benedict Oshomah Emoekabu"]
