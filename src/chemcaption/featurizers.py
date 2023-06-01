@@ -136,7 +136,7 @@ class NumRotableBondsFeaturizer(AbstractFeaturizer):
             num_rotable (np.array): Number of rotable bonds in molecule.
         """
         num_rotable = rdMolDescriptors.CalcNumRotatableBonds(molecule.rdkit_mol, strict=True)
-        return np.array([num_rotable])
+        return np.array([num_rotable]).reshape((1, -1))
 
     def implementors(self) -> List[str]:
         """
@@ -224,7 +224,7 @@ class HAcceptorCountFeaturizer(AbstractFeaturizer):
         Returns:
             (np.array): Number of Hydrogen bond acceptors present in `molecule`.
         """
-        return np.array([Lipinski.NumHAcceptors(molecule.rdkit_mol)])
+        return np.array([Lipinski.NumHAcceptors(molecule.rdkit_mol)]).reshape((1, -1))
 
     def implementors(self) -> List[str]:
         """
@@ -259,7 +259,7 @@ class HDonorCountFeaturizer(AbstractFeaturizer):
         Returns:
             np.array: Number of Hydrogen bond donors present in `molecule`.
         """
-        return np.array([Lipinski.NumHDonors(molecule.rdkit_mol)])
+        return np.array([Lipinski.NumHDonors(molecule.rdkit_mol)]).reshape((1, -1))
 
     def implementors(self) -> List[str]:
         """
@@ -301,7 +301,7 @@ class MolecularMassFeaturizer(AbstractFeaturizer):
                 for atom in molecule.get_atoms()
             ]
         )
-        return np.array([molar_mass])
+        return np.array([molar_mass]).reshape((1, -1))
 
     def implementors(self) -> List[str]:
         """
@@ -453,7 +453,7 @@ class ElementMassFeaturizer(AbstractFeaturizer):
         Returns:
             np.array: Molecular contribution by mass for elements in molecule.
         """
-        return np.reshape(np.array(self._get_profile(molecule=molecule)), newshape=(1, -1))
+        return np.array(self._get_profile(molecule=molecule)).reshape((1, -1))
 
     def implementors(self) -> List[str]:
         """
@@ -519,7 +519,7 @@ class ElementMassProportionFeaturizer(ElementMassFeaturizer):
         Returns:
             np.array: Molecular proportional contribution by mass for elements in molecule.
         """
-        return np.reshape(np.array(self._get_profile(molecule=molecule)), newshape=(1, -1))
+        return np.array(self._get_profile(molecule=molecule)).reshape((1, -1))
 
     def implementors(self) -> List[str]:
         """
@@ -598,7 +598,7 @@ class ElementCountFeaturizer(ElementMassFeaturizer):
         Returns:
             np.array: Molecular contribution by atom count for elements in molecule.
         """
-        return np.reshape(np.array([self._get_profile(molecule=molecule)]), newshape=(1, -1))
+        return np.array([self._get_profile(molecule=molecule)]).reshape((1, -1))
 
     def implementors(self) -> List[str]:
         """
@@ -664,7 +664,69 @@ class ElementCountProportionFeaturizer(ElementCountFeaturizer):
         Returns:
             np.array: Molecular proportional contribution by atom count for elements in molecule.
         """
-        return np.reshape(np.array(self._get_profile(molecule=molecule)), newshape=(1, -1))
+        return np.array(self._get_profile(molecule=molecule)).reshape((1, -1))
+
+    def implementors(self) -> List[str]:
+        """
+        Return functionality implementors.
+
+        Args:
+            None
+
+        Returns:
+            List[str]: List of implementors.
+        """
+        return ["Benedict Oshomah Emoekabu"]
+
+
+class MultipleFeaturizer(AbstractFeaturizer):
+    def __init__(self, featurizer_list: List[AbstractFeaturizer]):
+        super().__init__()
+        self.featurizers = featurizer_list
+
+    def featurize(
+        self, molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]
+    ) -> np.array:
+        """
+        Featurize a molecule instance via multiple lower-level featurizers.
+
+        Args:
+            molecule (Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]): Molecule representation.
+
+        Returns:
+            features (np.array), array shape [1, num_featurizers]: Array containing features
+                extracted from molecule.
+                `num_featurizers` is the number of featurizers passed to MultipleFeaturizer.
+        """
+        features = [
+            featurizer.featurize(molecule=molecule)
+            for featurizer in self.featurizers
+            ]
+
+        return np.concatenate(features, axis=-1)
+
+    def feature_labels(self) -> List[str]:
+        """Return feature labels."""
+        labels = list()
+        for featurizer in self.featurizers:
+            labels += featurizer.feature_labels()
+
+        return labels
+
+    def fit_on_featurizers(self, featurizer_list: List[AbstractFeaturizer]):
+        """Fit MultipleFeaturizer instance on lower-level featurizers.
+
+        Args:
+            featurizer_list (List[AbstractFeaturizer]): List of lower-level featurizers.
+
+        Returns:
+            self : Instance of self with state updated.
+        """
+        self.featurizers = featurizer_list
+        self.label = self.feature_labels()
+
+        return self
+
 
     def implementors(self) -> List[str]:
         """
