@@ -16,7 +16,6 @@ class MoleculeBase(ABC):
         self,
     ):
         """Instantiate base class for molecular representation."""
-        # self.representation_name = representation_name
         self._rdkit_mol = None
         self.representation_string = None
 
@@ -26,34 +25,34 @@ class MoleculeBase(ABC):
         raise NotImplementedError
 
     @property
-    def rdkit_mol(self):
+    def rdkit_mol(self) -> Chem.Mol:
         """Get molecular representation via rdkit. Getter method."""
         return self._rdkit_mol
 
     @rdkit_mol.setter
-    def rdkit_mol(self, **kwargs):
+    def rdkit_mol(self, **kwargs: dict) -> None:
         """Set molecular representation via rdkit."""
         self._rdkit_mol = self.get_rdkit_mol()
-        self.reveal_hydrogens(**kwargs)
         return
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """Return string representation of molecule object."""
         return f"{self.__class__.__name__}(REPRESENTATION = '{self.representation_string}')"
 
-    def get_atoms(self):
+    def get_atoms(self, hydrogen=True, **kwargs):
         """
         Return atomic representation for all atoms present in molecule.
 
         Args:
-            None
+            hydrogen (bool): Reveal hydrogen atoms or not.
+            **kwargs (dict): Keyword arguments.
 
         Returns:
             Sequence[Atom]: Sequence of atoms in `molecule`.
         """
-        return self.rdkit_mol.GetAtoms()
+        return self.reveal_hydrogens(**kwargs).GetAtoms() if hydrogen else self.rdkit_mol.GetAtoms()
 
-    def reveal_hydrogens(self, **kwargs):
+    def reveal_hydrogens(self, **kwargs: dict) -> Chem.Mol:
         """
         Explicitly represent hydrogen atoms in molecular structure.
 
@@ -63,8 +62,7 @@ class MoleculeBase(ABC):
         Returns:
             None
         """
-        self._rdkit_mol = Chem.rdmolops.AddHs(self.rdkit_mol, **kwargs)
-        return None
+        return Chem.rdmolops.AddHs(self.rdkit_mol, **kwargs)
 
 
 """
@@ -79,13 +77,13 @@ Lower level Molecule classes
 class SMILESMolecule(MoleculeBase):
     """Lower level molecular representation for SMILES string representation."""
 
-    def __init__(self, representation_string):
+    def __init__(self, representation_string: str):
         """Initialize class."""
         super().__init__()
         self.representation_string = Chem.CanonSmiles(representation_string)
         self._rdkit_mol = self.get_rdkit_mol()
 
-    def get_rdkit_mol(self):
+    def get_rdkit_mol(self) -> Chem.Mol:
         """Get rdkit molecular representation from SMILES string."""
         return Chem.MolFromSmiles(self.representation_string)
 
@@ -93,7 +91,7 @@ class SMILESMolecule(MoleculeBase):
 class SELFIESMolecule(MoleculeBase):
     """Lower level molecular representation for SELFIES string representation."""
 
-    def __init__(self, representation_string):
+    def __init__(self, representation_string: str):
         """Initialize class."""
         super().__init__()
         self.representation_string = representation_string
@@ -101,7 +99,7 @@ class SELFIESMolecule(MoleculeBase):
 
         self._rdkit_mol = self.get_rdkit_mol()
 
-    def get_rdkit_mol(self):
+    def get_rdkit_mol(self) -> Chem.Mol:
         """Get rdkit molecular representation from SELFIES string."""
         return Chem.MolFromSmiles(self.smiles_rep)
 
@@ -109,12 +107,12 @@ class SELFIESMolecule(MoleculeBase):
 class InChIMolecule(MoleculeBase):
     """Lower level molecular representation for InChI string representation."""
 
-    def __init__(self, representation_string):
+    def __init__(self, representation_string: str):
         """Initialize class."""
         super().__init__()
         self.representation_string = representation_string
         self._rdkit_mol = self.get_rdkit_mol()
 
-    def get_rdkit_mol(self):
+    def get_rdkit_mol(self) -> Chem.Mol:
         """Get rdkit molecular representation from InChI string."""
         return Chem.MolFromInchi(self.representation_string)
