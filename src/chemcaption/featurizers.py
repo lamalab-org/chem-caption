@@ -698,10 +698,7 @@ class MultipleFeaturizer(AbstractFeaturizer):
                 extracted from molecule.
                 `num_featurizers` is the number of featurizers passed to MultipleFeaturizer.
         """
-        features = [
-            featurizer.featurize(molecule=molecule)
-            for featurizer in self.featurizers
-            ]
+        features = [featurizer.featurize(molecule=molecule) for featurizer in self.featurizers]
 
         return np.concatenate(features, axis=-1)
 
@@ -726,7 +723,6 @@ class MultipleFeaturizer(AbstractFeaturizer):
         self.label = self.feature_labels()
 
         return self
-
 
     def implementors(self) -> List[str]:
         """
