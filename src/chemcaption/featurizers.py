@@ -36,7 +36,7 @@ class AbstractFeaturizer(ABC):
         """Featurize single Molecule instance."""
         raise NotImplementedError
 
-    def batch_featurize(
+    def featurize_many(
         self, molecules: Sequence[Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]]
     ) -> np.array:
         """
@@ -55,7 +55,7 @@ class AbstractFeaturizer(ABC):
         """Embed features in Prompt instance."""
         return None
 
-    def batch_text_featurize(
+    def text_featurize_many(
         self, molecules: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]
     ):
         """Embed features in Prompt instance for multiple molecules."""
@@ -698,10 +698,7 @@ class MultipleFeaturizer(AbstractFeaturizer):
                 extracted from molecule.
                 `num_featurizers` is the number of featurizers passed to MultipleFeaturizer.
         """
-        features = [
-            featurizer.featurize(molecule=molecule)
-            for featurizer in self.featurizers
-            ]
+        features = [featurizer.featurize(molecule=molecule) for featurizer in self.featurizers]
 
         return np.concatenate(features, axis=-1)
 
@@ -726,7 +723,6 @@ class MultipleFeaturizer(AbstractFeaturizer):
         self.label = self.feature_labels()
 
         return self
-
 
     def implementors(self) -> List[str]:
         """

@@ -2,7 +2,7 @@
 
 """Global requirements for modular testing."""
 
-from typing import Union
+from typing import List, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -15,7 +15,7 @@ from chemcaption.molecules import InChIMolecule, SELFIESMolecule, SMILESMolecule
 
 
 MOLECULAR_BANK = pd.read_json("data/molecular_bank.json", orient="index")
-PROPERTY_BANK = pd.read_csv("data/pubchem_response.csv")
+PROPERTY_BANK = pd.read_csv("data/final_pubchem_response.csv")
 
 
 DISPATCH_MAP = {
@@ -24,46 +24,35 @@ DISPATCH_MAP = {
     "inchi": InChIMolecule,
 }
 
-NAMES = [
-    "MolecularWeight",
-    "ExactMass",
-    "MonoisotopicMass",
-    "HBondDonorCount",
-    "HBondAcceptorCount",
-    "RotatableBondCount",
-    "smiles",
-]
 
-NEW_NAMES = [
-    "molar_mass",
-    "exact_mass",
-    "monoisotopic_mass",
-    "num_hdonors",
-    "num_hacceptors",
-    "num_rotable",
-    "smiles",
-]
-
-NAME_DICT = dict(zip(NAMES, NEW_NAMES))
-PROPERTY_BANK.rename(columns=NAME_DICT, inplace=True)
-PROPERTY_BANK = PROPERTY_BANK.loc[:, NEW_NAMES]
 """Utility functions."""
 
-def extract_molecule_properties(property_bank, property="molar_mass"):
+
+def extract_molecule_properties(property_bank, representation_name="smiles", property="molar_mass"):
     """Extract SMILES string and the value of `property`."""
-    smiles_list, property_list = (
-        property_bank["smiles"].values.tolist(),
+    representation_name = representation_name.lower()
+    string_list, property_list = (
+        property_bank[representation_name].values.tolist(),
         property_bank[property].values.tolist(),
     )
-    properties = [(k, np.array([v])) for k, v in zip(smiles_list, property_list) if not np.isnan(v)]
+    properties = [(k, np.array([v])) for k, v in zip(string_list, property_list) if not np.isnan(v)]
 
     return properties
 
 
 def extract_representation_strings(
     molecular_bank: pd.DataFrame, in_: str = "smiles", out_: str = "selfies"
-):
-    """Extract molecule representation strings from data bank."""
+) -> List[Tuple[str, str]]:
+    """Extract molecule representation strings from data bank.
+
+    Args:
+        molecular_bank (pd.DataFrame): Daraframe containing molecular information.
+        in_ (str): Input representation type.
+        out_ (str): Output representation type.
+
+    Returns:
+        input_output (List[Tuple[str, str]): List of (in_, out_) tuples.
+    """
     in_, out_ = in_.lower(), out_.lower()
     in_list, out_list = molecular_bank[in_].tolist(), molecular_bank[out_].tolist()
     input_output = [(k, v) for k, v in zip(in_list, out_list)]

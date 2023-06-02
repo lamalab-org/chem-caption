@@ -3,8 +3,6 @@
 """Tests for chemcaption.featurizer subpackage."""
 
 import pytest
-from rdkit import Chem
-from selfies import encoder
 
 from chemcaption.featurizers import (
     HAcceptorCountFeaturizer,
@@ -14,15 +12,18 @@ from chemcaption.featurizers import (
 )
 from tests.conftests import DISPATCH_MAP, PROPERTY_BANK, extract_molecule_properties
 
-KIND = "smiles"
+KIND = "inchi"
 MOLECULE = DISPATCH_MAP[KIND]
 
 
 @pytest.mark.parametrize(
     "test_input, expected",
-    extract_molecule_properties(property_bank=PROPERTY_BANK, property="molar_mass"),
+    extract_molecule_properties(
+        property_bank=PROPERTY_BANK, representation_name=KIND, property="molar_mass"
+    ),
 )
 def test_molar_mass_featurizer(test_input, expected):
+    """Test MolecularMassFeaturizer."""
     featurizer = MolecularMassFeaturizer()
     molecule = MOLECULE(test_input)
 
@@ -33,9 +34,12 @@ def test_molar_mass_featurizer(test_input, expected):
 
 @pytest.mark.parametrize(
     "test_input, expected",
-    extract_molecule_properties(property_bank=PROPERTY_BANK, property="num_rotable"),
+    extract_molecule_properties(
+        property_bank=PROPERTY_BANK, representation_name=KIND, property="num_rotable"
+    ),
 )
 def test_num_rotable_bond_featurizer(test_input, expected):
+    """Test NumRotableBondsFeaturizer."""
     featurizer = NumRotableBondsFeaturizer()
     molecule = MOLECULE(test_input)
 
@@ -43,11 +47,15 @@ def test_num_rotable_bond_featurizer(test_input, expected):
 
     assert results == expected.astype(int)
 
+
 @pytest.mark.parametrize(
     "test_input, expected",
-    extract_molecule_properties(property_bank=PROPERTY_BANK, property="num_hacceptors"),
+    extract_molecule_properties(
+        property_bank=PROPERTY_BANK, representation_name=KIND, property="num_hacceptors"
+    ),
 )
 def test_num_hacceptor_featurizer(test_input, expected):
+    """Test HAcceptorCountFeaturizer."""
     featurizer = HAcceptorCountFeaturizer()
     molecule = MOLECULE(test_input)
 
@@ -55,11 +63,15 @@ def test_num_hacceptor_featurizer(test_input, expected):
 
     assert results == expected.astype(int)
 
+
 @pytest.mark.parametrize(
     "test_input, expected",
-    extract_molecule_properties(property_bank=PROPERTY_BANK, property="num_hdonors"),
+    extract_molecule_properties(
+        property_bank=PROPERTY_BANK, representation_name=KIND, property="num_hdonors"
+    ),
 )
 def test_num_hdonor_featurizer(test_input, expected):
+    """Test HDonorCountFeaturizer."""
     featurizer = HDonorCountFeaturizer()
     molecule = MOLECULE(test_input)
 
