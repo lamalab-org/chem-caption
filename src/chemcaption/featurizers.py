@@ -55,9 +55,7 @@ class AbstractFeaturizer(ABC):
         """Embed features in Prompt instance."""
         return None
 
-    def text_featurize_many(
-        self, molecules: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]
-    ):
+    def text_featurize_many(self, molecules: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]):
         """Embed features in Prompt instance for multiple molecules."""
         return None
 
@@ -189,7 +187,7 @@ class BondRotabilityFeaturizer(AbstractFeaturizer):
         Returns:
             np.array: Array containing distribution of the bonds based on rotability.
         """
-        return np.reshape(np.array(self._get_bond_types(molecule=molecule)), newshape=(1, -1))
+        return np.array(self._get_bond_types(molecule=molecule)).reshape((1, -1))
 
     def implementors(self) -> List[str]:
         """
@@ -416,10 +414,9 @@ class ElementMassFeaturizer(AbstractFeaturizer):
         Returns:
             element_masses (List[float]): List of elemental masses.
         """
-        element_masses = list()
-        for element in self.preset:
-            element_mass = self._get_element_mass(element=element, molecule=molecule)
-            element_masses.append(element_mass)
+        element_masses = [
+            self._get_element_mass(element=element, molecule=molecule) for element in self.preset
+        ]
 
         return element_masses
 
@@ -680,7 +677,10 @@ class ElementCountProportionFeaturizer(ElementCountFeaturizer):
 
 
 class MultipleFeaturizer(AbstractFeaturizer):
+    """A featurizer to combine featurizers."""
+
     def __init__(self, featurizer_list: List[AbstractFeaturizer]):
+        """Initialize class instance."""
         super().__init__()
         self.featurizers = featurizer_list
 

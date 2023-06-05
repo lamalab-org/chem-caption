@@ -12,7 +12,7 @@ from chemcaption.featurizers import (
 )
 from tests.conftests import DISPATCH_MAP, PROPERTY_BANK, extract_molecule_properties
 
-KIND = "inchi"
+KIND = "smiles"
 MOLECULE = DISPATCH_MAP[KIND]
 
 

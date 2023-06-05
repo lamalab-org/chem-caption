@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
-"""Global requirements for modular testing."""
+"""Code to extract data from PubChem database."""
+
+from typing import List
 
 import numpy as np
 import pandas as pd
@@ -15,7 +17,10 @@ smiles = MOLECULAR_BANK["smiles"].tolist()
 
 
 class MolecularScraper:
-    def __init__(self, smiles_list):
+    """Extract data from PubChem database."""
+
+    def __init__(self, smiles_list: List[str]):
+        """Initialize class instance."""
         ## Out of 2,018 records, 1,450 records were successfully obtained.
         ## However, the size of the requests led to the process cutting off.
         self.list = smiles_list[1450:]
@@ -29,20 +34,38 @@ class MolecularScraper:
             "RotatableBondCount",
         ]
         self.columns = self.properties + ["smiles"]
-        self.int_columns = ["HBondDonorCount", "HBondAcceptorCount", "RotatableBondCount"]
         self.filename = "data/pubchem_response.csv"
 
-    def get_properties(self, substance):
+    def get_properties(self, substance: str) -> pd.DataFrame:
+        """
+        Get properties of a substance.
+
+        Args:
+            substance (str): SMILES string.
+
+        Returns:
+            properties (pd.DataFrame): Dataframe containing properties of `substance`.
+        """
         properties = pcp.get_properties(
             namespace="smiles", as_dataframe=True, identifier=substance, properties=self.properties
         )
         return properties
 
-    def get_compound(self, smile_string):
+    def get_compound(self, smile_string: str) -> pcp.Compound:
+        """
+        Get the compound object representing a SMILES molecular string.
+
+        Args:
+            smile_string (str): SMILES representation string.
+
+        Returns:
+            compound (pcp.Compound): Compound instance.
+        """
         compound = pcp.get_compounds(smile_string, "smiles")
         return compound
 
-    def run(self):
+    def run(self) -> None:
+        """Perform final data extraction. Persist data to storage."""
         dfs = list()
         seen = 0
         # df = pd.DataFrame(columns=self.columns)
@@ -58,18 +81,14 @@ class MolecularScraper:
                 dfs_1 = pd.read_csv(self.filename)
                 dfs_ = pd.concat(dfs, axis=0)
                 dfs_ = pd.concat([dfs_1, dfs_], axis=0)
-                try:
-                    dfs_.loc[:, self.int_columns] = dfs_.loc[:, self.int_columns].astype(int)
-                except:
-                    pass
                 dfs_.to_csv(self.filename, na_rep=np.nan, index=False)
                 dfs.clear()
 
                 print(f"{seen}/{len(self.list)} compounds scraped!")
 
-        return dfs
+        return None
 
 
 if __name__ == "__main__":
     scraper = MolecularScraper(smiles_list=smiles)
-    results = scraper.run()
+    scraper.run()

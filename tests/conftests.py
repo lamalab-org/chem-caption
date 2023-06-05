@@ -28,8 +28,19 @@ DISPATCH_MAP = {
 """Utility functions."""
 
 
-def extract_molecule_properties(property_bank, representation_name="smiles", property="molar_mass"):
-    """Extract SMILES string and the value of `property`."""
+def extract_molecule_properties(
+    property_bank: pd.DataFrame, representation_name: str = "smiles", property: str = "molar_mass"
+) -> List[Tuple[str, np.array]]:
+    """Extract SMILES string and the value of `property`.
+
+    Args:
+        property_bank (pd.DataFrame): Dataframe containig molecular properties.
+        representation_name (str): Name of molecular representation system.
+        property (str): Property of interest. Must be a column in `property_bank`.
+
+    Returns:
+        properties (List[Tuple[str, np.array]]): List of (SMILES, property value) tuples.
+    """
     representation_name = representation_name.lower()
     string_list, property_list = (
         property_bank[representation_name].values.tolist(),
