@@ -106,10 +106,12 @@ Lower level featurizer classes.
 2. BondRotabilityFeaturizer
 3. HAcceptorCountFeaturizer
 4. HDonorCountFeaturizer
-5. ElementMassFeaturizer
-6. ElementCountFeaturizer
-7. ElementMassProportionFeaturizer
-8. ElementCountProportionFeaturizer
+5. MolecularMassFeaturizer
+6. ElementMassFeaturizer
+7. ElementCountFeaturizer
+8. ElementMassProportionFeaturizer
+9. ElementCountProportionFeaturizer
+10. MultipleFeaturizer
 """
 
 
@@ -326,7 +328,9 @@ class ElementMassFeaturizer(AbstractFeaturizer):
         else:
             self._preset = ["Carbon", "Hydrogen", "Nitrogen", "Oxygen"]
 
-        self.label = [element.lower() + "_mass" for element in self.preset]
+        self.prefix = ""
+        self.suffix = "_mass"
+        self.label = [self.prefix + element.lower() + self.prefix for element in self.preset]
 
     @property
     def preset(self) -> List[str]:
@@ -344,7 +348,7 @@ class ElementMassFeaturizer(AbstractFeaturizer):
             None
         """
         self._preset = new_preset
-        self.label = [element.lower() + "_mass" for element in self.preset]
+        self.label = [self.prefix + element.lower() + self.suffix for element in self.preset]
         return
 
     def fit(
@@ -471,7 +475,9 @@ class ElementMassProportionFeaturizer(ElementMassFeaturizer):
     def __init__(self, preset: Optional[List[str]] = None):
         """Initialize instance."""
         super().__init__(preset=preset)
-        self.label = [element.lower() + "_mass_ratio" for element in self.preset]
+        self.prefix = ""
+        self.suffix = "_mass_ratio"
+        self.preset = preset
 
     def _get_profile(
         self, molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]
@@ -490,17 +496,8 @@ class ElementMassProportionFeaturizer(ElementMassFeaturizer):
                 for atom in molecule.get_atoms()
             ]
         )
-        element_proportions = list()
-        element_labels = list()
 
-        for element in self.preset:
-            element_proportion = (
-                self._get_element_mass(element=element, molecule=molecule) / molar_mass
-            )
-            element_proportions.append(element_proportion)
-            element_labels.append(element.lower() + "_mass_ratio")
-
-        self.label = element_labels
+        element_proportions = [self._get_element_mass(element=element, molecule=molecule) / molar_mass for element in self.preset]
 
         return element_proportions
 
@@ -537,8 +534,10 @@ class ElementCountFeaturizer(ElementMassFeaturizer):
     def __init__(self, preset: Optional[List[str]] = None):
         """Initialize class."""
         super().__init__(preset=preset)
+        self.prefix = "num_"
+        self.suffix = "_atoms"
 
-        self.label = ["num_" + element.lower() + "_atoms" for element in self.preset]
+        self.preset = preset
 
     def _get_atom_count(
         self, element: str, molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]
@@ -576,10 +575,7 @@ class ElementCountFeaturizer(ElementMassFeaturizer):
         Returns:
             atom_counts (List[int]): List of elemental atom counts.
         """
-        atom_counts = list()
-        for element in self.preset:
-            atom_count = self._get_atom_count(element=element, molecule=molecule)
-            atom_counts.append(atom_count)
+        atom_counts = [self._get_atom_count(element=element, molecule=molecule) for element in self.preset]
 
         return atom_counts
 
@@ -616,7 +612,9 @@ class ElementCountProportionFeaturizer(ElementCountFeaturizer):
     def __init__(self, preset: Optional[List[str]] = None):
         """Initialize instance."""
         super().__init__(preset=preset)
-        self.label = [element.lower() + "_atom_ratio" for element in self.preset]
+        self.prefix = ""
+        self.suffix = "_atom_ratio"
+        self.preset = preset
 
     def _get_profile(
         self, molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]
@@ -635,17 +633,7 @@ class ElementCountProportionFeaturizer(ElementCountFeaturizer):
                 for atom in molecule.get_atoms()
             ]
         )
-        element_proportions = list()
-        element_labels = list()
-
-        for element in self.preset:
-            element_proportion = (
-                self._get_atom_count(element=element, molecule=molecule) / molar_mass
-            )
-            element_proportions.append(element_proportion)
-            element_labels.append(element.lower() + "_atom_ratio")
-
-        self.label = element_labels
+        element_proportions = [self._get_atom_count(element=element, molecule=molecule) / molar_mass for element in self.preset]
 
         return element_proportions
 
