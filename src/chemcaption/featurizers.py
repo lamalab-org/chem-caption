@@ -497,7 +497,10 @@ class ElementMassProportionFeaturizer(ElementMassFeaturizer):
             ]
         )
 
-        element_proportions = [self._get_element_mass(element=element, molecule=molecule) / molar_mass for element in self.preset]
+        element_proportions = [
+            self._get_element_mass(element=element, molecule=molecule) / molar_mass
+            for element in self.preset
+        ]
 
         return element_proportions
 
@@ -575,7 +578,9 @@ class ElementCountFeaturizer(ElementMassFeaturizer):
         Returns:
             atom_counts (List[int]): List of elemental atom counts.
         """
-        atom_counts = [self._get_atom_count(element=element, molecule=molecule) for element in self.preset]
+        atom_counts = [
+            self._get_atom_count(element=element, molecule=molecule) for element in self.preset
+        ]
 
         return atom_counts
 
@@ -633,7 +638,10 @@ class ElementCountProportionFeaturizer(ElementCountFeaturizer):
                 for atom in molecule.get_atoms()
             ]
         )
-        element_proportions = [self._get_atom_count(element=element, molecule=molecule) / molar_mass for element in self.preset]
+        element_proportions = [
+            self._get_atom_count(element=element, molecule=molecule) / molar_mass
+            for element in self.preset
+        ]
 
         return element_proportions
 
