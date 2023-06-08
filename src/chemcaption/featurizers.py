@@ -752,7 +752,17 @@ class MultipleFeaturizer(AbstractFeaturizer):
 
 
 class SMARTSFeaturizer(ElementMassFeaturizer):
-    def __init__(self, count: bool = True, preset = None):
+    def __init__(self, count: bool = True, preset: Optional[Dict[str, str]] = None):
+        """
+        Initialize class.
+
+        Args:
+            count (bool): Count pattern frequency or presence. Default (True).
+            preset (Optional[Dict[str, str]]): Hash map between elements and SMARTS strings.
+
+        Returns:
+            self: Instance of self.
+        """
         super().__init__(preset=None)
         if preset is None:
             preset = {
