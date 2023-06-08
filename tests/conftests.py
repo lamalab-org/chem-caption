@@ -14,8 +14,8 @@ from chemcaption.molecules import InChIMolecule, SELFIESMolecule, SMILESMolecule
 """Test data."""
 
 
-MOLECULAR_BANK = pd.read_json("data/molecular_bank.json", orient="index")
-PROPERTY_BANK = pd.read_csv("data/final_pubchem_response.csv")
+MOLECULAR_BANK = pd.read_json("data/molecular_bank.json", orient="index").drop_duplicates()
+PROPERTY_BANK = pd.read_csv("data/pubchem_response.csv").drop_duplicates()
 
 
 DISPATCH_MAP = {
@@ -29,19 +29,20 @@ DISPATCH_MAP = {
 
 
 def extract_molecule_properties(
-    property_bank: pd.DataFrame, representation_name: str = "smiles", property: str = "molar_mass"
+    property_bank: pd.DataFrame, representation_name: str = "smiles", property: Union[List[str], str] = "molar_mass"
 ) -> List[Tuple[str, np.array]]:
     """Extract SMILES string and the value of `property`.
 
     Args:
         property_bank (pd.DataFrame): Dataframe containig molecular properties.
         representation_name (str): Name of molecular representation system.
-        property (str): Property of interest. Must be a column in `property_bank`.
+        property (Union[List[str], str]): Properties of interest. Must be a feature(s) in `property_bank`.
 
     Returns:
         properties (List[Tuple[str, np.array]]): List of (SMILES, property value) tuples.
     """
     representation_name = representation_name.lower()
+    representation_name = "canon_"+representation_name if representation_name == "smiles" else representation_name
     string_list, property_list = (
         property_bank[representation_name].values.tolist(),
         property_bank[property].values.tolist(),

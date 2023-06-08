@@ -8,6 +8,10 @@ import numpy as np
 import pandas as pd
 import pubchempy as pcp
 
+from selfies import encoder
+
+import time
+
 """Test data."""
 
 
@@ -23,8 +27,12 @@ class MolecularScraper:
         """Initialize class instance."""
         ## Out of 2,018 records, 1,450 records were successfully obtained.
         ## However, the size of the requests led to the process cutting off.
-        self.list = smiles_list[1450:]
+        self.list = smiles_list
+        self.total_len = len(self.list)
         self.properties = [
+            "CanonicalSMILES",
+            "InChI",
+            "InChIKey",
             "MolecularFormula",
             "MolecularWeight",
             "ExactMass",
@@ -33,7 +41,22 @@ class MolecularScraper:
             "HBondAcceptorCount",
             "RotatableBondCount",
         ]
-        self.columns = self.properties + ["smiles"]
+        self.column_map = dict(zip(
+            self.properties,
+            [
+                "canon_smiles",
+                "inchi",
+                "inchi_key",
+                "molecular_formular",
+                "molar_mass",
+                "exact_mass",
+                "monoisotopic_mass",
+                "num_hdonors",
+                "num_hacceptors",
+                "num_rotable"
+            ]
+        ))
+        self.columns = ["smiles", "selfies"] + [self.column_map[k] for k in self.properties]
         self.filename = "data/pubchem_response.csv"
 
     def get_properties(self, substance: str) -> pd.DataFrame:
@@ -51,6 +74,14 @@ class MolecularScraper:
         )
         return properties
 
+    def transfer_data(self, df):
+        new_df = pd.DataFrame(columns=self.columns)
+
+        for column in df.columns:
+            new_df[column] = df[column].values
+
+        return new_df
+
     def get_compound(self, smile_string: str) -> pcp.Compound:
         """
         Get the compound object representing a SMILES molecular string.
@@ -67,24 +98,47 @@ class MolecularScraper:
     def run(self) -> None:
         """Perform final data extraction. Persist data to storage."""
         dfs = list()
-        seen = 0
-        # df = pd.DataFrame(columns=self.columns)
-        # df.to_csv(self.filename, index=False)
+
+        try:
+            seen = len(pd.read_csv(self.filename))
+            self.list = self.list[seen:]
+        except:
+            df = pd.DataFrame(columns=self.columns)
+            df.to_csv(self.filename, index=False)
+            seen = 0
+
+        running_seen = seen
+
+        start = time.time()
 
         for smiles_string in self.list:
             # compound = self.get_compound(smiles_string)
             properties = self.get_properties(smiles_string)
             properties["smiles"] = smiles_string
+            properties["selfies"] = encoder(smiles_string)
+
             dfs.append(properties)
             seen += 1
-            if (len(dfs) % 50 == 0) or (seen == len(self.list)):
-                dfs_1 = pd.read_csv(self.filename)
-                dfs_ = pd.concat(dfs, axis=0)
-                dfs_ = pd.concat([dfs_1, dfs_], axis=0)
-                dfs_.to_csv(self.filename, na_rep=np.nan, index=False)
+            running_seen += 1
+
+            if (seen % 50 == 0) or (seen == len(self.list)):
+                df_base = pd.read_csv(self.filename)
+                df = pd.concat(dfs, axis=0).rename(columns = self.column_map)
+
+                df = self.transfer_data(df)
+                df = pd.concat([df_base, df], axis=0)
+
+                df.to_csv(self.filename, na_rep=np.nan, index=False)
                 dfs.clear()
 
-                print(f"{seen}/{len(self.list)} compounds scraped!")
+                print(f">>> {running_seen}/{self.total_len} compounds scraped!")
+
+                if (time.time() - start) >= 60 & seen >= 390:
+                    sleep_time = np.random.randint(low=1, high=5, size=(1,)).item()
+                    time.sleep(sleep_time)
+                    print(f"\nSleeping for {sleep_time} seconds...\n")
+                    start = time.time()
+                    seen = 0
 
         return None
 
