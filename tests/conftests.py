@@ -5,6 +5,7 @@
 from typing import List, Tuple, Union
 
 import numpy as np
+
 import pandas as pd
 from rdkit import Chem
 from selfies import encoder
@@ -13,10 +14,8 @@ from chemcaption.molecules import InChIMolecule, SELFIESMolecule, SMILESMolecule
 
 """Test data."""
 
-
-MOLECULAR_BANK = pd.read_json("data/molecular_bank.json", orient="index").drop_duplicates()
-PROPERTY_BANK = pd.read_csv("data/merged_pubchem_response.csv").drop_duplicates()
-
+MOLECULAR_BANK = pd.read_json("tests/data/molecular_bank.json", orient="index").drop_duplicates()
+PROPERTY_BANK = pd.read_csv("tests/data/merged_pubchem_response.csv").drop_duplicates()
 
 DISPATCH_MAP = {
     "smiles": SMILESMolecule,
