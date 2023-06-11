@@ -2,15 +2,13 @@
 
 """Code to extract data from PubChem database."""
 
+import time
 from typing import List
 
 import numpy as np
 import pandas as pd
 import pubchempy as pcp
-
 from selfies import encoder
-
-import time
 
 """Test data."""
 
@@ -41,21 +39,23 @@ class MolecularScraper:
             "HBondAcceptorCount",
             "RotatableBondCount",
         ]
-        self.column_map = dict(zip(
-            self.properties,
-            [
-                "canon_smiles",
-                "inchi",
-                "inchi_key",
-                "molecular_formular",
-                "molar_mass",
-                "exact_mass",
-                "monoisotopic_mass",
-                "num_hdonors",
-                "num_hacceptors",
-                "num_rotable"
-            ]
-        ))
+        self.column_map = dict(
+            zip(
+                self.properties,
+                [
+                    "canon_smiles",
+                    "inchi",
+                    "inchi_key",
+                    "molecular_formular",
+                    "molar_mass",
+                    "exact_mass",
+                    "monoisotopic_mass",
+                    "num_hdonors",
+                    "num_hacceptors",
+                    "num_rotable",
+                ],
+            )
+        )
         self.columns = ["smiles", "selfies"] + [self.column_map[k] for k in self.properties]
         self.filename = "data/pubchem_response.csv"
 
@@ -123,7 +123,7 @@ class MolecularScraper:
 
             if (seen % 50 == 0) or (seen == len(self.list)):
                 df_base = pd.read_csv(self.filename)
-                df = pd.concat(dfs, axis=0).rename(columns = self.column_map)
+                df = pd.concat(dfs, axis=0).rename(columns=self.column_map)
 
                 df = self.transfer_data(df)
                 df = pd.concat([df_base, df], axis=0)

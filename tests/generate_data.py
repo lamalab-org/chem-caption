@@ -1,13 +1,23 @@
-import rdkit
-from rdkit import Chem
-from rdkit.Chem import rdMolDescriptors, Lipinski
+# -*- coding: utf-8 -*-
+
+"""Script for generating test data."""
+
 import pandas as pd
-import numpy as np
+from rdkit.Chem import Lipinski, rdMolDescriptors
+
+from chemcaption.featurizers import (
+    ElementCountFeaturizer,
+    ElementCountProportionFeaturizer,
+    ElementMassFeaturizer,
+    ElementMassProportionFeaturizer,
+)
+from chemcaption.molecules import SMILESMolecule
 
 MOLECULAR_BANK = pd.read_json("data/molecular_bank.json", orient="index")
 PROPERTY_BANK = pd.read_csv("data/pubchem_response.csv")
 
 smiles_list = PROPERTY_BANK["smiles"]
+
 
 def generate_info(string: str):
     """
@@ -22,52 +32,97 @@ def generate_info(string: str):
     keys = [
         "smiles",
         "num_bonds",
-        "num_rotable",
-        "num_non_rotable",
+        "num_rotable_bonds",
+        "num_non_rotable_bonds",
+        "num_rotable_bonds_strict",
+        "num_non_rotable_bonds_strict",
         "rotable_proportion",
         "non_rotable_proportion",
-        "num_hdonors",
-        "num_hacceptors"
+        "rotable_proportion_strict",
+        "non_rotable_proportion_strict",
+        "num_hydrogen_bond_donors",
+        "num_hydrogen_bond_acceptors",
     ]
-    mol = Chem.rdmolops.AddHs(Chem.MolFromSmiles(string))
-    num_bonds = len(mol.GetBonds())
-    rotable_strict = rdMolDescriptors.CalcNumRotatableBonds(mol, strict=False)
-    rotable_non_strict = rdMolDescriptors.CalcNumRotatableBonds(mol, strict=False)
+    preset = [
+        "Carbon",
+        "Hydrogen",
+        "Nitrogen",
+        "Oxygen",
+        "Sulfur",
+        "Phosphorus",
+        "Fluorine",
+        "Chlorine",
+        "Bromine",
+        "Iodine",
+    ]
+
+    mass_featurizer = ElementMassFeaturizer(preset=preset)
+    mass_ratio_featurizer = ElementMassProportionFeaturizer(preset=preset)
+
+    count_featurizer = ElementCountFeaturizer(preset=preset)
+    count_ratio_featurizer = ElementCountProportionFeaturizer(preset=preset)
+
+    mol = SMILESMolecule(string)
+
+    num_bonds = len(mol.rdkit_mol.GetBonds())
+    rotable_strict = rdMolDescriptors.CalcNumRotatableBonds(mol.rdkit_mol, strict=True)
+    rotable_non_strict = rdMolDescriptors.CalcNumRotatableBonds(mol.rdkit_mol, strict=False)
 
     non_rotable_strict = num_bonds - rotable_strict
     non_rotable_non_strict = num_bonds - rotable_non_strict
 
-    num_donors = Lipinski.NumHDonors(mol)
-    num_acceptors = Lipinski.NumHAcceptors(mol)
+    num_donors = Lipinski.NumHDonors(mol.rdkit_mol)
+    num_acceptors = Lipinski.NumHAcceptors(mol.rdkit_mol)
+
+    masses = mass_featurizer.featurize(molecule=mol).reshape((-1,)).tolist()
+    keys += mass_featurizer.feature_labels()
+
+    mass_ratios = mass_ratio_featurizer.featurize(molecule=mol).reshape((-1,)).tolist()
+    keys += mass_ratio_featurizer.feature_labels()
+
+    counts = count_featurizer.featurize(molecule=mol).reshape((-1,)).tolist()
+    keys += count_featurizer.feature_labels()
+
+    count_ratios = count_ratio_featurizer.featurize(molecule=mol).reshape((-1,)).tolist()
+    keys += count_ratio_featurizer.feature_labels()
 
     values = [
         string,
         num_bonds,
+        rotable_non_strict,
+        non_rotable_non_strict,
         rotable_strict,
         non_rotable_strict,
+        rotable_non_strict / num_bonds,
+        non_rotable_non_strict / num_bonds,
         rotable_strict / num_bonds,
         non_rotable_strict / num_bonds,
         num_donors,
-        num_acceptors
+        num_acceptors,
     ]
+    values += masses
+    values += mass_ratios
+
+    values += counts
+    values += count_ratios
 
     return dict(zip(keys, values))
 
+
 data = [generate_info(string) for string in smiles_list]
 
-data = pd.DataFrame(data = data)
+data = pd.DataFrame(data=data)
+# data.to_csv("data/generated_data.csv", index=False)
 
-data.to_csv("data/generated_data.csv", index=False)
-print(data.head())
+PROPERTY_SUBSET = PROPERTY_BANK.drop(
+    labels=[col for col in PROPERTY_BANK.columns if col.__contains__("num")], axis=1
+)
 
-PROPERTY_SUBSET = PROPERTY_BANK.drop(labels = [col for col in PROPERTY_BANK.columns if col.__contains__("num")], axis=1)
+NEW_DATA = pd.merge(left=PROPERTY_SUBSET, right=data, left_on="smiles", right_on="smiles").rename(
+    columns={"molar_mass": "molecular_mass"}
+)
 
-print(PROPERTY_SUBSET.head())
-
-NEW_DATA = pd.merge(left = PROPERTY_SUBSET, right = data, left_on="smiles", right_on="smiles")
-
-print(NEW_DATA.head())
 
 NEW_DATA.to_csv("data/merged_pubchem_response.csv", index=False)
 
-print(NEW_DATA.drop_duplicates().shape)
+print(NEW_DATA.columns)
