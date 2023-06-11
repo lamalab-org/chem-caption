@@ -2,9 +2,15 @@
 
 """Tests for chemcaption.featurizer subpackage."""
 
+import numpy as np
 import pytest
 
 from chemcaption.featurizers import (
+    BondRotabilityFeaturizer,
+    ElementCountFeaturizer,
+    ElementCountProportionFeaturizer,
+    ElementMassFeaturizer,
+    ElementMassProportionFeaturizer,
     HAcceptorCountFeaturizer,
     HDonorCountFeaturizer,
     MolecularMassFeaturizer,
@@ -12,14 +18,18 @@ from chemcaption.featurizers import (
 )
 from tests.conftests import DISPATCH_MAP, PROPERTY_BANK, extract_molecule_properties
 
-KIND = "smiles"
+KIND = "selfies"
 MOLECULE = DISPATCH_MAP[KIND]
+PRESET = ["carbon", "hydrogen", "oxygen", "nitrogen", "phosphorus"]
+
+
+"""Test for molecular mass featurizer."""
 
 
 @pytest.mark.parametrize(
     "test_input, expected",
     extract_molecule_properties(
-        property_bank=PROPERTY_BANK, representation_name=KIND, property="molar_mass"
+        property_bank=PROPERTY_BANK, representation_name=KIND, property="molecular_mass"
     ),
 )
 def test_molar_mass_featurizer(test_input, expected):
@@ -29,13 +39,16 @@ def test_molar_mass_featurizer(test_input, expected):
 
     results = featurizer.featurize(molecule)
 
-    assert round(abs((results - expected).item()), 1) <= 1
+    return np.isclose(results, expected)
+
+
+"""Test for number of rotatable bonds featurizer."""
 
 
 @pytest.mark.parametrize(
     "test_input, expected",
     extract_molecule_properties(
-        property_bank=PROPERTY_BANK, representation_name=KIND, property="num_rotable"
+        property_bank=PROPERTY_BANK, representation_name=KIND, property="num_rotable_bonds_strict"
     ),
 )
 def test_num_rotable_bond_featurizer(test_input, expected):
@@ -48,10 +61,36 @@ def test_num_rotable_bond_featurizer(test_input, expected):
     assert results == expected.astype(int)
 
 
+"""Test for number of non-rotatable bonds featurizer."""
+
+
 @pytest.mark.parametrize(
     "test_input, expected",
     extract_molecule_properties(
-        property_bank=PROPERTY_BANK, representation_name=KIND, property="num_hacceptors"
+        property_bank=PROPERTY_BANK,
+        representation_name=KIND,
+        property=["rotable_proportion", "non_rotable_proportion"],
+    ),
+)
+def test_bond_distribution_featurizer(test_input, expected):
+    """Test BondRotabilityFeaturizer."""
+    featurizer = BondRotabilityFeaturizer()
+    molecule = MOLECULE(test_input)
+
+    results = featurizer.featurize(molecule)
+
+    return np.isclose(results, expected)
+
+
+"""Test for number of Hydrogen bond acceptors featurizer."""
+
+
+@pytest.mark.parametrize(
+    "test_input, expected",
+    extract_molecule_properties(
+        property_bank=PROPERTY_BANK,
+        representation_name=KIND,
+        property="num_hydrogen_bond_acceptors",
     ),
 )
 def test_num_hacceptor_featurizer(test_input, expected):
@@ -64,10 +103,13 @@ def test_num_hacceptor_featurizer(test_input, expected):
     assert results == expected.astype(int)
 
 
+"""Test for number of Hydrogen bond donors featurizer."""
+
+
 @pytest.mark.parametrize(
     "test_input, expected",
     extract_molecule_properties(
-        property_bank=PROPERTY_BANK, representation_name=KIND, property="num_hdonors"
+        property_bank=PROPERTY_BANK, representation_name=KIND, property="num_hydrogen_bond_donors"
     ),
 )
 def test_num_hdonor_featurizer(test_input, expected):
@@ -78,3 +120,87 @@ def test_num_hdonor_featurizer(test_input, expected):
     results = featurizer.featurize(molecule)
 
     assert results == expected.astype(int)
+
+
+"""Test for element mass contribution featurizer."""
+
+
+@pytest.mark.parametrize(
+    "test_input, expected",
+    extract_molecule_properties(
+        property_bank=PROPERTY_BANK,
+        representation_name=KIND,
+        property=list(map(lambda x: x + "_mass", PRESET)),
+    ),
+)
+def test_mass_featurizer(test_input, expected):
+    """Test ElementMassFeaturizer."""
+    featurizer = ElementMassFeaturizer(preset=PRESET)
+    molecule = MOLECULE(test_input)
+
+    results = featurizer.featurize(molecule)
+
+    return np.isclose(results, expected)
+
+
+"""Test for element mass ratio of contribution featurizer."""
+
+
+@pytest.mark.parametrize(
+    "test_input, expected",
+    extract_molecule_properties(
+        property_bank=PROPERTY_BANK,
+        representation_name=KIND,
+        property=list(map(lambda x: x + "_mass_ratio", PRESET)),
+    ),
+)
+def test_mass_proportion_featurizer(test_input, expected):
+    """Test ElementMassProportionFeaturizer."""
+    featurizer = ElementMassProportionFeaturizer(preset=PRESET)
+    molecule = MOLECULE(test_input)
+
+    results = featurizer.featurize(molecule)
+
+    return np.isclose(results, expected)
+
+
+"""Test for element atom count contribution featurizer."""
+
+
+@pytest.mark.parametrize(
+    "test_input, expected",
+    extract_molecule_properties(
+        property_bank=PROPERTY_BANK,
+        representation_name=KIND,
+        property=list(map(lambda x: "num_" + x + "_atoms", PRESET)),
+    ),
+)
+def test_count_featurizer(test_input, expected):
+    """Test ElementCountFeaturizer."""
+    featurizer = ElementCountFeaturizer(preset=PRESET)
+    molecule = MOLECULE(test_input)
+
+    results = featurizer.featurize(molecule)
+
+    return np.isclose(results, expected)
+
+
+"""Test for element atom count ratio contribution featurizer."""
+
+
+@pytest.mark.parametrize(
+    "test_input, expected",
+    extract_molecule_properties(
+        property_bank=PROPERTY_BANK,
+        representation_name=KIND,
+        property=list(map(lambda x: x + "_atom_ratio", PRESET)),
+    ),
+)
+def test_count_proportion_featurizer(test_input, expected):
+    """Test ElementCountProportionFeaturizer."""
+    featurizer = ElementCountProportionFeaturizer(preset=PRESET)
+    molecule = MOLECULE(test_input)
+
+    results = featurizer.featurize(molecule)
+
+    return np.isclose(results, expected)
