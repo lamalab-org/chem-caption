@@ -3,13 +3,14 @@
 """Utility imports."""
 
 from abc import ABC, abstractmethod
-from typing import List, Optional, Sequence, Union, Dict
+from typing import Dict, List, Optional, Sequence, Union
 
 import numpy as np
 import rdkit
 from rdkit.Chem import Lipinski, rdMolDescriptors
 
 from chemcaption.molecules import InChIMolecule, SELFIESMolecule, SMILESMolecule
+from chemcaption.presets import SMARTSPreset
 
 """Abstract classes."""
 
@@ -62,7 +63,7 @@ class AbstractFeaturizer(ABC):
     @abstractmethod
     def implementors(self) -> List[str]:
         """
-        Return functionality implementors.
+        Return list of functionality implementors.
 
         Args:
             None
@@ -110,14 +111,14 @@ class AbstractFeaturizer(ABC):
 Lower level featurizer classes.
 
 1. NumRotableBondsFeaturizer []
-2. BondRotabilityFeaturizer
+2. BondRotabilityFeaturizer []
 3. HAcceptorCountFeaturizer []
 4. HDonorCountFeaturizer []
 5. MolecularMassFeaturizer []
-6. ElementMassFeaturizer
-7. ElementCountFeaturizer
-8. ElementMassProportionFeaturizer
-9. ElementCountProportionFeaturizer
+6. ElementMassFeaturizer []
+7. ElementCountFeaturizer []
+8. ElementMassProportionFeaturizer []
+9. ElementCountProportionFeaturizer []
 10. MultipleFeaturizer
 11. SMARTSFeaturizer
 """
@@ -148,7 +149,7 @@ class NumRotableBondsFeaturizer(AbstractFeaturizer):
 
     def implementors(self) -> List[str]:
         """
-        Return functionality implementors.
+        Return list of functionality implementors.
 
         Args:
             None
@@ -201,7 +202,7 @@ class BondRotabilityFeaturizer(AbstractFeaturizer):
 
     def implementors(self) -> List[str]:
         """
-        Return functionality implementors.
+        Return list of functionality implementors.
 
         Args:
             None
@@ -232,11 +233,11 @@ class HAcceptorCountFeaturizer(AbstractFeaturizer):
         Returns:
             (np.array): Number of Hydrogen bond acceptors present in `molecule`.
         """
-        return np.array([Lipinski.NumHAcceptors(molecule.rdkit_mol)]).reshape((1, -1))
+        return np.array([rdMolDescriptors.CalcNumHBA(molecule.rdkit_mol)]).reshape((1, -1))
 
     def implementors(self) -> List[str]:
         """
-        Return functionality implementors.
+        Return list of functionality implementors.
 
         Args:
             None
@@ -271,7 +272,7 @@ class HDonorCountFeaturizer(AbstractFeaturizer):
 
     def implementors(self) -> List[str]:
         """
-        Return functionality implementors.
+        Return list of functionality implementors.
 
         Args:
             None
@@ -313,7 +314,7 @@ class MolecularMassFeaturizer(AbstractFeaturizer):
 
     def implementors(self) -> List[str]:
         """
-        Return functionality implementors.
+        Return list of functionality implementors.
 
         Args:
             None
@@ -397,7 +398,7 @@ class ElementMassFeaturizer(AbstractFeaturizer):
         return self
 
     def _get_element_mass(
-        self, element: str, molecule=Sequence[Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]]
+        self, element: str, molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]
     ) -> float:
         """
         Get the total mass component of an element in a molecule.
@@ -474,7 +475,7 @@ class ElementMassFeaturizer(AbstractFeaturizer):
 
     def implementors(self) -> List[str]:
         """
-        Return functionality implementors.
+        Return list of functionality implementors.
 
         Args:
             None
@@ -536,7 +537,7 @@ class ElementMassProportionFeaturizer(ElementMassFeaturizer):
 
     def implementors(self) -> List[str]:
         """
-        Return functionality implementors.
+        Return list of functionality implementors.
 
         Args:
             None
@@ -616,7 +617,7 @@ class ElementCountFeaturizer(ElementMassFeaturizer):
 
     def implementors(self) -> List[str]:
         """
-        Return functionality implementors.
+        Return list of functionality implementors.
 
         Args:
             None
@@ -672,7 +673,7 @@ class ElementCountProportionFeaturizer(ElementCountFeaturizer):
 
     def implementors(self) -> List[str]:
         """
-        Return functionality implementors.
+        Return list of functionality implementors.
 
         Args:
             None
@@ -740,7 +741,7 @@ class MultipleFeaturizer(AbstractFeaturizer):
 
     def implementors(self) -> List[str]:
         """
-        Return functionality implementors.
+        Return list of functionality implementors.
 
         Args:
             None
@@ -751,68 +752,95 @@ class MultipleFeaturizer(AbstractFeaturizer):
         return ["Benedict Oshomah Emoekabu"]
 
 
-class SMARTSFeaturizer(ElementMassFeaturizer):
-    def __init__(self, count: bool = True, preset: Optional[Dict[str, str]] = None):
+class SMARTSFeaturizer(AbstractFeaturizer):
+    def __init__(
+        self, count: bool = True, names: Union[str, List[str]] = "rings", smarts: List[str] = None
+    ):
         """
         Initialize class.
 
         Args:
-            count (bool): Count pattern frequency or presence. Default (True).
-            preset (Optional[Dict[str, str]]): Hash map between elements and SMARTS strings.
+            count (bool): If set to True, count pattern frequency. Otherwise, only encode presence. Defaults to True.
+            names: Union[str, List[str]]: Preset name or names of the substructures that are encoded with the SMARTs.
+            smarts: List[str]: SMARTS strings that are matched with the molecules. Defaults to None.
 
         Returns:
             self: Instance of self.
         """
-        super().__init__(preset=None)
-        if preset is None:
-            preset = {
-            'pyridine': '[#6]1:[#6]:[#6]:[#7]:[#6]:[#6]:1',
-            'indole': '[#6]12:[#6]:[#6]:[#6]:[#6]:[#6]:1:[#6]:[#6]:[#7H]:2',
-            'imidazole': '[#6]1:[#6]:[#7]:[#6]:[#7H]:1',
-            'thiazol-2-amine': '[#7]-[#6]1:[#7]:[#6]:[#6]:[#16]:1',
-            'tetrazole': '[#6]1:[#7]:[#7]:[#7]:[#7H]:1',
-            '1,2,4-triazole': '[#6]1:[#7]:[#6]:[#7]:[#7H]:1',
-            'thiophene': '[#6]1:[#6]:[#6]:[#6]:[#16]:1',
-            'cytosine': '[#8]=[#6]1:[#7]:[#6](-[#7]):[#6]:[#6]:[#7H]:1',
-            'adenine': '[#7]-[#6]1:[#7]:[#6]:[#7]:[#6]2:[#6]:1:[#7]:[#6]:[#7H]:2',
-            '5-methylindole': '[#6]-[#6]1:[#6]:[#6]:[#6]2:[#6](:[#6]:[#6]:[#7H]:2):[#6]:1',
-            'isocaffeine': '[#8]=[#6]1:[#7](-[#6]):[#6](:[#6]2:[#6](:[#7H]:1):[#7H]:[#6]:[#7]:2)=[#8]',
-            'tetrazolethiol': '[#16]-[#7]1:[#7]:[#7]:[#7]:[#6]:1',
-            '3-methylisoxazole': '[#6]1:[#6]:[#6]:[#7]:[#8]:1',
-            '1-methylimidazole': '[#6]-[#7]1:[#6]:[#7]:[#6]:[#6]:1',
-            '2-methylimidazole': '[#6]-[#6]1:[#7]:[#6]:[#6]:[#7H]:1',
-            'guanine': '[#7]-[#6]1:[#7H]:[#6](:[#6]2:[#6](:[#7]:1):[#7H]:[#6]:[#7]:2)=[#8]',
-            'quinoline': '[#6]12:[#6]:[#6]:[#6]:[#6]:[#6]:1:[#7]:[#6]:[#6]:[#6]:2',
-            'furan': '[#6]1:[#6]:[#6]:[#6]:[#8]:1',
-            'tosufloxacin': '[#7]-[#6]1:[#6](-[#9]):[#6]:[#6]2:[#6](:[#7H]:[#6]:[#6](-[#6](-[#8])=[#8]):[#6]:2=[#8]):[#7]:1',
-        }
+        super().__init__()
 
-        self.preset = preset
-        self.smart_keys = [key for key in self.preset]
+        if isinstance(names, str):
+            try:
+                names, smarts = SMARTSPreset(names).preset()
+            except:
+                raise Exception(
+                    f"`{names}` preset not pre-defined. Use `heterocyclic`, `rings`, 'amino`, `scaffolds`, or `warheads`"
+                )
+        else:
+            assert bool(names) == bool(
+                smarts
+            ), "Both `names` and `smarts` must either be or not be provided."
+            assert len(names) == len(
+                smarts
+            ), "Both `names` and `smarts` must be lists of the same length."
+
+        self.names = names
+        self.smarts = smarts
         self.count = count
 
+        self.prefix = ""
         self.suffix = "_count" if count else "_presence"
-        self.label = [self.prefix + element.lower() + self.suffix for element in self.preset]
+        self.label = [self.prefix + element.lower() + self.suffix for element in self.names]
 
     @property
-    def preset(self) -> Optional[Union[List[str], Dict[str, str]]]:
-        """Get molecular preset. Getter method."""
-        return super().preset
+    def preset(self) -> Dict[str, List[str]]:
+        """Get molecular preset. Getter method.
+
+        Args:
+            None.
+
+        Returns:
+            (Dict[str, List[str]]): Dictionary of substance names and substance SMARTS strings.
+        """
+        return dict(names=self.names, smarts=self.smarts)
 
     @preset.setter
-    def preset(self, new_preset: Optional[Union[List[str], Dict[str, str]]]) -> None:
+    def preset(
+        self, new_preset: Optional[Union[str, Dict[str, List[str]], List[List[str]]]]
+    ) -> None:
         """Set molecular preset. Setter method.
 
         Args:
-            new_preset (Optional[Union[List[str], Dict[str, str]]]): List of chemical elements of interest.
+            new_preset (Optional[Union[str, Dict[str, List[str]], List[List[str], List[str]]]]): New preset of interest.
+                Could be a:
+                    (str) string representing new predefined preset.
+                    (Dict[str, List[str]]) map of substance names and SMARTS strings.
+                    (List[List[str]]): A list of two lists:
+                        First, a list of substance names.
+                        Second, a list of corresponding SMARTS strings.
 
         Returns:
             None
         """
-        self._preset = new_preset
+
         if new_preset is not None:
-            self.label = [self.prefix + element.lower() + self.suffix for element in self.preset]
-            self.smart_keys = [k for k in self.preset]
+            if isinstance(new_preset, str):
+                names, smarts = SMARTSPreset(preset=new_preset)
+            elif isinstance(new_preset, tuple) or isinstance(new_preset, list):
+                names = new_preset[0]
+                smarts = new_preset[1]
+            else:
+                names = new_preset["names"]
+                smarts = new_preset["smarts"]
+
+            self.names = names
+            self.smarts = smarts
+
+            self.label = [self.prefix + element.lower() + self.suffix for element in self.names]
+        else:
+            self.names = None
+            self.smarts = None
+            self.label = [None]
         return
 
     def featurize(
@@ -829,17 +857,19 @@ class SMARTSFeaturizer(ElementMassFeaturizer):
         """
         if self.count:
             results = [
-                len(molecule.rdkit_mol.GetSubstructMatches(rdkit.Chem.MolFromSmarts(self.preset[smart]))) for smart in self.smart_keys
+                len(molecule.rdkit_mol.GetSubstructMatches(rdkit.Chem.MolFromSmarts(smart)))
+                for smart in self.smarts
             ]
         else:
             results = [
-                int(molecule.rdkit_mol.HasSubstructMatch(rdkit.Chem.MolFromSmarts(self.preset[smart]))) for smart in self.smart_keys
+                int(molecule.rdkit_mol.HasSubstructMatch(rdkit.Chem.MolFromSmarts(smart)))
+                for smart in self.smarts
             ]
 
         return np.array(results).reshape((1, -1))
 
     def feature_labels(self) -> List[str]:
-        """Return feature label.
+        """Return feature labels.
 
         Args:
             None.
@@ -847,12 +877,11 @@ class SMARTSFeaturizer(ElementMassFeaturizer):
         Returns:
             (List[str]): List of names of extracted features.
         """
-        labels = super().feature_labels()
-        return list(map(lambda x: x.replace("-", "_"), labels))
+        return list(map(lambda x: x.replace("-", "_"), self.label))
 
     def implementors(self) -> List[str]:
         """
-        Return functionality implementors.
+        Return list of functionality implementors.
 
         Args:
             None
