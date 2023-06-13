@@ -14,13 +14,21 @@ from chemcaption.featurizers import (
     HAcceptorCountFeaturizer,
     HDonorCountFeaturizer,
     MolecularMassFeaturizer,
-    NumRotableBondsFeaturizer,
+    NumRotableBondsFeaturizer, SMARTSFeaturizer,
 )
+
+from chemcaption.presets import SMARTS_MAP
 from tests.conftests import DISPATCH_MAP, PROPERTY_BANK, extract_molecule_properties
 
 KIND = "selfies"
 MOLECULE = DISPATCH_MAP[KIND]
+
+# Element mass-related presets
 PRESET = ["carbon", "hydrogen", "oxygen", "nitrogen", "phosphorus"]
+
+# SMARTS substructure search-related presets
+SMARTS_PRESET = "organic"
+PRESET_BASE_LABELS = SMARTS_MAP[SMARTS_PRESET]["names"]
 
 
 """Test for molecular mass featurizer."""
@@ -175,7 +183,7 @@ def test_mass_proportion_featurizer(test_input, expected):
         property=list(map(lambda x: "num_" + x + "_atoms", PRESET)),
     ),
 )
-def test_count_featurizer(test_input, expected):
+def test_atom_count_featurizer(test_input, expected):
     """Test ElementCountFeaturizer."""
     featurizer = ElementCountFeaturizer(preset=PRESET)
     molecule = MOLECULE(test_input)
@@ -196,7 +204,7 @@ def test_count_featurizer(test_input, expected):
         property=list(map(lambda x: x + "_atom_ratio", PRESET)),
     ),
 )
-def test_count_proportion_featurizer(test_input, expected):
+def test_atom_count_proportion_featurizer(test_input, expected):
     """Test ElementCountProportionFeaturizer."""
     featurizer = ElementCountProportionFeaturizer(preset=PRESET)
     molecule = MOLECULE(test_input)
@@ -204,3 +212,45 @@ def test_count_proportion_featurizer(test_input, expected):
     results = featurizer.featurize(molecule)
 
     return np.isclose(results, expected)
+
+
+"""Test for SMARTS substructure count featurizer."""
+
+
+@pytest.mark.parametrize(
+    "test_input, expected",
+    extract_molecule_properties(
+        property_bank=PROPERTY_BANK,
+        representation_name=KIND,
+        property=list(map(lambda x: "".join([("_" if c in "[]()-" else c) for c in x]) + "_count", PRESET_BASE_LABELS)),
+    ),
+)
+def test_smarts_count_featurizer(test_input, expected):
+    """Test SMARTSFeaturizer for SMARTS occurrence count."""
+    featurizer = SMARTSFeaturizer(count=True, names="organic")
+    molecule = MOLECULE(test_input)
+
+    results = featurizer.featurize(molecule)
+
+    return np.equal(results, expected)
+
+
+"""Test for SMARTS substructure presence featurizer."""
+
+
+@pytest.mark.parametrize(
+    "test_input, expected",
+    extract_molecule_properties(
+        property_bank=PROPERTY_BANK,
+        representation_name=KIND,
+        property=list(map(lambda x: "".join([("_" if c in "[]()-" else c) for c in x]) + "_presence", PRESET_BASE_LABELS)),
+    ),
+)
+def test_smarts_presence_featurizer(test_input, expected):
+    """Test SMARTSFeaturizer for SMARTS presence detection."""
+    featurizer = SMARTSFeaturizer(count=False, names="organic")
+    molecule = MOLECULE(test_input)
+
+    results = featurizer.featurize(molecule)
+
+    return np.equal(results, expected)
