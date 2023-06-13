@@ -9,7 +9,7 @@ from chemcaption.featurizers import (
     ElementCountFeaturizer,
     ElementCountProportionFeaturizer,
     ElementMassFeaturizer,
-    ElementMassProportionFeaturizer,
+    ElementMassProportionFeaturizer, SMARTSFeaturizer,
 )
 from chemcaption.molecules import SMILESMolecule
 
@@ -86,6 +86,7 @@ def generate_info(string: str):
     count_ratios = count_ratio_featurizer.featurize(molecule=mol).reshape((-1,)).tolist()
     keys += count_ratio_featurizer.feature_labels()
 
+
     values = [
         string,
         num_bonds,
@@ -105,6 +106,15 @@ def generate_info(string: str):
 
     values += counts
     values += count_ratios
+
+    for preset in ['rings', 'organic', "heterocyclic", "warheads", "scaffolds", "amino"]:
+        for val in [True, False]:
+            smarts_featurizer = SMARTSFeaturizer(count=val, names=preset)
+            smarts_presence = smarts_featurizer.featurize(molecule=mol).reshape((-1,)).tolist()
+
+            keys += smarts_featurizer.feature_labels()
+            values += smarts_presence
+
 
     return dict(zip(keys, values))
 

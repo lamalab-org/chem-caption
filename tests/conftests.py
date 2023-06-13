@@ -2,10 +2,10 @@
 
 """Global requirements for modular testing."""
 
+import os
 from typing import List, Tuple, Union
 
 import numpy as np
-
 import pandas as pd
 from rdkit import Chem
 from selfies import encoder
@@ -14,8 +14,15 @@ from chemcaption.molecules import InChIMolecule, SELFIESMolecule, SMILESMolecule
 
 """Test data."""
 
-MOLECULAR_BANK = pd.read_json("tests/data/molecular_bank.json", orient="index").drop_duplicates()
-PROPERTY_BANK = pd.read_csv("tests/data/merged_pubchem_response.csv").drop_duplicates()
+BASE_DIR = os.getcwd() if "tests" in os.getcwd() else os.path.join(os.getcwd(), "tests")
+
+# Sources of truth
+MOLECULAR_BANK = pd.read_json(
+    os.path.join(BASE_DIR, "data", "molecular_bank.json"), orient="index"
+).drop_duplicates()
+PROPERTY_BANK = pd.read_csv(
+    os.path.join(BASE_DIR, "data", "merged_pubchem_response.csv")
+).drop_duplicates()
 
 DISPATCH_MAP = {
     "smiles": SMILESMolecule,
@@ -65,7 +72,7 @@ def extract_representation_strings(
     """Extract molecule representation strings from data bank.
 
     Args:
-        molecular_bank (pd.DataFrame): Daraframe containing molecular information.
+        molecular_bank (pd.DataFrame): Dataframe containing molecular information.
         in_ (str): Input representation type.
         out_ (str): Output representation type.
 
