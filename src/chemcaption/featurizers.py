@@ -442,7 +442,7 @@ class ElementMassFeaturizer(AbstractFeaturizer):
         return element_masses
 
     def _get_unique_elements(
-        self, molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule] = None
+        self, molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]
     ) -> List[str]:
         """
         Get unique elements that make up a molecule.
@@ -754,15 +754,26 @@ class MultipleFeaturizer(AbstractFeaturizer):
 
 class SMARTSFeaturizer(AbstractFeaturizer):
     def __init__(
-        self, count: bool = True, names: Union[str, List[str]] = "rings", smarts: List[str] = None
+        self,
+        count: bool = True,
+        names: Optional[Union[str, List[str]]] = "rings",
+        smarts: Optional[List[str]] = None,
     ):
         """
         Initialize class.
 
         Args:
             count (bool): If set to True, count pattern frequency. Otherwise, only encode presence. Defaults to True.
-            names: Union[str, List[str]]: Preset name or names of the substructures that are encoded with the SMARTs.
-            smarts: List[str]: SMARTS strings that are matched with the molecules. Defaults to None.
+            names: Optional[Union[str, List[str]]]: Preset name(s) of the substructures encoded by the SMARTS strings.
+                Predefined presets can be specified as strings, and can be one of:
+                    - `heterocyclic`,
+                    - `rings`,
+                    - `amino`,
+                    - `scaffolds`,
+                    - `warheads` or
+                    - `organic`.
+                Defaults to `rings`.
+            smarts: Optional[List[str]]: SMARTS strings that are matched with the molecules. Defaults to None.
 
         Returns:
             self: Instance of self.
@@ -771,10 +782,11 @@ class SMARTSFeaturizer(AbstractFeaturizer):
 
         if isinstance(names, str):
             try:
-                names, smarts = SMARTSPreset(names).preset()
-            except:
-                raise Exception(
-                    f"`{names}` preset not pre-defined. Use `heterocyclic`, `rings`, 'amino`, `scaffolds`, or `warheads`"
+                names, smarts = SMARTSPreset(names).preset
+            except KeyError:
+                raise KeyError(
+                    f"`{names}` preset not defined. \
+                    Use `heterocyclic`, `rings`, 'amino`, `scaffolds`, `warheads`, or `organic`"
                 )
         else:
             assert bool(names) == bool(
@@ -825,7 +837,7 @@ class SMARTSFeaturizer(AbstractFeaturizer):
 
         if new_preset is not None:
             if isinstance(new_preset, str):
-                names, smarts = SMARTSPreset(preset=new_preset)
+                names, smarts = SMARTSPreset(preset=new_preset).preset()
             elif isinstance(new_preset, tuple) or isinstance(new_preset, list):
                 names = new_preset[0]
                 smarts = new_preset[1]
@@ -877,7 +889,7 @@ class SMARTSFeaturizer(AbstractFeaturizer):
         Returns:
             (List[str]): List of names of extracted features.
         """
-        return list(map(lambda x: x.replace("-", "_"), self.label))
+        return list(map(lambda x: "".join([("_" if c in "[]()-" else c) for c in x]), self.label))
 
     def implementors(self) -> List[str]:
         """
