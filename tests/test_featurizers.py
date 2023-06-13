@@ -14,9 +14,9 @@ from chemcaption.featurizers import (
     HAcceptorCountFeaturizer,
     HDonorCountFeaturizer,
     MolecularMassFeaturizer,
-    NumRotableBondsFeaturizer, SMARTSFeaturizer,
+    NumRotableBondsFeaturizer,
+    SMARTSFeaturizer,
 )
-
 from chemcaption.presets import SMARTS_MAP
 from tests.conftests import DISPATCH_MAP, PROPERTY_BANK, extract_molecule_properties
 
@@ -27,7 +27,7 @@ MOLECULE = DISPATCH_MAP[KIND]
 PRESET = ["carbon", "hydrogen", "oxygen", "nitrogen", "phosphorus"]
 
 # SMARTS substructure search-related presets
-SMARTS_PRESET = "organic"
+SMARTS_PRESET = "amino"
 PRESET_BASE_LABELS = SMARTS_MAP[SMARTS_PRESET]["names"]
 
 
@@ -222,12 +222,17 @@ def test_atom_count_proportion_featurizer(test_input, expected):
     extract_molecule_properties(
         property_bank=PROPERTY_BANK,
         representation_name=KIND,
-        property=list(map(lambda x: "".join([("_" if c in "[]()-" else c) for c in x]) + "_count", PRESET_BASE_LABELS)),
+        property=list(
+            map(
+                lambda x: "".join([("_" if c in "[]()-" else c) for c in x]).lower() + "_count",
+                PRESET_BASE_LABELS,
+            )
+        ),
     ),
 )
 def test_smarts_count_featurizer(test_input, expected):
     """Test SMARTSFeaturizer for SMARTS occurrence count."""
-    featurizer = SMARTSFeaturizer(count=True, names="organic")
+    featurizer = SMARTSFeaturizer(count=True, names=SMARTS_PRESET)
     molecule = MOLECULE(test_input)
 
     results = featurizer.featurize(molecule)
@@ -243,12 +248,17 @@ def test_smarts_count_featurizer(test_input, expected):
     extract_molecule_properties(
         property_bank=PROPERTY_BANK,
         representation_name=KIND,
-        property=list(map(lambda x: "".join([("_" if c in "[]()-" else c) for c in x]) + "_presence", PRESET_BASE_LABELS)),
+        property=list(
+            map(
+                lambda x: "".join([("_" if c in "[]()-" else c) for c in x]).lower() + "_presence",
+                PRESET_BASE_LABELS,
+            )
+        ),
     ),
 )
 def test_smarts_presence_featurizer(test_input, expected):
     """Test SMARTSFeaturizer for SMARTS presence detection."""
-    featurizer = SMARTSFeaturizer(count=False, names="organic")
+    featurizer = SMARTSFeaturizer(count=False, names=SMARTS_PRESET)
     molecule = MOLECULE(test_input)
 
     results = featurizer.featurize(molecule)

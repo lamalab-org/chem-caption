@@ -7,7 +7,7 @@ from typing import Dict, List, Optional, Sequence, Union
 
 import numpy as np
 import rdkit
-from rdkit.Chem import Lipinski, rdMolDescriptors
+from rdkit.Chem import rdMolDescriptors
 
 from chemcaption.molecules import InChIMolecule, SELFIESMolecule, SMILESMolecule
 from chemcaption.presets import SMARTSPreset
@@ -16,14 +16,7 @@ from chemcaption.presets import SMARTSPreset
 
 
 class AbstractFeaturizer(ABC):
-    """Base class for lower level Featurizers.
-
-    Args:
-        None
-
-    Returns:
-        None
-    """
+    """Base class for lower level Featurizers."""
 
     def __init__(self):
         """Initialize class. Initialize periodic table."""
@@ -120,7 +113,7 @@ Lower level featurizer classes.
 8. ElementMassProportionFeaturizer []
 9. ElementCountProportionFeaturizer []
 10. MultipleFeaturizer
-11. SMARTSFeaturizer
+11. SMARTSFeaturizer []
 """
 
 
@@ -333,9 +326,6 @@ class ElementMassFeaturizer(AbstractFeaturizer):
 
         Args:
             preset (Optional[Union[List[str], Dict[str, str]]]): Preset containing substances or elements of interest.
-
-        Returns:
-            self: An instance of self.
         """
         super().__init__()
 
@@ -753,6 +743,8 @@ class MultipleFeaturizer(AbstractFeaturizer):
 
 
 class SMARTSFeaturizer(AbstractFeaturizer):
+    """A featurizer for molecular substructure search via SMARTS."""
+
     def __init__(
         self,
         count: bool = True,
@@ -774,9 +766,6 @@ class SMARTSFeaturizer(AbstractFeaturizer):
                     - `organic`.
                 Defaults to `rings`.
             smarts: Optional[List[str]]: SMARTS strings that are matched with the molecules. Defaults to None.
-
-        Returns:
-            self: Instance of self.
         """
         super().__init__()
 
@@ -834,7 +823,6 @@ class SMARTSFeaturizer(AbstractFeaturizer):
         Returns:
             None
         """
-
         if new_preset is not None:
             if isinstance(new_preset, str):
                 names, smarts = SMARTSPreset(preset=new_preset).preset()

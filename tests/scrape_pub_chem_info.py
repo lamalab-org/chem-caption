@@ -23,8 +23,8 @@ class MolecularScraper:
 
     def __init__(self, smiles_list: List[str]):
         """Initialize class instance."""
-        ## Out of 2,018 records, 1,450 records were successfully obtained.
-        ## However, the size of the requests led to the process cutting off.
+        # Out of 2,018 records, 1,450 records were successfully obtained.
+        # However, the size of the requests led to the process cutting off.
         self.list = smiles_list
         self.total_len = len(self.list)
         self.properties = [
@@ -74,7 +74,15 @@ class MolecularScraper:
         )
         return properties
 
-    def transfer_data(self, df):
+    def transfer_data(self, df: pd.DataFrame) -> pd.DataFrame:
+        """Transfer stacked data to DataFrame of desired attributes.
+
+        Args:
+            df (pd.DataFrame): Stacked DataFrame.
+
+        Returns:
+            new_df (pd.DataFrame): Formmated DataFrame.
+        """
         new_df = pd.DataFrame(columns=self.columns)
 
         for column in df.columns:
@@ -102,7 +110,7 @@ class MolecularScraper:
         try:
             seen = len(pd.read_csv(self.filename))
             self.list = self.list[seen:]
-        except:
+        except FileNotFoundError:
             df = pd.DataFrame(columns=self.columns)
             df.to_csv(self.filename, index=False)
             seen = 0

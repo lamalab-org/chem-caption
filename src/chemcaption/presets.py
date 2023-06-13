@@ -8,24 +8,23 @@ from typing import Dict, List, Union
 
 
 class SMARTSPreset:
-    _preset = None
+    """Container class for SMARTS string presets."""
 
     def __init__(self, preset: Union[str, Dict[str, List[str]]] = "rings"):
         """Initialize class.
 
         Args:
             preset (Union[str, Dict[str, List[str]]]): Predefined SMARTS map or user-define map.
-
-        Returns:
-            (self): Instance of self.
         """
+        self._preset = None
         self.preset = preset
+
     @property
     def preset(self):
-        """Return preset. Gett
+        """Return preset. Getter method.
 
         Args:
-            preset (Union[str, Dict[str, List[str]]]): Predefined SMARTS map or user-define map.
+            None.
 
         Returns:
             (self): Instance of self.
@@ -1364,7 +1363,17 @@ WARHEADS = {
 }
 
 ORGANIC = {
-    "names": ["carboxyl", "carbonyl", "ether", "alkanol", "thiol", "halogen", "amine", "amide", "ketone"],
+    "names": [
+        "carboxyl",
+        "carbonyl",
+        "ether",
+        "alkanol",
+        "thiol",
+        "halogen",
+        "amine",
+        "amide",
+        "ketone",
+    ],
     "smarts": [
         "[CX3](=O)[OX2H1]",
         "[CX3]=[OX1]",
@@ -1374,11 +1383,16 @@ ORGANIC = {
         "[F,Cl,Br,I]",
         "[NX3;H2,H1;!$(NC=O)]",
         "[NH2]",
-        "[#6][CX3](=O)[#6]"
-    ]
+        "[#6][CX3](=O)[#6]",
+    ],
 }
 
 # Preset map
 SMARTS_MAP = dict(
-    amino=AMINO_PROTECTORS, rings=RINGS, heterocyclic=HETEROCYCLIC, scaffolds=SCAFFOLDS, warheads=WARHEADS, organic=ORGANIC
+    amino=AMINO_PROTECTORS,
+    rings=RINGS,
+    heterocyclic=HETEROCYCLIC,
+    scaffolds=SCAFFOLDS,
+    warheads=WARHEADS,
+    organic=ORGANIC,
 )
