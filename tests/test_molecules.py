@@ -3,11 +3,10 @@
 """Tests for chemcaption.molecules subpackage."""
 
 import pytest
-from rdkit import Chem
 
 from tests.conftests import (
     DISPATCH_MAP,
-    MOLECULAR_BANK,
+    PROPERTY_BANK,
     _convert_molecule,
     extract_representation_strings,
 )
@@ -15,7 +14,7 @@ from tests.conftests import (
 
 @pytest.mark.parametrize(
     "test_input, expected",
-    extract_representation_strings(MOLECULAR_BANK, in_="selfies", out_="smiles"),
+    extract_representation_strings(PROPERTY_BANK, in_="selfies", out_="smiles"),
 )
 def test_selfies_to_smiles(test_input: str, expected: str):
     """Test conversion from SELFIES to SMILES."""
@@ -30,7 +29,7 @@ def test_selfies_to_smiles(test_input: str, expected: str):
 
 @pytest.mark.parametrize(
     "test_input, expected",
-    extract_representation_strings(MOLECULAR_BANK, in_="smiles", out_="selfies"),
+    extract_representation_strings(PROPERTY_BANK, in_="smiles", out_="selfies"),
 )
 def test_smiles_to_selfies(test_input: str, expected: str):
     """Test conversion from SMILES to SELFIES."""
@@ -45,7 +44,7 @@ def test_smiles_to_selfies(test_input: str, expected: str):
 
 @pytest.mark.parametrize(
     "test_input, expected",
-    extract_representation_strings(MOLECULAR_BANK, in_="smiles", out_="inchi"),
+    extract_representation_strings(PROPERTY_BANK, in_="smiles", out_="inchi"),
 )
 def test_smiles_to_inchi(test_input: str, expected: str):
     """Test conversion from SMILES to InChI."""
@@ -60,7 +59,7 @@ def test_smiles_to_inchi(test_input: str, expected: str):
 
 @pytest.mark.parametrize(
     "test_input, expected",
-    extract_representation_strings(MOLECULAR_BANK, in_="inchi", out_="smiles"),
+    extract_representation_strings(PROPERTY_BANK, in_="inchi", out_="smiles"),
 )
 def test_inchi_to_smiles(test_input: str, expected: str):
     """Test conversion from InChI to SMILES."""
@@ -68,14 +67,14 @@ def test_inchi_to_smiles(test_input: str, expected: str):
 
     molecule = DISPATCH_MAP[from_kind](representation_string=test_input)
     new_molecule = _convert_molecule(molecule, to_kind=to_kind)
-    results = Chem.CanonSmiles(new_molecule.representation_string)
+    results = new_molecule.representation_string
 
-    assert results == Chem.CanonSmiles(Chem.MolToSmiles(Chem.MolFromSmiles(expected)))
+    assert results == expected
 
 
 @pytest.mark.parametrize(
     "test_input, expected",
-    extract_representation_strings(MOLECULAR_BANK, in_="inchi", out_="selfies"),
+    extract_representation_strings(PROPERTY_BANK, in_="inchi", out_="selfies"),
 )
 def test_inchi_to_selfies(test_input: str, expected: str):
     """Test conversion from InChI to SELFIES."""
@@ -92,7 +91,7 @@ def test_inchi_to_selfies(test_input: str, expected: str):
 
 @pytest.mark.parametrize(
     "test_input, expected",
-    extract_representation_strings(MOLECULAR_BANK, in_="selfies", out_="inchi"),
+    extract_representation_strings(PROPERTY_BANK, in_="selfies", out_="inchi"),
 )
 def test_selfies_to_inchi(test_input: str, expected: str):
     """Test conversion from SELFIES to InChI."""
