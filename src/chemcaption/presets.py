@@ -19,18 +19,25 @@ class SMARTSPreset:
         Returns:
             (self): Instance of self.
         """
-        self.set_preset(preset)
+        self.preset = preset
+    @property
+    def preset(self):
+        """Return preset. Gett
 
-    @classmethod
-    def preset(cls):
-        return cls._preset
+        Args:
+            preset (Union[str, Dict[str, List[str]]]): Predefined SMARTS map or user-define map.
 
-    @classmethod
-    def set_preset(cls, new_preset: Union[str, Dict[str, List[str]]]):
+        Returns:
+            (self): Instance of self.
+        """
+        return self._preset
+
+    @preset.setter
+    def preset(self, new_preset: Union[str, Dict[str, List[str]]]):
         if isinstance(new_preset, str):
-            cls._preset = (SMARTS_MAP[new_preset]["names"], SMARTS_MAP[new_preset]["smarts"])
+            self._preset = (SMARTS_MAP[new_preset]["names"], SMARTS_MAP[new_preset]["smarts"])
         else:
-            cls._preset = new_preset["names"], new_preset["smarts"]
+            self._preset = new_preset["names"], new_preset["smarts"]
 
         return
 
@@ -42,6 +49,7 @@ class SMARTSPreset:
 3. RINGS
 4. AMINO_PROTECTORS
 5. WARHEADS
+6. ORGANIC
 """
 
 HETEROCYCLIC = {
@@ -1355,7 +1363,22 @@ WARHEADS = {
     ],
 }
 
+ORGANIC = {
+    "names": ["carboxyl", "carbonyl", "ether", "alkanol", "thiol", "halogen", "amine", "amide", "ketone"],
+    "smarts": [
+        "[CX3](=O)[OX2H1]",
+        "[CX3]=[OX1]",
+        "[OD2]([#6])[#6]",
+        "[#6][OX2H]",
+        "[#16X2H]",
+        "[F,Cl,Br,I]",
+        "[NX3;H2,H1;!$(NC=O)]",
+        "[NH2]",
+        "[#6][CX3](=O)[#6]"
+    ]
+}
+
 # Preset map
 SMARTS_MAP = dict(
-    amino=AMINO_PROTECTORS, rings=RINGS, hetero=HETEROCYCLIC, scaffolds=SCAFFOLDS, warheads=WARHEADS
+    amino=AMINO_PROTECTORS, rings=RINGS, heterocyclic=HETEROCYCLIC, scaffolds=SCAFFOLDS, warheads=WARHEADS, organic=ORGANIC
 )
