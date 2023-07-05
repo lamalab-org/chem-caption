@@ -3,6 +3,7 @@
 """Utility imports."""
 
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
 from typing import Dict, List, Optional, Sequence, Union
 
 import numpy as np
@@ -10,7 +11,7 @@ import rdkit
 from rdkit.Chem import rdMolDescriptors
 
 from chemcaption.molecules import InChIMolecule, SELFIESMolecule, SMILESMolecule
-from chemcaption.presets import SMARTSPreset
+from chemcaption.presets import QA_TEMPLATES, TEXT_TEMPLATES, SMARTSPreset
 
 """Abstract classes."""
 
@@ -890,3 +891,53 @@ class SMARTSFeaturizer(AbstractFeaturizer):
             List[str]: List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]
+
+
+@dataclass
+class Prompt:
+    prompt: str
+    completion: Union[str, float, int, bool, List[str], List[float], List[int], List[bool]]
+    representation: Union[str, List[str]]
+    representation_type: Union[str, float, int, bool, np.array]
+    completion_type: Union[str, float, int, bool, np.array]
+    template: Optional[str] = None
+
+    def __dict__(self):
+        return {
+            "prompt": self.prompt,
+            "completion": self.completion,
+            "qa": self.fill_template(template_type="qa"),
+            "text": self.fill_template(template_type="text"),
+        }
+
+    def fill_template(
+        self, precision_type: str = "decimal", set_template: bool = True, template_type: str = "qa"
+    ):
+        molecular_info = dict(
+            PROPERTY_NAME=self.completion_type,
+            REPR=self.representation_type,
+            REPR_STRING=self.representation,
+            PROPERTY_VALUE=self.completion,
+            PRECISION=2,
+            PRECISION_TYPE=precision_type,
+        )
+
+        templates = QA_TEMPLATES if template_type == "qa" else TEXT_TEMPLATES
+        if template_type == "qa":
+            templates = templates[
+                "single" if not isinstance(self.representation, (set, list, tuple)) else "multiple"
+            ]
+
+        self.template = (
+            templates[np.random.randint(low=0, high=len(templates), size=(1,)).item()]
+            if (set_template or bool(self.template))
+            else self.template
+        )
+
+        return self.template.format(**molecular_info)
+
+    def __str__(self):
+        return self.fill_template(template_type="text")
+
+    def to_meta_yaml(self):
+        raise NotImplementedError
