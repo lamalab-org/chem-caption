@@ -1401,7 +1401,8 @@ SMARTS_MAP = dict(
 )
 
 
-TEXT_TEMPLATES = [
+TEXT_TEMPLATES = dict(
+    single=[
     "The {PROPERTY_NAME} property has a magnitude {PROPERTY_VALUE}.",
     "The {PROPERTY_NAME} property has a magnitude of {PROPERTY_VALUE}.",
     "The {PROPERTY_NAME} has a magnitude {PROPERTY_VALUE}.",
@@ -1429,9 +1430,47 @@ TEXT_TEMPLATES = [
     "The {PROPERTY_NAME} is measured to have a magnitude of {PROPERTY_VALUE}.",
     "The {PROPERTY_NAME} for the molecule with representation `{REPR_STRING}` in the {REPR} representational system has a value of {PROPERTY_VALUE}.",
     "The {PROPERTY_NAME} for the molecule with representation `{REPR_STRING}` in the {REPR} representational system is {PROPERTY_VALUE}.",
-    "The molecule represented by representation `{REPR_STRING}` via the {REPR} representational system is characterized by \
-    the following properties, having the respective values: {PROPERTY_NAME}, and {PROPERTY_VALUE}.",
-]
+    "The molecule represented by representation `{REPR_STRING}` via the {REPR} representational system is characterized"
+    " by the following properties, having the respective values: {PROPERTY_NAME}, and {PROPERTY_VALUE}.",
+    ],
+    multiple=[
+    "The {PROPERTY_NAME} properties have the respective magnitudes: {PROPERTY_VALUE}.",
+    "The {PROPERTY_NAME} properties have the respective magnitudes of: {PROPERTY_VALUE}.",
+    "The {PROPERTY_NAME} properties have the magnitudes {PROPERTY_VALUE} respectively.",
+    "The {PROPERTY_NAME} properties have respective magnitudes {PROPERTY_VALUE}.",
+    "The {PROPERTY_NAME} properties have respective magnitudes of {PROPERTY_VALUE}.",
+    "The {PROPERTY_NAME} properties have magnitudes {PROPERTY_VALUE} respectively.",
+    "The {PROPERTY_NAME} properties have respective magnitudes {PROPERTY_VALUE}.",
+    "The {PROPERTY_NAME} properties have the following magnitudes {PROPERTY_VALUE} respectively.",
+    "The {PROPERTY_NAME} properties have the following magnitudes respectively: {PROPERTY_VALUE}.",
+    "The {PROPERTY_NAME} properties have the following respective magnitudes {PROPERTY_VALUE}.",
+
+    "The {PROPERTY_NAME} properties have the respective values: {PROPERTY_VALUE}.",
+    "The {PROPERTY_NAME} properties have the respective values of: {PROPERTY_VALUE}.",
+    "The {PROPERTY_NAME} properties have the values {PROPERTY_VALUE} respectively.",
+    "The {PROPERTY_NAME} properties have respective values {PROPERTY_VALUE}.",
+    "The {PROPERTY_NAME} properties have respective values of {PROPERTY_VALUE}.",
+    "The {PROPERTY_NAME} properties have values {PROPERTY_VALUE} respectively.",
+    "The {PROPERTY_NAME} properties have respective values {PROPERTY_VALUE}.",
+    "The {PROPERTY_NAME} properties have the following values {PROPERTY_VALUE} respectively.",
+    "The {PROPERTY_NAME} properties have the following values respectively: {PROPERTY_VALUE}.",
+    "The {PROPERTY_NAME} properties have the following respective values {PROPERTY_VALUE}.",
+
+    "The {PROPERTY_NAME} properties have been evaluated to be {PROPERTY_VALUE}.",
+    "The {PROPERTY_NAME} properties have been evaluated to have values of {PROPERTY_VALUE} respectively.",
+    "The {PROPERTY_NAME} properties have been evaluated to have magnitudes of {PROPERTY_VALUE} respectively.",
+    "The {PROPERTY_NAME} properties have been evaluated to have the following values {PROPERTY_VALUE} respectively.",
+    "The {PROPERTY_NAME} properties have been evaluated to have following magnitudes {PROPERTY_VALUE} respectively.",
+    "The {PROPERTY_NAME} properties have been evaluated to have the following respective values {PROPERTY_VALUE}.",
+    "The {PROPERTY_NAME} properties have been evaluated to have following respective magnitudes {PROPERTY_VALUE}.",
+    "The {PROPERTY_NAME} for the molecule with representation `{REPR_STRING}` in the {REPR} representational system have the values: {PROPERTY_VALUE} respectively.",
+    "The {PROPERTY_NAME} for the molecule with representation `{REPR_STRING}` in the {REPR} representational system are {PROPERTY_VALUE} respectively.",
+    "The values for the {PROPERTY_NAME} of the molecule with representation `{REPR_STRING}` in the {REPR} representational system are {PROPERTY_VALUE}.",
+    "The magnitudes for the {PROPERTY_NAME} of the molecule with representation `{REPR_STRING}` in the {REPR} representational system are {PROPERTY_VALUE}.",
+    "The molecule represented by representation `{REPR_STRING}` via the {REPR} representational system is characterized"
+    " by the following properties, having the respective values: {PROPERTY_NAME}, and {PROPERTY_VALUE}.",
+    ]
+)
 
 QA_TEMPLATES = dict(
     multiple=[
@@ -1443,14 +1482,8 @@ QA_TEMPLATES = dict(
         "For the {REPR} molecule with string `{REPR_STRING}`, what are the {PROPERTY_NAME}?",
         "What values does the {REPR} molecule `{REPR_STRING}` have for the {PROPERTY_NAME}?",
         "What are the values for the following properties of {REPR} molecule with {REPR} string `{REPR_STRING}`: {PROPERTY_NAME}?",
-        "With the {PROPERTY_NAME} properties of {REPR} molecule `{REPR_STRING}` being known to have the respective values {PROPERTY_VALUE}, what may be said about the compound?",
-        "With the {PROPERTY_NAME} of {REPR} molecule `{REPR_STRING}` being known to have the respective values {PROPERTY_VALUE}, what may be said about the compound?",
-        "If the {PROPERTY_NAME} have the respective values {PROPERTY_VALUE}, what are the pertinent implications for {REPR} molecule `{REPR_STRING}`, if any?",
-        "If the {PROPERTY_NAME} have the respective values {PROPERTY_VALUE}, are there any pertinent implications for {REPR} molecule `{REPR_STRING}`?",
-        "If the {PROPERTY_NAME} properties have the respective values {PROPERTY_VALUE}, what are the pertinent implications for {REPR} molecule `{REPR_STRING}`, if any?",
         "What values does the {REPR} molecule `{REPR_STRING}` have for the properties: {PROPERTY_NAME}?",
         "What values does the {REPR} molecule `{REPR_STRING}` have for the {PROPERTY_NAME} properties?",
-        "If the {PROPERTY_NAME} properties have the respective values {PROPERTY_VALUE}, are there any pertinent implications for {REPR} molecule `{REPR_STRING}`?",
     ],
     single=[
         "What is the value of the {PROPERTY_NAME} property for {REPR} molecule `{REPR_STRING}`?",
@@ -1467,12 +1500,26 @@ QA_TEMPLATES = dict(
         "What magnitude does the {REPR} molecule `{REPR_STRING}` have for the property: {PROPERTY_NAME}?",
         "What magnitude does the {REPR} molecule `{REPR_STRING}` have for the {PROPERTY_NAME} property?",
         "What magnitude does the {REPR} molecule `{REPR_STRING}` have for the {PROPERTY_NAME}?",
-        "If the {PROPERTY_NAME} property has a value of {PROPERTY_VALUE}, are there any pertinent implications for {} molecule `{REPR_STRING}`?",
-        "If the {PROPERTY_NAME} property has a value of {PROPERTY_VALUE}, what are the pertinent implications for {REPR} molecule `{REPR_STRING}`, if any?",
-        "If the {PROPERTY_NAME} has a value of {PROPERTY_VALUE}, are there any pertinent implications for {REPR} molecule `{REPR_STRING}`?",
-        "If the {PROPERTY_NAME} has a value of {PROPERTY_VALUE}, what are the pertinent implications for {REPR} molecule `{REPR_STRING}`, if any?",
     ],
 )
+
+
+def generate_template(template_type: str = "qa", key: str = "single"):
+    """Randomly select prompt template.
+
+    Args:
+        template_type (str): Type of template. Take either `qa` or `text`. Defaults to `qa`.
+        key (str): Cardinality of template. Can be `single` or `multiple`. Defaults to `single`.
+
+    Returns:
+          template (str): Selected template.
+    """
+    templates = QA_TEMPLATES[key] if template_type == "qa" else TEXT_TEMPLATES[key]
+
+    template = (
+        templates[np.random.randint(low=0, high=len(templates), size=(1,)).item()]
+    )
+    return template
 
 
 def inspect_info(info: dict):
@@ -1488,10 +1535,13 @@ def inspect_info(info: dict):
     new_info = info.copy()
     for key, value in new_info.items():
         # Process each item in the dictionary
-        if isinstance(value, (list, tuple)):
+        if key == "PRECISION":
+            continue
+
+        elif isinstance(value, (list, tuple)):
             list_len = len(value)
             value = [
-                (str(round(sub_value, 4)) if isinstance(sub_value, (int, float)) else sub_value)
+                (str(round(sub_value, new_info["PRECISION"])) if isinstance(sub_value, (int, float)) else str(sub_value))
                 for sub_value in value
             ]
 
@@ -1507,19 +1557,19 @@ def inspect_info(info: dict):
                 properties = "decimal places" if value == "decimal" else "significant figures"
 
             else:
-                properties = str(round(value, 4)) if isinstance(value, (int, float)) else value
+                properties = str(round(value, new_info["PRECISION"])) if isinstance(value, (int, float)) else str(value)
 
         # Store processed information in new dictionary
         new_info[key] = properties
     return new_info
 
 
-def inspect_template(template, template_type="single"):
+def inspect_template(template:str, template_cardinality:str="single"):
     """Inspect and mutate template structure on the fly.
 
     Args:
         template (str): Template format as string.
-        template_type (str): Type of template. May be `multiple` or `single`. Defaults to `single`.
+        template_cardinality (str): Type of template. May be `multiple` or `single`. Defaults to `single`.
 
     Returns:
         template (str): Updated template.
@@ -1529,7 +1579,7 @@ def inspect_template(template, template_type="single"):
     if prob > 0.5:
         pass
     else:
-        if template_type == "single":
+        if template_cardinality == "single":
             hot_words = [
                 "{PROPERTY_NAME} value",
                 "{PROPERTY_NAME}",
@@ -1555,7 +1605,7 @@ def inspect_template(template, template_type="single"):
                     template = (
                         template[0]
                         + term
-                        + " (rounded to {PRECISION} {PRECISION_TYPE})"
+                        + " (rounded to within {PRECISION} {PRECISION_TYPE})"
                         + template[-1]
                     )
                     break
@@ -1567,17 +1617,18 @@ def inspect_template(template, template_type="single"):
     return template
 
 
-def generate_info():
+def generate_info(info_cardinality:str = "single"):
     """Generate dictionary of molecular information at random.
 
     Args:
-        None
+        info_cardinality (str): Cardinality of template. Can be `single` or `multiple`. Defaults to `single`.
 
     Returns:
         info (dict): Dictionary of molecular information.
+
     """
-    prob = np.random.randn()
-    if prob > 0.5:
+
+    if info_cardinality == "single":
         info = dict(
             PROPERTY_NAME="molar mass",
             REPR="SMILES",
