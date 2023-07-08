@@ -1540,9 +1540,8 @@ def inspect_info(info: dict):
                 (
                     str(round(sub_value, new_info["PRECISION"]))
                     if isinstance(sub_value, (int, float))
-                    else str(sub_value)
+                    else str(sub_value) for sub_value in value
                 )
-                for sub_value in value
             ]
 
             if list_len > 2:
@@ -1566,7 +1565,6 @@ def inspect_info(info: dict):
         # Store processed information in new dictionary
         new_info[key] = properties
     return new_info
-
 
 def inspect_template(template: str, template_cardinality: str = "single"):
     """Inspect and mutate template structure on the fly.
@@ -1619,7 +1617,6 @@ def inspect_template(template: str, template_cardinality: str = "single"):
                 continue
 
     return template
-
 
 def generate_info(info_cardinality: str = "single"):
     """Generate dictionary of molecular information at random.

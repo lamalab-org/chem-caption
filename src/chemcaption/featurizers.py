@@ -896,7 +896,6 @@ class SMARTSFeaturizer(AbstractFeaturizer):
 @dataclass
 class Prompt:
     """Contain all things prompt-related."""
-
     completion: Union[str, float, int, bool, List[Union[str, float, int, bool]]]
     representation: Union[str, List[str]]
     representation_type: Union[str, float, int, bool, np.array]
