@@ -1540,9 +1540,8 @@ def inspect_info(info: dict):
                 (
                     str(round(sub_value, new_info["PRECISION"]))
                     if isinstance(sub_value, (int, float))
-                    else str(sub_value)
+                    else str(sub_value) for sub_value in value
                 )
-                for sub_value in value
             ]
 
             if list_len > 2:
