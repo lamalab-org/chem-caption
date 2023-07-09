@@ -11,6 +11,7 @@ from rdkit import Chem
 from selfies import encoder
 
 from chemcaption.molecules import InChIMolecule, SELFIESMolecule, SMILESMolecule
+from chemcaption.presets import QA_TEMPLATES, TEXT_TEMPLATES, inspect_info
 
 """Test data."""
 
@@ -42,12 +43,12 @@ def extract_molecule_properties(
     """Extract SMILES string and the value of `property`.
 
     Args:
-        property_bank (pd.DataFrame): Dataframe containig molecular properties.
+        property_bank (pd.DataFrame): Dataframe containing molecular properties.
         representation_name (str): Name of molecular representation system.
         property (Union[List[str], str]): Properties of interest. Must be a feature(s) in `property_bank`.
 
     Returns:
-        properties (List[Tuple[str, np.array]]): List of (SMILES, property value) tuples.
+        properties (List[Tuple[str, np.array]]): List of (molecular_string, property value) tuples.
     """
     representation_name = representation_name.lower()
     property = [property] if not isinstance(property, list) else property
@@ -56,10 +57,10 @@ def extract_molecule_properties(
 
     string_list, property_list = (
         property_bank[representation_name].values.tolist(),
-        property_bank[property].values.tolist(),
+        property_bank[property].values,
     )
 
-    properties = [(k, np.array([v])) for k, v in zip(string_list, property_list)]
+    properties = [(k, v) for k, v in zip(string_list, property_list)]
 
     return properties
 
@@ -110,3 +111,90 @@ def _convert_molecule(
             representation_string = encoder(representation_string)
 
     return DISPATCH_MAP[to_kind](representation_string)
+
+
+def extract_info(
+    property_bank: pd.DataFrame,
+    representation_name: str,
+    property: Union[str, List[str]],
+) -> List[dict]:
+    """
+    Extract molecular information and structure as list of dictionaries.
+
+    Args:
+        property_bank (pd.DataFrame): Dataframe containing molecular properties.
+        representation_name (str): Name of molecular representation system.
+        property (Union[List[str], str]): Properties of interest. Must be a feature(s) in `property_bank`.
+
+    Returns:
+        properties (List[dict]): List of (molecular_string, property value) tuples.
+    """
+    results = extract_molecule_properties(
+        property_bank=property_bank, representation_name=representation_name, property=property
+    )
+
+    if isinstance(property, (list, tuple)):
+        num_features = len(property)
+    else:
+        num_features = 1
+        property = [property]
+
+    results = [
+        dict(
+            PROPERTY_NAME=property,
+            PROPERTY_VALUE=v.reshape(
+                num_features,
+            ).tolist(),
+            REPR_SYSTEM=representation_name,
+            REPR_STRING=k,
+            PRECISION=4,
+            PRECISION_TYPE="decimal",
+        )
+        for (k, v) in results
+    ]
+    return results
+
+
+def fill_template(template: str, bank: List[dict]) -> List[str]:
+    """
+    Format template and return formatted result.
+
+    Args:
+        template (str): Template to format.
+        bank (List[dict]): List of dictionaries containing molecular information.
+
+    Returns:
+        results (List[str]): List of formatted templates for each dictionary of molecular information.
+    """
+    results = [template.format(**inspect_info(info)) for info in bank]
+    return results
+
+
+def generate_prompt_test_data(
+    property_bank: pd.DataFrame,
+    representation_name: str,
+    property: Union[str, List[str]],
+    key: str = "single",
+) -> List[Tuple[dict, str, str]]:
+    """
+    Generate prompt-related inputs and outputs for testing.
+
+    Args:
+        property_bank (pd.DataFrame): Dataframe containing molecular properties.
+        representation_name (str): Name of molecular representation system.
+        property (Union[List[str], str]): Properties of interest. Must be a feature(s) in `property_bank`.
+        key (str): Cardinality of molecular features.
+
+    Returns:
+        results (List[Tuple[dict, str, str]]): List of (molecular_string, property value) tuples.
+    """
+    bank = extract_info(property_bank, representation_name, property)
+    templates = (
+        QA_TEMPLATES["single"] + TEXT_TEMPLATES["single"]
+        if key == "single"
+        else QA_TEMPLATES["multiple"] + TEXT_TEMPLATES["multiple"]
+    )
+
+    results = [(mol, t, t.format(**inspect_info(mol))) for mol in bank for t in templates]
+
+    return results

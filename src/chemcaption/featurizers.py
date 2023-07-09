@@ -115,6 +115,7 @@ Lower level featurizer classes.
 9. ElementCountProportionFeaturizer []
 10. MultipleFeaturizer
 11. SMARTSFeaturizer []
+12. Prompt []
 """
 
 
@@ -922,7 +923,7 @@ class Prompt:
             "filled_prompt": self.fill_template(),
         }
 
-    def fill_template(self, precision_type: str = "decimal"):
+    def fill_template(self, precision_type: str = "decimal") -> str:
         """Fill up the prompt template with appropriate values.
 
         Args:
@@ -934,7 +935,7 @@ class Prompt:
         """
         molecular_info = dict(
             PROPERTY_NAME=self.completion_names,
-            REPR=self.representation_type,
+            REPR_SYSTEM=self.representation_type,
             REPR_STRING=self.representation,
             PROPERTY_VALUE=self.completion,
             PRECISION=4,
@@ -944,7 +945,7 @@ class Prompt:
 
         return self.template.format(**molecular_info)
 
-    def __str__(self):
+    def __str__(self) -> str:
         """Return string representation of object.
 
         Args:
@@ -959,7 +960,7 @@ class Prompt:
         """Convert all prompt information from string to YAML format."""
         raise NotImplementedError
 
-    def implementors(self):
+    def implementors(self) -> List[str]:
         """
         Return list of functionality implementors.
 

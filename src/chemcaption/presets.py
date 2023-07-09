@@ -1428,9 +1428,9 @@ TEXT_TEMPLATES = dict(
         "The {PROPERTY_NAME} is evaluated to have a magnitude of {PROPERTY_VALUE}.",
         "The {PROPERTY_NAME} is measured to have a value of {PROPERTY_VALUE}.",
         "The {PROPERTY_NAME} is measured to have a magnitude of {PROPERTY_VALUE}.",
-        "The {PROPERTY_NAME} for the molecule with representation `{REPR_STRING}` in the {REPR} representational system has a value of {PROPERTY_VALUE}.",
-        "The {PROPERTY_NAME} for the molecule with representation `{REPR_STRING}` in the {REPR} representational system is {PROPERTY_VALUE}.",
-        "The molecule represented by representation `{REPR_STRING}` via the {REPR} representational system is characterized"
+        "The {PROPERTY_NAME} for the molecule with representation `{REPR_STRING}` in the {REPR_SYSTEM} representational system has a value of {PROPERTY_VALUE}.",
+        "The {PROPERTY_NAME} for the molecule with representation `{REPR_STRING}` in the {REPR_SYSTEM} representational system is {PROPERTY_VALUE}.",
+        "The molecule represented by representation `{REPR_STRING}` via the {REPR_SYSTEM} representational system is characterized"
         " by the following properties, having the respective values: {PROPERTY_NAME}, and {PROPERTY_VALUE}.",
     ],
     multiple=[
@@ -1461,43 +1461,43 @@ TEXT_TEMPLATES = dict(
         "The {PROPERTY_NAME} properties have been evaluated to have following magnitudes {PROPERTY_VALUE} respectively.",
         "The {PROPERTY_NAME} properties have been evaluated to have the following respective values {PROPERTY_VALUE}.",
         "The {PROPERTY_NAME} properties have been evaluated to have following respective magnitudes {PROPERTY_VALUE}.",
-        "The {PROPERTY_NAME} for the molecule with representation `{REPR_STRING}` in the {REPR} representational system have the values: {PROPERTY_VALUE} respectively.",
-        "The {PROPERTY_NAME} for the molecule with representation `{REPR_STRING}` in the {REPR} representational system are {PROPERTY_VALUE} respectively.",
-        "The values for the {PROPERTY_NAME} of the molecule with representation `{REPR_STRING}` in the {REPR} representational system are {PROPERTY_VALUE}.",
-        "The magnitudes for the {PROPERTY_NAME} of the molecule with representation `{REPR_STRING}` in the {REPR} representational system are {PROPERTY_VALUE}.",
-        "The molecule represented by representation `{REPR_STRING}` via the {REPR} representational system is characterized"
+        "The {PROPERTY_NAME} for the molecule with representation `{REPR_STRING}` in the {REPR_SYSTEM} representational system have the values: {PROPERTY_VALUE} respectively.",
+        "The {PROPERTY_NAME} for the molecule with representation `{REPR_STRING}` in the {REPR_SYSTEM} representational system are {PROPERTY_VALUE} respectively.",
+        "The values for the {PROPERTY_NAME} of the molecule with representation `{REPR_STRING}` in the {REPR_SYSTEM} representational system are {PROPERTY_VALUE}.",
+        "The magnitudes for the {PROPERTY_NAME} of the molecule with representation `{REPR_STRING}` in the {REPR_SYSTEM} representational system are {PROPERTY_VALUE}.",
+        "The molecule represented by representation `{REPR_STRING}` via the {REPR_SYSTEM} representational system is characterized"
         " by the following properties, having the respective values: {PROPERTY_NAME}, and {PROPERTY_VALUE}.",
     ],
 )
 
 QA_TEMPLATES = dict(
     multiple=[
-        "What are the values of the {PROPERTY_NAME} properties of {REPR} molecule `{REPR_STRING}`?",
-        "What are the values of {PROPERTY_NAME} properties of {REPR} molecule `{REPR_STRING}`?",
-        "For the {REPR} molecule with string `{REPR_STRING}`, what are the values of the {PROPERTY_NAME} properties?",
-        "For the {REPR} molecule with string `{REPR_STRING}`, what are the values of {PROPERTY_NAME}?",
-        "For the {REPR} molecule with string `{REPR_STRING}`, what are the {PROPERTY_NAME} values?",
-        "For the {REPR} molecule with string `{REPR_STRING}`, what are the {PROPERTY_NAME}?",
-        "What values does the {REPR} molecule `{REPR_STRING}` have for the {PROPERTY_NAME}?",
-        "What are the values for the following properties of {REPR} molecule with {REPR} string `{REPR_STRING}`: {PROPERTY_NAME}?",
-        "What values does the {REPR} molecule `{REPR_STRING}` have for the properties: {PROPERTY_NAME}?",
-        "What values does the {REPR} molecule `{REPR_STRING}` have for the {PROPERTY_NAME} properties?",
+        "What are the values of the {PROPERTY_NAME} properties of {REPR_SYSTEM} molecule `{REPR_STRING}`?",
+        "What are the values of {PROPERTY_NAME} properties of {REPR_SYSTEM} molecule `{REPR_STRING}`?",
+        "For the {REPR_SYSTEM} molecule with string `{REPR_STRING}`, what are the values of the {PROPERTY_NAME} properties?",
+        "For the {REPR_SYSTEM} molecule with string `{REPR_STRING}`, what are the values of {PROPERTY_NAME}?",
+        "For the {REPR_SYSTEM} molecule with string `{REPR_STRING}`, what are the {PROPERTY_NAME} values?",
+        "For the {REPR_SYSTEM} molecule with string `{REPR_STRING}`, what are the {PROPERTY_NAME}?",
+        "What values do the {REPR_SYSTEM} molecule `{REPR_STRING}` have for the {PROPERTY_NAME}?",
+        "What are the values for the following properties of {REPR_SYSTEM} molecule with {REPR_SYSTEM} string `{REPR_STRING}`: {PROPERTY_NAME}?",
+        "What values do the {REPR_SYSTEM} molecule `{REPR_STRING}` have for the properties: {PROPERTY_NAME}?",
+        "What values do the {REPR_SYSTEM} molecule `{REPR_STRING}` have for the {PROPERTY_NAME} properties?",
     ],
     single=[
-        "What is the value of the {PROPERTY_NAME} property for {REPR} molecule `{REPR_STRING}`?",
-        "What is the value of {PROPERTY_NAME} property of {REPR} molecule `{REPR_STRING}`?",
-        "What value does {REPR} molecule `{REPR_STRING}` have for the {PROPERTY_NAME} property?",
-        "What value does the {REPR} molecule `{REPR_STRING}` have for the {PROPERTY_NAME} property?",
-        "What value does {REPR} molecule `{REPR_STRING}` have for the {PROPERTY_NAME}?",
-        "What value does the {REPR} molecule `{REPR_STRING}` have for the {PROPERTY_NAME}?",
-        "For the {REPR} molecule with string `{REPR_STRING}`, what is the value of the {PROPERTY_NAME} property?",
-        "For the {REPR} molecule with string `{REPR_STRING}`, what is the value of {PROPERTY_NAME}?",
-        "For the {REPR} molecule with string `{REPR_STRING}`, what is the {PROPERTY_NAME} value?",
-        "For the {REPR} molecule with string `{REPR_STRING}`, what is the {PROPERTY_NAME}?",
-        "What is the magnitude of the {PROPERTY_NAME} property for {REPR} molecule `{REPR_STRING}`?",
-        "What magnitude does the {REPR} molecule `{REPR_STRING}` have for the property: {PROPERTY_NAME}?",
-        "What magnitude does the {REPR} molecule `{REPR_STRING}` have for the {PROPERTY_NAME} property?",
-        "What magnitude does the {REPR} molecule `{REPR_STRING}` have for the {PROPERTY_NAME}?",
+        "What is the value of the {PROPERTY_NAME} property for {REPR_SYSTEM} molecule `{REPR_STRING}`?",
+        "What is the value of {PROPERTY_NAME} property of {REPR_SYSTEM} molecule `{REPR_STRING}`?",
+        "What value does {REPR_SYSTEM} molecule `{REPR_STRING}` have for the {PROPERTY_NAME} property?",
+        "What value does the {REPR_SYSTEM} molecule `{REPR_STRING}` have for the {PROPERTY_NAME} property?",
+        "What value does {REPR_SYSTEM} molecule `{REPR_STRING}` have for the {PROPERTY_NAME}?",
+        "What value does the {REPR_SYSTEM} molecule `{REPR_STRING}` have for the {PROPERTY_NAME}?",
+        "For the {REPR_SYSTEM} molecule with string `{REPR_STRING}`, what is the value of the {PROPERTY_NAME} property?",
+        "For the {REPR_SYSTEM} molecule with string `{REPR_STRING}`, what is the value of {PROPERTY_NAME}?",
+        "For the {REPR_SYSTEM} molecule with string `{REPR_STRING}`, what is the {PROPERTY_NAME} value?",
+        "For the {REPR_SYSTEM} molecule with string `{REPR_STRING}`, what is the {PROPERTY_NAME}?",
+        "What is the magnitude of the {PROPERTY_NAME} property for {REPR_SYSTEM} molecule `{REPR_STRING}`?",
+        "What magnitude does the {REPR_SYSTEM} molecule `{REPR_STRING}` have for the property: {PROPERTY_NAME}?",
+        "What magnitude does the {REPR_SYSTEM} molecule `{REPR_STRING}` have for the {PROPERTY_NAME} property?",
+        "What magnitude does the {REPR_SYSTEM} molecule `{REPR_STRING}` have for the {PROPERTY_NAME}?",
     ],
 )
 
@@ -1537,11 +1537,10 @@ def inspect_info(info: dict):
         elif isinstance(value, (list, tuple)):
             list_len = len(value)
             value = [
-                (
-                    str(round(sub_value, new_info["PRECISION"]))
-                    if isinstance(sub_value, (int, float))
-                    else str(sub_value) for sub_value in value
-                )
+                str(round(sub_value, new_info["PRECISION"]))
+                if isinstance(sub_value, (int, float))
+                else str(sub_value)
+                for sub_value in value
             ]
 
             if list_len > 2:
@@ -1633,7 +1632,7 @@ def generate_info(info_cardinality: str = "single"):
     if info_cardinality == "single":
         info = dict(
             PROPERTY_NAME="molar mass",
-            REPR="SMILES",
+            REPR_SYSTEM="SMILES",
             REPR_STRING="CCC",
             PROPERTY_VALUE=359.02,
             PRECISION=2,
@@ -1642,7 +1641,7 @@ def generate_info(info_cardinality: str = "single"):
     else:
         info = dict(
             PROPERTY_NAME=["valence", "density", "molar mass"],
-            REPR="SMILES",
+            REPR_SYSTEM="SMILES",
             REPR_STRING="CCCC(C)C",
             PROPERTY_VALUE=[27, 0.37, 359.02],
             PRECISION=2,
