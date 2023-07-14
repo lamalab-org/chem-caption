@@ -3,7 +3,7 @@
 """Utility imports."""
 
 from abc import ABC, abstractmethod
-from typing import Dict, List, Optional, Sequence, Union
+from typing import Any, Callable, Dict, List, Optional, Sequence, Union
 
 import numpy as np
 import rdkit
@@ -622,7 +622,12 @@ class ElementCountProportionFeaturizer(ElementCountFeaturizer):
     """Get the proportion of an element in a molecule by atomic count."""
 
     def __init__(self, preset: Optional[List[str]] = None):
-        """Initialize instance."""
+        """Initialize instance.
+
+        Args:
+            preset (Optional[List[str]]): None or List of strings. Containing the names of elements of interest.
+                Defaults to `None`.
+        """
         super().__init__(preset=preset)
         self.prefix = ""
         self.suffix = "_atom_ratio"
@@ -678,7 +683,12 @@ class MultipleFeaturizer(AbstractFeaturizer):
     """A featurizer to combine featurizers."""
 
     def __init__(self, featurizer_list: List[AbstractFeaturizer]):
-        """Initialize class instance."""
+        """Initialize class instance.
+
+        Args:
+            featurizer_list (List[AbstractFeaturizer]): A list of featurizer objects.
+
+        """
         super().__init__()
         self.featurizers = featurizer_list
 
@@ -756,7 +766,7 @@ class SMARTSFeaturizer(AbstractFeaturizer):
 
         Args:
             count (bool): If set to True, count pattern frequency. Otherwise, only encode presence. Defaults to True.
-            names: Optional[Union[str, List[str]]]: Preset name(s) of the substructures encoded by the SMARTS strings.
+            names (Optional[Union[str, List[str]]]): Preset name(s) of the substructures encoded by the SMARTS strings.
                 Predefined presets can be specified as strings, and can be one of:
                     - `heterocyclic`,
                     - `rings`,
@@ -765,7 +775,7 @@ class SMARTSFeaturizer(AbstractFeaturizer):
                     - `warheads` or
                     - `organic`.
                 Defaults to `rings`.
-            smarts: Optional[List[str]]: SMARTS strings that are matched with the molecules. Defaults to None.
+            smarts (Optional[List[str]]): SMARTS strings that are matched with the molecules. Defaults to None.
         """
         super().__init__()
 
@@ -814,8 +824,8 @@ class SMARTSFeaturizer(AbstractFeaturizer):
         Args:
             new_preset (Optional[Union[str, Dict[str, List[str]], List[List[str], List[str]]]]): New preset of interest.
                 Could be a:
-                    (str) string representing new predefined preset.
-                    (Dict[str, List[str]]) map of substance names and SMARTS strings.
+                    (str): string representing new predefined preset.
+                    (Dict[str, List[str]]): map of substance names and SMARTS strings.
                     (List[List[str]]): A list of two lists:
                         First, a list of substance names.
                         Second, a list of corresponding SMARTS strings.
@@ -826,7 +836,7 @@ class SMARTSFeaturizer(AbstractFeaturizer):
         if new_preset is not None:
             if isinstance(new_preset, str):
                 names, smarts = SMARTSPreset(preset=new_preset).preset()
-            elif isinstance(new_preset, tuple) or isinstance(new_preset, list):
+            elif isinstance(new_preset, (tuple, list)):
                 names = new_preset[0]
                 smarts = new_preset[1]
             else:
@@ -878,6 +888,79 @@ class SMARTSFeaturizer(AbstractFeaturizer):
             (List[str]): List of names of extracted features.
         """
         return list(map(lambda x: "".join([("_" if c in "[]()-" else c) for c in x]), self.label))
+
+    def implementors(self) -> List[str]:
+        """
+        Return list of functionality implementors.
+
+        Args:
+            None
+
+        Returns:
+            List[str]: List of implementors.
+        """
+        return ["Benedict Oshomah Emoekabu"]
+
+
+class RDKitAdaptor(AbstractFeaturizer):
+    """Higher-level featurizer. Returns specific, lower-level featurizers."""
+
+    def __init__(
+        self, rdkit_function: Callable, label: str, **rdkit_function_kwargs: Dict[str, Any]
+    ):
+        """Initialize class object.
+
+        Args:
+            rdkit_function (Callable): Molecule descriptor-generating function.
+                May be obtained from a chemistry featurization package like `rdkit` or custom written.
+            label (str): Feature label to assign to extracted feature.
+            rdkit_function_kwargs (Dict[str, Any]): Keyword arguments to be parsed by `rdkit_function`.
+        """
+        super().__init__()
+        self.rdkit_function = rdkit_function
+        self._label = label
+        self._rdkit_function_kwargs = rdkit_function_kwargs
+
+    def featurize(
+        self,
+        molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule],
+    ) -> np.array:
+        """
+        Extract and return features from molecular object.
+
+        Args:
+            molecule (Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]): Molecule representation.
+
+        Returns:
+            (np.array): Array containing extracted features.
+        """
+        feature = self.rdkit_function(molecule.rdkit_mol, **self.rdkit_function_kwargs)
+        return np.array([feature]).reshape((1, -1))
+
+    @property
+    def rdkit_function_kwargs(self):
+        """Returns keyword arguments for `rdkit_function`.
+
+        Args:
+            None
+
+        Returns:
+            (Dict[str, Any]): Keyword arguments for `rdkit_function`.
+        """
+        return self._rdkit_function_kwargs
+
+    @rdkit_function_kwargs.setter
+    def rdkit_function_kwargs(self, new_rdkit_function_kwargs: Dict[str, Any]):
+        """Setter for `rdkit_function_kwargs`.
+
+        Args:
+            new_rdkit_function_kwargs (Dict[str, Any]): New keyword arguments for `rdkit_function`.
+
+        Returns:
+            None
+        """
+        self._rdkit_function_kwargs = new_rdkit_function_kwargs
+        return
 
     def implementors(self) -> List[str]:
         """
