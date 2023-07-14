@@ -1431,7 +1431,7 @@ TEXT_TEMPLATES = dict(
         "The {PROPERTY_NAME} for the molecule with representation `{REPR_STRING}` in the {REPR_SYSTEM} representational system has a value of {PROPERTY_VALUE}.",
         "The {PROPERTY_NAME} for the molecule with representation `{REPR_STRING}` in the {REPR_SYSTEM} representational system is {PROPERTY_VALUE}.",
         "The molecule represented by representation `{REPR_STRING}` via the {REPR_SYSTEM} representational system is characterized"
-        " by the following properties, having the respective values: {PROPERTY_NAME}, and {PROPERTY_VALUE}.",
+        " by the {PROPERTY_NAME} property as {PROPERTY_VALUE}.",
     ],
     multiple=[
         "The {PROPERTY_NAME} properties have the respective magnitudes: {PROPERTY_VALUE}.",

@@ -13,6 +13,89 @@ from rdkit.Chem import rdMolDescriptors
 from chemcaption.molecules import InChIMolecule, SELFIESMolecule, SMILESMolecule
 from chemcaption.presets import SMARTSPreset, inspect_info
 
+
+"""Prompt object class."""
+
+
+@dataclass
+class Prompt:
+    """Contain all things prompt-related."""
+
+    completion: Union[str, float, int, bool, List[Union[str, float, int, bool]]]
+    representation: Union[str, List[str]]
+    representation_type: Union[str, float, int, bool, np.array]
+    completion_type: Union[str, float, int, bool, np.array]
+    completion_names: Union[str, List[str]]
+    template: Optional[str] = None
+
+    def __dict__(self):
+        """Return dictionary representation of object.
+
+        Args:
+            None
+
+        Returns:
+            (dict): Dictionary containing all relevant prompt-related information.
+        """
+        return {
+            "representation": self.representation,
+            "representation_type": self.representation_type,
+            "prompt": self.template,
+            "completion": self.completion,
+            "completion_names": self.completion_names,
+            "filled_prompt": self.fill_template(),
+        }
+
+    def fill_template(self, precision_type: str = "decimal") -> str:
+        """Fill up the prompt template with appropriate values.
+
+        Args:
+            precision_type (str): Level of precision for approximation purposes. Can be `decimal` or `significant`.
+                Defaults to `decimal`.
+
+        Returns:
+            (str): Appropriately formatted template.
+        """
+        molecular_info = dict(
+            PROPERTY_NAME=self.completion_names,
+            REPR_SYSTEM=self.representation_type,
+            REPR_STRING=self.representation,
+            PROPERTY_VALUE=self.completion,
+            PRECISION=4,
+            PRECISION_TYPE=precision_type,
+        )
+        molecular_info = inspect_info(molecular_info)
+
+        return self.template.format(**molecular_info)
+
+    def __str__(self) -> str:
+        """Return string representation of object.
+
+        Args:
+            None.
+
+        Returns:
+            (str): Appropriately formatted template.
+        """
+        return self.fill_template()
+
+    def to_meta_yaml(self):
+        """Convert all prompt information from string to YAML format."""
+        raise NotImplementedError
+
+    def implementors(self) -> List[str]:
+        """
+        Return list of functionality implementors.
+
+        Args:
+            None
+
+        Returns:
+            List[str]: List of implementors.
+        """
+        return ["Benedict Oshomah Emoekabu"]
+
+
 """Abstract classes."""
 
 
@@ -46,13 +129,54 @@ class AbstractFeaturizer(ABC):
         """
         return np.concatenate([self.featurize(molecule) for molecule in molecules])
 
-    def text_featurize(self, molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]):
-        """Embed features in Prompt instance."""
-        return None
+    def text_featurize(self, molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule], template: str) -> Prompt:
+        """Embed features in Prompt instance.
 
-    def text_featurize_many(self, molecules: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]):
-        """Embed features in Prompt instance for multiple molecules."""
-        return None
+        Args:
+            molecule (Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]): Molecule representation.
+            template (str): Text template to be formatted.
+
+        Returns:
+            (Prompt): Instance of Prompt containing relevant information extracted from `molecule`.
+        """
+
+        completion = self.featurize(molecule=molecule).tolist()
+        completion = completion[0] if len(completion) == 1 else completion
+
+        completion_type = [type(c) for c in completion] if isinstance(completion, list) else type(completion)
+
+        representation = molecule.representation_string
+        representation_type = molecule.__repr__().split("Mole")[0]
+
+        completion_names = self.feature_labels()
+        completion_names = completion_names[0] if len(completion_names) == 0 else completion_names
+
+        return Prompt(
+            completion=completion,
+            completion_type=completion_type,
+            representation=representation,
+            representation_type=representation_type,
+            completion_names=completion_names,
+            template=template
+        )
+
+    def text_featurize_many(self, molecules: Sequence[Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]], templates: Union[str, List[str]]) -> List[Prompt]:
+        """Embed features in Prompt instance for multiple molecules.
+
+        Args:
+            molecules (Sequence[Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]]):
+                A sequence of molecule representations.
+            templates (Union[str, List[str]]): Single text template or list of text templates to be formatted.
+
+        Returns:
+            (List[Prompt]): List of Prompt instances containing relevant information extracted from each
+                molecule in `molecules`.
+        """
+        if isinstance(templates, str):
+            templates = [
+                templates for _ in range(len(molecules))
+            ]
+        return [self.text_featurize(molecule=molecule, template=template) for (molecule, template) in zip(molecules, templates)]
 
     @abstractmethod
     def implementors(self) -> List[str]:
@@ -880,85 +1004,6 @@ class SMARTSFeaturizer(AbstractFeaturizer):
             (List[str]): List of names of extracted features.
         """
         return list(map(lambda x: "".join([("_" if c in "[]()-" else c) for c in x]), self.label))
-
-    def implementors(self) -> List[str]:
-        """
-        Return list of functionality implementors.
-
-        Args:
-            None
-
-        Returns:
-            List[str]: List of implementors.
-        """
-        return ["Benedict Oshomah Emoekabu"]
-
-
-@dataclass
-class Prompt:
-    """Contain all things prompt-related."""
-
-    completion: Union[str, float, int, bool, List[Union[str, float, int, bool]]]
-    representation: Union[str, List[str]]
-    representation_type: Union[str, float, int, bool, np.array]
-    completion_type: Union[str, float, int, bool, np.array]
-    completion_names: Union[str, List[str]]
-    template: Optional[str] = None
-
-    def __dict__(self):
-        """Return dictionary representation of object.
-
-        Args:
-            None
-
-        Returns:
-            (dict): Dictionary containing all relevant prompt-related information.
-        """
-        return {
-            "representation": self.representation,
-            "representation_type": self.representation_type,
-            "prompt": self.template,
-            "completion": self.completion,
-            "completion_names": self.completion_names,
-            "filled_prompt": self.fill_template(),
-        }
-
-    def fill_template(self, precision_type: str = "decimal") -> str:
-        """Fill up the prompt template with appropriate values.
-
-        Args:
-            precision_type (str): Level of precision for approximation purposes. Can be `decimal` r `significant`.
-                Defaults to `decimal`.
-
-        Returns:
-            (str): Appropriately formatted template.
-        """
-        molecular_info = dict(
-            PROPERTY_NAME=self.completion_names,
-            REPR_SYSTEM=self.representation_type,
-            REPR_STRING=self.representation,
-            PROPERTY_VALUE=self.completion,
-            PRECISION=4,
-            PRECISION_TYPE=precision_type,
-        )
-        molecular_info = inspect_info(molecular_info)
-
-        return self.template.format(**molecular_info)
-
-    def __str__(self) -> str:
-        """Return string representation of object.
-
-        Args:
-            None.
-
-        Returns:
-            (str): Appropriately formatted template.
-        """
-        return self.fill_template()
-
-    def to_meta_yaml(self):
-        """Convert all prompt information from string to YAML format."""
-        raise NotImplementedError
 
     def implementors(self) -> List[str]:
         """
