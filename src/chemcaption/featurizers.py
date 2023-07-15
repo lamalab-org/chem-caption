@@ -7,7 +7,7 @@ from typing import Any, Callable, Dict, List, Optional, Sequence, Union
 
 import numpy as np
 import rdkit
-from rdkit.Chem import rdMolDescriptors
+from rdkit.Chem import rdMolDescriptors, Descriptors
 
 from chemcaption.molecules import InChIMolecule, SELFIESMolecule, SMILESMolecule
 from chemcaption.presets import SMARTSPreset
@@ -297,12 +297,7 @@ class MolecularMassFeaturizer(AbstractFeaturizer):
         Returns:
             molar_mass (float): Molecular mass of `molecule`.
         """
-        molar_mass = sum(
-            [
-                self.periodic_table.GetAtomicWeight(atom.GetAtomicNum())
-                for atom in molecule.get_atoms()
-            ]
-        )
+        molar_mass = Descriptors.MolWt(molecule.rdkit_mol)
         return np.array([molar_mass]).reshape((1, -1))
 
     def implementors(self) -> List[str]:
@@ -497,12 +492,7 @@ class ElementMassProportionFeaturizer(ElementMassFeaturizer):
         Returns:
             element_proportions (List[float]): List of elemental mass proportions.
         """
-        molar_mass = sum(
-            [
-                self.periodic_table.GetAtomicWeight(atom.GetAtomicNum())
-                for atom in molecule.get_atoms()
-            ]
-        )
+        molar_mass = Descriptors.MolWt(molecule.rdkit_mol)
 
         element_proportions = [
             self._get_element_mass(element=element, molecule=molecule) / molar_mass
