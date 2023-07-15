@@ -7,7 +7,7 @@ from typing import Any, Callable, Dict, List, Optional, Sequence, Union
 
 import numpy as np
 import rdkit
-from rdkit.Chem import rdMolDescriptors, Descriptors
+from rdkit.Chem import Descriptors, rdMolDescriptors
 
 from chemcaption.molecules import InChIMolecule, SELFIESMolecule, SMILESMolecule
 from chemcaption.presets import SMARTSPreset
@@ -481,26 +481,6 @@ class ElementMassProportionFeaturizer(ElementMassFeaturizer):
         self.suffix = "_mass_ratio"
         self.label = [self.prefix + element.lower() + self.suffix for element in self.preset]
 
-    def _get_profile(
-        self, molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]
-    ) -> List[float]:
-        """Generate molecular profile based of preset attribute.
-
-        Args:
-            molecule (Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]): Molecular representation instance.
-
-        Returns:
-            element_proportions (List[float]): List of elemental mass proportions.
-        """
-        molar_mass = Descriptors.MolWt(molecule.rdkit_mol)
-
-        element_proportions = [
-            self._get_element_mass(element=element, molecule=molecule) / molar_mass
-            for element in self.preset
-        ]
-
-        return element_proportions
-
     def featurize(
         self, molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]
     ) -> np.array:
@@ -513,7 +493,8 @@ class ElementMassProportionFeaturizer(ElementMassFeaturizer):
         Returns:
             np.array: Molecular proportional contribution by mass for elements in molecule.
         """
-        return np.array(self._get_profile(molecule=molecule)).reshape((1, -1))
+        molar_mass = Descriptors.MolWt(molecule.rdkit_mol)
+        return np.array(self._get_profile(molecule=molecule)).reshape((1, -1)) / molar_mass
 
     def implementors(self) -> List[str]:
         """
@@ -623,25 +604,6 @@ class ElementCountProportionFeaturizer(ElementCountFeaturizer):
         self.suffix = "_atom_ratio"
         self.label = [self.prefix + element.lower() + self.suffix for element in self.preset]
 
-    def _get_profile(
-        self, molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]
-    ) -> List[float]:
-        """Generate molecular profile based of preset attribute.
-
-        Args:
-            molecule (Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]): Molecular representation instance.
-
-        Returns:
-            element_proportions (List[float]): List of elemental atom proportions.
-        """
-        num_atoms = molecule.reveal_hydrogens().GetNumAtoms()
-        element_proportions = [
-            self._get_atom_count(element=element, molecule=molecule) / num_atoms
-            for element in self.preset
-        ]
-
-        return element_proportions
-
     def featurize(
         self, molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]
     ) -> np.array:
@@ -654,7 +616,8 @@ class ElementCountProportionFeaturizer(ElementCountFeaturizer):
         Returns:
             np.array: Molecular proportional contribution by atom count for elements in molecule.
         """
-        return np.array(self._get_profile(molecule=molecule)).reshape((1, -1))
+        num_atoms = len(molecule.get_atoms(hydrogen=True))
+        return np.array(self._get_profile(molecule=molecule)).reshape((1, -1)) / num_atoms
 
     def implementors(self) -> List[str]:
         """

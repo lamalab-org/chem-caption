@@ -4,8 +4,7 @@
 
 import numpy as np
 import pytest
-
-from rdkit.Chem import rdMolDescriptors, Descriptors
+from rdkit.Chem import Descriptors, rdMolDescriptors
 
 from chemcaption.featurizers import (
     BondRotabilityFeaturizer,
@@ -35,6 +34,7 @@ PRESET_BASE_LABELS = SMARTS_MAP[SMARTS_PRESET]["names"]
 
 
 """Test for molecular mass featurizer."""
+
 
 @pytest.mark.parametrize(
     "test_input, expected",
@@ -95,7 +95,9 @@ def test_num_rotable_bond_featurizer(test_input, expected):
 )
 def test_rdkit_adaptor_strict_num_rotable_bond_featurizer(test_input, expected):
     """Test RDKitAdaptor as NumRotableBondsFeaturizer (strict)."""
-    featurizer = RDKitAdaptor(rdMolDescriptors.CalcNumRotatableBonds, "num_rotable_bonds_strict", **{"strict": True})
+    featurizer = RDKitAdaptor(
+        rdMolDescriptors.CalcNumRotatableBonds, "num_rotable_bonds_strict", **{"strict": True}
+    )
     molecule = MOLECULE(test_input)
 
     results = featurizer.featurize(molecule)
@@ -114,7 +116,9 @@ def test_rdkit_adaptor_strict_num_rotable_bond_featurizer(test_input, expected):
 )
 def test_rdkit_adaptor_non_strict_num_rotable_bond_featurizer(test_input, expected):
     """Test RDKitAdaptor as NumRotableBondsFeaturizer (non-strict)."""
-    featurizer = RDKitAdaptor(rdMolDescriptors.CalcNumRotatableBonds, "num_rotable_bonds", **{"strict": False})
+    featurizer = RDKitAdaptor(
+        rdMolDescriptors.CalcNumRotatableBonds, "num_rotable_bonds", **{"strict": False}
+    )
     molecule = MOLECULE(test_input)
 
     results = featurizer.featurize(molecule)
@@ -174,7 +178,7 @@ def test_num_hacceptor_featurizer(test_input, expected):
 )
 def test_rdkit_adaptor_num_hacceptor_featurizer(test_input, expected):
     """Test RDKitAdaptor as HAcceptorCountFeaturizer."""
-    featurizer = RDKitAdaptor(Descriptors.NumHAcceptors, "num_hydrogen_bond_acceptors", **{})
+    featurizer = RDKitAdaptor(Descriptors.NumHAcceptors, "num_hydrogen_bond_acceptors")
     molecule = MOLECULE(test_input)
 
     results = featurizer.featurize(molecule)
@@ -209,7 +213,10 @@ def test_num_hdonor_featurizer(test_input, expected):
 )
 def test_rdkit_adaptor_num_hdonor_featurizer(test_input, expected):
     """Test RDKitAdaptor as HDonorCountFeaturizer."""
-    featurizer = RDKitAdaptor(Descriptors.NumHDonors, "num_hydrogen_bond_donors", **{})
+    featurizer = RDKitAdaptor(
+        Descriptors.NumHDonors,
+        "num_hydrogen_bond_donors",
+    )
     molecule = MOLECULE(test_input)
 
     results = featurizer.featurize(molecule)
