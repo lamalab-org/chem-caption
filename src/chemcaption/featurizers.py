@@ -3,9 +3,8 @@
 """Utility imports."""
 
 from abc import ABC, abstractmethod
-
-from typing import Any, Callable, Dict, List, Optional, Sequence, Union
 from dataclasses import dataclass
+from typing import Any, Callable, Dict, List, Optional, Sequence, Union
 
 import numpy as np
 import rdkit
@@ -13,7 +12,6 @@ from rdkit.Chem import Descriptors, rdMolDescriptors
 
 from chemcaption.molecules import InChIMolecule, SELFIESMolecule, SMILESMolecule
 from chemcaption.presets import SMARTSPreset, inspect_info
-
 
 """Abstract classes."""
 

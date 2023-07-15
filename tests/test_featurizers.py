@@ -16,8 +16,8 @@ from chemcaption.featurizers import (
     HDonorCountFeaturizer,
     MolecularMassFeaturizer,
     NumRotableBondsFeaturizer,
-    RDKitAdaptor,
     Prompt,
+    RDKitAdaptor,
     SMARTSFeaturizer,
 )
 from chemcaption.presets import SMARTS_MAP
