@@ -4,7 +4,7 @@
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Dict, List, Optional, Sequence, Union
+from typing import Any, Dict, List, Optional, Sequence, Union
 
 import numpy as np
 import rdkit
@@ -13,13 +13,12 @@ from rdkit.Chem import rdMolDescriptors
 from chemcaption.molecules import InChIMolecule, SELFIESMolecule, SMILESMolecule
 from chemcaption.presets import SMARTSPreset, inspect_info
 
-
 """Prompt object class."""
 
 
 @dataclass
 class Prompt:
-    """Contain all things prompt-related."""
+    """Encapsulate all things prompt-related."""
 
     completion: Union[str, float, int, bool, List[Union[str, float, int, bool]]]
     representation: Union[str, List[str]]
@@ -28,7 +27,7 @@ class Prompt:
     completion_names: Union[str, List[str]]
     template: Optional[str] = None
 
-    def __dict__(self):
+    def __dict__(self) -> Dict[str, Any]:
         """Return dictionary representation of object.
 
         Args:
@@ -129,7 +128,9 @@ class AbstractFeaturizer(ABC):
         """
         return np.concatenate([self.featurize(molecule) for molecule in molecules])
 
-    def text_featurize(self, molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule], template: str) -> Prompt:
+    def text_featurize(
+        self, molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule], template: str
+    ) -> Prompt:
         """Embed features in Prompt instance.
 
         Args:
@@ -139,11 +140,12 @@ class AbstractFeaturizer(ABC):
         Returns:
             (Prompt): Instance of Prompt containing relevant information extracted from `molecule`.
         """
-
         completion = self.featurize(molecule=molecule).tolist()
         completion = completion[0] if len(completion) == 1 else completion
 
-        completion_type = [type(c) for c in completion] if isinstance(completion, list) else type(completion)
+        completion_type = (
+            [type(c) for c in completion] if isinstance(completion, list) else type(completion)
+        )
 
         representation = molecule.representation_string
         representation_type = molecule.__repr__().split("Mole")[0]
@@ -157,10 +159,14 @@ class AbstractFeaturizer(ABC):
             representation=representation,
             representation_type=representation_type,
             completion_names=completion_names,
-            template=template
+            template=template,
         )
 
-    def text_featurize_many(self, molecules: Sequence[Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]], templates: Union[str, List[str]]) -> List[Prompt]:
+    def text_featurize_many(
+        self,
+        molecules: Sequence[Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]],
+        templates: Union[str, List[str]],
+    ) -> List[Prompt]:
         """Embed features in Prompt instance for multiple molecules.
 
         Args:
@@ -173,10 +179,11 @@ class AbstractFeaturizer(ABC):
                 molecule in `molecules`.
         """
         if isinstance(templates, str):
-            templates = [
-                templates for _ in range(len(molecules))
-            ]
-        return [self.text_featurize(molecule=molecule, template=template) for (molecule, template) in zip(molecules, templates)]
+            templates = [templates for _ in range(len(molecules))]
+        return [
+            self.text_featurize(molecule=molecule, template=template)
+            for (molecule, template) in zip(molecules, templates)
+        ]
 
     @abstractmethod
     def implementors(self) -> List[str]:
