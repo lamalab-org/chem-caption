@@ -27,6 +27,18 @@ class Prompt:
     completion_names: Union[str, List[str]]
     template: Optional[str] = None
 
+    def __post_init__(self):
+        """Post-initialize default template if required.
+
+        Args:
+            None.
+        """
+        self.template = (
+            "The {PROPERTY_NAME} property is evaluated to have a magnitude of {PROPERTY_VALUE}."
+            if self.template is None
+            else self.template
+        )
+
     def __dict__(self) -> Dict[str, Any]:
         """Return dictionary representation of object.
 
