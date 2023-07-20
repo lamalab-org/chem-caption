@@ -772,18 +772,17 @@ class SMARTSFeaturizer(AbstractFeaturizer):
 
     @preset.setter
     def preset(
-        self, new_preset: Optional[Union[str, Dict[str, List[str]], List[List[str]]]]
+        self, new_preset: Optional[Union[str, Dict[str, List[str]]]],
     ) -> None:
         """Set molecular preset. Setter method.
 
         Args:
-            new_preset (Optional[Union[str, Dict[str, List[str]], List[List[str], List[str]]]]): New preset of interest.
+            new_preset (Optional[Union[str, Dict[str, List[str]]]]): New preset of interest.
                 Could be a:
                     (str): string representing new predefined preset.
-                    (Dict[str, List[str]]): map of substance names and SMARTS strings.
-                    (List[List[str]]): A list of two lists:
-                        First, a list of substance names.
-                        Second, a list of corresponding SMARTS strings.
+                    (Dict[str, List[str]]): dictionary.
+                        Keys: `name` and `smarts`.
+                        Values: list of substance names and list of corresponding SMARTS strings.
 
         Returns:
             None
