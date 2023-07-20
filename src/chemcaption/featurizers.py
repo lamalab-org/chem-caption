@@ -861,20 +861,20 @@ class RDKitAdaptor(AbstractFeaturizer):
     """Higher-level featurizer. Returns specific, lower-level featurizers."""
 
     def __init__(
-        self, rdkit_function: Callable, label: str, **rdkit_function_kwargs: Dict[str, Any]
+        self, rdkit_function: Callable, labels: List[str], **rdkit_function_kwargs: Dict[str, Any]
     ):
         """Initialize class object.
 
         Args:
             rdkit_function (Callable): Molecule descriptor-generating function.
                 May be obtained from a chemistry featurization package like `rdkit` or custom written.
-            label (str): Feature label to assign to extracted feature.
+            labels (List[str]): Feature label(s) to assign to extracted feature(s).
             rdkit_function_kwargs (Dict[str, Any]): Keyword arguments to be parsed by `rdkit_function`.
         """
         super().__init__()
         self.rdkit_function = rdkit_function
-        self._label = label
-        self._rdkit_function_kwargs = rdkit_function_kwargs
+        self._labels = labels
+        self.rdkit_function_kwargs = rdkit_function_kwargs
 
     def featurize(
         self,
@@ -890,32 +890,8 @@ class RDKitAdaptor(AbstractFeaturizer):
             (np.array): Array containing extracted features.
         """
         feature = self.rdkit_function(molecule.rdkit_mol, **self.rdkit_function_kwargs)
-        return np.array([feature]).reshape((1, -1))
-
-    @property
-    def rdkit_function_kwargs(self):
-        """Returns keyword arguments for `rdkit_function`.
-
-        Args:
-            None
-
-        Returns:
-            (Dict[str, Any]): Keyword arguments for `rdkit_function`.
-        """
-        return self._rdkit_function_kwargs
-
-    @rdkit_function_kwargs.setter
-    def rdkit_function_kwargs(self, new_rdkit_function_kwargs: Dict[str, Any]):
-        """Setter for `rdkit_function_kwargs`.
-
-        Args:
-            new_rdkit_function_kwargs (Dict[str, Any]): New keyword arguments for `rdkit_function`.
-
-        Returns:
-            None
-        """
-        self._rdkit_function_kwargs = new_rdkit_function_kwargs
-        return
+        feature = [feature,] if isinstance(feature, (int, float)) else feature
+        return np.array(feature).reshape((1, -1))
 
     def implementors(self) -> List[str]:
         """
