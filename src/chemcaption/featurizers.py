@@ -27,18 +27,6 @@ class Prompt:
     completion_names: Union[str, List[str]]
     template: Optional[str] = None
 
-    def __post_init__(self):
-        """Post-initialize default template if required.
-
-        Args:
-            None.
-        """
-        self.template = (
-            "The {PROPERTY_NAME} property is evaluated to have a magnitude of {PROPERTY_VALUE}."
-            if self.template is None
-            else self.template
-        )
-
     def __dict__(self) -> Dict[str, Any]:
         """Return dictionary representation of object.
 
@@ -117,6 +105,7 @@ class AbstractFeaturizer(ABC):
         """Initialize class. Initialize periodic table."""
         self.periodic_table = rdkit.Chem.GetPeriodicTable()
         self._label = list()
+        self.template = None
 
     @abstractmethod
     def featurize(
@@ -141,13 +130,12 @@ class AbstractFeaturizer(ABC):
         return np.concatenate([self.featurize(molecule) for molecule in molecules])
 
     def text_featurize(
-        self, molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule], template: str
+        self, molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule],
     ) -> Prompt:
         """Embed features in Prompt instance.
 
         Args:
             molecule (Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]): Molecule representation.
-            template (str): Text template to be formatted.
 
         Returns:
             (Prompt): Instance of Prompt containing relevant information extracted from `molecule`.
@@ -171,30 +159,27 @@ class AbstractFeaturizer(ABC):
             representation=representation,
             representation_type=representation_type,
             completion_names=completion_names,
-            template=template,
+            template=self.template,
         )
 
     def text_featurize_many(
         self,
         molecules: Sequence[Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]],
-        templates: Union[str, List[str]],
     ) -> List[Prompt]:
         """Embed features in Prompt instance for multiple molecules.
 
         Args:
             molecules (Sequence[Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]]):
                 A sequence of molecule representations.
-            templates (Union[str, List[str]]): Single text template or list of text templates to be formatted.
 
         Returns:
             (List[Prompt]): List of Prompt instances containing relevant information extracted from each
                 molecule in `molecules`.
         """
-        if isinstance(templates, str):
-            templates = [templates for _ in range(len(molecules))]
+
         return [
-            self.text_featurize(molecule=molecule, template=template)
-            for (molecule, template) in zip(molecules, templates)
+            self.text_featurize(molecule=molecule)
+            for molecule in molecules
         ]
 
     @abstractmethod
@@ -259,6 +244,7 @@ Lower level featurizer classes.
 10. MultipleFeaturizer
 11. SMARTSFeaturizer []
 12. Prompt []
+13. RDKitAdaptor []
 """
 
 
