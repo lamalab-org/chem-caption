@@ -4,11 +4,11 @@
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional, Sequence, Union
+from typing import Any, Callable, Dict, List, Optional, Sequence, Union
 
 import numpy as np
 import rdkit
-from rdkit.Chem import rdMolDescriptors
+from rdkit.Chem import Descriptors, rdMolDescriptors
 
 from chemcaption.molecules import InChIMolecule, SELFIESMolecule, SMILESMolecule
 from chemcaption.presets import SMARTSPreset, inspect_info
@@ -442,12 +442,7 @@ class MolecularMassFeaturizer(AbstractFeaturizer):
         Returns:
             molar_mass (float): Molecular mass of `molecule`.
         """
-        molar_mass = sum(
-            [
-                self.periodic_table.GetAtomicWeight(atom.GetAtomicNum())
-                for atom in molecule.get_atoms()
-            ]
-        )
+        molar_mass = Descriptors.MolWt(molecule.rdkit_mol)
         return np.array([molar_mass]).reshape((1, -1))
 
     def implementors(self) -> List[str]:
@@ -631,31 +626,6 @@ class ElementMassProportionFeaturizer(ElementMassFeaturizer):
         self.suffix = "_mass_ratio"
         self.label = [self.prefix + element.lower() + self.suffix for element in self.preset]
 
-    def _get_profile(
-        self, molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]
-    ) -> List[float]:
-        """Generate molecular profile based of preset attribute.
-
-        Args:
-            molecule (Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]): Molecular representation instance.
-
-        Returns:
-            element_proportions (List[float]): List of elemental mass proportions.
-        """
-        molar_mass = sum(
-            [
-                self.periodic_table.GetAtomicWeight(atom.GetAtomicNum())
-                for atom in molecule.get_atoms()
-            ]
-        )
-
-        element_proportions = [
-            self._get_element_mass(element=element, molecule=molecule) / molar_mass
-            for element in self.preset
-        ]
-
-        return element_proportions
-
     def featurize(
         self, molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]
     ) -> np.array:
@@ -668,7 +638,8 @@ class ElementMassProportionFeaturizer(ElementMassFeaturizer):
         Returns:
             np.array: Molecular proportional contribution by mass for elements in molecule.
         """
-        return np.array(self._get_profile(molecule=molecule)).reshape((1, -1))
+        molar_mass = Descriptors.MolWt(molecule.rdkit_mol)
+        return np.array(self._get_profile(molecule=molecule)).reshape((1, -1)) / molar_mass
 
     def implementors(self) -> List[str]:
         """
@@ -767,30 +738,16 @@ class ElementCountProportionFeaturizer(ElementCountFeaturizer):
     """Get the proportion of an element in a molecule by atomic count."""
 
     def __init__(self, preset: Optional[List[str]] = None):
-        """Initialize instance."""
+        """Initialize instance.
+
+        Args:
+            preset (Optional[List[str]]): None or List of strings. Containing the names of elements of interest.
+                Defaults to `None`.
+        """
         super().__init__(preset=preset)
         self.prefix = ""
         self.suffix = "_atom_ratio"
         self.label = [self.prefix + element.lower() + self.suffix for element in self.preset]
-
-    def _get_profile(
-        self, molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]
-    ) -> List[float]:
-        """Generate molecular profile based of preset attribute.
-
-        Args:
-            molecule (Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]): Molecular representation instance.
-
-        Returns:
-            element_proportions (List[float]): List of elemental atom proportions.
-        """
-        num_atoms = molecule.reveal_hydrogens().GetNumAtoms()
-        element_proportions = [
-            self._get_atom_count(element=element, molecule=molecule) / num_atoms
-            for element in self.preset
-        ]
-
-        return element_proportions
 
     def featurize(
         self, molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]
@@ -804,7 +761,8 @@ class ElementCountProportionFeaturizer(ElementCountFeaturizer):
         Returns:
             np.array: Molecular proportional contribution by atom count for elements in molecule.
         """
-        return np.array(self._get_profile(molecule=molecule)).reshape((1, -1))
+        num_atoms = len(molecule.get_atoms(hydrogen=True))
+        return np.array(self._get_profile(molecule=molecule)).reshape((1, -1)) / num_atoms
 
     def implementors(self) -> List[str]:
         """
@@ -823,7 +781,12 @@ class MultipleFeaturizer(AbstractFeaturizer):
     """A featurizer to combine featurizers."""
 
     def __init__(self, featurizer_list: List[AbstractFeaturizer]):
-        """Initialize class instance."""
+        """Initialize class instance.
+
+        Args:
+            featurizer_list (List[AbstractFeaturizer]): A list of featurizer objects.
+
+        """
         super().__init__()
         self.featurizers = featurizer_list
 
@@ -901,7 +864,7 @@ class SMARTSFeaturizer(AbstractFeaturizer):
 
         Args:
             count (bool): If set to True, count pattern frequency. Otherwise, only encode presence. Defaults to True.
-            names: Optional[Union[str, List[str]]]: Preset name(s) of the substructures encoded by the SMARTS strings.
+            names (Optional[Union[str, List[str]]]): Preset name(s) of the substructures encoded by the SMARTS strings.
                 Predefined presets can be specified as strings, and can be one of:
                     - `heterocyclic`,
                     - `rings`,
@@ -910,7 +873,7 @@ class SMARTSFeaturizer(AbstractFeaturizer):
                     - `warheads` or
                     - `organic`.
                 Defaults to `rings`.
-            smarts: Optional[List[str]]: SMARTS strings that are matched with the molecules. Defaults to None.
+            smarts (Optional[List[str]]): SMARTS strings that are matched with the molecules. Defaults to None.
         """
         super().__init__()
 
@@ -952,18 +915,18 @@ class SMARTSFeaturizer(AbstractFeaturizer):
 
     @preset.setter
     def preset(
-        self, new_preset: Optional[Union[str, Dict[str, List[str]], List[List[str]]]]
+        self,
+        new_preset: Optional[Union[str, Dict[str, List[str]]]],
     ) -> None:
         """Set molecular preset. Setter method.
 
         Args:
-            new_preset (Optional[Union[str, Dict[str, List[str]], List[List[str], List[str]]]]): New preset of interest.
+            new_preset (Optional[Union[str, Dict[str, List[str]]]]): New preset of interest.
                 Could be a:
-                    (str) string representing new predefined preset.
-                    (Dict[str, List[str]]) map of substance names and SMARTS strings.
-                    (List[List[str]]): A list of two lists:
-                        First, a list of substance names.
-                        Second, a list of corresponding SMARTS strings.
+                    (str): string representing new predefined preset.
+                    (Dict[str, List[str]]): dictionary.
+                        Keys: `name` and `smarts`.
+                        Values: list of substance names and list of corresponding SMARTS strings.
 
         Returns:
             None
@@ -971,7 +934,7 @@ class SMARTSFeaturizer(AbstractFeaturizer):
         if new_preset is not None:
             if isinstance(new_preset, str):
                 names, smarts = SMARTSPreset(preset=new_preset).preset()
-            elif isinstance(new_preset, tuple) or isinstance(new_preset, list):
+            elif isinstance(new_preset, (tuple, list)):
                 names = new_preset[0]
                 smarts = new_preset[1]
             else:
@@ -1023,6 +986,61 @@ class SMARTSFeaturizer(AbstractFeaturizer):
             (List[str]): List of names of extracted features.
         """
         return list(map(lambda x: "".join([("_" if c in "[]()-" else c) for c in x]), self.label))
+
+    def implementors(self) -> List[str]:
+        """
+        Return list of functionality implementors.
+
+        Args:
+            None
+
+        Returns:
+            List[str]: List of implementors.
+        """
+        return ["Benedict Oshomah Emoekabu"]
+
+
+class RDKitAdaptor(AbstractFeaturizer):
+    """Higher-level featurizer. Returns specific, lower-level featurizers."""
+
+    def __init__(
+        self, rdkit_function: Callable, labels: List[str], **rdkit_function_kwargs: Dict[str, Any]
+    ):
+        """Initialize class object.
+
+        Args:
+            rdkit_function (Callable): Molecule descriptor-generating function.
+                May be obtained from a chemistry featurization package like `rdkit` or custom written.
+            labels (List[str]): Feature label(s) to assign to extracted feature(s).
+            rdkit_function_kwargs (Dict[str, Any]): Keyword arguments to be parsed by `rdkit_function`.
+        """
+        super().__init__()
+        self.rdkit_function = rdkit_function
+        self._labels = labels
+        self.rdkit_function_kwargs = rdkit_function_kwargs
+
+    def featurize(
+        self,
+        molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule],
+    ) -> np.array:
+        """
+        Extract and return features from molecular object.
+
+        Args:
+            molecule (Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]): Molecule representation.
+
+        Returns:
+            (np.array): Array containing extracted features.
+        """
+        feature = self.rdkit_function(molecule.rdkit_mol, **self.rdkit_function_kwargs)
+        feature = (
+            [
+                feature,
+            ]
+            if isinstance(feature, (int, float))
+            else feature
+        )
+        return np.array(feature).reshape((1, -1))
 
     def implementors(self) -> List[str]:
         """
