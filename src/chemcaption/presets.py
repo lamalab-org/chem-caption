@@ -17,7 +17,7 @@ class SMARTSPreset:
         """Initialize class.
 
         Args:
-            preset (Union[str, Dict[str, List[str]]]): Predefined SMARTS map or user-define map.
+            preset (Union[str, Dict[str, List[str]]]): Predefined SMARTS map or user-defined map.
         """
         self._preset = None
         self.preset = preset
