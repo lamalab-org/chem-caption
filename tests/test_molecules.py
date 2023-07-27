@@ -24,7 +24,7 @@ def test_selfies_to_smiles(test_input: str, expected: str):
     new_molecule = _convert_molecule(molecule, to_kind=to_kind)
     results = new_molecule.representation_string
 
-    return results == expected
+    assert results == expected
 
 
 @pytest.mark.parametrize(
@@ -39,7 +39,7 @@ def test_smiles_to_selfies(test_input: str, expected: str):
     new_molecule = _convert_molecule(molecule, to_kind=to_kind)
     results = new_molecule.representation_string
 
-    return results == expected
+    assert results == expected
 
 
 @pytest.mark.parametrize(
@@ -54,7 +54,7 @@ def test_smiles_to_inchi(test_input: str, expected: str):
     new_molecule = _convert_molecule(molecule, to_kind=to_kind)
     results = new_molecule.representation_string
 
-    return results == expected
+    assert results == expected
 
 
 @pytest.mark.parametrize(
@@ -69,7 +69,7 @@ def test_inchi_to_smiles(test_input: str, expected: str):
     new_molecule = _convert_molecule(molecule, to_kind=to_kind)
     results = new_molecule.representation_string
 
-    return results == expected
+    assert results == expected
 
 
 @pytest.mark.parametrize(
@@ -86,7 +86,7 @@ def test_inchi_to_selfies(test_input: str, expected: str):
     new_molecule = _convert_molecule(molecule, to_kind=to_kind)
     results = new_molecule.representation_string
 
-    return results == expected
+    assert results == expected
 
 
 @pytest.mark.parametrize(
@@ -101,4 +101,4 @@ def test_selfies_to_inchi(test_input: str, expected: str):
     new_molecule = _convert_molecule(molecule, to_kind=to_kind)
     results = new_molecule.representation_string
 
-    return results == expected
+    assert results == expected

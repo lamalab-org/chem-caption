@@ -130,7 +130,8 @@ class AbstractFeaturizer(ABC):
         return np.concatenate([self.featurize(molecule) for molecule in molecules])
 
     def text_featurize(
-        self, molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule],
+        self,
+        molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule],
     ) -> Prompt:
         """Embed features in Prompt instance.
 
@@ -177,10 +178,7 @@ class AbstractFeaturizer(ABC):
                 molecule in `molecules`.
         """
 
-        return [
-            self.text_featurize(molecule=molecule)
-            for molecule in molecules
-        ]
+        return [self.text_featurize(molecule=molecule) for molecule in molecules]
 
     @abstractmethod
     def implementors(self) -> List[str]:

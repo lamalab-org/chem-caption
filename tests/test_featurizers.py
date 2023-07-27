@@ -55,7 +55,7 @@ def test_molar_mass_featurizer(test_input, expected):
 
     results = featurizer.featurize(molecule)
 
-    return np.isclose(results, expected)
+    return np.isclose(results, expected).all()
 
 
 @pytest.mark.parametrize(
@@ -71,7 +71,7 @@ def test_rdkit_adaptor_molar_mass_featurizer(test_input, expected):
 
     results = featurizer.featurize(molecule)
 
-    return np.isclose(results, expected)
+    return np.isclose(results, expected).all()
 
 
 """Test for number of rotatable bonds featurizer (strict)."""
@@ -90,7 +90,7 @@ def test_num_rotable_bond_featurizer(test_input, expected):
 
     results = featurizer.featurize(molecule)
 
-    return results == expected.astype(int)
+    assert results == expected.astype(int)
 
 
 @pytest.mark.parametrize(
@@ -150,7 +150,7 @@ def test_bond_distribution_featurizer(test_input, expected):
 
     results = featurizer.featurize(molecule)
 
-    return np.isclose(results, expected)
+    return np.isclose(results, expected).all()
 
 
 """Test for number of Hydrogen bond acceptors featurizer."""
@@ -171,7 +171,7 @@ def test_num_hacceptor_featurizer(test_input, expected):
 
     results = featurizer.featurize(molecule)
 
-    return results == expected.astype(int)
+    assert results == expected.astype(int)
 
 
 @pytest.mark.parametrize(
@@ -248,7 +248,7 @@ def test_mass_featurizer(test_input, expected):
 
     results = featurizer.featurize(molecule)
 
-    return np.isclose(results, expected)
+    assert np.isclose(results, expected).all()
 
 
 """Test for element mass ratio of contribution featurizer."""
@@ -269,7 +269,7 @@ def test_mass_proportion_featurizer(test_input, expected):
 
     results = featurizer.featurize(molecule)
 
-    return np.isclose(results, expected)
+    assert np.isclose(results, expected).all()
 
 
 """Test for element atom count contribution featurizer."""
@@ -290,7 +290,7 @@ def test_atom_count_featurizer(test_input, expected):
 
     results = featurizer.featurize(molecule)
 
-    return np.isclose(results, expected)
+    return np.isclose(results, expected).all()
 
 
 """Test for element atom count ratio contribution featurizer."""
@@ -311,7 +311,7 @@ def test_atom_count_proportion_featurizer(test_input, expected):
 
     results = featurizer.featurize(molecule)
 
-    return np.isclose(results, expected)
+    return np.isclose(results, expected).all()
 
 
 """Test for SMARTS substructure count featurizer."""
@@ -337,7 +337,7 @@ def test_smarts_count_featurizer(test_input, expected):
 
     results = featurizer.featurize(molecule)
 
-    return np.equal(results, expected)
+    return np.equal(results, expected).all()
 
 
 """Test for SMARTS substructure presence featurizer."""
@@ -363,7 +363,7 @@ def test_smarts_presence_featurizer(test_input, expected):
 
     results = featurizer.featurize(molecule)
 
-    return np.equal(results, expected)
+    assert np.equal(results, expected).all()
 
 
 """Test for Prompt object capabilities."""
@@ -393,4 +393,4 @@ def test_prompt(test_input, template, expected):
         representation_type=test_input["REPR_SYSTEM"],
     )
     result = prompt.__str__()
-    return result == expected
+    assert result == expected
