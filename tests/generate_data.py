@@ -5,7 +5,7 @@
 import pandas as pd
 from rdkit.Chem import Lipinski, rdMolDescriptors
 
-from chemcaption.featurizers import (
+from chemcaption.featurize import (
     ElementCountFeaturizer,
     ElementCountProportionFeaturizer,
     ElementMassFeaturizer,

@@ -6,7 +6,7 @@ import numpy as np
 import pytest
 from rdkit.Chem import Descriptors, rdMolDescriptors
 
-from chemcaption.featurizers import (
+from chemcaption.featurize import (
     BondRotabilityFeaturizer,
     ElementCountFeaturizer,
     ElementCountProportionFeaturizer,

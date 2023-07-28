@@ -87,6 +87,10 @@ class SMILESMolecule(MoleculeBase):
         """Get rdkit molecular representation from SMILES string."""
         return Chem.MolFromSmiles(self.representation_string)
 
+    def get_composition(self) -> str:
+        """Get composition of molecule."""
+        return Chem.rdMolDescriptors.CalcMolFormula(self.rdkit_mol)
+
 
 class SELFIESMolecule(MoleculeBase):
     """Lower level molecular representation for SELFIES string representation."""
