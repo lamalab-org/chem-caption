@@ -64,6 +64,10 @@ class MoleculeBase(ABC):
         """
         return Chem.rdmolops.AddHs(self.rdkit_mol, **kwargs)
 
+    def get_composition(self) -> str:
+        """Get composition of molecule."""
+        return Chem.rdMolDescriptors.CalcMolFormula(self.rdkit_mol)
+
 
 """
 Lower level Molecule classes
@@ -86,10 +90,6 @@ class SMILESMolecule(MoleculeBase):
     def get_rdkit_mol(self) -> Chem.Mol:
         """Get rdkit molecular representation from SMILES string."""
         return Chem.MolFromSmiles(self.representation_string)
-
-    def get_composition(self) -> str:
-        """Get composition of molecule."""
-        return Chem.rdMolDescriptors.CalcMolFormula(self.rdkit_mol)
 
 
 class SELFIESMolecule(MoleculeBase):
