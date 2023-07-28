@@ -5,6 +5,7 @@ from typing import List, Union
 import numpy as np
 from rdkit import Chem
 from rdkit.Chem import AllChem
+
 from chemcaption.featurizers import AbstractFeaturizer
 from chemcaption.molecules import InChIMolecule, SELFIESMolecule, SMILESMolecule
 

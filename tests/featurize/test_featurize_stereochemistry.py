@@ -1,6 +1,7 @@
+import numpy as np
+
 from chemcaption.featurize.stereochemistry import NumChiralCentersFeaturizer
 from chemcaption.molecules import SMILESMolecule
-import numpy as np
 
 
 def test_num_chiral_centers():
