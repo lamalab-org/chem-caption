@@ -64,6 +64,10 @@ class MoleculeBase(ABC):
         """
         return Chem.rdmolops.AddHs(self.rdkit_mol, **kwargs)
 
+    def get_composition(self) -> str:
+        """Get composition of molecule."""
+        return Chem.rdMolDescriptors.CalcMolFormula(self.rdkit_mol)
+
 
 """
 Lower level Molecule classes
