@@ -48,6 +48,7 @@ class SMARTSFeaturizer(AbstractFeaturizer):
 
         if isinstance(names, str):
             try:
+                self.prefix = f"{names}_"
                 names, smarts = SMARTSPreset(names).preset
             except KeyError:
                 raise KeyError(
@@ -61,11 +62,12 @@ class SMARTSFeaturizer(AbstractFeaturizer):
             if len(names) != len(smarts):
                 raise Exception("Both `names` and `smarts` must be lists of the same length.")
 
+            self.prefix = "user_provided_"
+
         self.names = names
         self.smarts = smarts
         self.count = count
 
-        self.prefix = ""
         self.suffix = "_count" if count else "_presence"
         self.label = [self.prefix + element.lower() + self.suffix for element in self.names]
 
@@ -101,7 +103,7 @@ class SMARTSFeaturizer(AbstractFeaturizer):
         """
         if new_preset is not None:
             if isinstance(new_preset, str):
-                names, smarts = SMARTSPreset(preset=new_preset).preset()
+                names, smarts = SMARTSPreset(preset=new_preset).preset
             elif isinstance(new_preset, (tuple, list)):
                 names = new_preset[0]
                 smarts = new_preset[1]
@@ -109,6 +111,7 @@ class SMARTSFeaturizer(AbstractFeaturizer):
                 names = new_preset["names"]
                 smarts = new_preset["smarts"]
 
+            self.prefix = f"{new_preset}_" if isinstance(new_preset, str) else "user_provided_"
             self.names = names
             self.smarts = smarts
 
@@ -123,7 +126,10 @@ class SMARTSFeaturizer(AbstractFeaturizer):
         self, molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]
     ) -> np.array:
         """
-        Return integers representing the frequency or presence of molecular patterns in a molecule.
+        Featurize single molecule instance. Return integer array representing the:
+            - frequency or
+            - presence
+            of molecular patterns in a molecule.
 
         Args:
             molecule (Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]): Molecule representation.
@@ -143,6 +149,17 @@ class SMARTSFeaturizer(AbstractFeaturizer):
             ]
 
         return np.array(results).reshape((1, -1))
+
+    def feature_labels(self) -> List[str]:
+        """Return feature labels.
+
+        Args:
+            None.
+
+        Returns:
+            (List[str]): List of names of extracted features.
+        """
+        return list(map(lambda x: "".join([("_" if c in "[]()-" else c) for c in x]), self.label))
 
     def implementors(self) -> List[str]:
         """

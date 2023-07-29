@@ -13,7 +13,7 @@ from chemcaption.molecules import InChIMolecule, SELFIESMolecule, SMILESMolecule
 # Implemented bond-related featurizers
 
 __all__ = [
-    "NumRotableBondsFeaturizer",
+    "RotableBondCountFeaturizer",
     "BondRotabilityFeaturizer",
 ]
 
@@ -21,7 +21,7 @@ __all__ = [
 """Featurizer for counting rotatable bonds in molecule."""
 
 
-class NumRotableBondsFeaturizer(AbstractFeaturizer):
+class RotableBondCountFeaturizer(AbstractFeaturizer):
     """Obtain number of rotable (i.e., non-terminal, non-hydrogen) bonds in a molecule."""
 
     def __init__(self):

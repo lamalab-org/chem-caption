@@ -974,7 +974,7 @@ AMINO_PROTECTORS = {
         "no2",
         "w,w-bis-benzyloxycarbonyl",
         "w,w-bis-allyloxycarbonyl",
-        "z",
+        "z-small",
         "p-methylbenzyl",
         "p-methoxybenzyl",
         "monomethoxytrityl",
