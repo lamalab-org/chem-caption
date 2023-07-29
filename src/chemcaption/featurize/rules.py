@@ -101,7 +101,7 @@ class LipinskiViolationsFeaturizer(AbstractFeaturizer):
             + self._hydrogen_bond_acceptor_violation(molecule)
         )
 
-        return np.array([num_violations]).reshape((1, -1))
+        return np.array([num_violations])
 
     def implementors(self) -> List[str]:
         """
