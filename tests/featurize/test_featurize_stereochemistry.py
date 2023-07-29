@@ -1,7 +1,18 @@
+# -*- coding: utf-8 -*-
+
+"""Test chemcaption.featurize.stereochemistry classes."""
+
+
 import numpy as np
 
 from chemcaption.featurize.stereochemistry import NumChiralCentersFeaturizer
 from chemcaption.molecules import SMILESMolecule
+
+# Implemented tests for stereochemistry-related classes.
+
+__all__ = [
+    "test_num_chiral_centers",
+]
 
 
 def test_num_chiral_centers():

@@ -4,13 +4,8 @@
 
 import pytest
 
-from tests.conftests import (
-    DISPATCH_MAP,
-    PROPERTY_BANK,
-    generate_prompt_test_data,
-)
-
 from chemcaption.featurize.text import Prompt
+from tests.conftests import DISPATCH_MAP, PROPERTY_BANK, generate_prompt_test_data
 
 KIND = "selfies"
 MOLECULE = DISPATCH_MAP[KIND]
@@ -26,6 +21,7 @@ __all__ = [
 
 
 """Test for Prompt object capabilities."""
+
 
 @pytest.mark.parametrize(
     "test_input, template, expected",

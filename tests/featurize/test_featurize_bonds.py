@@ -2,19 +2,11 @@
 
 """Tests for chemcaption.featurize.bonds subpackage."""
 
-import pytest
 import numpy as np
+import pytest
 
-from chemcaption.featurize.bonds import (
-    RotableBondCountFeaturizer,
-    BondRotabilityFeaturizer,
-)
-
-from tests.conftests import (
-    DISPATCH_MAP,
-    PROPERTY_BANK,
-    extract_molecule_properties,
-)
+from chemcaption.featurize.bonds import BondRotabilityFeaturizer, RotableBondCountFeaturizer
+from tests.conftests import DISPATCH_MAP, PROPERTY_BANK, extract_molecule_properties
 
 KIND = "selfies"
 MOLECULE = DISPATCH_MAP[KIND]
@@ -43,7 +35,7 @@ def test_rotable_bond_count_featurizer(test_input, expected):
 
     results = featurizer.featurize(molecule)
 
-    assert results == expected.astype(int)
+    assert np.equal(results, expected.astype(int)).all()
 
 
 """Test for number of non-rotatable bonds featurizer."""
@@ -64,4 +56,4 @@ def test_bond_distribution_featurizer(test_input, expected):
 
     results = featurizer.featurize(molecule)
 
-    return np.isclose(results, expected).all()
+    assert np.isclose(results, expected).all()
