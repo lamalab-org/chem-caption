@@ -4,6 +4,16 @@
 
 from typing import Dict, List, Union
 
+__all__ = [
+    "SMARTSPreset",
+    "HETEROCYCLIC",
+    "SCAFFOLDS",
+    "RINGS",
+    "AMINO_PROTECTORS",
+    "WARHEADS",
+    "ORGANIC",
+    "SMARTS_MAP",
+]
 
 """Preset class."""
 
@@ -1420,7 +1430,9 @@ ORGANIC = {
     ],
 }
 
-# Preset map
+
+"""Preset map."""
+
 SMARTS_MAP = dict(
     amino=AMINO_PROTECTORS,
     rings=RINGS,

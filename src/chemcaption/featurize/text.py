@@ -1,11 +1,19 @@
 # -*- coding: utf-8 -*-
 
+"""Classes for representing featurizer output as text."""
+
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional, Union
 
 import numpy as np
 
 from chemcaption.featurize.text_utils import inspect_info
+
+# Implemented text-related classes
+
+__all__ = [
+    "Prompt",
+]
 
 
 @dataclass

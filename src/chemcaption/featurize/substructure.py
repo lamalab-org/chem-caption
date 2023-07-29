@@ -2,6 +2,21 @@
 
 """Featurizers describing the presence of substructures in a molecule."""
 
+from typing import Dict, List, Optional, Union
+
+import numpy as np
+import rdkit
+
+from chemcaption.featurize.base import AbstractFeaturizer
+from chemcaption.molecules import InChIMolecule, SELFIESMolecule, SMILESMolecule
+from chemcaption.presets import SMARTSPreset
+
+__all__ = [
+    "SMARTSFeaturizer",
+]
+
+
+"""Featurizer to obtain the presence or count of SMARTS in molecules."""
 
 
 class SMARTSFeaturizer(AbstractFeaturizer):
@@ -40,12 +55,11 @@ class SMARTSFeaturizer(AbstractFeaturizer):
                     Use `heterocyclic`, `rings`, 'amino`, `scaffolds`, `warheads`, or `organic`"
                 )
         else:
-            assert bool(names) == bool(
-                smarts
-            ), "Both `names` and `smarts` must either be or not be provided."
-            assert len(names) == len(
-                smarts
-            ), "Both `names` and `smarts` must be lists of the same length."
+            if bool(names) != bool(smarts):
+                raise Exception("Both `names` and `smarts` must either be or not be provided.")
+
+            if len(names) != len(smarts):
+                raise Exception("Both `names` and `smarts` must be lists of the same length.")
 
         self.names = names
         self.smarts = smarts
@@ -129,3 +143,15 @@ class SMARTSFeaturizer(AbstractFeaturizer):
             ]
 
         return np.array(results).reshape((1, -1))
+
+    def implementors(self) -> List[str]:
+        """
+        Return list of functionality implementors.
+
+        Args:
+            None
+
+        Returns:
+            List[str]: List of implementors.
+        """
+        return ["Benedict Oshomah Emoekabu"]

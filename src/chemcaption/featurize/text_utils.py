@@ -1,7 +1,21 @@
 # -*- coding: utf-8 -*-
 
+"""Utilities for facilitating text featurization."""
+
 from random import shuffle
+
 import numpy as np
+
+# Implemented text-related utilities
+
+__all__ = [
+    "TEXT_TEMPLATES",  # Constant
+    "QA_TEMPLATES",  # Constant
+    "generate_template",  # Utility function
+    "inspect_template",  # Utility function
+    "inspect_info",  # Utility function
+    "generate_info",  # Utility function
+]
 
 
 """Prompt templates"""
@@ -117,6 +131,9 @@ QA_TEMPLATES = dict(
         "What magnitude does the {REPR_SYSTEM} molecule `{REPR_STRING}` have for the {PROPERTY_NAME}?",
     ],
 )
+
+
+"""Utility functions."""
 
 
 def generate_template(template_type: str = "qa", key: str = "single"):
