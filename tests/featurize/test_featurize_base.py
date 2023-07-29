@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""Tests for chemcaption.featurize.substructure subpackage."""
+"""Tests for chemcaption.featurize.base subpackage."""
 
 import numpy as np
 import pytest
