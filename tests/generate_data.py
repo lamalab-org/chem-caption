@@ -5,13 +5,15 @@
 import pandas as pd
 from rdkit.Chem import Lipinski, rdMolDescriptors
 
-from chemcaption.featurize import (
+from chemcaption.featurize.composition import (
     ElementCountFeaturizer,
     ElementCountProportionFeaturizer,
     ElementMassFeaturizer,
     ElementMassProportionFeaturizer,
-    SMARTSFeaturizer,
 )
+
+from chemcaption.featurize.substructure import SMARTSFeaturizer
+
 from chemcaption.molecules import SMILESMolecule
 
 MOLECULAR_BANK = pd.read_json("data/molecular_bank.json", orient="index")
