@@ -6,6 +6,10 @@ from abc import ABC, abstractmethod
 from rdkit import Chem
 from selfies import decoder
 
+# Implemented molecular representation classes.
+
+__all__ = ["MoleculeBase", "SMILESMolecule", "SELFIESMolecule", "InChIMolecule"]
+
 """Abstract classes."""
 
 
@@ -60,7 +64,7 @@ class MoleculeBase(ABC):
             **kwargs (dict): Keyword arguments.
 
         Returns:
-            None
+            (Chem.Mol): RDKit molecular object with explicit hydrogens.
         """
         return Chem.rdmolops.AddHs(self.rdkit_mol, **kwargs)
 

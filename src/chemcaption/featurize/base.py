@@ -1,18 +1,30 @@
+# -*- coding: utf-8 -*-
+
 """Abstract base class and wrappers for featurizers."""
 
 from abc import ABC, abstractmethod
-from typing import Any, Callable, Dict, List, Optional, Sequence, Union
+from typing import Any, Callable, Dict, List, Sequence, Union
 
 import numpy as np
 import rdkit
-from rdkit.Chem import Descriptors, rdMolDescriptors
 
+from chemcaption.featurize.text import Prompt
 from chemcaption.molecules import InChIMolecule, SELFIESMolecule, SMILESMolecule
-from chemcaption.presets import inspect_info
+
+# Implemented abstract and high-level classes
+
+__all__ = [
+    "AbstractFeaturizer",
+    "MultipleFeaturizer",
+    "RDKitAdaptor",
+]
+
+
+"""Abstract class"""
 
 
 class AbstractFeaturizer(ABC):
-    """Base class for lower level Featurizers."""
+    """Abstract base class for lower level Featurizers."""
 
     def __init__(self):
         """Initialize class. Initialize periodic table."""
@@ -90,7 +102,6 @@ class AbstractFeaturizer(ABC):
             (List[Prompt]): List of Prompt instances containing relevant information extracted from each
                 molecule in `molecules`.
         """
-
         return [self.text_featurize(molecule=molecule) for molecule in molecules]
 
     @abstractmethod
@@ -138,3 +149,134 @@ class AbstractFeaturizer(ABC):
     def citations(self):
         """Return citation for this project."""
         return None
+
+
+"""Higher-level featurizers."""
+
+
+class MultipleFeaturizer(AbstractFeaturizer):
+    """A featurizer to combine featurizers."""
+
+    def __init__(self, featurizer_list: List[AbstractFeaturizer]):
+        """Initialize class instance.
+
+        Args:
+            featurizer_list (List[AbstractFeaturizer]): A list of featurizer objects.
+
+        """
+        super().__init__()
+        self.featurizers = featurizer_list
+
+    def featurize(
+        self, molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]
+    ) -> np.array:
+        """
+        Featurize a molecule instance. Returns results from multiple lower-level featurizers.
+
+        Args:
+            molecule (Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]): Molecule representation.
+
+        Returns:
+            features (np.array), array shape [1, num_featurizers]: Array containing features
+                extracted from molecule.
+                `num_featurizers` is the number of featurizers passed to MultipleFeaturizer.
+        """
+        features = [featurizer.featurize(molecule=molecule) for featurizer in self.featurizers]
+
+        return np.concatenate(features, axis=-1)
+
+    def feature_labels(self) -> List[str]:
+        """Return feature labels.
+
+        Args:
+            None
+
+        Returns:
+            List[str]: List of labels for all features extracted by all featurizers.
+        """
+        labels = list()
+        for featurizer in self.featurizers:
+            labels += featurizer.feature_labels()
+
+        return labels
+
+    def fit_on_featurizers(self, featurizer_list: List[AbstractFeaturizer]):
+        """Fit MultipleFeaturizer instance on lower-level featurizers.
+
+        Args:
+            featurizer_list (List[AbstractFeaturizer]): List of lower-level featurizers.
+
+        Returns:
+            self : Instance of self with state updated.
+        """
+        self.featurizers = featurizer_list
+        self.label = self.feature_labels()
+
+        return self
+
+    def implementors(self) -> List[str]:
+        """
+        Return list of functionality implementors.
+
+        Args:
+            None
+
+        Returns:
+            List[str]: List of implementors.
+        """
+        return ["Benedict Oshomah Emoekabu"]
+
+
+class RDKitAdaptor(AbstractFeaturizer):
+    """Higher-level featurizer. Returns specific, lower-level featurizers."""
+
+    def __init__(
+        self, rdkit_function: Callable, labels: List[str], **rdkit_function_kwargs: Dict[str, Any]
+    ):
+        """Initialize class object.
+
+        Args:
+            rdkit_function (Callable): Molecule descriptor-generating function.
+                May be obtained from a chemistry featurization package like `rdkit` or custom written.
+            labels (List[str]): Feature label(s) to assign to extracted feature(s).
+            rdkit_function_kwargs (Dict[str, Any]): Keyword arguments to be parsed by `rdkit_function`.
+        """
+        super().__init__()
+        self.rdkit_function = rdkit_function
+        self._labels = labels
+        self.rdkit_function_kwargs = rdkit_function_kwargs
+
+    def featurize(
+        self,
+        molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule],
+    ) -> np.array:
+        """
+        Featurize single molecule instance. Extract and return features from molecular object.
+
+        Args:
+            molecule (Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]): Molecule representation.
+
+        Returns:
+            (np.array): Array containing extracted features.
+        """
+        feature = self.rdkit_function(molecule.rdkit_mol, **self.rdkit_function_kwargs)
+        feature = (
+            [
+                feature,
+            ]
+            if isinstance(feature, (int, float))
+            else feature
+        )
+        return np.array(feature).reshape((1, -1))
+
+    def implementors(self) -> List[str]:
+        """
+        Return list of functionality implementors.
+
+        Args:
+            None
+
+        Returns:
+            List[str]: List of implementors.
+        """
+        return ["Benedict Oshomah Emoekabu"]

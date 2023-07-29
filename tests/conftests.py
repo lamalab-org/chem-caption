@@ -11,11 +11,12 @@ from rdkit import Chem
 from selfies import encoder
 
 from chemcaption.molecules import InChIMolecule, SELFIESMolecule, SMILESMolecule
-from chemcaption.presets import QA_TEMPLATES, TEXT_TEMPLATES, inspect_info
+from chemcaption.featurize.text_utils import QA_TEMPLATES, TEXT_TEMPLATES, inspect_info
 
 """Test data."""
 
-BASE_DIR = os.getcwd() if "tests" in os.getcwd() else os.path.join(os.getcwd(), "tests")
+BASE_DIR = os.getcwd().split("featurize")[0]
+BASE_DIR = BASE_DIR if "tests" in os.getcwd() else os.path.join(os.getcwd(), "tests")
 
 # Sources of truth
 MOLECULAR_BANK = pd.read_json(

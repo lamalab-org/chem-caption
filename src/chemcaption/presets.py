@@ -4,6 +4,18 @@
 
 from typing import Dict, List, Union
 
+# Implemented SMARTS presets.
+
+__all__ = [
+    "SMARTSPreset",
+    "HETEROCYCLIC",
+    "SCAFFOLDS",
+    "RINGS",
+    "AMINO_PROTECTORS",
+    "WARHEADS",
+    "ORGANIC",
+    "SMARTS_MAP",
+]
 
 """Preset class."""
 
@@ -964,7 +976,7 @@ AMINO_PROTECTORS = {
         "no2",
         "w,w-bis-benzyloxycarbonyl",
         "w,w-bis-allyloxycarbonyl",
-        "z",
+        "z-small",
         "p-methylbenzyl",
         "p-methoxybenzyl",
         "monomethoxytrityl",
@@ -1420,7 +1432,9 @@ ORGANIC = {
     ],
 }
 
-# Preset map
+
+"""Preset map."""
+
 SMARTS_MAP = dict(
     amino=AMINO_PROTECTORS,
     rings=RINGS,
