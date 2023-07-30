@@ -6,6 +6,8 @@ from abc import ABC, abstractmethod
 from typing import Any, Callable, Dict, List, Sequence, Union
 
 import numpy as np
+from scipy.spatial import distance_matrix
+
 import rdkit
 
 from chemcaption.featurize.text import Prompt
@@ -299,6 +301,7 @@ class Comparator(MultipleFeaturizer):
         self,
         featurizer: AbstractFeaturizer,
         molecules: List[Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]],
+        epsilon: float = 0.,
     ) -> np.array:
         """Return results of molecule feature comparison between molecule instance pairs.
 
@@ -306,23 +309,20 @@ class Comparator(MultipleFeaturizer):
             featurizer (AbstractFeaturizer): Featurizer to compare on.
             molecules (List[Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]]):
                 List containing a pair of molecule instances.
+            epsilon (float): Small float. Precision bound for numerical inconsistencies.
 
         Returns:
             (np.array): Comparison results. 1 if all extracted features are equal, else 0.
         """
         batch_results = featurizer.featurize_many(molecules=molecules)
-        singular_result = featurizer.featurize(molecule=molecules[0])
 
-        compare_ = np.concatenate([singular_result for _ in range(len(molecules))], axis=0)
-        if batch_results.dtype in [np.int32, np.int64]:
-            results = np.equal(batch_results, compare_).all().astype(int)
-        else:
-            results = np.isclose(batch_results, compare_).all().astype(int)
+        distance_results = distance_matrix(batch_results, batch_results)
 
-        return results.reshape((1, -1))
+        return (np.mean(distance_results) <= epsilon).astype(int).reshape((1, -1))
 
     def featurize(
-        self, molecules: List[Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]]
+        self, molecules: List[Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]],
+        epsilon: float = .0,
     ) -> np.array:
         """
         Featurize multiple molecule instances.
@@ -331,13 +331,14 @@ class Comparator(MultipleFeaturizer):
 
         Args:
             molecules (List[Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]]): Molecule instances to be compared.
+            epsilon (float): Small float. Precision bound for numerical inconsistencies.
 
         Returns:
             (np.array): Array containing extracted features with shape `(1, N)`,
                 where `N` is the number of featurizers provided at initialization time.
         """
         results = [
-            self._compare_on_featurizer(featurizer=featurizer, molecules=molecules)
+            self._compare_on_featurizer(featurizer=featurizer, molecules=molecules, epsilon=epsilon)
             for featurizer in self.featurizers
         ]
         return np.concatenate(results, axis=-1)

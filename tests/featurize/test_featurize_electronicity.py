@@ -2,6 +2,7 @@
 
 """Tests for chemcaption.featurize.electronicity subpackage."""
 
+import numpy as np
 import pytest
 
 from chemcaption.featurize.electronicity import HAcceptorCountFeaturizer, HDonorCountFeaturizer
@@ -36,7 +37,7 @@ def test_num_hacceptor_featurizer(test_input, expected):
 
     results = featurizer.featurize(molecule)
 
-    assert results == expected.astype(int)
+    assert np.equal(results, expected).all()
 
 
 """Test for number of Hydrogen bond donors featurizer."""
@@ -55,4 +56,4 @@ def test_num_hdonor_featurizer(test_input, expected):
 
     results = featurizer.featurize(molecule)
 
-    return results == expected.astype(int)
+    assert np.equal(results, expected).all()
