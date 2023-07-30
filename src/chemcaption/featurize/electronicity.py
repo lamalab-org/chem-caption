@@ -7,22 +7,23 @@ from typing import List, Union
 import numpy as np
 from rdkit.Chem import Descriptors, rdMolDescriptors
 
-from chemcaption.featurize.base import AbstractFeaturizer, Comparator
+from chemcaption.featurize.base import AbstractFeaturizer
 from chemcaption.molecules import InChIMolecule, SELFIESMolecule, SMILESMolecule
 
 # Implemented proton-, electron- and charge-related featurizers
 
 __all__ = [
-    "HAcceptorCountFeaturizer",
-    "HDonorCountFeaturizer",
+    "HydrogenAcceptorCountFeaturizer",
+    "HydrogenDonorCountFeaturizer",
     "ValenceElectronCountFeaturizer",
     "IsoelectronicDifferenceFeaturizer",
     "IsoelectronicityFeaturizer",
-    "IsoelectronicComparator",
 ]
 
 
-class HAcceptorCountFeaturizer(AbstractFeaturizer):
+"""Featurizer to extract hydrogen acceptor count from molecules."""
+
+class HydrogenAcceptorCountFeaturizer(AbstractFeaturizer):
     """Obtain number of Hydrogen bond acceptors in a molecule."""
 
     def __init__(self):
@@ -57,7 +58,9 @@ class HAcceptorCountFeaturizer(AbstractFeaturizer):
         return ["Benedict Oshomah Emoekabu"]
 
 
-class HDonorCountFeaturizer(AbstractFeaturizer):
+"""Featurizer to extract hydrogen donor count from molecules."""
+
+class HydrogenDonorCountFeaturizer(AbstractFeaturizer):
     """Obtain number of Hydrogen bond donors in a molecule."""
 
     def __init__(self):
@@ -93,7 +96,6 @@ class HDonorCountFeaturizer(AbstractFeaturizer):
 
 
 """Featurizer to obtain molecular valence electron count"""
-
 
 class ValenceElectronCountFeaturizer(AbstractFeaturizer):
     """A featurizer for molecular electronicity-based comparison."""
@@ -137,7 +139,6 @@ class ValenceElectronCountFeaturizer(AbstractFeaturizer):
 
 
 """Featurizer to compare molecules for isoelectronic difference"""
-
 
 class IsoelectronicDifferenceFeaturizer(AbstractFeaturizer):
     """A featurizer for molecular electronicity-based comparison."""
@@ -186,7 +187,6 @@ class IsoelectronicDifferenceFeaturizer(AbstractFeaturizer):
 
 """Featurizer to compare molecules for isoelectronicity"""
 
-
 class IsoelectronicityFeaturizer(AbstractFeaturizer):
     """A featurizer for molecular electronicity-based comparison."""
 
@@ -220,37 +220,6 @@ class IsoelectronicityFeaturizer(AbstractFeaturizer):
         return np.array(
             [num_reference_valence_electrons == num_valence_electrons], dtype=int
         ).reshape((1, -1))
-
-    def implementors(self) -> List[str]:
-        """
-        Return list of functionality implementors.
-
-        Args:
-            None
-
-        Returns:
-            List[str]: List of implementors.
-        """
-        return ["Benedict Oshomah Emoekabu"]
-
-
-class IsoelectronicComparator(Comparator):
-    """Compare molecular instances for isoelectronicity."""
-
-    def __init__(self):
-        """Initialize instance."""
-        super().__init__(featurizers=[ValenceElectronCountFeaturizer()])
-
-    def feature_labels(self) -> List[str]:
-        """Return feature labels.
-
-        Args:
-            None
-
-        Returns:
-            List[str]: List of labels for all features extracted.
-        """
-        return ["isoelectronic_similarity"]
 
     def implementors(self) -> List[str]:
         """

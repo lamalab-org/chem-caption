@@ -13,7 +13,6 @@ from chemcaption.featurize.composition import (
 )
 from chemcaption.featurize.electronicity import ValenceElectronCountFeaturizer
 from chemcaption.featurize.rules import LipinskiViolationsFeaturizer
-
 from chemcaption.featurize.substructure import SMARTSFeaturizer
 from chemcaption.molecules import SMILESMolecule
 

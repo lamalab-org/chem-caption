@@ -19,6 +19,7 @@ __all__ = [
     "ElementMassProportionFeaturizer",
     "ElementCountFeaturizer",
     "ElementCountProportionFeaturizer",
+    "AtomCountFeaturizer",
     "DegreeOfUnsaturationFeaturizer",
 ]
 
@@ -365,6 +366,42 @@ class ElementCountProportionFeaturizer(ElementCountFeaturizer):
         """
         num_atoms = len(molecule.get_atoms(hydrogen=True))
         return np.array(self._get_profile(molecule=molecule)).reshape((1, -1)) / num_atoms
+
+    def implementors(self) -> List[str]:
+        """
+        Return list of functionality implementors.
+
+        Args:
+            None
+
+        Returns:
+            List[str]: List of implementors.
+        """
+        return ["Benedict Oshomah Emoekabu"]
+
+
+class AtomCountFeaturizer(ElementCountFeaturizer):
+    """Get the number of atoms in a molecule."""
+
+    def __init__(self):
+        """Initialize instance."""
+        super().__init__()
+
+        self.label = ["num_atoms"]
+
+    def featurize(
+        self, molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]
+    ) -> np.array:
+        """
+        Featurize single molecule instance. Get the atom count proportion for elements in a molecule.
+
+        Args:
+            molecule (Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]): Molecular representation.
+
+        Returns:
+            np.array: Number of atoms in `molecule`.
+        """
+        return np.array([len(molecule.get_atoms(hydrogen=True))]).reshape((1, -1))
 
     def implementors(self) -> List[str]:
         """

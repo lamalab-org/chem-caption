@@ -6,9 +6,8 @@ from abc import ABC, abstractmethod
 from typing import Any, Callable, Dict, List, Sequence, Union
 
 import numpy as np
-from scipy.spatial import distance_matrix
-
 import rdkit
+from scipy.spatial import distance_matrix
 
 from chemcaption.featurize.text import Prompt
 from chemcaption.molecules import InChIMolecule, SELFIESMolecule, SMILESMolecule
@@ -20,6 +19,7 @@ __all__ = [
     "MultipleFeaturizer",  # Combines multiple featurizers.
     "RDKitAdaptor",  # Higher-level featurizer. Returns lower-level featurizer instances.
     "Comparator",  # Class for comparing featurizer results amongst molecules.
+    "MultipleComparator",  # Higher-level Comparator. Returns lower-level Comparator instances.
 ]
 
 
@@ -288,7 +288,7 @@ class RDKitAdaptor(AbstractFeaturizer):
 class Comparator(MultipleFeaturizer):
     """Compare molecules based on featurizer outputs."""
 
-    def __init__(self, featurizers: List[AbstractFeaturizer]):
+    def __init__(self, featurizers: List[AbstractFeaturizer] = None):
         """Instantiate class.
 
         Args:
@@ -301,7 +301,7 @@ class Comparator(MultipleFeaturizer):
         self,
         featurizer: AbstractFeaturizer,
         molecules: List[Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]],
-        epsilon: float = 0.,
+        epsilon: float = 0.0,
     ) -> np.array:
         """Return results of molecule feature comparison between molecule instance pairs.
 
@@ -321,8 +321,9 @@ class Comparator(MultipleFeaturizer):
         return (np.mean(distance_results) <= epsilon).astype(int).reshape((1, -1))
 
     def featurize(
-        self, molecules: List[Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]],
-        epsilon: float = .0,
+        self,
+        molecules: List[Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]],
+        epsilon: float = 0.0,
     ) -> np.array:
         """
         Featurize multiple molecule instances.
@@ -366,8 +367,9 @@ class Comparator(MultipleFeaturizer):
         return labels
 
     def compare(
-        self, molecules: List[Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]],
-        epsilon: float = 0.,
+        self,
+        molecules: List[Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]],
+        epsilon: float = 0.0,
     ) -> np.array:
         """
         Compare features from multiple molecular instances. 1 if all molecules are similar, else 0.
@@ -381,6 +383,54 @@ class Comparator(MultipleFeaturizer):
                 where `N` is the number of featurizers provided at initialization time.
         """
         return self.featurize(molecules=molecules, epsilon=epsilon)
+
+    def implementors(self) -> List[str]:
+        """
+        Return list of functionality implementors.
+
+        Args:
+            None
+
+        Returns:
+            List[str]: List of implementors.
+        """
+        return ["Benedict Oshomah Emoekabu"]
+
+
+class MultipleComparator(Comparator):
+    """A Comparator to combine Comparators."""
+
+    def __init__(self, comparators: List[Comparator]):
+        """Instantiate class.
+
+        Args:
+            comparators (List[Comparator]): List of Comparator instances.
+        """
+        super().__init__()
+        self.comparators = comparators
+
+    def featurize(
+        self,
+        molecules: List[Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]],
+        epsilon: float = 0.0,
+    ) -> np.array:
+        """
+        Compare features from multiple molecular Comparators. 1 if all molecules are similar, else 0.
+
+        Args:
+            molecules (List[Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]]): Molecule instances to be compared.
+            epsilon (float): Small float. Precision bound for numerical inconsistencies. Defaults to 0.0.
+
+        Returns:
+            (np.array): Array containing comparison results with shape `(1, N)`,
+                where `N` is the number of Comparators provided at initialization time.
+        """
+        features = [
+            comparator.featurize(molecules=molecules, epsilon=epsilon)
+            for comparator in self.comparators
+        ]
+
+        return np.concatenate(features, axis=-1)
 
     def implementors(self) -> List[str]:
         """
