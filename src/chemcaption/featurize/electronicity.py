@@ -18,6 +18,7 @@ __all__ = [
     "ValenceElectronCountFeaturizer",
     "IsoelectronicDifferenceFeaturizer",
     "IsoelectronicityFeaturizer",
+    "IsoelectronicComparator",
 ]
 
 
@@ -233,45 +234,32 @@ class IsoelectronicityFeaturizer(AbstractFeaturizer):
         return ["Benedict Oshomah Emoekabu"]
 
 
-class IsoelectricComparator(Comparator):
-    """Compare molecular instances for isoelectronic properties."""
+class IsoelectronicComparator(Comparator):
+    """Compare molecular instances for isoelectronicity."""
 
     def __init__(self):
         """Initialize instance."""
         super().__init__(featurizers=[ValenceElectronCountFeaturizer()])
 
-    def featurize(
-        self, molecules: List[Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]]
-    ) -> np.array:
-        """
-        Extract and return features from molecular object.
+    def feature_labels(self) -> List[str]:
+        """Return feature labels.
 
         Args:
-            molecules (List[Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]]): Molecule representation.
+            None
 
         Returns:
-            (np.array): Array containing int representation of isoelectronic status between
-                molecular instances in `molecules`.
+            List[str]: List of labels for all features extracted.
         """
-        return super().featurize(molecules=molecules)
+        return ["isoelectronic_similarity"]
 
+    def implementors(self) -> List[str]:
+        """
+        Return list of functionality implementors.
 
-if __name__ == "__main__":
-    mol1 = SELFIESMolecule("CC(=O)NCCCOc1cccc(CN2CCCCC2)c1")
-    mol2 = SELFIESMolecule(
-        "[C][C][Branch1][C][C][N][C][C][Branch1][C][O][C][O][C][=C][C][=C][C][=C][C][=C][C][=C][Ring1][#Branch2][Ring1][=Branch1].[ClH0]"
-    )
+        Args:
+            None
 
-    feat1 = ValenceElectronCountFeaturizer()
-    feat2 = IsoelectronicityFeaturizer(mol1)
-
-    feat3 = IsoelectricComparator()
-
-    print(feat1.featurize(mol1))
-    print(feat1.featurize(mol2))
-
-    print(feat2.featurize(mol2))
-    print(feat2.featurize(mol2))
-
-    print(feat3.compare([mol1, mol1]))
-    print(feat3.feature_labels())
+        Returns:
+            List[str]: List of implementors.
+        """
+        return ["Benedict Oshomah Emoekabu"]

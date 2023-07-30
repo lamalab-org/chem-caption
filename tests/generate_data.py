@@ -11,6 +11,7 @@ from chemcaption.featurize.composition import (
     ElementMassFeaturizer,
     ElementMassProportionFeaturizer,
 )
+from chemcaption.featurize.electronicity import ValenceElectronCountFeaturizer
 from chemcaption.featurize.substructure import SMARTSFeaturizer
 from chemcaption.molecules import SMILESMolecule
 
@@ -43,6 +44,7 @@ def generate_info(string: str):
         "non_rotable_proportion_strict",
         "num_hydrogen_bond_donors",
         "num_hydrogen_bond_acceptors",
+        "num_valence_electrons",
     ]
     preset = [
         "Carbon",
@@ -62,6 +64,8 @@ def generate_info(string: str):
 
     count_featurizer = ElementCountFeaturizer(preset=preset)
     count_ratio_featurizer = ElementCountProportionFeaturizer(preset=preset)
+
+    valence_featurizer = ValenceElectronCountFeaturizer()
 
     mol = SMILESMolecule(string)
 
@@ -87,6 +91,8 @@ def generate_info(string: str):
     count_ratios = count_ratio_featurizer.featurize(molecule=mol).reshape((-1,)).tolist()
     keys += count_ratio_featurizer.feature_labels()
 
+    valence_count = valence_featurizer.featurize(molecule=mol).item()
+
     values = [
         string,
         num_bonds,
@@ -100,6 +106,7 @@ def generate_info(string: str):
         non_rotable_strict / num_bonds,
         num_donors,
         num_acceptors,
+        valence_count,
     ]
     values += masses
     values += mass_ratios
