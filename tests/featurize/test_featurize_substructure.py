@@ -2,18 +2,12 @@
 
 """Tests for chemcaption.featurize.substructure subpackage."""
 
-import pytest
 import numpy as np
+import pytest
 
 from chemcaption.featurize.substructure import SMARTSFeaturizer
-
-from tests.conftests import (
-    DISPATCH_MAP,
-    PROPERTY_BANK,
-    extract_molecule_properties,
-)
-
 from chemcaption.presets import SMARTS_MAP
+from tests.conftests import DISPATCH_MAP, PROPERTY_BANK, extract_molecule_properties
 
 KIND = "selfies"
 MOLECULE = DISPATCH_MAP[KIND]
@@ -32,6 +26,7 @@ __all__ = [
 
 """Test for SMARTS substructure count featurizer."""
 
+
 @pytest.mark.parametrize(
     "test_input, expected",
     extract_molecule_properties(
@@ -39,7 +34,10 @@ __all__ = [
         representation_name=KIND,
         property=list(
             map(
-                lambda x: SMARTS_PRESET + "_" + "".join([("_" if c in "[]()-" else c) for c in x]).lower() + "_count",
+                lambda x: SMARTS_PRESET
+                + "_"
+                + "".join([("_" if c in "[]()-" else c) for c in x]).lower()
+                + "_count",
                 PRESET_BASE_LABELS,
             )
         ),
@@ -65,7 +63,10 @@ def test_smarts_count_featurizer(test_input, expected):
         representation_name=KIND,
         property=list(
             map(
-                lambda x: SMARTS_PRESET + "_" + "".join([("_" if c in "[]()-" else c) for c in x]).lower() + "_presence",
+                lambda x: SMARTS_PRESET
+                + "_"
+                + "".join([("_" if c in "[]()-" else c) for c in x]).lower()
+                + "_presence",
                 PRESET_BASE_LABELS,
             )
         ),

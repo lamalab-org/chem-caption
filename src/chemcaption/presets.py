@@ -4,6 +4,8 @@
 
 from typing import Dict, List, Union
 
+# Implemented SMARTS presets.
+
 __all__ = [
     "SMARTSPreset",
     "HETEROCYCLIC",

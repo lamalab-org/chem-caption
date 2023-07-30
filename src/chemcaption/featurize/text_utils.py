@@ -17,7 +17,6 @@ __all__ = [
     "generate_info",  # Utility function
 ]
 
-
 """Prompt templates"""
 
 TEXT_TEMPLATES = dict(
@@ -281,4 +280,5 @@ def generate_info(info_cardinality: str = "single"):
             PRECISION=2,
             PRECISION_TYPE="decimal",
         )
+
     return info
