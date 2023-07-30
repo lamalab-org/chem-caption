@@ -2,25 +2,19 @@
 
 """Tests for chemcaption.featurize.composition."""
 
+import numpy as np
 import pytest
 
-import numpy as np
-
 from chemcaption.featurize.composition import (
-    MolecularMassFeaturizer,
-    ElementMassFeaturizer,
-    ElementMassProportionFeaturizer,
+    DegreeOfUnsaturationFeaturizer,
     ElementCountFeaturizer,
     ElementCountProportionFeaturizer,
-    DegreeOfUnsaturationFeaturizer,
+    ElementMassFeaturizer,
+    ElementMassProportionFeaturizer,
+    MolecularMassFeaturizer,
 )
-from chemcaption.molecules import SMILESMolecule, SELFIESMolecule, InChIMolecule
-
-from tests.conftests import (
-    DISPATCH_MAP,
-    PROPERTY_BANK,
-    extract_molecule_properties,
-)
+from chemcaption.molecules import InChIMolecule, SELFIESMolecule, SMILESMolecule
+from tests.conftests import DISPATCH_MAP, PROPERTY_BANK, extract_molecule_properties
 
 KIND = "selfies"
 MOLECULE = DISPATCH_MAP[KIND]
@@ -37,7 +31,7 @@ __all__ = [
     "test_atom_count_featurizer",
     "test_atom_count_proportion_featurizer",
     "test_get_degree_of_unsaturation_for_mol",
-    "test_degree_of_unsaturation_featurizer"
+    "test_degree_of_unsaturation_featurizer",
 ]
 
 """Test for molecular mass featurizer."""

@@ -10,8 +10,8 @@ import pandas as pd
 from rdkit import Chem
 from selfies import encoder
 
-from chemcaption.molecules import InChIMolecule, SELFIESMolecule, SMILESMolecule
 from chemcaption.featurize.text_utils import QA_TEMPLATES, TEXT_TEMPLATES, inspect_info
+from chemcaption.molecules import InChIMolecule, SELFIESMolecule, SMILESMolecule
 
 """Test data."""
 

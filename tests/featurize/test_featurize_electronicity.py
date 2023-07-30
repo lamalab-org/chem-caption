@@ -4,16 +4,8 @@
 
 import pytest
 
-from chemcaption.featurize.electronicity import (
-    HAcceptorCountFeaturizer,
-    HDonorCountFeaturizer,
-)
-
-from tests.conftests import (
-    DISPATCH_MAP,
-    PROPERTY_BANK,
-    extract_molecule_properties,
-)
+from chemcaption.featurize.electronicity import HAcceptorCountFeaturizer, HDonorCountFeaturizer
+from tests.conftests import DISPATCH_MAP, PROPERTY_BANK, extract_molecule_properties
 
 KIND = "selfies"
 MOLECULE = DISPATCH_MAP[KIND]

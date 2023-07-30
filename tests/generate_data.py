@@ -11,9 +11,7 @@ from chemcaption.featurize.composition import (
     ElementMassFeaturizer,
     ElementMassProportionFeaturizer,
 )
-
 from chemcaption.featurize.substructure import SMARTSFeaturizer
-
 from chemcaption.molecules import SMILESMolecule
 
 MOLECULAR_BANK = pd.read_json("data/molecular_bank.json", orient="index")

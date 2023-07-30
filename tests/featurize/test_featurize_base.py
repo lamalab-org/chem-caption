@@ -2,21 +2,12 @@
 
 """Tests for chemcaption.featurize.substructure subpackage."""
 
-import pytest
 import numpy as np
+import pytest
+from rdkit.Chem import Descriptors, rdMolDescriptors
 
-from rdkit.Chem import rdMolDescriptors, Descriptors
-
-from chemcaption.featurize.base import (
-    MultipleFeaturizer,
-    RDKitAdaptor,
-)
-
-from tests.conftests import (
-    DISPATCH_MAP,
-    PROPERTY_BANK,
-    extract_molecule_properties,
-)
+from chemcaption.featurize.base import MultipleFeaturizer, RDKitAdaptor
+from tests.conftests import DISPATCH_MAP, PROPERTY_BANK, extract_molecule_properties
 
 KIND = "selfies"
 MOLECULE = DISPATCH_MAP[KIND]
@@ -28,11 +19,12 @@ __all__ = [
     "test_rdkit_adaptor_num_hacceptor_featurizer",
     "test_rdkit_adaptor_num_hdonor_featurizer",
     "test_rdkit_adaptor_strict_num_rotable_bond_featurizer",
-    "test_rdkit_adaptor_non_strict_num_rotable_bond_featurizer"
+    "test_rdkit_adaptor_non_strict_num_rotable_bond_featurizer",
 ]
 
 
 """Test for molecular mass featurizer via higher-level RDKitAdaptor."""
+
 
 @pytest.mark.parametrize(
     "test_input, expected",
@@ -51,6 +43,7 @@ def test_rdkit_adaptor_molar_mass_featurizer(test_input, expected):
 
 
 """Test for number of Hydrogen bond acceptors via higher-level RDKitAdaptor."""
+
 
 @pytest.mark.parametrize(
     "test_input, expected",
@@ -72,6 +65,7 @@ def test_rdkit_adaptor_num_hacceptor_featurizer(test_input, expected):
 
 """Test for number of Hydrogen bond donors via higher-level RDKitAdaptor."""
 
+
 @pytest.mark.parametrize(
     "test_input, expected",
     extract_molecule_properties(
@@ -88,10 +82,12 @@ def test_rdkit_adaptor_num_hdonor_featurizer(test_input, expected):
 
     results = featurizer.featurize(molecule)
 
-    assert (results == expected.astype(int))
+    assert results == expected.astype(int)
 
 
 """Test for number of rotatable bonds featurizer (strict) via higher-level RDKitAdaptor."""
+
+
 @pytest.mark.parametrize(
     "test_input, expected",
     extract_molecule_properties(
@@ -111,6 +107,7 @@ def test_rdkit_adaptor_strict_num_rotable_bond_featurizer(test_input, expected):
 
 
 """Test for number of rotatable bonds featurizer (non-strict) via higher-level RDKitAdaptor."""
+
 
 @pytest.mark.parametrize(
     "test_input, expected",
