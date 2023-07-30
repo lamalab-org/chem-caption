@@ -309,7 +309,7 @@ class Comparator(MultipleFeaturizer):
             featurizer (AbstractFeaturizer): Featurizer to compare on.
             molecules (List[Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]]):
                 List containing a pair of molecule instances.
-            epsilon (float): Small float. Precision bound for numerical inconsistencies.
+            epsilon (float): Small float. Precision bound for numerical inconsistencies. Defaults to 0.0.
 
         Returns:
             (np.array): Comparison results. 1 if all extracted features are equal, else 0.
@@ -331,7 +331,7 @@ class Comparator(MultipleFeaturizer):
 
         Args:
             molecules (List[Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]]): Molecule instances to be compared.
-            epsilon (float): Small float. Precision bound for numerical inconsistencies.
+            epsilon (float): Small float. Precision bound for numerical inconsistencies. Defaults to 0.0.
 
         Returns:
             (np.array): Array containing extracted features with shape `(1, N)`,
@@ -366,19 +366,21 @@ class Comparator(MultipleFeaturizer):
         return labels
 
     def compare(
-        self, molecules: List[Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]]
+        self, molecules: List[Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]],
+        epsilon: float = 0.,
     ) -> np.array:
         """
         Compare features from multiple molecular instances. 1 if all molecules are similar, else 0.
 
         Args:
             molecules (List[Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]]): Molecule instances to be compared.
+            epsilon (float): Small float. Precision bound for numerical inconsistencies. Defaults to 0.0.
 
         Returns:
             (np.array): Array containing comparison results with shape `(1, N)`,
                 where `N` is the number of featurizers provided at initialization time.
         """
-        return self.featurize(molecules=molecules)
+        return self.featurize(molecules=molecules, epsilon=epsilon)
 
     def implementors(self) -> List[str]:
         """
