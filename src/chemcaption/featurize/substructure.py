@@ -127,6 +127,7 @@ class SMARTSFeaturizer(AbstractFeaturizer):
     ) -> np.array:
         """
         Featurize single molecule instance. Return integer array representing the:
+
             - frequency or
             - presence
             of molecular patterns in a molecule.

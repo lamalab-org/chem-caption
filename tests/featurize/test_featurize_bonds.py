@@ -35,7 +35,7 @@ def test_rotable_bond_count_featurizer(test_input, expected):
 
     results = featurizer.featurize(molecule)
 
-    assert results == expected.astype(int)
+    assert np.equal(results, expected.astype(int)).all()
 
 
 """Test for number of non-rotatable bonds featurizer."""
@@ -56,4 +56,4 @@ def test_bond_distribution_featurizer(test_input, expected):
 
     results = featurizer.featurize(molecule)
 
-    return np.isclose(results, expected).all()
+    assert np.isclose(results, expected).all()

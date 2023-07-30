@@ -139,6 +139,7 @@ def test_atom_count_proportion_featurizer(test_input, expected):
 
 def test_get_degree_of_unsaturation_for_mol():
     """Make sure the degree of unsaturation is calculated correctly.
+
     See some examples here
     https://www.masterorganicchemistry.com/2016/08/26/degrees-of-unsaturation-index-of-hydrogen-deficiency/
     """

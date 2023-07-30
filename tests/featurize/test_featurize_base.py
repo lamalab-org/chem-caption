@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""Tests for chemcaption.featurize.substructure subpackage."""
+"""Tests for chemcaption.featurize.base subpackage."""
 
 import numpy as np
 import pytest
@@ -34,7 +34,7 @@ __all__ = [
 )
 def test_rdkit_adaptor_molar_mass_featurizer(test_input, expected):
     """Test RDKitAdaptor as MolecularMassFeaturizer."""
-    featurizer = RDKitAdaptor(Descriptors.MolWt, "molecular_mass", **{})
+    featurizer = RDKitAdaptor(Descriptors.MolWt, ["molecular_mass"], **{})
     molecule = MOLECULE(test_input)
 
     results = featurizer.featurize(molecule)
@@ -55,12 +55,12 @@ def test_rdkit_adaptor_molar_mass_featurizer(test_input, expected):
 )
 def test_rdkit_adaptor_num_hacceptor_featurizer(test_input, expected):
     """Test RDKitAdaptor as HAcceptorCountFeaturizer."""
-    featurizer = RDKitAdaptor(Descriptors.NumHAcceptors, "num_hydrogen_bond_acceptors")
+    featurizer = RDKitAdaptor(Descriptors.NumHAcceptors, ["num_hydrogen_bond_acceptors"])
     molecule = MOLECULE(test_input)
 
     results = featurizer.featurize(molecule)
 
-    assert results == expected.astype(int)
+    assert np.equal(results, expected.astype(int)).all()
 
 
 """Test for number of Hydrogen bond donors via higher-level RDKitAdaptor."""
@@ -76,13 +76,13 @@ def test_rdkit_adaptor_num_hdonor_featurizer(test_input, expected):
     """Test RDKitAdaptor as HDonorCountFeaturizer."""
     featurizer = RDKitAdaptor(
         Descriptors.NumHDonors,
-        "num_hydrogen_bond_donors",
+        ["num_hydrogen_bond_donors"],
     )
     molecule = MOLECULE(test_input)
 
     results = featurizer.featurize(molecule)
 
-    assert results == expected.astype(int)
+    assert np.equal(results, expected.astype(int)).all()
 
 
 """Test for number of rotatable bonds featurizer (strict) via higher-level RDKitAdaptor."""
@@ -97,13 +97,13 @@ def test_rdkit_adaptor_num_hdonor_featurizer(test_input, expected):
 def test_rdkit_adaptor_strict_num_rotable_bond_featurizer(test_input, expected):
     """Test RDKitAdaptor as NumRotableBondsFeaturizer (strict)."""
     featurizer = RDKitAdaptor(
-        rdMolDescriptors.CalcNumRotatableBonds, "num_rotable_bonds_strict", **{"strict": True}
+        rdMolDescriptors.CalcNumRotatableBonds, ["num_rotable_bonds_strict"], **{"strict": True}
     )
     molecule = MOLECULE(test_input)
 
     results = featurizer.featurize(molecule)
 
-    assert results == expected.astype(int)
+    assert np.equal(results, expected.astype(int)).all()
 
 
 """Test for number of rotatable bonds featurizer (non-strict) via higher-level RDKitAdaptor."""
@@ -118,10 +118,10 @@ def test_rdkit_adaptor_strict_num_rotable_bond_featurizer(test_input, expected):
 def test_rdkit_adaptor_non_strict_num_rotable_bond_featurizer(test_input, expected):
     """Test RDKitAdaptor as NumRotableBondsFeaturizer (non-strict)."""
     featurizer = RDKitAdaptor(
-        rdMolDescriptors.CalcNumRotatableBonds, "num_rotable_bonds", **{"strict": False}
+        rdMolDescriptors.CalcNumRotatableBonds, ["num_rotable_bonds"], **{"strict": False}
     )
     molecule = MOLECULE(test_input)
 
     results = featurizer.featurize(molecule)
 
-    assert results == expected.astype(int)
+    assert np.equal(results, expected.astype(int)).all()

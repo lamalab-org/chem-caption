@@ -1,4 +1,7 @@
+# -*- coding: utf-8 -*-
+
 """Test symmetry featurizers."""
+
 import numpy as np
 
 from chemcaption.featurize.symmetry import PointGroupFeaturizer, RotationalSymmetryNumber

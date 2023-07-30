@@ -12,6 +12,8 @@ from chemcaption.featurize.composition import (
     ElementMassProportionFeaturizer,
 )
 from chemcaption.featurize.electronicity import ValenceElectronCountFeaturizer
+from chemcaption.featurize.rules import LipinskiViolationsFeaturizer
+
 from chemcaption.featurize.substructure import SMARTSFeaturizer
 from chemcaption.molecules import SMILESMolecule
 
@@ -45,6 +47,7 @@ def generate_info(string: str):
         "num_hydrogen_bond_donors",
         "num_hydrogen_bond_acceptors",
         "num_valence_electrons",
+        "num_lipinski_violations",
     ]
     preset = [
         "Carbon",
@@ -64,6 +67,7 @@ def generate_info(string: str):
 
     count_featurizer = ElementCountFeaturizer(preset=preset)
     count_ratio_featurizer = ElementCountProportionFeaturizer(preset=preset)
+    lipinski_featurizer = LipinskiViolationsFeaturizer()
 
     valence_featurizer = ValenceElectronCountFeaturizer()
 
@@ -78,6 +82,8 @@ def generate_info(string: str):
 
     num_donors = Lipinski.NumHDonors(mol.rdkit_mol)
     num_acceptors = Lipinski.NumHAcceptors(mol.rdkit_mol)
+
+    num_lipinski_violations = lipinski_featurizer.featurize(mol).item()
 
     masses = mass_featurizer.featurize(molecule=mol).reshape((-1,)).tolist()
     keys += mass_featurizer.feature_labels()
@@ -107,6 +113,7 @@ def generate_info(string: str):
         num_donors,
         num_acceptors,
         valence_count,
+        num_lipinski_violations,
     ]
     values += masses
     values += mass_ratios
