@@ -11,9 +11,8 @@ from chemcaption.featurize.composition import (
     ElementMassFeaturizer,
     ElementMassProportionFeaturizer,
 )
-
+from chemcaption.featurize.rules import LipinskiViolationsFeaturizer
 from chemcaption.featurize.substructure import SMARTSFeaturizer
-
 from chemcaption.molecules import SMILESMolecule
 
 MOLECULAR_BANK = pd.read_json("data/molecular_bank.json", orient="index")
@@ -45,6 +44,7 @@ def generate_info(string: str):
         "non_rotable_proportion_strict",
         "num_hydrogen_bond_donors",
         "num_hydrogen_bond_acceptors",
+        "num_lipinski_violations",
     ]
     preset = [
         "Carbon",
@@ -64,6 +64,7 @@ def generate_info(string: str):
 
     count_featurizer = ElementCountFeaturizer(preset=preset)
     count_ratio_featurizer = ElementCountProportionFeaturizer(preset=preset)
+    lipinski_featurizer = LipinskiViolationsFeaturizer()
 
     mol = SMILESMolecule(string)
 
@@ -76,6 +77,8 @@ def generate_info(string: str):
 
     num_donors = Lipinski.NumHDonors(mol.rdkit_mol)
     num_acceptors = Lipinski.NumHAcceptors(mol.rdkit_mol)
+
+    num_lipinski_violations = lipinski_featurizer.featurize(mol).item()
 
     masses = mass_featurizer.featurize(molecule=mol).reshape((-1,)).tolist()
     keys += mass_featurizer.feature_labels()
@@ -102,6 +105,7 @@ def generate_info(string: str):
         non_rotable_strict / num_bonds,
         num_donors,
         num_acceptors,
+        num_lipinski_violations,
     ]
     values += masses
     values += mass_ratios

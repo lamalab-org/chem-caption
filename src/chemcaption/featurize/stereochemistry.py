@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""Featurizers for symmetry."""
+"""Featurizers for stereochemistry."""
 
 from typing import List, Union
 
