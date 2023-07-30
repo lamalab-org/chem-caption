@@ -120,7 +120,7 @@ class IsoelectronicComparator(MultipleComparator):
         molecules: List[Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]],
         epsilon: float = 0.0,
     ) -> np.array:
-        return self.featurize(molecules=molecules, epsilon=epsilon).astype(bool).all()
+        return self.featurize(molecules=molecules, epsilon=epsilon).astype(int).all()
 
     def implementors(self) -> List[str]:
         """
