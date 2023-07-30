@@ -134,6 +134,7 @@ QA_TEMPLATES = dict(
 
 """Utility functions."""
 
+
 def generate_template(template_type: str = "qa", key: str = "single"):
     """Randomly select prompt template.
 
