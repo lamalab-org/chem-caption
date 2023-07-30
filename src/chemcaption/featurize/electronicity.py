@@ -23,6 +23,7 @@ __all__ = [
 
 """Featurizer to extract hydrogen acceptor count from molecules."""
 
+
 class HydrogenAcceptorCountFeaturizer(AbstractFeaturizer):
     """Obtain number of Hydrogen bond acceptors in a molecule."""
 
@@ -60,6 +61,7 @@ class HydrogenAcceptorCountFeaturizer(AbstractFeaturizer):
 
 """Featurizer to extract hydrogen donor count from molecules."""
 
+
 class HydrogenDonorCountFeaturizer(AbstractFeaturizer):
     """Obtain number of Hydrogen bond donors in a molecule."""
 
@@ -96,6 +98,7 @@ class HydrogenDonorCountFeaturizer(AbstractFeaturizer):
 
 
 """Featurizer to obtain molecular valence electron count"""
+
 
 class ValenceElectronCountFeaturizer(AbstractFeaturizer):
     """A featurizer for molecular electronicity-based comparison."""
@@ -139,6 +142,7 @@ class ValenceElectronCountFeaturizer(AbstractFeaturizer):
 
 
 """Featurizer to compare molecules for isoelectronic difference"""
+
 
 class IsoelectronicDifferenceFeaturizer(AbstractFeaturizer):
     """A featurizer for molecular electronicity-based comparison."""
@@ -186,6 +190,7 @@ class IsoelectronicDifferenceFeaturizer(AbstractFeaturizer):
 
 
 """Featurizer to compare molecules for isoelectronicity"""
+
 
 class IsoelectronicityFeaturizer(AbstractFeaturizer):
     """A featurizer for molecular electronicity-based comparison."""

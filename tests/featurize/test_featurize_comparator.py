@@ -17,13 +17,10 @@ __all__ = [
     "test_isoelectronicity_comparator",
 ]
 
+
 @pytest.mark.parametrize(
     "test_input, expected",
-    [
-        (("N#N", "[C-]#[O+]"), 1),
-        (("[P-3]", "[S-2]"), 1),
-        (("[Al+3]", "[Mg+2]"), 1)
-    ]
+    [(("N#N", "[C-]#[O+]"), 1), (("[P-3]", "[S-2]"), 1), (("[Al+3]", "[Mg+2]"), 1)],
 )
 def test_isoelectronicity_comparator(test_input, expected):
     smiles1, smiles2 = test_input

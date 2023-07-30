@@ -5,7 +5,10 @@
 import numpy as np
 import pytest
 
-from chemcaption.featurize.electronicity import HydrogenAcceptorCountFeaturizer, HydrogenDonorCountFeaturizer
+from chemcaption.featurize.electronicity import (
+    HydrogenAcceptorCountFeaturizer,
+    HydrogenDonorCountFeaturizer,
+)
 from tests.conftests import DISPATCH_MAP, PROPERTY_BANK, extract_molecule_properties
 
 KIND = "selfies"
