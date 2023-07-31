@@ -33,9 +33,7 @@ class RotationalSymmetryNumber(AbstractFeaturizer):
         ]
         self.label = ["rotational_symmetry_number"]
 
-    def featurize(
-        self, molecule: Molecule
-    ) -> np.array:
+    def featurize(self, molecule: Molecule) -> np.array:
         """
         Featurize single molecule instance. Returns the rotational symmetry number of a molecule.
 
@@ -85,9 +83,7 @@ class PointGroupFeaturizer(AbstractFeaturizer):
     # I think we have to, because there are infinitely many
     # and for one-hot encoding we would need to know the
     # possible point groups beforehand
-    def featurize(
-        self, molecule: Molecule
-    ) -> np.array:
+    def featurize(self, molecule: Molecule) -> np.array:
         """
         Featurize single molecule instance. Returns the point group of a molecule.
 

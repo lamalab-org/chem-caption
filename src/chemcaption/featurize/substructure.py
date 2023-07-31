@@ -122,9 +122,7 @@ class SMARTSFeaturizer(AbstractFeaturizer):
             self.label = [None]
         return
 
-    def featurize(
-        self, molecule: Molecule
-    ) -> np.array:
+    def featurize(self, molecule: Molecule) -> np.array:
         """
         Featurize single molecule instance. Return integer array representing the:
 

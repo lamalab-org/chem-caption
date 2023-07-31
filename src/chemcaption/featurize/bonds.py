@@ -29,9 +29,7 @@ class RotableBondCountFeaturizer(AbstractFeaturizer):
         super().__init__()
         self.label = ["num_rotable_bonds"]
 
-    def featurize(
-        self, molecule: Molecule
-    ) -> np.array:
+    def featurize(self, molecule: Molecule) -> np.array:
         """
         Count the number of rotable (single, non-terminal) bonds in a molecule.
 
@@ -68,9 +66,7 @@ class BondRotabilityFeaturizer(AbstractFeaturizer):
         super().__init__()
         self.label = ["rotable_proportion", "non_rotable_proportion"]
 
-    def _get_bond_types(
-        self, molecule: Molecule
-    ) -> List[float]:
+    def _get_bond_types(self, molecule: Molecule) -> List[float]:
         """Return distribution of bonds based on rotability.
 
         Args:
@@ -87,9 +83,7 @@ class BondRotabilityFeaturizer(AbstractFeaturizer):
 
         return bond_distribution
 
-    def featurize(
-        self, molecule: Molecule
-    ) -> np.array:
+    def featurize(self, molecule: Molecule) -> np.array:
         """Featurize single molecule instance. Return distribution of bonds based on rotability.
 
         Args:

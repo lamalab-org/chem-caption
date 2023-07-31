@@ -26,9 +26,7 @@ class LipinskiViolationsFeaturizer(AbstractFeaturizer):
         super().__init__()
         self.label = ["num_lipinski_violations"]
 
-    def _mass_violation(
-        self, molecule: Molecule
-    ) -> np.array:
+    def _mass_violation(self, molecule: Molecule) -> np.array:
         """Return molecule status as regards violation of Lipinski's molar mass rule (must be < 500 Daltons).
 
         Args:
@@ -40,9 +38,7 @@ class LipinskiViolationsFeaturizer(AbstractFeaturizer):
         molar_mass = Descriptors.ExactMolWt(molecule.rdkit_mol)
         return np.array([molar_mass > 500], dtype=int).reshape((1, -1))
 
-    def _hydrogen_bond_donor_violation(
-        self, molecule: Molecule
-    ) -> np.array:
+    def _hydrogen_bond_donor_violation(self, molecule: Molecule) -> np.array:
         """Return molecule status as regards violation of Lipinski's hydrogen bond donor rule (must be < 5).
 
         Args:
@@ -54,9 +50,7 @@ class LipinskiViolationsFeaturizer(AbstractFeaturizer):
         hbd = Chem.Lipinski.NumHDonors(molecule.rdkit_mol)
         return np.array([hbd > 5], dtype=int).reshape((1, -1))
 
-    def _hydrogen_bond_acceptor_violation(
-        self, molecule: Molecule
-    ) -> np.array:
+    def _hydrogen_bond_acceptor_violation(self, molecule: Molecule) -> np.array:
         """Return molecule status as regards violation of Lipinski's hydrogen bond acceptor rule (must be < 10).
 
         Args:
@@ -68,9 +62,7 @@ class LipinskiViolationsFeaturizer(AbstractFeaturizer):
         hba = Chem.Lipinski.NumHAcceptors(molecule.rdkit_mol)
         return np.array([hba > 10], dtype=int).reshape((1, -1))
 
-    def _log_p_violation(
-        self, molecule: Molecule
-    ) -> np.array:
+    def _log_p_violation(self, molecule: Molecule) -> np.array:
         """Return molecule status as regards violation of Lipinski's LogP rule (must be < 5).
 
         Args:
@@ -82,9 +74,7 @@ class LipinskiViolationsFeaturizer(AbstractFeaturizer):
         log_p = Descriptors.MolLogP(molecule.rdkit_mol)
         return np.array([log_p > 5], dtype=int).reshape((1, -1))
 
-    def featurize(
-        self, molecule: Molecule
-    ) -> np.array:
+    def featurize(self, molecule: Molecule) -> np.array:
         """
         Featurize single molecule instance. Returns the number of Lipinski rules violated by a molecule.
 

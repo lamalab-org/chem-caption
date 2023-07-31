@@ -127,9 +127,7 @@ class ElementMassFeaturizer(AbstractFeaturizer):
 
         return self
 
-    def _get_element_mass(
-        self, element: str, molecule: Molecule
-    ) -> float:
+    def _get_element_mass(self, element: str, molecule: Molecule) -> float:
         """
         Get the total mass component of an element in a molecule.
 
@@ -154,9 +152,7 @@ class ElementMassFeaturizer(AbstractFeaturizer):
             ]
         return sum(element_mass)
 
-    def _get_profile(
-        self, molecule: Molecule
-    ) -> List[float]:
+    def _get_profile(self, molecule: Molecule) -> List[float]:
         """Generate molecular profile based of preset attribute.
 
         Args:
@@ -171,9 +167,7 @@ class ElementMassFeaturizer(AbstractFeaturizer):
 
         return element_masses
 
-    def _get_unique_elements(
-        self, molecule: Molecule
-    ) -> List[str]:
+    def _get_unique_elements(self, molecule: Molecule) -> List[str]:
         """
         Get unique elements that make up a molecule.
 
@@ -189,9 +183,7 @@ class ElementMassFeaturizer(AbstractFeaturizer):
         ]
         return unique_elements
 
-    def featurize(
-        self, molecule: Molecule
-    ) -> np.array:
+    def featurize(self, molecule: Molecule) -> np.array:
         """
         Featurize single molecule instance. Get the total mass component for elements in a molecule.
 
@@ -226,9 +218,7 @@ class ElementMassProportionFeaturizer(ElementMassFeaturizer):
         self.suffix = "_mass_ratio"
         self.label = [self.prefix + element.lower() + self.suffix for element in self.preset]
 
-    def featurize(
-        self, molecule: Molecule
-    ) -> np.array:
+    def featurize(self, molecule: Molecule) -> np.array:
         """
         Featurize single molecule instance. Get the total mass proportion for elements in a molecule.
 
@@ -265,9 +255,7 @@ class ElementCountFeaturizer(ElementMassFeaturizer):
 
         self.label = [self.prefix + element.lower() + self.suffix for element in self.preset]
 
-    def _get_atom_count(
-        self, element: str, molecule: Molecule
-    ) -> int:
+    def _get_atom_count(self, element: str, molecule: Molecule) -> int:
         """
         Get number of atoms of element in a molecule.
 
@@ -290,9 +278,7 @@ class ElementCountFeaturizer(ElementMassFeaturizer):
         )
         return atom_count
 
-    def _get_profile(
-        self, molecule: Molecule
-    ) -> List[int]:
+    def _get_profile(self, molecule: Molecule) -> List[int]:
         """Generate number of atoms per element based of preset attribute.
 
         Args:
@@ -307,9 +293,7 @@ class ElementCountFeaturizer(ElementMassFeaturizer):
 
         return atom_counts
 
-    def featurize(
-        self, molecule: Molecule
-    ) -> np.array:
+    def featurize(self, molecule: Molecule) -> np.array:
         """
         Featurize single molecule instance. Get the atom count for elements in a molecule.
 
@@ -349,9 +333,7 @@ class ElementCountProportionFeaturizer(ElementCountFeaturizer):
         self.suffix = "_atom_ratio"
         self.label = [self.prefix + element.lower() + self.suffix for element in self.preset]
 
-    def featurize(
-        self, molecule: Molecule
-    ) -> np.array:
+    def featurize(self, molecule: Molecule) -> np.array:
         """
         Featurize single molecule instance. Get the atom count proportion for elements in a molecule.
 
@@ -397,9 +379,7 @@ class DegreeOfUnsaturationFeaturizer(AbstractFeaturizer):
         ]
         self._label = ["degree_of_unsaturation"]
 
-    def _get_degree_of_unsaturation_for_mol(
-        self, molecule: Molecule
-    ):
+    def _get_degree_of_unsaturation_for_mol(self, molecule: Molecule):
         """Returns the degree of unsaturation for a molecule.
 
         .. math::
@@ -421,9 +401,7 @@ class DegreeOfUnsaturationFeaturizer(AbstractFeaturizer):
         du = 1 + 0.5 * sum([n * (v - 2) for v, n in valence_counter.items()])
         return du
 
-    def featurize(
-        self, molecule: Molecule
-    ) -> np.array:
+    def featurize(self, molecule: Molecule) -> np.array:
         """
         Featurize single molecule instance. Returns the degree of unsaturation of a molecule.
 

@@ -30,9 +30,7 @@ class HAcceptorCountFeaturizer(AbstractFeaturizer):
         super().__init__()
         self.label = ["num_hydrogen_bond_acceptors"]
 
-    def featurize(
-        self, molecule: Molecule
-    ) -> np.array:
+    def featurize(self, molecule: Molecule) -> np.array:
         """
         Featurize single molecule instance. Get the number of Hydrogen bond acceptors present in a molecule.
 
@@ -65,9 +63,7 @@ class HDonorCountFeaturizer(AbstractFeaturizer):
         super().__init__()
         self.label = ["num_hydrogen_bond_donors"]
 
-    def featurize(
-        self, molecule: Molecule
-    ) -> np.array:
+    def featurize(self, molecule: Molecule) -> np.array:
         """
         Featurize single molecule instance. Get the number of Hydrogen bond donors present in a molecule.
 
@@ -107,9 +103,7 @@ class ValenceElectronCountFeaturizer(AbstractFeaturizer):
         super().__init__()
         self.label = ["num_valence_electrons"]
 
-    def featurize(
-        self, molecule: Molecule
-    ) -> np.array:
+    def featurize(self, molecule: Molecule) -> np.array:
         """
         Extract and return valence electron count for molecular object.
 
@@ -153,9 +147,7 @@ class IsoelectronicDifferenceFeaturizer(AbstractFeaturizer):
         self.label = ["isoelectronic_difference"]
         self.comparer = ValenceElectronCountFeaturizer()
 
-    def featurize(
-        self, molecule: Molecule
-    ) -> np.array:
+    def featurize(self, molecule: Molecule) -> np.array:
         """
         Extract and return features from molecular object.
 
@@ -201,9 +193,7 @@ class IsoelectronicityFeaturizer(AbstractFeaturizer):
         self.label = ["isoelectronic_similarity"]
         self.comparer = ValenceElectronCountFeaturizer()
 
-    def featurize(
-        self, molecule: Molecule
-    ) -> np.array:
+    def featurize(self, molecule: Molecule) -> np.array:
         """
         Extract and return features from molecular object.
 

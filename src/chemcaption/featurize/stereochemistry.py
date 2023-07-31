@@ -2,7 +2,7 @@
 
 """Featurizers for stereochemistry."""
 
-from typing import List, Union, Tuple, Any
+from typing import Any, List, Tuple, Union
 
 import numpy as np
 from rdkit import Chem
@@ -50,9 +50,7 @@ class NumChiralCentersFeaturizer(AbstractFeaturizer):
 
         return chiral_cc
 
-    def featurize(
-        self, molecule: Molecule
-    ) -> np.array:
+    def featurize(self, molecule: Molecule) -> np.array:
         """
         Featurize single molecule instance. Returns number of chiral centers in a molecule.
 

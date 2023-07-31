@@ -2,11 +2,10 @@
 
 """Utility imports."""
 from abc import ABC, abstractmethod
+from typing import Union
 
 from rdkit import Chem
 from selfies import decoder
-
-from typing import Union
 
 # Implemented molecular representation classes.
 

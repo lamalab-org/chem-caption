@@ -34,15 +34,11 @@ class AbstractFeaturizer(ABC):
         self.template = None
 
     @abstractmethod
-    def featurize(
-        self, molecule: Molecule
-    ) -> np.array:
+    def featurize(self, molecule: Molecule) -> np.array:
         """Featurize single Molecule instance."""
         raise NotImplementedError
 
-    def featurize_many(
-        self, molecules: List[Molecule]
-    ) -> np.array:
+    def featurize_many(self, molecules: List[Molecule]) -> np.array:
         """
         Featurize a sequence of Molecule objects.
 
@@ -168,9 +164,7 @@ class MultipleFeaturizer(AbstractFeaturizer):
         super().__init__()
         self.featurizers = featurizers
 
-    def featurize(
-        self, molecule: Molecule
-    ) -> np.array:
+    def featurize(self, molecule: Molecule) -> np.array:
         """
         Featurize a molecule instance. Returns results from multiple lower-level featurizers.
 
@@ -321,9 +315,7 @@ class Comparator(MultipleFeaturizer):
 
         return results.reshape((1, -1))
 
-    def featurize(
-        self, molecules: List[Molecule]
-    ) -> np.array:
+    def featurize(self, molecules: List[Molecule]) -> np.array:
         """
         Featurize multiple molecule instances.
 
@@ -364,9 +356,7 @@ class Comparator(MultipleFeaturizer):
 
         return labels
 
-    def compare(
-        self, molecules: List[Molecule]
-    ) -> np.array:
+    def compare(self, molecules: List[Molecule]) -> np.array:
         """
         Compare features from multiple molecular instances. 1 if all molecules are similar, else 0.
 
