@@ -2,14 +2,14 @@
 
 """Featurizers for drug & molecular rules."""
 
-from typing import List, Union
+from typing import List
 
 import numpy as np
 from rdkit import Chem
 from rdkit.Chem import Descriptors
 
 from chemcaption.featurize.base import AbstractFeaturizer
-from chemcaption.molecules import InChIMolecule, SELFIESMolecule, SMILESMolecule
+from chemcaption.molecules import Molecule
 
 # Implemented drug rule-related featurizers.
 
@@ -27,12 +27,12 @@ class LipinskiViolationsFeaturizer(AbstractFeaturizer):
         self.label = ["num_lipinski_violations"]
 
     def _mass_violation(
-        self, molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]
+        self, molecule: Molecule
     ) -> np.array:
         """Return molecule status as regards violation of Lipinski's molar mass rule (must be < 500 Daltons).
 
         Args:
-            molecule (Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]): Molecular instance.
+            molecule (Molecule): Molecular instance.
 
         Returns:
             (np.array): integer representing violation status. 1 if rule is violated else 0.
@@ -41,12 +41,12 @@ class LipinskiViolationsFeaturizer(AbstractFeaturizer):
         return np.array([molar_mass > 500], dtype=int).reshape((1, -1))
 
     def _hydrogen_bond_donor_violation(
-        self, molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]
+        self, molecule: Molecule
     ) -> np.array:
         """Return molecule status as regards violation of Lipinski's hydrogen bond donor rule (must be < 5).
 
         Args:
-            molecule (Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]): Molecular instance.
+            molecule (Molecule): Molecular instance.
 
         Returns:
             (np.array): integer representing violation status. 1 if rule is violated else 0.
@@ -55,12 +55,12 @@ class LipinskiViolationsFeaturizer(AbstractFeaturizer):
         return np.array([hbd > 5], dtype=int).reshape((1, -1))
 
     def _hydrogen_bond_acceptor_violation(
-        self, molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]
+        self, molecule: Molecule
     ) -> np.array:
         """Return molecule status as regards violation of Lipinski's hydrogen bond acceptor rule (must be < 10).
 
         Args:
-            molecule (Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]): Molecular instance.
+            molecule (Molecule): Molecular instance.
 
         Returns:
             (np.array): integer representing violation status. 1 if rule is violated else 0.
@@ -69,12 +69,12 @@ class LipinskiViolationsFeaturizer(AbstractFeaturizer):
         return np.array([hba > 10], dtype=int).reshape((1, -1))
 
     def _log_p_violation(
-        self, molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]
+        self, molecule: Molecule
     ) -> np.array:
         """Return molecule status as regards violation of Lipinski's LogP rule (must be < 5).
 
         Args:
-            molecule (Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]): Molecular instance.
+            molecule (Molecule): Molecular instance.
 
         Returns:
             (np.array): integer representing violation status. 1 if rule is violated else 0.
@@ -83,13 +83,13 @@ class LipinskiViolationsFeaturizer(AbstractFeaturizer):
         return np.array([log_p > 5], dtype=int).reshape((1, -1))
 
     def featurize(
-        self, molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]
+        self, molecule: Molecule
     ) -> np.array:
         """
         Featurize single molecule instance. Returns the number of Lipinski rules violated by a molecule.
 
         Args:
-            molecule (Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]): Molecular representation.
+            molecule (Molecule): Molecular representation.
 
         Returns:
             (np.array): number of Lipinski Rule of 5 violations.

@@ -6,7 +6,7 @@ import numpy as np
 import pytest
 from rdkit.Chem import Descriptors, rdMolDescriptors
 
-from chemcaption.featurize.base import MultipleFeaturizer, RDKitAdaptor
+from chemcaption.featurize.base import RDKitAdaptor
 from tests.conftests import DISPATCH_MAP, PROPERTY_BANK, extract_molecule_properties
 
 KIND = "selfies"

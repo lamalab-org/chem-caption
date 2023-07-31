@@ -8,7 +8,7 @@ import numpy as np
 
 from chemcaption.featurize.base import AbstractFeaturizer
 from chemcaption.featurize.utils import _pmg_mol_to_pointgroup_analyzer, _rdkit_to_pymatgen
-from chemcaption.molecules import InChIMolecule, SELFIESMolecule, SMILESMolecule
+from chemcaption.molecules import Molecule
 
 # Implemented helper functions.
 
@@ -25,7 +25,7 @@ class RotationalSymmetryNumber(AbstractFeaturizer):
         """Initialize instance."""
         super().__init__()
 
-        self.template = "What is the roitational symmetry number for a molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
+        self.template = "What is the rotational symmetry number for a molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
         self._names = [
             {
                 "noun": "rotational symmetry number",
@@ -34,7 +34,7 @@ class RotationalSymmetryNumber(AbstractFeaturizer):
         self.label = ["rotational_symmetry_number"]
 
     def featurize(
-        self, molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]
+        self, molecule: Molecule
     ) -> np.array:
         """
         Featurize single molecule instance. Returns the rotational symmetry number of a molecule.
@@ -42,7 +42,7 @@ class RotationalSymmetryNumber(AbstractFeaturizer):
         The symmetry number is the number of indistinguishable rotated positions.
 
         Args:
-            molecule (Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]): Molecular representation.
+            molecule (Molecule): Molecular representation.
 
         Returns:
             (np.array): Rotational symmetry number.
@@ -86,7 +86,7 @@ class PointGroupFeaturizer(AbstractFeaturizer):
     # and for one-hot encoding we would need to know the
     # possible point groups beforehand
     def featurize(
-        self, molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]
+        self, molecule: Molecule
     ) -> np.array:
         """
         Featurize single molecule instance. Returns the point group of a molecule.
@@ -94,7 +94,7 @@ class PointGroupFeaturizer(AbstractFeaturizer):
         Note that infinity is represented as * in the output.
 
         Args:
-            molecule (Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]): Molecular representation.
+            molecule (Molecule): Molecular representation.
 
         Returns:
             (np.array): Schoenflies symbol of point group.

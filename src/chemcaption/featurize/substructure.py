@@ -8,7 +8,7 @@ import numpy as np
 import rdkit
 
 from chemcaption.featurize.base import AbstractFeaturizer
-from chemcaption.molecules import InChIMolecule, SELFIESMolecule, SMILESMolecule
+from chemcaption.molecules import Molecule
 from chemcaption.presets import SMARTSPreset
 
 __all__ = [
@@ -123,7 +123,7 @@ class SMARTSFeaturizer(AbstractFeaturizer):
         return
 
     def featurize(
-        self, molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]
+        self, molecule: Molecule
     ) -> np.array:
         """
         Featurize single molecule instance. Return integer array representing the:
@@ -133,7 +133,7 @@ class SMARTSFeaturizer(AbstractFeaturizer):
             of molecular patterns in a molecule.
 
         Args:
-            molecule (Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]): Molecule representation.
+            molecule (Molecule): Molecule representation.
 
         Returns:
             (np.array): Array containing integer counts/signifier of pattern presence.

@@ -9,7 +9,7 @@ import numpy as np
 from rdkit.Chem import Descriptors
 
 from chemcaption.featurize.base import AbstractFeaturizer
-from chemcaption.molecules import InChIMolecule, SELFIESMolecule, SMILESMolecule
+from chemcaption.molecules import Molecule
 
 # Implemented composition-related featurizers
 
@@ -33,13 +33,13 @@ class MolecularMassFeaturizer(AbstractFeaturizer):
 
     def featurize(
         self,
-        molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule],
+        molecule: Molecule,
     ) -> np.array:
         """
         Featurize single molecule instance. Get the molecular mass of a molecule.
 
         Args:
-            molecule (Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]): Molecular representation.
+            molecule (Molecule): Molecular representation.
 
         Returns:
             molar_mass (float): Molecular mass of `molecule`.
@@ -103,16 +103,14 @@ class ElementMassFeaturizer(AbstractFeaturizer):
     def fit(
         self,
         molecules: Union[
-            Union[SMILESMolecule, InChIMolecule, SELFIESMolecule],
-            Sequence[Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]],
+            Molecule,
+            List[Molecule],
         ],
     ):
         """Generate preset by exploration of molecule sequence. Updates instance state.
 
         Args:
-            molecules (Union[Union[SMILESMolecule, InChIMolecule, SELFIESMolecule],
-                        Sequence[Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]]]):
-                Sequence of molecular instances.
+            molecules (Union[Molecule, List[Molecule]]): Sequence of molecular instances.
 
         Returns:
             self (ElementMassFeaturizer): Instance of self with updated state.
@@ -130,14 +128,14 @@ class ElementMassFeaturizer(AbstractFeaturizer):
         return self
 
     def _get_element_mass(
-        self, element: str, molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]
+        self, element: str, molecule: Molecule
     ) -> float:
         """
         Get the total mass component of an element in a molecule.
 
         Args:
             element (str): String representing element name or symbol.
-            molecule (Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]): Molecular representation.
+            molecule (Molecule): Molecular representation.
 
         Returns:
             element_mass (float): Total mass accounted for by `element`` in `molecule`.
@@ -157,12 +155,12 @@ class ElementMassFeaturizer(AbstractFeaturizer):
         return sum(element_mass)
 
     def _get_profile(
-        self, molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]
+        self, molecule: Molecule
     ) -> List[float]:
         """Generate molecular profile based of preset attribute.
 
         Args:
-            molecule (Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]): Molecular representation instance.
+            molecule (Molecule): Molecular representation instance.
 
         Returns:
             element_masses (List[float]): List of elemental masses.
@@ -174,13 +172,13 @@ class ElementMassFeaturizer(AbstractFeaturizer):
         return element_masses
 
     def _get_unique_elements(
-        self, molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]
+        self, molecule: Molecule
     ) -> List[str]:
         """
         Get unique elements that make up a molecule.
 
         Args:
-            molecule (Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]): Molecular representation.
+            molecule (Molecule): Molecular representation.
 
         Returns:
             unique_elements (List[str]): Unique list of element_names or element_symbols in `molecule`.
@@ -192,13 +190,13 @@ class ElementMassFeaturizer(AbstractFeaturizer):
         return unique_elements
 
     def featurize(
-        self, molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]
+        self, molecule: Molecule
     ) -> np.array:
         """
         Featurize single molecule instance. Get the total mass component for elements in a molecule.
 
         Args:
-            molecule (Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]): Molecular representation.
+            molecule (Molecule): Molecular representation.
 
         Returns:
             np.array: Molecular contribution by mass for elements in molecule.
@@ -229,13 +227,13 @@ class ElementMassProportionFeaturizer(ElementMassFeaturizer):
         self.label = [self.prefix + element.lower() + self.suffix for element in self.preset]
 
     def featurize(
-        self, molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]
+        self, molecule: Molecule
     ) -> np.array:
         """
         Featurize single molecule instance. Get the total mass proportion for elements in a molecule.
 
         Args:
-            molecule (Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]): Molecular representation.
+            molecule (Molecule): Molecular representation.
 
         Returns:
             np.array: Molecular proportional contribution by mass for elements in molecule.
@@ -268,14 +266,14 @@ class ElementCountFeaturizer(ElementMassFeaturizer):
         self.label = [self.prefix + element.lower() + self.suffix for element in self.preset]
 
     def _get_atom_count(
-        self, element: str, molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]
+        self, element: str, molecule: Molecule
     ) -> int:
         """
         Get number of atoms of element in a molecule.
 
         Args:
             element (str): String representation of a chemical element.
-            molecule (Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]): Molecular representation instance.
+            molecule (Molecule): Molecular representation instance.
 
         Returns:
             atom_count (int): Number of atoms of element in molecule.
@@ -293,12 +291,12 @@ class ElementCountFeaturizer(ElementMassFeaturizer):
         return atom_count
 
     def _get_profile(
-        self, molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]
+        self, molecule: Molecule
     ) -> List[int]:
         """Generate number of atoms per element based of preset attribute.
 
         Args:
-            molecule (Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]): Molecular representation instance.
+            molecule (Molecule): Molecular representation instance.
 
         Returns:
             atom_counts (List[int]): List of elemental atom counts.
@@ -310,13 +308,13 @@ class ElementCountFeaturizer(ElementMassFeaturizer):
         return atom_counts
 
     def featurize(
-        self, molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]
+        self, molecule: Molecule
     ) -> np.array:
         """
         Featurize single molecule instance. Get the atom count for elements in a molecule.
 
         Args:
-            molecule (Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]): Molecular representation.
+            molecule (Molecule): Molecular representation.
 
         Returns:
             np.array: Molecular contribution by atom count for elements in molecule.
@@ -352,13 +350,13 @@ class ElementCountProportionFeaturizer(ElementCountFeaturizer):
         self.label = [self.prefix + element.lower() + self.suffix for element in self.preset]
 
     def featurize(
-        self, molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]
+        self, molecule: Molecule
     ) -> np.array:
         """
         Featurize single molecule instance. Get the atom count proportion for elements in a molecule.
 
         Args:
-            molecule (Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]): Molecular representation.
+            molecule (Molecule): Molecular representation.
 
         Returns:
             np.array: Molecular proportional contribution by atom count for elements in molecule.
@@ -400,7 +398,7 @@ class DegreeOfUnsaturationFeaturizer(AbstractFeaturizer):
         self._label = ["degree_of_unsaturation"]
 
     def _get_degree_of_unsaturation_for_mol(
-        self, molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]
+        self, molecule: Molecule
     ):
         """Returns the degree of unsaturation for a molecule.
 
@@ -410,7 +408,7 @@ class DegreeOfUnsaturationFeaturizer(AbstractFeaturizer):
         where ni is the number of atoms with valence vi.
 
         Args:
-            molecule (Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]): Molecule instance.
+            molecule (Molecule): Molecule instance.
 
         Returns:
             (int): Degree of unsaturation.
@@ -424,13 +422,13 @@ class DegreeOfUnsaturationFeaturizer(AbstractFeaturizer):
         return du
 
     def featurize(
-        self, molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]
+        self, molecule: Molecule
     ) -> np.array:
         """
         Featurize single molecule instance. Returns the degree of unsaturation of a molecule.
 
         Args:
-            molecule (Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]): Molecular representation.
+            molecule (Molecule): Molecular representation.
 
         Returns:
             np.array: degree of unsaturation.

@@ -2,13 +2,13 @@
 
 """Featurizers for proton- and electron-related information."""
 
-from typing import List, Union
+from typing import List
 
 import numpy as np
 from rdkit.Chem import Descriptors, rdMolDescriptors
 
 from chemcaption.featurize.base import AbstractFeaturizer, Comparator
-from chemcaption.molecules import InChIMolecule, SELFIESMolecule, SMILESMolecule
+from chemcaption.molecules import Molecule
 
 # Implemented proton-, electron- and charge-related featurizers
 
@@ -31,13 +31,13 @@ class HAcceptorCountFeaturizer(AbstractFeaturizer):
         self.label = ["num_hydrogen_bond_acceptors"]
 
     def featurize(
-        self, molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]
+        self, molecule: Molecule
     ) -> np.array:
         """
         Featurize single molecule instance. Get the number of Hydrogen bond acceptors present in a molecule.
 
         Args:
-            molecule (Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]): Molecular representation.
+            molecule (Molecule): Molecular representation.
 
         Returns:
             (np.array): Number of Hydrogen bond acceptors present in `molecule`.
@@ -66,13 +66,13 @@ class HDonorCountFeaturizer(AbstractFeaturizer):
         self.label = ["num_hydrogen_bond_donors"]
 
     def featurize(
-        self, molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]
+        self, molecule: Molecule
     ) -> np.array:
         """
         Featurize single molecule instance. Get the number of Hydrogen bond donors present in a molecule.
 
         Args:
-            molecule (Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]): Molecular representation.
+            molecule (Molecule): Molecular representation.
 
         Returns:
             np.array: Number of Hydrogen bond donors present in `molecule`.
@@ -108,13 +108,13 @@ class ValenceElectronCountFeaturizer(AbstractFeaturizer):
         self.label = ["num_valence_electrons"]
 
     def featurize(
-        self, molecule: Union[SMILESMolecule, SELFIESMolecule, InChIMolecule]
+        self, molecule: Molecule
     ) -> np.array:
         """
         Extract and return valence electron count for molecular object.
 
         Args:
-            molecule (Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]): Molecule representation.
+            molecule (Molecule): Molecule representation.
 
         Returns:
             (np.array): Array containing number of valence electrons.
@@ -142,11 +142,11 @@ class ValenceElectronCountFeaturizer(AbstractFeaturizer):
 class IsoelectronicDifferenceFeaturizer(AbstractFeaturizer):
     """A featurizer for molecular electronicity-based comparison."""
 
-    def __init__(self, reference_molecule: Union[SMILESMolecule, SELFIESMolecule, InChIMolecule]):
+    def __init__(self, reference_molecule: Molecule):
         """Initialize class.
 
         Args:
-            reference_molecule (Union[SMILESMolecule, SELFIESMolecule, InChIMolecule]): Molecule representation.
+            reference_molecule (Molecule): Molecule representation.
         """
         super().__init__()
         self.reference_molecule = reference_molecule
@@ -154,13 +154,13 @@ class IsoelectronicDifferenceFeaturizer(AbstractFeaturizer):
         self.comparer = ValenceElectronCountFeaturizer()
 
     def featurize(
-        self, molecule: Union[SMILESMolecule, SELFIESMolecule, InChIMolecule]
+        self, molecule: Molecule
     ) -> np.array:
         """
         Extract and return features from molecular object.
 
         Args:
-            molecule (Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]): Molecule representation.
+            molecule (Molecule): Molecule representation.
 
         Returns:
             (np.array): Array containing int representation of isoelectronic status between
@@ -190,11 +190,11 @@ class IsoelectronicDifferenceFeaturizer(AbstractFeaturizer):
 class IsoelectronicityFeaturizer(AbstractFeaturizer):
     """A featurizer for molecular electronicity-based comparison."""
 
-    def __init__(self, reference_molecule: Union[SMILESMolecule, SELFIESMolecule, InChIMolecule]):
+    def __init__(self, reference_molecule: Molecule):
         """Initialize class.
 
         Args:
-            reference_molecule (Union[SMILESMolecule, SELFIESMolecule, InChIMolecule]): Molecule representation.
+            reference_molecule (Molecule): Molecule representation.
         """
         super().__init__()
         self.reference_molecule = reference_molecule
@@ -202,13 +202,13 @@ class IsoelectronicityFeaturizer(AbstractFeaturizer):
         self.comparer = ValenceElectronCountFeaturizer()
 
     def featurize(
-        self, molecule: Union[SMILESMolecule, SELFIESMolecule, InChIMolecule]
+        self, molecule: Molecule
     ) -> np.array:
         """
         Extract and return features from molecular object.
 
         Args:
-            molecule (Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]): Molecule representation.
+            molecule (Molecule): Molecule representation.
 
         Returns:
             (np.array): Array containing int representation of isoelectronic status between

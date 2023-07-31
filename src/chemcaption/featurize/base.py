@@ -3,13 +3,13 @@
 """Abstract base class and wrappers for featurizers."""
 
 from abc import ABC, abstractmethod
-from typing import Any, Callable, Dict, List, Sequence, Union
+from typing import Any, Callable, Dict, List
 
 import numpy as np
 import rdkit
 
 from chemcaption.featurize.text import Prompt
-from chemcaption.molecules import InChIMolecule, SELFIESMolecule, SMILESMolecule
+from chemcaption.molecules import Molecule
 
 # Implemented abstract and high-level classes
 
@@ -35,19 +35,19 @@ class AbstractFeaturizer(ABC):
 
     @abstractmethod
     def featurize(
-        self, molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]
+        self, molecule: Molecule
     ) -> np.array:
         """Featurize single Molecule instance."""
         raise NotImplementedError
 
     def featurize_many(
-        self, molecules: Sequence[Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]]
+        self, molecules: List[Molecule]
     ) -> np.array:
         """
         Featurize a sequence of Molecule objects.
 
         Args:
-            molecules (Sequence[Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]]):
+            molecules (Sequence[Molecule]):
                 A sequence of molecule representations.
 
         Returns:
@@ -57,12 +57,12 @@ class AbstractFeaturizer(ABC):
 
     def text_featurize(
         self,
-        molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule],
+        molecule: Molecule,
     ) -> Prompt:
         """Embed features in Prompt instance.
 
         Args:
-            molecule (Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]): Molecule representation.
+            molecule (Molecule): Molecule representation.
 
         Returns:
             (Prompt): Instance of Prompt containing relevant information extracted from `molecule`.
@@ -91,12 +91,12 @@ class AbstractFeaturizer(ABC):
 
     def text_featurize_many(
         self,
-        molecules: Sequence[Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]],
+        molecules: List[Molecule],
     ) -> List[Prompt]:
         """Embed features in Prompt instance for multiple molecules.
 
         Args:
-            molecules (Sequence[Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]]):
+            molecules (Sequence[Molecule]):
                 A sequence of molecule representations.
 
         Returns:
@@ -169,13 +169,13 @@ class MultipleFeaturizer(AbstractFeaturizer):
         self.featurizers = featurizers
 
     def featurize(
-        self, molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]
+        self, molecule: Molecule
     ) -> np.array:
         """
         Featurize a molecule instance. Returns results from multiple lower-level featurizers.
 
         Args:
-            molecule (Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]): Molecule representation.
+            molecule (Molecule): Molecule representation.
 
         Returns:
             features (np.array), array shape [1, num_featurizers]: Array containing features
@@ -249,13 +249,13 @@ class RDKitAdaptor(AbstractFeaturizer):
 
     def featurize(
         self,
-        molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule],
+        molecule: Molecule,
     ) -> np.array:
         """
         Featurize single molecule instance. Extract and return features from molecular object.
 
         Args:
-            molecule (Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]): Molecule representation.
+            molecule (Molecule): Molecule representation.
 
         Returns:
             (np.array): Array containing extracted features.
@@ -298,13 +298,13 @@ class Comparator(MultipleFeaturizer):
     def _compare_on_featurizer(
         self,
         featurizer: AbstractFeaturizer,
-        molecules: List[Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]],
+        molecules: List[Molecule],
     ) -> np.array:
         """Return results of molecule feature comparison between molecule instance pairs.
 
         Args:
             featurizer (AbstractFeaturizer): Featurizer to compare on.
-            molecules (List[Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]]):
+            molecules (List[Molecule]):
                 List containing a pair of molecule instances.
 
         Returns:
@@ -322,7 +322,7 @@ class Comparator(MultipleFeaturizer):
         return results.reshape((1, -1))
 
     def featurize(
-        self, molecules: List[Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]]
+        self, molecules: List[Molecule]
     ) -> np.array:
         """
         Featurize multiple molecule instances.
@@ -330,7 +330,7 @@ class Comparator(MultipleFeaturizer):
         Extract and return comparison between molecular instances. 1 if similar, else 0.
 
         Args:
-            molecules (List[Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]]): Molecule instances to be compared.
+            molecules (List[Molecule]): Molecule instances to be compared.
 
         Returns:
             (np.array): Array containing extracted features with shape `(1, N)`,
@@ -365,13 +365,13 @@ class Comparator(MultipleFeaturizer):
         return labels
 
     def compare(
-        self, molecules: List[Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]]
+        self, molecules: List[Molecule]
     ) -> np.array:
         """
         Compare features from multiple molecular instances. 1 if all molecules are similar, else 0.
 
         Args:
-            molecules (List[Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]]): Molecule instances to be compared.
+            molecules (List[Molecule]): Molecule instances to be compared.
 
         Returns:
             (np.array): Array containing comparison results with shape `(1, N)`,
