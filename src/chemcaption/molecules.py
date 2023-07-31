@@ -2,7 +2,7 @@
 
 """Utility imports."""
 from abc import ABC, abstractmethod
-from typing import Union
+from typing import TypeAlias, Union
 
 from rdkit import Chem
 from selfies import decoder
@@ -10,6 +10,9 @@ from selfies import decoder
 # Implemented molecular representation classes.
 
 __all__ = ["MoleculeBase", "SMILESMolecule", "SELFIESMolecule", "InChIMolecule", "Molecule"]
+
+# Define molecule type alias
+Molecule: TypeAlias = Union["SMILESMolecule", "InChIMolecule", "SELFIESMolecule"]
 
 """Abstract classes."""
 
@@ -125,7 +128,3 @@ class InChIMolecule(MoleculeBase):
     def get_rdkit_mol(self) -> Chem.Mol:
         """Get rdkit molecular representation from InChI string."""
         return Chem.MolFromInchi(self.representation_string)
-
-
-# Define molecule type alias
-Molecule = Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]

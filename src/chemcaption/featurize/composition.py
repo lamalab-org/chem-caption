@@ -3,7 +3,7 @@
 """Featurizers describing the composition of a molecule."""
 
 from collections import Counter
-from typing import Dict, List, Optional, Sequence, Union
+from typing import Dict, List, Optional, Union
 
 import numpy as np
 from rdkit.Chem import Descriptors

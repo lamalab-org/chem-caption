@@ -124,8 +124,9 @@ class SMARTSFeaturizer(AbstractFeaturizer):
 
     def featurize(self, molecule: Molecule) -> np.array:
         """
-        Featurize single molecule instance. Return integer array representing the:
+        Featurize single molecule instance.
 
+        Return integer array representing the:
             - frequency or
             - presence
             of molecular patterns in a molecule.
