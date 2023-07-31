@@ -407,6 +407,14 @@ class MultipleComparator(Comparator):
             comparators (List[Comparator]): List of Comparator instances.
         """
         super().__init__()
+
+        # Type check for Comparator
+        for ix, comparator in enumerate(comparators):
+            if not isinstance(comparator, Comparator):
+                raise ValueError(
+                    f"{comparator.__class__.__name__} object at index {ix} is not of type `Comparator`."
+                )
+
         self.comparators = comparators
 
     def featurize(

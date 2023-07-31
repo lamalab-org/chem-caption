@@ -120,6 +120,16 @@ class IsoelectronicComparator(MultipleComparator):
         molecules: List[Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]],
         epsilon: float = 0.0,
     ) -> np.array:
+        """
+        Compare for isoelectronic status amongst multiple molecular instances. 1 if all molecules are similar, else 0.
+
+        Args:
+            molecules (List[Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]]): Molecule instances to be compared.
+            epsilon (float): Small float. Precision bound for numerical inconsistencies. Defaults to 0.0.
+
+        Returns:
+            (np.array): Comparison results. 1 if molecules are isoelectronic, else 0.
+        """
         return self.featurize(molecules=molecules, epsilon=epsilon).astype(int).all()
 
     def implementors(self) -> List[str]:

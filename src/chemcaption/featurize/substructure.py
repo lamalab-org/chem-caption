@@ -180,12 +180,23 @@ class IsomorphismFeaturizer(AbstractFeaturizer):
     """Convert molecule graph to adjacency matrix."""
 
     def __init__(self):
+        """Instantiate class."""
         super().__init__()
         self.label = ["weisfeiler_lehman_hash"]
 
     def featurize(
         self, molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]
     ) -> np.array:
+        """
+        Featurize single molecule instance. Extract and return features from molecular object.
+
+        Args:
+            molecule (Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]): Molecule representation.
+
+        Returns:
+            (np.array): Array containing int representation of isoelectronic status between
+                `self.reference_molecule` and `molecule`.
+        """
         molecule_graph = molecule.to_graph()
 
         return molecule_graph.weisfeiler_lehman_graph_hash()
