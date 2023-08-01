@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 
 """Utility imports."""
+
 from abc import ABC, abstractmethod
+from typing import TypeAlias, Union
 
 import networkx as nx
 import rdkit
@@ -11,6 +13,7 @@ from selfies import decoder
 # Implemented molecular representation classes.
 
 __all__ = [
+    "Molecule",
     "MoleculeGraph",
     "MoleculeBase",
     "SMILESMolecule",
@@ -19,11 +22,20 @@ __all__ = [
 ]
 
 
+# Define molecule type alias
+Molecule: TypeAlias = Union["SMILESMolecule", "InChIMolecule", "SELFIESMolecule"]
+
+"""Molecular type alias."""
+
+
 """Graph representation"""
 
 
 class MoleculeGraph(nx.Graph):
+    """Graph representation for molecular instances."""
+
     def __init__(self, molecule: Chem.Mol):
+        """Initialize instance."""
         super().__init__()
 
         self.molecule = molecule
@@ -32,6 +44,14 @@ class MoleculeGraph(nx.Graph):
         self._hash = None
 
     def molecule_to_graph(self):
+        """Convert molecule object to graph representation.
+
+        Args:
+            None
+
+        Returns:
+            None
+        """
         graph = nx.Graph()
 
         # Generate nodes
@@ -68,13 +88,15 @@ class MoleculeGraph(nx.Graph):
         Args:
             None
 
+        Returns:
+            None
         """
         if not self._hash:
             self._hash = nx.weisfeiler_lehman_graph_hash(self.graph)
         return self._hash
 
 
-"""Abstract classes."""
+"""Abstract class."""
 
 
 class MoleculeBase(ABC):

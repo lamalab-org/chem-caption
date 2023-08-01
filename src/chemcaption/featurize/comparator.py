@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-"""Comparator implementations"""
+"""Comparator implementations."""
 
-from typing import List, Union
+from typing import List
 
 import numpy as np
 
@@ -10,7 +10,7 @@ from chemcaption.featurize.base import AbstractFeaturizer, Comparator, MultipleC
 from chemcaption.featurize.composition import AtomCountFeaturizer
 from chemcaption.featurize.electronicity import ValenceElectronCountFeaturizer
 from chemcaption.featurize.substructure import IsomorphismFeaturizer
-from chemcaption.molecules import InChIMolecule, SELFIESMolecule, SMILESMolecule
+from chemcaption.molecules import Molecule
 
 # Implemented Comparator classes
 
@@ -72,14 +72,14 @@ class IsomorphismComparator(Comparator):
     def _compare_on_featurizer(
         self,
         featurizer: AbstractFeaturizer,
-        molecules: List[Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]],
+        molecules: List[Molecule],
         epsilon: float = 0.0,
     ) -> np.array:
         """Return results of molecule feature comparison between molecule instance pairs.
 
         Args:
             featurizer (AbstractFeaturizer): Featurizer to compare on.
-            molecules (List[Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]]):
+            molecules (List[Molecule]):
                 List containing a pair of molecule instances.
             epsilon (float): Small float. Precision bound for numerical inconsistencies. Defaults to 0.0.
 
@@ -117,20 +117,22 @@ class IsoelectronicComparator(MultipleComparator):
 
     def compare(
         self,
-        molecules: List[Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]],
+        molecules: List[Molecule],
         epsilon: float = 0.0,
     ) -> np.array:
         """
         Compare for isoelectronic status amongst multiple molecular instances. 1 if all molecules are similar, else 0.
 
         Args:
-            molecules (List[Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]]): Molecule instances to be compared.
+            molecules (List[Molecule]): Molecule instances to be compared.
             epsilon (float): Small float. Precision bound for numerical inconsistencies. Defaults to 0.0.
 
         Returns:
             (np.array): Comparison results. 1 if molecules are isoelectronic, else 0.
         """
-        return self.featurize(molecules=molecules, epsilon=epsilon).astype(int).all()
+        return np.reshape(
+            self.featurize(molecules=molecules, epsilon=epsilon).all(), (1, 1)
+        ).astype(int)
 
     def implementors(self) -> List[str]:
         """

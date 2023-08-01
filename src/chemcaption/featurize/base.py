@@ -3,21 +3,20 @@
 """Abstract base class and wrappers for featurizers."""
 
 from abc import ABC, abstractmethod
-from typing import Any, Callable, Dict, List, Sequence, Union
+from typing import List
 
 import numpy as np
 import rdkit
 from scipy.spatial import distance_matrix
 
 from chemcaption.featurize.text import Prompt
-from chemcaption.molecules import InChIMolecule, SELFIESMolecule, SMILESMolecule
+from chemcaption.molecules import Molecule
 
 # Implemented abstract and high-level classes
 
 __all__ = [
     "AbstractFeaturizer",  # Featurizer base class.
     "MultipleFeaturizer",  # Combines multiple featurizers.
-    "RDKitAdaptor",  # Higher-level featurizer. Returns lower-level featurizer instances.
     "Comparator",  # Class for comparing featurizer results amongst molecules.
     "MultipleComparator",  # Higher-level Comparator. Returns lower-level Comparator instances.
 ]
@@ -32,24 +31,20 @@ class AbstractFeaturizer(ABC):
     def __init__(self):
         """Initialize class. Initialize periodic table."""
         self.periodic_table = rdkit.Chem.GetPeriodicTable()
-        self._label = list()
+        self._label = []
         self.template = None
 
     @abstractmethod
-    def featurize(
-        self, molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]
-    ) -> np.array:
+    def featurize(self, molecule: Molecule) -> np.array:
         """Featurize single Molecule instance."""
         raise NotImplementedError
 
-    def featurize_many(
-        self, molecules: Sequence[Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]]
-    ) -> np.array:
+    def featurize_many(self, molecules: List[Molecule]) -> np.array:
         """
         Featurize a sequence of Molecule objects.
 
         Args:
-            molecules (Sequence[Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]]):
+            molecules (Sequence[Molecule]):
                 A sequence of molecule representations.
 
         Returns:
@@ -59,12 +54,12 @@ class AbstractFeaturizer(ABC):
 
     def text_featurize(
         self,
-        molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule],
+        molecule: Molecule,
     ) -> Prompt:
         """Embed features in Prompt instance.
 
         Args:
-            molecule (Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]): Molecule representation.
+            molecule (Molecule): Molecule representation.
 
         Returns:
             (Prompt): Instance of Prompt containing relevant information extracted from `molecule`.
@@ -93,12 +88,12 @@ class AbstractFeaturizer(ABC):
 
     def text_featurize_many(
         self,
-        molecules: Sequence[Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]],
+        molecules: List[Molecule],
     ) -> List[Prompt]:
         """Embed features in Prompt instance for multiple molecules.
 
         Args:
-            molecules (Sequence[Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]]):
+            molecules (Sequence[Molecule]):
                 A sequence of molecule representations.
 
         Returns:
@@ -170,14 +165,12 @@ class MultipleFeaturizer(AbstractFeaturizer):
         super().__init__()
         self.featurizers = featurizers
 
-    def featurize(
-        self, molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]
-    ) -> np.array:
+    def featurize(self, molecule: Molecule) -> np.array:
         """
         Featurize a molecule instance. Returns results from multiple lower-level featurizers.
 
         Args:
-            molecule (Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]): Molecule representation.
+            molecule (Molecule): Molecule representation.
 
         Returns:
             features (np.array), array shape [1, num_featurizers]: Array containing features
@@ -230,61 +223,6 @@ class MultipleFeaturizer(AbstractFeaturizer):
         return ["Benedict Oshomah Emoekabu"]
 
 
-class RDKitAdaptor(AbstractFeaturizer):
-    """Higher-level featurizer. Returns specific, lower-level featurizers."""
-
-    def __init__(
-        self, rdkit_function: Callable, labels: List[str], **rdkit_function_kwargs: Dict[str, Any]
-    ):
-        """Initialize class object.
-
-        Args:
-            rdkit_function (Callable): Molecule descriptor-generating function.
-                May be obtained from a chemistry featurization package like `rdkit` or custom written.
-            labels (List[str]): Feature label(s) to assign to extracted feature(s).
-            rdkit_function_kwargs (Dict[str, Any]): Keyword arguments to be parsed by `rdkit_function`.
-        """
-        super().__init__()
-        self.rdkit_function = rdkit_function
-        self._labels = labels
-        self.rdkit_function_kwargs = rdkit_function_kwargs
-
-    def featurize(
-        self,
-        molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule],
-    ) -> np.array:
-        """
-        Featurize single molecule instance. Extract and return features from molecular object.
-
-        Args:
-            molecule (Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]): Molecule representation.
-
-        Returns:
-            (np.array): Array containing extracted features.
-        """
-        feature = self.rdkit_function(molecule.rdkit_mol, **self.rdkit_function_kwargs)
-        feature = (
-            [
-                feature,
-            ]
-            if isinstance(feature, (int, float))
-            else feature
-        )
-        return np.array(feature).reshape((1, -1))
-
-    def implementors(self) -> List[str]:
-        """
-        Return list of functionality implementors.
-
-        Args:
-            None
-
-        Returns:
-            List[str]: List of implementors.
-        """
-        return ["Benedict Oshomah Emoekabu"]
-
-
 class Comparator(MultipleFeaturizer):
     """Compare molecules based on featurizer outputs."""
 
@@ -300,14 +238,14 @@ class Comparator(MultipleFeaturizer):
     def _compare_on_featurizer(
         self,
         featurizer: AbstractFeaturizer,
-        molecules: List[Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]],
+        molecules: List[Molecule],
         epsilon: float = 0.0,
     ) -> np.array:
         """Return results of molecule feature comparison between molecule instance pairs.
 
         Args:
             featurizer (AbstractFeaturizer): Featurizer to compare on.
-            molecules (List[Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]]):
+            molecules (List[Molecule]):
                 List containing a pair of molecule instances.
             epsilon (float): Small float. Precision bound for numerical inconsistencies. Defaults to 0.0.
 
@@ -322,7 +260,7 @@ class Comparator(MultipleFeaturizer):
 
     def featurize(
         self,
-        molecules: List[Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]],
+        molecules: List[Molecule],
         epsilon: float = 0.0,
     ) -> np.array:
         """
@@ -331,7 +269,7 @@ class Comparator(MultipleFeaturizer):
         Extract and return comparison between molecular instances. 1 if similar, else 0.
 
         Args:
-            molecules (List[Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]]): Molecule instances to be compared.
+            molecules (List[Molecule]): Molecule instances to be compared.
             epsilon (float): Small float. Precision bound for numerical inconsistencies. Defaults to 0.0.
 
         Returns:
@@ -359,23 +297,20 @@ class Comparator(MultipleFeaturizer):
         for featurizer in self.featurizers:
             labels += featurizer.feature_labels()
 
-        labels = [
-            (label + "_similarity" if not label.__contains__("similarity") else label)
-            for label in labels
-        ]
+        labels = [label + "_similarity" for label in labels]
 
         return labels
 
     def compare(
         self,
-        molecules: List[Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]],
+        molecules: List[Molecule],
         epsilon: float = 0.0,
     ) -> np.array:
         """
         Compare features from multiple molecular instances. 1 if all molecules are similar, else 0.
 
         Args:
-            molecules (List[Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]]): Molecule instances to be compared.
+            molecules (List[Molecule]): Molecule instances to be compared.
             epsilon (float): Small float. Precision bound for numerical inconsistencies. Defaults to 0.0.
 
         Returns:
@@ -408,7 +343,7 @@ class MultipleComparator(Comparator):
         """
         super().__init__()
 
-        # Type check for Comparator
+        # Type check for Comparator instances
         for ix, comparator in enumerate(comparators):
             if not isinstance(comparator, Comparator):
                 raise ValueError(
@@ -419,14 +354,14 @@ class MultipleComparator(Comparator):
 
     def featurize(
         self,
-        molecules: List[Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]],
+        molecules: List[Molecule],
         epsilon: float = 0.0,
     ) -> np.array:
         """
         Compare features from multiple molecular Comparators. 1 if all molecules are similar, else 0.
 
         Args:
-            molecules (List[Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]]): Molecule instances to be compared.
+            molecules (List[Molecule]): Molecule instances to be compared.
             epsilon (float): Small float. Precision bound for numerical inconsistencies. Defaults to 0.0.
 
         Returns:
@@ -439,6 +374,23 @@ class MultipleComparator(Comparator):
         ]
 
         return np.concatenate(features, axis=-1)
+
+    def feature_labels(
+        self,
+    ) -> List[str]:
+        """Return feature labels.
+
+        Args:
+            None
+
+        Returns:
+            List[str]: List of labels for all features extracted by all comparators.
+        """
+        labels = []
+        for comparator in self.comparators:
+            labels += comparator.feature_labels()
+
+        return labels
 
     def implementors(self) -> List[str]:
         """
