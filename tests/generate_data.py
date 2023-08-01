@@ -137,7 +137,7 @@ NEW_DATA = pd.merge(left=PROPERTY_SUBSET, right=data, left_on="smiles", right_on
     columns={
         "molar_mass": "molecular_mass",
         "exact_mass": "exact_molecular_mass",
-        "monoisotopic_mass": "monoisotopic_molecular_mass"
+        "monoisotopic_mass": "monoisotopic_molecular_mass",
     }
 )
 
