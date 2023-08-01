@@ -16,7 +16,6 @@ from chemcaption.molecules import Molecule
 __all__ = [
     "AbstractFeaturizer",  # Featurizer base class.
     "MultipleFeaturizer",  # Combines multiple featurizers.
-    "RDKitAdaptor",  # Higher-level featurizer. Returns lower-level featurizer instances.
 ]
 
 
@@ -207,61 +206,6 @@ class MultipleFeaturizer(AbstractFeaturizer):
         self.label = self.feature_labels()
 
         return self
-
-    def implementors(self) -> List[str]:
-        """
-        Return list of functionality implementors.
-
-        Args:
-            None
-
-        Returns:
-            List[str]: List of implementors.
-        """
-        return ["Benedict Oshomah Emoekabu"]
-
-
-class RDKitAdaptor(AbstractFeaturizer):
-    """Higher-level featurizer. Returns specific, lower-level featurizers."""
-
-    def __init__(
-        self, rdkit_function: Callable, labels: List[str], **rdkit_function_kwargs: Dict[str, Any]
-    ):
-        """Initialize class object.
-
-        Args:
-            rdkit_function (Callable): Molecule descriptor-generating function.
-                May be obtained from a chemistry featurization package like `rdkit` or custom written.
-            labels (List[str]): Feature label(s) to assign to extracted feature(s).
-            rdkit_function_kwargs (Dict[str, Any]): Keyword arguments to be parsed by `rdkit_function`.
-        """
-        super().__init__()
-        self.rdkit_function = rdkit_function
-        self._labels = labels
-        self.rdkit_function_kwargs = rdkit_function_kwargs
-
-    def featurize(
-        self,
-        molecule: Molecule,
-    ) -> np.array:
-        """
-        Featurize single molecule instance. Extract and return features from molecular object.
-
-        Args:
-            molecule (Molecule): Molecule representation.
-
-        Returns:
-            (np.array): Array containing extracted features.
-        """
-        feature = self.rdkit_function(molecule.rdkit_mol, **self.rdkit_function_kwargs)
-        feature = (
-            [
-                feature,
-            ]
-            if isinstance(feature, (int, float))
-            else feature
-        )
-        return np.array(feature).reshape((1, -1))
 
     def implementors(self) -> List[str]:
         """

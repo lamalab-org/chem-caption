@@ -134,7 +134,11 @@ PROPERTY_SUBSET = PROPERTY_BANK.drop(
 )
 
 NEW_DATA = pd.merge(left=PROPERTY_SUBSET, right=data, left_on="smiles", right_on="smiles").rename(
-    columns={"molar_mass": "molecular_mass"}
+    columns={
+        "molar_mass": "molecular_mass",
+        "exact_mass": "exact_molecular_mass",
+        "monoisotopic_mass": "monoisotopic_molecular_mass"
+    }
 )
 
 
