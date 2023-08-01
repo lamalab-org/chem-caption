@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """Utility imports."""
+
 from abc import ABC, abstractmethod
 from typing import TypeAlias, Union
 

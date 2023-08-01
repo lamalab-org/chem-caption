@@ -2,7 +2,7 @@
 
 """Featurizers for chemical bond-related information."""
 
-from typing import List, Union
+from typing import List
 
 import numpy as np
 from rdkit.Chem import rdMolDescriptors
@@ -22,7 +22,7 @@ __all__ = [
 
 
 class RotableBondCountFeaturizer(AbstractFeaturizer):
-    """Obtain number of rotable (i.e., non-terminal, non-hydrogen) bonds in a molecule."""
+    """Obtain number of rotable (i.e., single, non-terminal, non-hydrogen) bonds in a molecule."""
 
     def __init__(self):
         """Initialize instance."""
@@ -31,7 +31,7 @@ class RotableBondCountFeaturizer(AbstractFeaturizer):
 
     def featurize(self, molecule: Molecule) -> np.array:
         """
-        Count the number of rotable (single, non-terminal) bonds in a molecule.
+        Featurize single molecule instance. Count the number of rotable (single, non-terminal) bonds in a molecule.
 
         Args:
             molecule (Molecule): Molecule representation.

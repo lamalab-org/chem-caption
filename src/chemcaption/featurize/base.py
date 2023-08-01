@@ -17,7 +17,6 @@ __all__ = [
     "AbstractFeaturizer",  # Featurizer base class.
     "MultipleFeaturizer",  # Combines multiple featurizers.
     "RDKitAdaptor",  # Higher-level featurizer. Returns lower-level featurizer instances.
-    "Comparator",  # Class for comparing featurizer results amongst molecules.
 ]
 
 
@@ -30,7 +29,7 @@ class AbstractFeaturizer(ABC):
     def __init__(self):
         """Initialize class. Initialize periodic table."""
         self.periodic_table = rdkit.Chem.GetPeriodicTable()
-        self._label = list()
+        self._label = []
         self.template = None
 
     @abstractmethod
