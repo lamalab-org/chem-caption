@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""Featurizers describing the presence of substructures in a molecule."""
+"""Featurizers describing the structure of (and/or the count and/or presence of substructures in) a molecule."""
 
 from typing import Dict, List, Optional, Union
 
@@ -8,8 +8,10 @@ import numpy as np
 import rdkit
 
 from chemcaption.featurize.base import AbstractFeaturizer
-from chemcaption.molecules import InChIMolecule, SELFIESMolecule, SMILESMolecule
+from chemcaption.molecules import Molecule
 from chemcaption.presets import SMARTSPreset
+
+# Implemented molecular structure- and substructure-related featurizers
 
 __all__ = [
     "SMARTSFeaturizer",
@@ -122,18 +124,17 @@ class SMARTSFeaturizer(AbstractFeaturizer):
             self.label = [None]
         return
 
-    def featurize(
-        self, molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]
-    ) -> np.array:
+    def featurize(self, molecule: Molecule) -> np.array:
         """
-        Featurize single molecule instance. Return integer array representing the:
+        Featurize single molecule instance.
 
+        Return integer array representing the:
             - frequency or
             - presence
             of molecular patterns in a molecule.
 
         Args:
-            molecule (Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]): Molecule representation.
+            molecule (Molecule): Molecule representation.
 
         Returns:
             (np.array): Array containing integer counts/signifier of pattern presence.

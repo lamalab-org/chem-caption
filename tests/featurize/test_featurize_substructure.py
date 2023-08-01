@@ -50,7 +50,7 @@ def test_smarts_count_featurizer(test_input, expected):
 
     results = featurizer.featurize(molecule)
 
-    return np.equal(results, expected).all()
+    assert np.equal(results, expected).all()
 
 
 """Test for SMARTS substructure presence featurizer."""

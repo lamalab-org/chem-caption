@@ -1,14 +1,22 @@
 # -*- coding: utf-8 -*-
 
 """Utility imports."""
+
 from abc import ABC, abstractmethod
+from typing import TypeAlias, Union
 
 from rdkit import Chem
 from selfies import decoder
 
 # Implemented molecular representation classes.
 
-__all__ = ["MoleculeBase", "SMILESMolecule", "SELFIESMolecule", "InChIMolecule"]
+__all__ = ["MoleculeBase", "SMILESMolecule", "SELFIESMolecule", "InChIMolecule", "Molecule"]
+
+# Define molecule type alias
+Molecule: TypeAlias = Union["SMILESMolecule", "InChIMolecule", "SELFIESMolecule"]
+
+"""Molecular type alias."""
+
 
 """Abstract classes."""
 

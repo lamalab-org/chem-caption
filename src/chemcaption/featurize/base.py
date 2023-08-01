@@ -3,20 +3,19 @@
 """Abstract base class and wrappers for featurizers."""
 
 from abc import ABC, abstractmethod
-from typing import Any, Callable, Dict, List, Sequence, Union
+from typing import List
 
 import numpy as np
 import rdkit
 
 from chemcaption.featurize.text import Prompt
-from chemcaption.molecules import InChIMolecule, SELFIESMolecule, SMILESMolecule
+from chemcaption.molecules import Molecule
 
 # Implemented abstract and high-level classes
 
 __all__ = [
-    "AbstractFeaturizer",
-    "MultipleFeaturizer",
-    "RDKitAdaptor",
+    "AbstractFeaturizer",  # Featurizer base class.
+    "MultipleFeaturizer",  # Combines multiple featurizers.
 ]
 
 
@@ -29,24 +28,20 @@ class AbstractFeaturizer(ABC):
     def __init__(self):
         """Initialize class. Initialize periodic table."""
         self.periodic_table = rdkit.Chem.GetPeriodicTable()
-        self._label = list()
+        self._label = []
         self.template = None
 
     @abstractmethod
-    def featurize(
-        self, molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]
-    ) -> np.array:
+    def featurize(self, molecule: Molecule) -> np.array:
         """Featurize single Molecule instance."""
         raise NotImplementedError
 
-    def featurize_many(
-        self, molecules: Sequence[Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]]
-    ) -> np.array:
+    def featurize_many(self, molecules: List[Molecule]) -> np.array:
         """
         Featurize a sequence of Molecule objects.
 
         Args:
-            molecules (Sequence[Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]]):
+            molecules (Sequence[Molecule]):
                 A sequence of molecule representations.
 
         Returns:
@@ -56,12 +51,12 @@ class AbstractFeaturizer(ABC):
 
     def text_featurize(
         self,
-        molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule],
+        molecule: Molecule,
     ) -> Prompt:
         """Embed features in Prompt instance.
 
         Args:
-            molecule (Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]): Molecule representation.
+            molecule (Molecule): Molecule representation.
 
         Returns:
             (Prompt): Instance of Prompt containing relevant information extracted from `molecule`.
@@ -90,12 +85,12 @@ class AbstractFeaturizer(ABC):
 
     def text_featurize_many(
         self,
-        molecules: Sequence[Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]],
+        molecules: List[Molecule],
     ) -> List[Prompt]:
         """Embed features in Prompt instance for multiple molecules.
 
         Args:
-            molecules (Sequence[Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]]):
+            molecules (Sequence[Molecule]):
                 A sequence of molecule representations.
 
         Returns:
@@ -157,24 +152,22 @@ class AbstractFeaturizer(ABC):
 class MultipleFeaturizer(AbstractFeaturizer):
     """A featurizer to combine featurizers."""
 
-    def __init__(self, featurizer_list: List[AbstractFeaturizer]):
+    def __init__(self, featurizers: List[AbstractFeaturizer]):
         """Initialize class instance.
 
         Args:
-            featurizer_list (List[AbstractFeaturizer]): A list of featurizer objects.
+            featurizers (List[AbstractFeaturizer]): A list of featurizer objects.
 
         """
         super().__init__()
-        self.featurizers = featurizer_list
+        self.featurizers = featurizers
 
-    def featurize(
-        self, molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]
-    ) -> np.array:
+    def featurize(self, molecule: Molecule) -> np.array:
         """
         Featurize a molecule instance. Returns results from multiple lower-level featurizers.
 
         Args:
-            molecule (Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]): Molecule representation.
+            molecule (Molecule): Molecule representation.
 
         Returns:
             features (np.array), array shape [1, num_featurizers]: Array containing features
@@ -200,74 +193,19 @@ class MultipleFeaturizer(AbstractFeaturizer):
 
         return labels
 
-    def fit_on_featurizers(self, featurizer_list: List[AbstractFeaturizer]):
+    def fit_on_featurizers(self, featurizers: List[AbstractFeaturizer]):
         """Fit MultipleFeaturizer instance on lower-level featurizers.
 
         Args:
-            featurizer_list (List[AbstractFeaturizer]): List of lower-level featurizers.
+            featurizers (List[AbstractFeaturizer]): List of lower-level featurizers.
 
         Returns:
             self : Instance of self with state updated.
         """
-        self.featurizers = featurizer_list
+        self.featurizers = featurizers
         self.label = self.feature_labels()
 
         return self
-
-    def implementors(self) -> List[str]:
-        """
-        Return list of functionality implementors.
-
-        Args:
-            None
-
-        Returns:
-            List[str]: List of implementors.
-        """
-        return ["Benedict Oshomah Emoekabu"]
-
-
-class RDKitAdaptor(AbstractFeaturizer):
-    """Higher-level featurizer. Returns specific, lower-level featurizers."""
-
-    def __init__(
-        self, rdkit_function: Callable, labels: List[str], **rdkit_function_kwargs: Dict[str, Any]
-    ):
-        """Initialize class object.
-
-        Args:
-            rdkit_function (Callable): Molecule descriptor-generating function.
-                May be obtained from a chemistry featurization package like `rdkit` or custom written.
-            labels (List[str]): Feature label(s) to assign to extracted feature(s).
-            rdkit_function_kwargs (Dict[str, Any]): Keyword arguments to be parsed by `rdkit_function`.
-        """
-        super().__init__()
-        self.rdkit_function = rdkit_function
-        self._labels = labels
-        self.rdkit_function_kwargs = rdkit_function_kwargs
-
-    def featurize(
-        self,
-        molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule],
-    ) -> np.array:
-        """
-        Featurize single molecule instance. Extract and return features from molecular object.
-
-        Args:
-            molecule (Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]): Molecule representation.
-
-        Returns:
-            (np.array): Array containing extracted features.
-        """
-        feature = self.rdkit_function(molecule.rdkit_mol, **self.rdkit_function_kwargs)
-        feature = (
-            [
-                feature,
-            ]
-            if isinstance(feature, (int, float))
-            else feature
-        )
-        return np.array(feature).reshape((1, -1))
 
     def implementors(self) -> List[str]:
         """
