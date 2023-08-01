@@ -14,6 +14,9 @@ __all__ = ["MoleculeBase", "SMILESMolecule", "SELFIESMolecule", "InChIMolecule",
 # Define molecule type alias
 Molecule: TypeAlias = Union["SMILESMolecule", "InChIMolecule", "SELFIESMolecule"]
 
+"""Molecular type alias."""
+
+
 """Abstract classes."""
 
 
