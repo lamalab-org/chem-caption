@@ -5,9 +5,9 @@
 from typing import List
 
 import numpy as np
-from rdkit.Chem import Descriptors, rdMolDescriptors
+from rdkit.Chem import rdMolDescriptors
 
-from chemcaption.featurize.base import AbstractFeaturizer, Comparator
+from chemcaption.featurize.base import AbstractFeaturizer
 from chemcaption.molecules import Molecule
 
 # Implemented proton-, electron- and charge-related featurizers
@@ -15,10 +15,6 @@ from chemcaption.molecules import Molecule
 __all__ = [
     "HAcceptorCountFeaturizer",
     "HDonorCountFeaturizer",
-    "ValenceElectronCountFeaturizer",
-    "IsoelectronicDifferenceFeaturizer",
-    "IsoelectronicityFeaturizer",
-    "IsoelectronicComparator",
 ]
 
 

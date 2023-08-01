@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""Featurizers describing the presence of substructures in a molecule."""
+"""Featurizers describing the structure of (and/or the count and/or presence of substructures in) a molecule."""
 
 from typing import Dict, List, Optional, Union
 
@@ -10,6 +10,8 @@ import rdkit
 from chemcaption.featurize.base import AbstractFeaturizer
 from chemcaption.molecules import Molecule
 from chemcaption.presets import SMARTSPreset
+
+# Implemented molecular structure- and substructure-related featurizers
 
 __all__ = [
     "SMARTSFeaturizer",

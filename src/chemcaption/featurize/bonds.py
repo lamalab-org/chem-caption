@@ -2,7 +2,7 @@
 
 """Featurizers for chemical bond-related information."""
 
-from typing import List, Union
+from typing import List
 
 import numpy as np
 from rdkit.Chem import rdMolDescriptors
