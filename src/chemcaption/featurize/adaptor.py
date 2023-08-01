@@ -5,21 +5,26 @@
 from typing import Any, Callable, Dict, List
 
 import numpy as np
-from rdkit.Chem import Descriptors
+from rdkit.Chem import Descriptors, rdMolDescriptors
 
-from chemcaption.molecules import Molecule
 from chemcaption.featurize.base import AbstractFeaturizer
+from chemcaption.molecules import Molecule
 
-# Implemented abstract and high-level classes
+# Implemented high- and low-level adaptor classes
 
 __all__ = [
     "RDKitAdaptor",  # Higher-level featurizer. Returns lower-level featurizer instances.
     "MolecularMassAdaptor",  # Molar mass featurizer. Subclass of RDKitAdaptor
     "ExactMolecularMassAdaptor",
-    "MonoisotopicMolecularMassAdaptor"
+    "MonoisotopicMolecularMassAdaptor",
+    "HydrogenDonorCountAdaptor",
+    "HydrogenAcceptorCountAdaptor",
+    "RotableBondCountAdaptor",
+    "StrictRotableBondCountAdaptor",
 ]
 
 """High-level featurizer adaptor."""
+
 
 class RDKitAdaptor(AbstractFeaturizer):
     """Higher-level featurizer. Returns specific, lower-level featurizers."""
@@ -77,6 +82,7 @@ class RDKitAdaptor(AbstractFeaturizer):
 
 
 """Lower level featurizer adaptors."""
+
 
 class MolecularMassAdaptor(RDKitAdaptor):
     """Adaptor to extract molar mass information."""
@@ -153,7 +159,9 @@ class MonoisotopicMolecularMassAdaptor(RDKitAdaptor):
 
     def __init__(self):
         """Initialize instance."""
-        super().__init__(rdkit_function=Descriptors.ExactMolWt, labels=["monoisotopic_molecular_mass"])
+        super().__init__(
+            rdkit_function=Descriptors.ExactMolWt, labels=["monoisotopic_molecular_mass"]
+        )
 
     def featurize(
         self,
@@ -167,6 +175,158 @@ class MonoisotopicMolecularMassAdaptor(RDKitAdaptor):
 
         Returns:
             (np.array): Array containing monoisotopic molecular mass.
+        """
+        return super().featurize(molecule=molecule)
+
+    def implementors(self) -> List[str]:
+        """
+        Return list of functionality implementors.
+
+        Args:
+            None
+
+        Returns:
+            List[str]: List of implementors.
+        """
+        return ["Benedict Oshomah Emoekabu"]
+
+
+class HydrogenDonorCountAdaptor(RDKitAdaptor):
+    """Adaptor to extract number of Hydrogen bond donors."""
+
+    def __init__(self):
+        """Initialize instance."""
+        super().__init__(rdkit_function=Descriptors.NumHDonors, labels=["num_hydrogen_bond_donors"])
+
+    def featurize(
+        self,
+        molecule: Molecule,
+    ) -> np.array:
+        """
+        Featurize single molecule instance. Extract and return the number of Hydrogen bond donors in molecular instance.
+
+        Args:
+            molecule (Molecule): Molecule representation.
+
+        Returns:
+            (np.array): Array containing number of Hydrogen bond donors.
+        """
+        return super().featurize(molecule=molecule)
+
+    def implementors(self) -> List[str]:
+        """
+        Return list of functionality implementors.
+
+        Args:
+            None
+
+        Returns:
+            List[str]: List of implementors.
+        """
+        return ["Benedict Oshomah Emoekabu"]
+
+
+class HydrogenAcceptorCountAdaptor(RDKitAdaptor):
+    """Adaptor to extract number of Hydrogen bond acceptors."""
+
+    def __init__(self):
+        """Initialize instance."""
+        super().__init__(
+            rdkit_function=Descriptors.NumHAcceptors, labels=["num_hydrogen_bond_acceptors"]
+        )
+
+    def featurize(
+        self,
+        molecule: Molecule,
+    ) -> np.array:
+        """
+        Featurize single molecule instance. Extract and return the number of Hydrogen bond acceptors in molecular instance.
+
+        Args:
+            molecule (Molecule): Molecule representation.
+
+        Returns:
+            (np.array): Array containing number of Hydrogen bond acceptors.
+        """
+        return super().featurize(molecule=molecule)
+
+    def implementors(self) -> List[str]:
+        """
+        Return list of functionality implementors.
+
+        Args:
+            None
+
+        Returns:
+            List[str]: List of implementors.
+        """
+        return ["Benedict Oshomah Emoekabu"]
+
+
+class RotableBondCountAdaptor(RDKitAdaptor):
+    """Adaptor to extract number of rotatable bonds (non-strict criterion)."""
+
+    def __init__(self):
+        """Initialize instance."""
+        super().__init__(
+            rdkit_function=rdMolDescriptors.CalcNumRotatableBonds,
+            labels=["num_rotable_bonds"],
+            **{"strict": False},
+        )
+
+    def featurize(
+        self,
+        molecule: Molecule,
+    ) -> np.array:
+        """
+        Featurize single molecule instance. Extract and return the number of rotable bonds in molecular instance.
+
+        Args:
+            molecule (Molecule): Molecule representation.
+
+        Returns:
+            (np.array): Array containing number of rotable bonds in molecule.
+        """
+        return super().featurize(molecule=molecule)
+
+    def implementors(self) -> List[str]:
+        """
+        Return list of functionality implementors.
+
+        Args:
+            None
+
+        Returns:
+            List[str]: List of implementors.
+        """
+        return ["Benedict Oshomah Emoekabu"]
+
+
+class StrictRotableBondCountAdaptor(RDKitAdaptor):
+    """Adaptor to extract number of rotatable bonds (strict criterion)."""
+
+    def __init__(self):
+        """Initialize instance."""
+        super().__init__(
+            rdkit_function=rdMolDescriptors.CalcNumRotatableBonds,
+            labels=["num_rotable_bonds_strict"],
+            **{"strict": True},
+        )
+
+    def featurize(
+        self,
+        molecule: Molecule,
+    ) -> np.array:
+        """
+        Featurize single molecule instance.
+
+        Extract and return the number of rotable bonds in molecular instance (strict criterion).
+
+        Args:
+            molecule (Molecule): Molecule representation.
+
+        Returns:
+            (np.array): Array containing number of strictly rotable bonds.
         """
         return super().featurize(molecule=molecule)
 
