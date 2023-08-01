@@ -2,13 +2,13 @@
 
 """Featurizers for chemical bond-related information."""
 
-from typing import List, Union
+from typing import List
 
 import numpy as np
 from rdkit.Chem import rdMolDescriptors
 
 from chemcaption.featurize.base import AbstractFeaturizer
-from chemcaption.molecules import InChIMolecule, SELFIESMolecule, SMILESMolecule
+from chemcaption.molecules import Molecule
 
 # Implemented bond-related featurizers
 
@@ -22,21 +22,19 @@ __all__ = [
 
 
 class RotableBondCountFeaturizer(AbstractFeaturizer):
-    """Obtain number of rotable (i.e., non-terminal, non-hydrogen) bonds in a molecule."""
+    """Obtain number of rotable (i.e., single, non-terminal, non-hydrogen) bonds in a molecule."""
 
     def __init__(self):
         """Initialize instance."""
         super().__init__()
         self.label = ["num_rotable_bonds"]
 
-    def featurize(
-        self, molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]
-    ) -> np.array:
+    def featurize(self, molecule: Molecule) -> np.array:
         """
-        Count the number of rotable (single, non-terminal) bonds in a molecule.
+        Featurize single molecule instance. Count the number of rotable (single, non-terminal) bonds in a molecule.
 
         Args:
-            molecule (Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]): Molecule representation.
+            molecule (Molecule): Molecule representation.
 
         Returns:
             num_rotable (np.array): Number of rotable bonds in molecule.
@@ -68,13 +66,11 @@ class BondRotabilityFeaturizer(AbstractFeaturizer):
         super().__init__()
         self.label = ["rotable_proportion", "non_rotable_proportion"]
 
-    def _get_bond_types(
-        self, molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]
-    ) -> List[float]:
+    def _get_bond_types(self, molecule: Molecule) -> List[float]:
         """Return distribution of bonds based on rotability.
 
         Args:
-            molecule (Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]): Molecular representation.
+            molecule (Molecule): Molecular representation.
 
         Returns:
             bond_distribution (List[float]): Distribution of bonds based on rotability.
@@ -87,13 +83,11 @@ class BondRotabilityFeaturizer(AbstractFeaturizer):
 
         return bond_distribution
 
-    def featurize(
-        self, molecule: Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]
-    ) -> np.array:
+    def featurize(self, molecule: Molecule) -> np.array:
         """Featurize single molecule instance. Return distribution of bonds based on rotability.
 
         Args:
-            molecule (Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]): Molecular representation.
+            molecule (Molecule): Molecular representation.
 
         Returns:
             np.array: Array containing distribution of the bonds based on rotability.
