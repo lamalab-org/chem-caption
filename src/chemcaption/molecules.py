@@ -3,7 +3,8 @@
 """Utility imports."""
 
 from abc import ABC, abstractmethod
-from typing import TypeAlias, Union
+from typing import Union
+from typing_extensions import TypeAlias
 
 import networkx as nx
 import rdkit
