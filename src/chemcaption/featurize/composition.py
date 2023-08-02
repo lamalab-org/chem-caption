@@ -19,6 +19,7 @@ __all__ = [
     "ElementMassProportionFeaturizer",
     "ElementCountFeaturizer",
     "ElementCountProportionFeaturizer",
+    "AtomCountFeaturizer",
     "DegreeOfUnsaturationFeaturizer",
 ]
 
@@ -359,6 +360,40 @@ class ElementCountProportionFeaturizer(ElementCountFeaturizer):
         return ["Benedict Oshomah Emoekabu"]
 
 
+class AtomCountFeaturizer(ElementCountFeaturizer):
+    """Get the number of atoms in a molecule."""
+
+    def __init__(self):
+        """Initialize instance."""
+        super().__init__()
+
+        self.label = ["num_atoms"]
+
+    def featurize(self, molecule: Molecule) -> np.array:
+        """
+        Featurize single molecule instance. Get the atom count proportion for elements in a molecule.
+
+        Args:
+            molecule (Molecule): Molecular representation.
+
+        Returns:
+            np.array: Number of atoms in `molecule`.
+        """
+        return np.array([len(molecule.get_atoms(hydrogen=True))]).reshape((1, -1))
+
+    def implementors(self) -> List[str]:
+        """
+        Return list of functionality implementors.
+
+        Args:
+            None
+
+        Returns:
+            List[str]: List of implementors.
+        """
+        return ["Benedict Oshomah Emoekabu"]
+
+
 class DegreeOfUnsaturationFeaturizer(AbstractFeaturizer):
     """Return the degree of unsaturation."""
 
@@ -380,7 +415,7 @@ class DegreeOfUnsaturationFeaturizer(AbstractFeaturizer):
         self._label = ["degree_of_unsaturation"]
 
     def _get_degree_of_unsaturation_for_mol(self, molecule: Molecule):
-        """Returns the degree of unsaturation for a molecule.
+        """Return the degree of unsaturation for a molecule.
 
         .. math::
             {\displaystyle \mathrm {DU} =1+{\tfrac {1}{2}}\sum n_{i}(v_{i}-2)}

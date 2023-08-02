@@ -3,14 +3,25 @@
 """Utility imports."""
 
 from abc import ABC, abstractmethod
-from typing import TypeAlias, Union
+from typing import Union
+from typing_extensions import TypeAlias
 
+import networkx as nx
+import rdkit
 from rdkit import Chem
 from selfies import decoder
 
 # Implemented molecular representation classes.
 
-__all__ = ["MoleculeBase", "SMILESMolecule", "SELFIESMolecule", "InChIMolecule", "Molecule"]
+__all__ = [
+    "Molecule",
+    "MoleculeGraph",
+    "MoleculeBase",
+    "SMILESMolecule",
+    "SELFIESMolecule",
+    "InChIMolecule",
+]
+
 
 # Define molecule type alias
 Molecule: TypeAlias = Union["SMILESMolecule", "InChIMolecule", "SELFIESMolecule"]
@@ -18,7 +29,75 @@ Molecule: TypeAlias = Union["SMILESMolecule", "InChIMolecule", "SELFIESMolecule"
 """Molecular type alias."""
 
 
-"""Abstract classes."""
+"""Graph representation"""
+
+
+class MoleculeGraph(nx.Graph):
+    """Graph representation for molecular instances."""
+
+    def __init__(self, molecule: Chem.Mol):
+        """Initialize instance."""
+        super().__init__()
+
+        self.molecule = molecule
+        self.periodic_table = rdkit.Chem.GetPeriodicTable()
+        self.graph = self.molecule_to_graph()
+        self._hash = None
+
+    def molecule_to_graph(self):
+        """Convert molecule object to graph representation.
+
+        Args:
+            None
+
+        Returns:
+            None
+        """
+        graph = nx.Graph()
+
+        # Generate nodes
+
+        nodes = [
+            (
+                atom.GetIdx(),
+                {
+                    "atomic_mass": self.periodic_table.GetAtomicWeight(atom.GetAtomicNum()),
+                    "atomic_num": atom.GetAtomicNum(),
+                    "atom_symbol": self.periodic_table.GetElementSymbol(atom.GetAtomicNum()),
+                },
+            )
+            for atom in self.molecule.GetAtoms()
+        ]
+
+        # Generate edges
+
+        edges = [
+            (bond.GetBeginAtomIdx(), bond.GetEndAtomIdx(), {"bond_type": bond.GetBondType()})
+            for bond in self.molecule.GetBonds()
+        ]
+
+        # Store nodes and edges in graph
+
+        graph.add_nodes_from(nodes_for_adding=nodes)
+        graph.add_edges_from(ebunch_to_add=edges)
+
+        return graph
+
+    def weisfeiler_lehman_graph_hash(self):
+        """Return graph hash according to Weisfeiler-Lehman isomorphism test.
+
+        Args:
+            None
+
+        Returns:
+            None
+        """
+        if not self._hash:
+            self._hash = nx.weisfeiler_lehman_graph_hash(self.graph)
+        return self._hash
+
+
+"""Abstract class."""
 
 
 class MoleculeBase(ABC):
@@ -80,14 +159,13 @@ class MoleculeBase(ABC):
         """Get composition of molecule."""
         return Chem.rdMolDescriptors.CalcMolFormula(self.rdkit_mol)
 
+    def to_graph(self) -> MoleculeGraph:
+        """Convert molecule to graph."""
+        graph = MoleculeGraph(molecule=self.reveal_hydrogens())
+        return graph
 
-"""
-Lower level Molecule classes
 
-1. SMILESMolecule
-2. SELFIESMolecule
-3. InChIMolecule
-"""
+"""Lower level Molecule classes"""
 
 
 class SMILESMolecule(MoleculeBase):

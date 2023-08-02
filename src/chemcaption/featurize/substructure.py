@@ -15,6 +15,7 @@ from chemcaption.presets import SMARTSPreset
 
 __all__ = [
     "SMARTSFeaturizer",
+    "IsomorphismFeaturizer",
 ]
 
 
@@ -162,6 +163,42 @@ class SMARTSFeaturizer(AbstractFeaturizer):
             (List[str]): List of names of extracted features.
         """
         return list(map(lambda x: "".join([("_" if c in "[]()-" else c) for c in x]), self.label))
+
+    def implementors(self) -> List[str]:
+        """
+        Return list of functionality implementors.
+
+        Args:
+            None
+
+        Returns:
+            List[str]: List of implementors.
+        """
+        return ["Benedict Oshomah Emoekabu"]
+
+
+class IsomorphismFeaturizer(AbstractFeaturizer):
+    """Convert molecule graph to adjacency matrix."""
+
+    def __init__(self):
+        """Instantiate class."""
+        super().__init__()
+        self.label = ["weisfeiler_lehman_hash"]
+
+    def featurize(self, molecule: Molecule) -> np.array:
+        """
+        Featurize single molecule instance. Extract and return features from molecular object.
+
+        Args:
+            molecule (Molecule): Molecule representation.
+
+        Returns:
+            (np.array): Array containing int representation of isoelectronic status between
+                `self.reference_molecule` and `molecule`.
+        """
+        molecule_graph = molecule.to_graph()
+
+        return molecule_graph.weisfeiler_lehman_graph_hash()
 
     def implementors(self) -> List[str]:
         """
