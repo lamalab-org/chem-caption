@@ -13,10 +13,7 @@ from chemcaption.presets import SMARTSPreset
 
 # Implemented molecular structure- and substructure-related featurizers
 
-__all__ = [
-    "SMARTSFeaturizer",
-    "IsomorphismFeaturizer",
-]
+__all__ = ["SMARTSFeaturizer", "IsomorphismFeaturizer", "CarbonTopologyCountFeaturizer"]
 
 
 """Featurizer to obtain the presence or count of SMARTS in molecules."""
@@ -178,7 +175,7 @@ class SMARTSFeaturizer(AbstractFeaturizer):
 
 
 class IsomorphismFeaturizer(AbstractFeaturizer):
-    """Convert molecule graph to adjacency matrix."""
+    """Convert molecule graph to Weisfeiler-Lehman graph hash."""
 
     def __init__(self):
         """Instantiate class."""
@@ -211,3 +208,57 @@ class IsomorphismFeaturizer(AbstractFeaturizer):
             List[str]: List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]
+
+
+class CarbonTopologyCountFeaturizer(AbstractFeaturizer):
+    """Featurizer to return number of unique Carbon environments in a molecule."""
+
+    def __init__(self):
+        """Initialize class object."""
+        super().__init__()
+        self._label = ["num_carbon_environments"]
+
+    def featurize(self, molecule: Molecule) -> np.array:
+        """
+        Featurize single molecule instance. Extract number of unique Carbon environments.
+
+        Args:
+            molecule (Molecule): Molecule representation.
+
+        Returns:
+            (np.array): Array containing number of unique Carbon environments.
+        """
+        return np.array(
+            self._get_number_of_topologically_distinct_atoms(molecule=molecule)
+        ).reshape((1, -1))
+
+    def _get_number_of_topologically_distinct_atoms(self, molecule: Molecule):
+        """Return the number off unique Carbons based on environmental topology.
+
+        Args:
+            molecule (Molecule): Molecular instance.
+
+        Returns:
+            (int): Number of unique environments.
+        """
+        # Get unique canonical atom rankings
+        equivalences = set(rdkit.Chem.CanonicalRankAtoms(molecule.rdkit_mol, breakTies=False))
+
+        # Select the unique carbon environments
+        atoms = [molecule.rdkit_mol.GetAtomWithIdx(i) for i in equivalences]
+
+        new_equivalences = [atom for atom in atoms if atom.GetAtomicNum() == 6]
+        # Count them
+        return len(new_equivalences)
+
+    def implementors(self) -> List[str]:
+        """
+        Return list of functionality implementors.
+
+        Args:
+            None
+
+        Returns:
+            List[str]: List of implementors.
+        """
+        return ["Benedict Oshomah Emoekabu", "Kevin Maik Jablonka"]
