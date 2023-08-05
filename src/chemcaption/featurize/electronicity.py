@@ -30,9 +30,7 @@ class HydrogenAcceptorCountFeaturizer(AbstractFeaturizer):
         """Get the number of Hydrogen bond acceptors present in a molecule."""
         super().__init__()
 
-        self.template = (
-            "What is the number of hydrogen bond acceptors in the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
-        )
+        self.template = "How many hydrogen bond acceptors are in the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
         self._names = [
             {
                 "noun": "number of hydrogen bond acceptors",
@@ -76,9 +74,7 @@ class HydrogenDonorCountFeaturizer(AbstractFeaturizer):
         """Get the number of Hydrogen bond donors present in a molecule."""
         super().__init__()
 
-        self.template = (
-            "What is the number of hydrogen bond donors in the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
-        )
+        self.template = "What is the number of hydrogen bond donors in the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
         self._names = [
             {
                 "noun": "number of hydrogen bond donors",
@@ -127,7 +123,8 @@ class ValenceElectronCountFeaturizer(AbstractFeaturizer):
         super().__init__()
 
         self.template = (
-            "How many valence electrons does the molecule with {REPR_SYSTEM} `{REPR_STRING}` have in its outer shell?"
+            "How many valence electrons does the molecule with {REPR_SYSTEM} `{REPR_STRING}` "
+            "have in its outer shell?"
         )
         self._names = [
             {
@@ -138,7 +135,7 @@ class ValenceElectronCountFeaturizer(AbstractFeaturizer):
             },
             {
                 "noun": "count of valence electrons",
-            }
+            },
         ]
 
         self.label = ["num_valence_electrons"]

@@ -28,9 +28,7 @@ class RotableBondCountFeaturizer(AbstractFeaturizer):
         """Initialize instance."""
         super().__init__()
 
-        self.template = (
-            "What is the number of rotatable bonds in the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
-        )
+        self.template = "What is the number of rotatable bonds in the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
         self._names = [
             {
                 "noun": "number of rotatable bonds",

@@ -30,7 +30,7 @@ __all__ = [
     "test_rdkit_adaptor_num_hdonor_featurizer",
     "test_rdkit_adaptor_strict_num_rotable_bond_featurizer",
     "test_rdkit_adaptor_non_strict_num_rotable_bond_featurizer",
-    "test_rdkit_adaptor_valence_electron_count_featurizer"
+    "test_rdkit_adaptor_valence_electron_count_featurizer",
 ]
 
 

@@ -21,7 +21,7 @@ __all__ = [
     "HydrogenAcceptorCountAdaptor",
     "RotableBondCountAdaptor",
     "StrictRotableBondCountAdaptor",
-    "ValenceElectronCountAdaptor"
+    "ValenceElectronCountAdaptor",
 ]
 
 """High-level featurizer adaptor."""
@@ -344,7 +344,6 @@ class StrictRotableBondCountAdaptor(RDKitAdaptor):
         return ["Benedict Oshomah Emoekabu"]
 
 
-
 class ValenceElectronCountAdaptor(RDKitAdaptor):
     """Adaptor to extract for valence electron count."""
 
@@ -354,11 +353,12 @@ class ValenceElectronCountAdaptor(RDKitAdaptor):
         Args:
             None
         """
-        super().__init__(rdkit_function=Descriptors.NumValenceElectrons, labels=["num_valence_electrons"], )
-
-        self.template = (
-            "How many valence electrons does the molecule with {REPR_SYSTEM} `{REPR_STRING}` have in its outer shell?"
+        super().__init__(
+            rdkit_function=Descriptors.NumValenceElectrons,
+            labels=["num_valence_electrons"],
         )
+
+        self.template = "How many valence electrons does the molecule with {REPR_SYSTEM} `{REPR_STRING}` have in its outer shell?"
         self._names = [
             {
                 "noun": "number of valence electrons",
@@ -368,7 +368,7 @@ class ValenceElectronCountAdaptor(RDKitAdaptor):
             },
             {
                 "noun": "count of valence electrons",
-            }
+            },
         ]
 
     def featurize(self, molecule: Molecule) -> np.array:

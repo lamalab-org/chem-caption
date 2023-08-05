@@ -75,7 +75,9 @@ class SMARTSFeaturizer(AbstractFeaturizer):
         self.label = [self.prefix + element.lower() + self.suffix for element in self.names]
 
         self.template = (
-            "What is the " + self.suffix[1:] + " of the provided functional groups (i.e., SMARTS patterns)"
+            "What is the "
+            + self.suffix[1:]
+            + " of the provided functional groups (i.e., SMARTS patterns)"
             " in the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
         )
         self._names = [
@@ -195,7 +197,7 @@ class IsomorphismFeaturizer(AbstractFeaturizer):
         super().__init__()
 
         self.template = (
-            "According to the Weisfeiler-Lehman isomorphism test, wWhat is the graph hash for "
+            "According to the Weisfeiler-Lehman isomorphism test, what is the graph hash for "
             "the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
         )
         self._names = [
@@ -219,7 +221,7 @@ class IsomorphismFeaturizer(AbstractFeaturizer):
         """
         molecule_graph = molecule.to_graph()
 
-        return molecule_graph.weisfeiler_lehman_graph_hash()
+        return np.array(molecule_graph.weisfeiler_lehman_graph_hash())
 
     def implementors(self) -> List[str]:
         """

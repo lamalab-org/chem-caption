@@ -28,8 +28,8 @@ class LipinskiViolationsFeaturizer(AbstractFeaturizer):
         self.template = (
             "How many violations of the Lipinski Rules of Five does"
             " the molecule with {REPR_SYSTEM} `{REPR_STRING}` have?",
-            "How many failures of the drug suirablity test would the molecule with {REPR_SYSTEM} `{REPR_STRING}`"
-            " have with respect to the Lipinski Rule of Fice?"
+            "How many failures of the drug suitability tests would the molecule with {REPR_SYSTEM} `{REPR_STRING}`"
+            " have with respect to the Lipinski Rules of Five?",
         )
         self._names = [
             {
