@@ -27,6 +27,15 @@ class RotableBondCountFeaturizer(AbstractFeaturizer):
     def __init__(self):
         """Initialize instance."""
         super().__init__()
+
+        self.template = (
+            "What is the number of rotatable bonds in the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
+        )
+        self._names = [
+            {
+                "noun": "number of rotatable bonds",
+            }
+        ]
         self.label = ["num_rotable_bonds"]
 
     def featurize(self, molecule: Molecule) -> np.array:
@@ -64,6 +73,16 @@ class BondRotabilityFeaturizer(AbstractFeaturizer):
     def __init__(self):
         """Initialize instance."""
         super().__init__()
+
+        self.template = (
+            "What are the proportions of rotatable and non-rotatable bonds"
+            " in the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
+        )
+        self._names = [
+            {
+                "noun": "proportions of rotatable and non-rotatable bonds",
+            }
+        ]
         self.label = ["rotable_proportion", "non_rotable_proportion"]
 
     def _get_bond_types(self, molecule: Molecule) -> List[float]:

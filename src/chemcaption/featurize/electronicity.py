@@ -29,6 +29,16 @@ class HydrogenAcceptorCountFeaturizer(AbstractFeaturizer):
     def __init__(self):
         """Get the number of Hydrogen bond acceptors present in a molecule."""
         super().__init__()
+
+        self.template = (
+            "What is the number of hydrogen bond acceptors in the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
+        )
+        self._names = [
+            {
+                "noun": "number of hydrogen bond acceptors",
+            }
+        ]
+
         self.label = ["num_hydrogen_bond_acceptors"]
 
     def featurize(self, molecule: Molecule) -> np.array:
@@ -65,6 +75,16 @@ class HydrogenDonorCountFeaturizer(AbstractFeaturizer):
     def __init__(self):
         """Get the number of Hydrogen bond donors present in a molecule."""
         super().__init__()
+
+        self.template = (
+            "What is the number of hydrogen bond donors in the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
+        )
+        self._names = [
+            {
+                "noun": "number of hydrogen bond donors",
+            }
+        ]
+
         self.label = ["num_hydrogen_bond_donors"]
 
     def featurize(self, molecule: Molecule) -> np.array:
@@ -96,7 +116,7 @@ class HydrogenDonorCountFeaturizer(AbstractFeaturizer):
 
 
 class ValenceElectronCountFeaturizer(AbstractFeaturizer):
-    """A featurizer for molecular electronicity-based comparison."""
+    """A featurizer for extracting valence electron count."""
 
     def __init__(self):
         """Initialize class.
@@ -105,6 +125,22 @@ class ValenceElectronCountFeaturizer(AbstractFeaturizer):
             None
         """
         super().__init__()
+
+        self.template = (
+            "How many valence electrons does the molecule with {REPR_SYSTEM} `{REPR_STRING}` have in its outer shell?"
+        )
+        self._names = [
+            {
+                "noun": "number of valence electrons",
+            },
+            {
+                "noun": "valence electron count",
+            },
+            {
+                "noun": "count of valence electrons",
+            }
+        ]
+
         self.label = ["num_valence_electrons"]
 
     def featurize(self, molecule: Molecule) -> np.array:

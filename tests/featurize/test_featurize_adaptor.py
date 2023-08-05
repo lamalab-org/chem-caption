@@ -165,3 +165,22 @@ def test_rdkit_adaptor_non_strict_num_rotable_bond_featurizer(test_input, expect
     results = featurizer.featurize(molecule)
 
     assert np.equal(results, expected.astype(int)).all()
+
+
+"""Test for number of rotatable bonds featurizer (non-strict) via higher-level RDKitAdaptor."""
+
+
+@pytest.mark.parametrize(
+    "test_input, expected",
+    extract_molecule_properties(
+        property_bank=PROPERTY_BANK, representation_name=KIND, property="num_rotable_bonds"
+    ),
+)
+def test_rdkit_adaptor_valence_electron_count_featurizer(test_input, expected):
+    """Test RDKitAdaptor as ValenceElectronCountFeaturizer."""
+    featurizer = RotableBondCountAdaptor()
+    molecule = MOLECULE(test_input)
+
+    results = featurizer.featurize(molecule)
+
+    assert np.equal(results, expected.astype(int)).all()
