@@ -25,6 +25,7 @@ class Prompt:
     representation_type: Union[str, float, int, bool, np.array]
     completion_type: Union[str, float, int, bool, np.array]
     completion_names: Union[str, List[str]]
+    completion_labels: Union[str, List[str]]
     template: Optional[str] = None
 
     def __dict__(self) -> Dict[str, Any]:
@@ -42,6 +43,7 @@ class Prompt:
             "prompt": self.template,
             "completion": self.completion,
             "completion_names": self.completion_names,
+            "completion_labels": self.completion_labels,
             "filled_prompt": self.fill_template(),
         }
 

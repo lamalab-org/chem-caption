@@ -76,15 +76,16 @@ class AbstractFeaturizer(ABC):
         representation = molecule.representation_string
         representation_type = molecule.__repr__().split("Mole")[0]
 
-        completion_names = self.feature_labels()
-        completion_names = completion_names[0] if len(completion_names) == 0 else completion_names
+        completion_labels = self.feature_labels()
+        completion_labels = completion_labels[0] if len(completion_labels) == 0 else completion_labels
 
         return Prompt(
             completion=completion,
             completion_type=completion_type,
             representation=representation,
             representation_type=representation_type,
-            completion_names=completion_names,
+            completion_names=self._names,
+            completion_labels=completion_labels,
             template=self.template,
         )
 
