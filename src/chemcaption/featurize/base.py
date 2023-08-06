@@ -77,7 +77,9 @@ class AbstractFeaturizer(ABC):
         representation_type = molecule.__repr__().split("Mole")[0]
 
         completion_labels = self.feature_labels()
-        completion_labels = completion_labels[0] if len(completion_labels) == 0 else completion_labels
+        completion_labels = (
+            completion_labels[0] if len(completion_labels) == 0 else completion_labels
+        )
 
         return Prompt(
             completion=completion,
@@ -258,7 +260,6 @@ class MultipleFeaturizer(AbstractFeaturizer):
         Returns:
             self : Instance of self with state updated.
         """
-
         # Type check for AbstractFeaturizer instances
         for ix, featurizer in enumerate(featurizers):
             # Each featurizer must be specifically of type AbstractFeaturizer
