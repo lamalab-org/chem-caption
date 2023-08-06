@@ -221,7 +221,7 @@ class IsomorphismFeaturizer(AbstractFeaturizer):
         """
         molecule_graph = molecule.to_graph()
 
-        return np.array(molecule_graph.weisfeiler_lehman_graph_hash())
+        return np.array(molecule_graph.weisfeiler_lehman_graph_hash()).reshape(1, 1)
 
     def implementors(self) -> List[str]:
         """
