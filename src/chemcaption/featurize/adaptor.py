@@ -92,6 +92,15 @@ class MolecularMassAdaptor(RDKitAdaptor):
         """Initialize instance."""
         super().__init__(rdkit_function=Descriptors.MolWt, labels=["molecular_mass"])
 
+        self.template = (
+            "What is the molecular mass of the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
+        )
+        self._names = [
+            {
+                "noun": "molecular mass",
+            }
+        ]
+
     def featurize(
         self,
         molecule: Molecule,
@@ -126,6 +135,15 @@ class ExactMolecularMassAdaptor(RDKitAdaptor):
     def __init__(self):
         """Initialize instance."""
         super().__init__(rdkit_function=Descriptors.ExactMolWt, labels=["exact_molecular_mass"])
+
+        self.template = (
+            "What is the exact molecular mass of the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
+        )
+        self._names = [
+            {
+                "noun": "exact molecular mass",
+            }
+        ]
 
     def featurize(
         self,
@@ -164,6 +182,15 @@ class MonoisotopicMolecularMassAdaptor(RDKitAdaptor):
             rdkit_function=Descriptors.ExactMolWt, labels=["monoisotopic_molecular_mass"]
         )
 
+        self.template = (
+            "What is the monoisotopic molecular mass of the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
+        )
+        self._names = [
+            {
+                "noun": "monoisotopic molecular mass",
+            }
+        ]
+
     def featurize(
         self,
         molecule: Molecule,
@@ -198,6 +225,14 @@ class HydrogenDonorCountAdaptor(RDKitAdaptor):
     def __init__(self):
         """Initialize instance."""
         super().__init__(rdkit_function=Descriptors.NumHDonors, labels=["num_hydrogen_bond_donors"])
+
+        self.template = "What is the number of hydrogen bond acceptors in the molecule"\
+                        " with {REPR_SYSTEM} `{REPR_STRING}`?"
+        self._names = [
+            {
+                "noun": "number of hydrogen bond acceptors",
+            }
+        ]
 
     def featurize(
         self,
@@ -235,6 +270,14 @@ class HydrogenAcceptorCountAdaptor(RDKitAdaptor):
         super().__init__(
             rdkit_function=Descriptors.NumHAcceptors, labels=["num_hydrogen_bond_acceptors"]
         )
+
+        self.template = "What is the number of hydrogen bond donors in the molecule" \
+                        " with {REPR_SYSTEM} `{REPR_STRING}`?"
+        self._names = [
+            {
+                "noun": "number of hydrogen bond donors",
+            }
+        ]
 
     def featurize(
         self,
@@ -275,6 +318,13 @@ class RotableBondCountAdaptor(RDKitAdaptor):
             **{"strict": False},
         )
 
+        self.template = "How many rotatable bonds are in the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
+        self._names = [
+            {
+                "noun": "number of rotatable bonds",
+            }
+        ]
+
     def featurize(
         self,
         molecule: Molecule,
@@ -313,6 +363,14 @@ class StrictRotableBondCountAdaptor(RDKitAdaptor):
             labels=["num_rotable_bonds_strict"],
             **{"strict": True},
         )
+
+        self.template = "According to strict guidelines,"\
+                        " how many rotatable bonds are in the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
+        self._names = [
+            {
+                "noun": "number of rotatable bonds by strict guidelines",
+            }
+        ]
 
     def featurize(
         self,
@@ -358,7 +416,8 @@ class ValenceElectronCountAdaptor(RDKitAdaptor):
             labels=["num_valence_electrons"],
         )
 
-        self.template = "How many valence electrons does the molecule with {REPR_SYSTEM} `{REPR_STRING}` have in its outer shell?"
+        self.template = "How many valence electrons does the molecule"\
+                        " with {REPR_SYSTEM} `{REPR_STRING}` have in its outer shell?"
         self._names = [
             {
                 "noun": "number of valence electrons",
