@@ -13,7 +13,7 @@ from chemcaption.presets import SMARTSPreset
 
 # Implemented molecular structure- and substructure-related featurizers
 
-__all__ = ["SMARTSFeaturizer", "IsomorphismFeaturizer", "CarbonTopologyCountFeaturizer"]
+__all__ = ["SMARTSFeaturizer", "IsomorphismFeaturizer", "TopologyCountFeaturizer"]
 
 
 """Featurizer to obtain the presence or count of SMARTS in molecules."""
@@ -210,7 +210,7 @@ class IsomorphismFeaturizer(AbstractFeaturizer):
         return ["Benedict Oshomah Emoekabu"]
 
 
-class CarbonTopologyCountFeaturizer(AbstractFeaturizer):
+class TopologyCountFeaturizer(AbstractFeaturizer):
     """Featurizer to return number of unique Carbon environments in a molecule."""
 
     def __init__(self):
@@ -218,12 +218,13 @@ class CarbonTopologyCountFeaturizer(AbstractFeaturizer):
         super().__init__()
         self._label = ["num_carbon_environments"]
 
-    def featurize(self, molecule: Molecule) -> np.array:
+    def featurize(self, molecule: Molecule, reference_atomic_number: int = 6) -> np.array:
         """
         Featurize single molecule instance. Extract number of unique Carbon environments.
 
         Args:
             molecule (Molecule): Molecule representation.
+            reference_atomic_number (int): Atomic number for element of interest. Defaults to `6` (Carbon).
 
         Returns:
             (np.array): Array containing number of unique Carbon environments.
@@ -232,11 +233,14 @@ class CarbonTopologyCountFeaturizer(AbstractFeaturizer):
             self._get_number_of_topologically_distinct_atoms(molecule=molecule)
         ).reshape((1, -1))
 
-    def _get_number_of_topologically_distinct_atoms(self, molecule: Molecule):
+    def _get_number_of_topologically_distinct_atoms(
+        self, molecule: Molecule, reference_atomic_number: int = 6
+    ):
         """Return the number off unique Carbons based on environmental topology.
 
         Args:
             molecule (Molecule): Molecular instance.
+            reference_atomic_number (int): Atomic number for element of interest. Defaults to `6` (Carbon).
 
         Returns:
             (int): Number of unique environments.
@@ -247,7 +251,9 @@ class CarbonTopologyCountFeaturizer(AbstractFeaturizer):
         # Select the unique carbon environments
         atoms = [molecule.rdkit_mol.GetAtomWithIdx(i) for i in equivalences]
 
-        new_equivalences = [atom for atom in atoms if atom.GetAtomicNum() == 6]
+        new_equivalences = [
+            atom for atom in atoms if atom.GetAtomicNum() == reference_atomic_number
+        ]
         # Count them
         return len(new_equivalences)
 
