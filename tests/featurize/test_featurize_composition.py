@@ -137,6 +137,9 @@ def test_atom_count_proportion_featurizer(test_input, expected):
     assert np.isclose(results, expected).all()
 
 
+"""Test for element atom count ratio contribution featurizer."""
+
+
 def test_get_degree_of_unsaturation_for_mol():
     """Make sure the degree of unsaturation is calculated correctly.
 

@@ -15,12 +15,11 @@ from chemcaption.molecules import Molecule
 __all__ = [
     "RDKitAdaptor",  # Higher-level featurizer. Returns lower-level featurizer instances.
     "MolecularMassAdaptor",  # Molar mass featurizer. Subclass of RDKitAdaptor
-    "ExactMolecularMassAdaptor",
-    "MonoisotopicMolecularMassAdaptor",
-    "HydrogenDonorCountAdaptor",
-    "HydrogenAcceptorCountAdaptor",
-    "RotableBondCountAdaptor",
-    "StrictRotableBondCountAdaptor",
+    "MonoisotopicMolecularMassAdaptor",  # Monoisotopic molar mass featurizer
+    "HydrogenDonorCountAdaptor",  # Hydrogen donor count featurizer
+    "HydrogenAcceptorCountAdaptor",  # Hydrogen acceptor count featurizer
+    "RotableBondCountAdaptor",  # Rotatable bond counter (non-strict)
+    "StrictRotableBondCountAdaptor",  # Rotatable bond counter (strict)
 ]
 
 """High-level featurizer adaptor."""
@@ -85,7 +84,7 @@ class RDKitAdaptor(AbstractFeaturizer):
 
 
 class MolecularMassAdaptor(RDKitAdaptor):
-    """Adaptor to extract molar mass information."""
+    """Adaptor to extract molecular mass information."""
 
     def __init__(self):
         """Initialize instance."""
@@ -103,41 +102,6 @@ class MolecularMassAdaptor(RDKitAdaptor):
 
         Returns:
             (np.array): Array containing molecular mass.
-        """
-        return super().featurize(molecule=molecule)
-
-    def implementors(self) -> List[str]:
-        """
-        Return list of functionality implementors.
-
-        Args:
-            None
-
-        Returns:
-            List[str]: List of implementors.
-        """
-        return ["Benedict Oshomah Emoekabu"]
-
-
-class ExactMolecularMassAdaptor(RDKitAdaptor):
-    """Adaptor to extract exact molar mass information."""
-
-    def __init__(self):
-        """Initialize instance."""
-        super().__init__(rdkit_function=Descriptors.ExactMolWt, labels=["exact_molecular_mass"])
-
-    def featurize(
-        self,
-        molecule: Molecule,
-    ) -> np.array:
-        """
-        Featurize single molecule instance. Extract and return exact molecular mass from molecular instance.
-
-        Args:
-            molecule (Molecule): Molecule representation.
-
-        Returns:
-            (np.array): Array containing exact molecular mass.
         """
         return super().featurize(molecule=molecule)
 
@@ -227,7 +191,7 @@ class HydrogenDonorCountAdaptor(RDKitAdaptor):
 
 
 class HydrogenAcceptorCountAdaptor(RDKitAdaptor):
-    """Adaptor to extract number of Hydrogen bond acceptors."""
+    """Adaptor to extract number of Hydrogen bond acceptors in a molecule."""
 
     def __init__(self):
         """Initialize instance."""
@@ -279,7 +243,7 @@ class RotableBondCountAdaptor(RDKitAdaptor):
         molecule: Molecule,
     ) -> np.array:
         """
-        Featurize single molecule instance. Extract and return the number of rotable bonds in molecular instance.
+        Featurize single molecule instance. Extract and return the number of rotatable bonds in molecular instance.
 
         Args:
             molecule (Molecule): Molecule representation.
@@ -326,7 +290,7 @@ class StrictRotableBondCountAdaptor(RDKitAdaptor):
             molecule (Molecule): Molecule representation.
 
         Returns:
-            (np.array): Array containing number of strictly rotable bonds.
+            (np.array): Array containing number of strictly rotatable bonds.
         """
         return super().featurize(molecule=molecule)
 
