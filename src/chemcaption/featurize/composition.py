@@ -32,7 +32,7 @@ class MolecularMassFeaturizer(AbstractFeaturizer):
         super().__init__()
 
         self.template = (
-            "What is the molecular mass of the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
+            "What is the {PROPERTY_NAME} of the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
         )
         self._names = [
             {
@@ -90,7 +90,7 @@ class ElementMassFeaturizer(AbstractFeaturizer):
         self.suffix = "_mass"
         self.label = [self.prefix + element.lower() + self.suffix for element in self.preset]
 
-        self.template = "What is the contributed mass of the elements of a molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
+        self.template = "What is the {PROPERTY_NAME} for the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
         self._names = [
             {
                 "noun": "contributed mass per element",
@@ -235,7 +235,7 @@ class ElementMassProportionFeaturizer(ElementMassFeaturizer):
         self.suffix = "_mass_ratio"
         self.label = [self.prefix + element.lower() + self.suffix for element in self.preset]
 
-        self.template = "What is the contributed mass proportion of the elements of a molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
+        self.template = "What is the {PROPERTY_NAME} for the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
         self._names = [
             {
                 "noun": "contributed mass proportion per element",
@@ -279,7 +279,7 @@ class ElementCountFeaturizer(ElementMassFeaturizer):
 
         self.label = [self.prefix + element.lower() + self.suffix for element in self.preset]
 
-        self.template = "What is the number of atoms for each of the elements of a molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
+        self.template = "What is the {PROPERTY_NAME} for the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
         self._names = [
             {
                 "noun": "number of atoms per element",
@@ -365,8 +365,7 @@ class ElementCountProportionFeaturizer(ElementCountFeaturizer):
         self.label = [self.prefix + element.lower() + self.suffix for element in self.preset]
 
         self.template = (
-            "Based on atom count, what is the proportion of contribution"
-            " for each of the elements of a molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
+            "Based on atom count, what is the {PROPERTY_NAME} for the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
         )
         self._names = [
             {
@@ -407,10 +406,10 @@ class AtomCountFeaturizer(ElementCountFeaturizer):
         """Initialize instance."""
         super().__init__()
 
-        self.template = "What is the total number of atoms present in the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
+        self.template = "What is the {PROPERTY_NAME} present in the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
         self._names = [
             {
-                "noun": "total number of atoms in molecule",
+                "noun": "total number of atoms",
             }
         ]
 
@@ -452,7 +451,7 @@ class DegreeOfUnsaturationFeaturizer(AbstractFeaturizer):
         """
         super().__init__()
         self.template = (
-            "What is the degree of unsaturation of a molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
+            "What is the {PROPERTY_NAME} of a molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
         )
         self._names = [
             {

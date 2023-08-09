@@ -77,12 +77,12 @@ class SMARTSFeaturizer(AbstractFeaturizer):
         self.template = (
             "What is the "
             + self.suffix[1:]
-            + " of the provided functional groups (i.e., SMARTS patterns)"
+            + " of the provided {PROPERTY_NAME} (i.e., SMARTS patterns)"
             " in the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
         )
         self._names = [
             {
-                "noun": "number of hydrogen bond acceptors",
+                "noun": "functional groups",
             }
         ]
 
@@ -197,7 +197,7 @@ class IsomorphismFeaturizer(AbstractFeaturizer):
         super().__init__()
 
         self.template = (
-            "According to the Weisfeiler-Lehman isomorphism test, what is the graph hash for "
+            "According to the Weisfeiler-Lehman isomorphism test, what is the {PROPERTY_NAME} for "
             "the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
         )
         self._names = [

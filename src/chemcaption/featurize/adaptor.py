@@ -93,7 +93,7 @@ class MolecularMassAdaptor(RDKitAdaptor):
         super().__init__(rdkit_function=Descriptors.MolWt, labels=["molecular_mass"])
 
         self.template = (
-            "What is the molecular mass of the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
+            "What is the {PROPERTY_NAME} of the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
         )
         self._names = [
             {
@@ -137,7 +137,7 @@ class ExactMolecularMassAdaptor(RDKitAdaptor):
         super().__init__(rdkit_function=Descriptors.ExactMolWt, labels=["exact_molecular_mass"])
 
         self.template = (
-            "What is the exact molecular mass of the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
+            "What is the {PROPERTY_NAME} of the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
         )
         self._names = [
             {
@@ -182,7 +182,7 @@ class MonoisotopicMolecularMassAdaptor(RDKitAdaptor):
             rdkit_function=Descriptors.ExactMolWt, labels=["monoisotopic_molecular_mass"]
         )
 
-        self.template = "What is the monoisotopic molecular mass of the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
+        self.template = "What is the {PROPERTY_NAME} of the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
         self._names = [
             {
                 "noun": "monoisotopic molecular mass",
@@ -225,7 +225,7 @@ class HydrogenDonorCountAdaptor(RDKitAdaptor):
         super().__init__(rdkit_function=Descriptors.NumHDonors, labels=["num_hydrogen_bond_donors"])
 
         self.template = (
-            "What is the number of hydrogen bond acceptors in the molecule"
+            "What is the {PROPERTY_NAME} in the molecule"
             " with {REPR_SYSTEM} `{REPR_STRING}`?"
         )
         self._names = [
@@ -272,7 +272,7 @@ class HydrogenAcceptorCountAdaptor(RDKitAdaptor):
         )
 
         self.template = (
-            "What is the number of hydrogen bond donors in the molecule"
+            "What is the {PROPERTY_NAME} in the molecule"
             " with {REPR_SYSTEM} `{REPR_STRING}`?"
         )
         self._names = [
@@ -321,7 +321,7 @@ class RotableBondCountAdaptor(RDKitAdaptor):
         )
 
         self.template = (
-            "How many rotatable bonds are in the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
+            "What is the {PROPERTY_NAME} in the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
         )
         self._names = [
             {
@@ -369,12 +369,11 @@ class StrictRotableBondCountAdaptor(RDKitAdaptor):
         )
 
         self.template = (
-            "According to strict guidelines,"
-            " how many rotatable bonds are in the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
+            "What is the {PROPERTY_NAME} in the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
         )
         self._names = [
             {
-                "noun": "number of rotatable bonds by strict guidelines",
+                "noun": "number of rotatable bonds (by strict guidelines)",
             }
         ]
 
@@ -423,7 +422,7 @@ class ValenceElectronCountAdaptor(RDKitAdaptor):
         )
 
         self.template = (
-            "How many valence electrons does the molecule"
+            "What is the {PROPERTY_NAME} for the molecule"
             " with {REPR_SYSTEM} `{REPR_STRING}` have in its outer shell?"
         )
         self._names = [

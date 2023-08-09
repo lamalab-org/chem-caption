@@ -3,7 +3,7 @@
 """Abstract base class and wrappers for featurizers."""
 
 from abc import ABC, abstractmethod
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 import numpy as np
 import rdkit
@@ -81,12 +81,14 @@ class AbstractFeaturizer(ABC):
             completion_labels[0] if len(completion_labels) == 0 else completion_labels
         )
 
+        completion_name = self._names[0]["noun"]
+
         return Prompt(
             completion=completion,
             completion_type=completion_type,
             representation=representation,
             representation_type=representation_type,
-            completion_names=self._names,
+            completion_names=completion_name,
             completion_labels=completion_labels,
             template=self.template,
         )
@@ -139,7 +141,7 @@ class AbstractFeaturizer(ABC):
         return
 
     def feature_labels(self) -> List[str]:
-        """Return feature label.
+        """Return feature label(s).
 
         Args:
             None.
@@ -148,6 +150,17 @@ class AbstractFeaturizer(ABC):
             (List[str]): List of names of extracted features.
         """
         return self.label
+
+    def feature_names(self) -> List[Dict[str, str]]:
+        """Return feature names.
+
+        Args:
+            None.
+
+        Returns:
+            (List[Dict[str, str]]): List of names for extracted features according to parts-of-speech.
+        """
+        return self._names
 
     def citations(self):
         """Return citation for this project."""
