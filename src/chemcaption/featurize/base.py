@@ -3,7 +3,7 @@
 """Abstract base class and wrappers for featurizers."""
 
 from abc import ABC, abstractmethod
-from typing import List
+from typing import Dict, List, Optional
 
 import numpy as np
 import rdkit
@@ -34,6 +34,7 @@ class AbstractFeaturizer(ABC):
         self.periodic_table = rdkit.Chem.GetPeriodicTable()
         self._label = []
         self.template = None
+        self._names = []
 
     @abstractmethod
     def featurize(self, molecule: Molecule) -> np.array:
@@ -75,15 +76,20 @@ class AbstractFeaturizer(ABC):
         representation = molecule.representation_string
         representation_type = molecule.__repr__().split("Mole")[0]
 
-        completion_names = self.feature_labels()
-        completion_names = completion_names[0] if len(completion_names) == 0 else completion_names
+        completion_labels = self.feature_labels()
+        completion_labels = (
+            completion_labels[0] if len(completion_labels) == 0 else completion_labels
+        )
+
+        completion_name = self._names[0]["noun"]
 
         return Prompt(
             completion=completion,
             completion_type=completion_type,
             representation=representation,
             representation_type=representation_type,
-            completion_names=completion_names,
+            completion_names=completion_name,
+            completion_labels=completion_labels,
             template=self.template,
         )
 
@@ -135,7 +141,7 @@ class AbstractFeaturizer(ABC):
         return
 
     def feature_labels(self) -> List[str]:
-        """Return feature label.
+        """Return feature label(s).
 
         Args:
             None.
@@ -144,6 +150,17 @@ class AbstractFeaturizer(ABC):
             (List[str]): List of names of extracted features.
         """
         return self.label
+
+    def feature_names(self) -> List[Dict[str, str]]:
+        """Return feature names.
+
+        Args:
+            None.
+
+        Returns:
+            (List[Dict[str, str]]): List of names for extracted features according to parts-of-speech.
+        """
+        return self._names
 
     def citations(self):
         """Return citation for this project."""
@@ -157,6 +174,7 @@ class AbstractComparator(ABC):
         """Initialize class. Initialize periodic table."""
         self.periodic_table = rdkit.Chem.GetPeriodicTable()
         self.template = None
+        self._names = []
 
     @abstractmethod
     def featurize(self, molecules: List[Molecule]) -> np.array:
@@ -204,25 +222,16 @@ class AbstractComparator(ABC):
 class MultipleFeaturizer(AbstractFeaturizer):
     """A featurizer to combine featurizers."""
 
-    def __init__(self, featurizers: List[AbstractFeaturizer]):
+    def __init__(self, featurizers: Optional[List[AbstractFeaturizer]] = None):
         """Initialize class instance.
 
         Args:
-            featurizers (List[AbstractFeaturizer]): A list of featurizer objects.
+            featurizers (Optional[List[AbstractFeaturizer]]): A list of featurizer objects. Defaults to `None`.
 
         """
         super().__init__()
 
-        # Type check for AbstractFeaturizer instances
-        for ix, featurizer in enumerate(featurizers):
-            # Each featurizer must be specifically of type AbstractFeaturizer
-
-            if not isinstance(featurizers, AbstractFeaturizer):
-                raise ValueError(
-                    f"`{featurizer.__class__.__name__}` instance at index {ix} is not of type `AbstractFeaturizer`."
-                )
-
-        self.featurizers = featurizers  # If all featurizers pass the check
+        self.featurizers = self.fit_on_featurizers(featurizers=featurizers)
 
     def featurize(self, molecule: Molecule) -> np.array:
         """
@@ -255,17 +264,29 @@ class MultipleFeaturizer(AbstractFeaturizer):
 
         return labels
 
-    def fit_on_featurizers(self, featurizers: List[AbstractFeaturizer]):
+    def fit_on_featurizers(self, featurizers: Optional[List[AbstractFeaturizer]] = None):
         """Fit MultipleFeaturizer instance on lower-level featurizers.
 
         Args:
-            featurizers (List[AbstractFeaturizer]): List of lower-level featurizers.
+            featurizers (Optional[List[AbstractFeaturizer]]): List of lower-level featurizers. Defaults to `None`.
 
         Returns:
             self : Instance of self with state updated.
         """
+        # Type check for AbstractFeaturizer instances
+        for ix, featurizer in enumerate(featurizers):
+            # Each featurizer must be specifically of type AbstractFeaturizer
+
+            if not isinstance(featurizers, AbstractFeaturizer):
+                raise ValueError(
+                    f"`{featurizer.__class__.__name__}` instance at index {ix} is not of type `AbstractFeaturizer`."
+                )
+
         self.featurizers = featurizers
         self.label = self.feature_labels()
+
+        self.template = [featurizer.template for featurizer in featurizers]
+        self._names = [featurizer._names for featurizer in featurizers]
 
         return self
 
@@ -285,28 +306,52 @@ class MultipleFeaturizer(AbstractFeaturizer):
 class Comparator(AbstractComparator):
     """Compare molecules based on featurizer outputs."""
 
-    def __init__(self, featurizers: List[AbstractFeaturizer] = None):
+    def __init__(self, featurizers: Optional[List[AbstractFeaturizer]] = None):
         """Instantiate class.
 
         Args:
-            featurizers (List[AbstractFeaturizer]): List of featurizers to compare over.
+            featurizers (Optional[List[AbstractFeaturizer]]): List of featurizers to compare over. Defaults to `None`.
 
         """
         super().__init__()
-        self.featurizers = featurizers
+        self.featurizers = None
+        self.fit_on_featurizers(featurizers=featurizers)
 
-    def fit_on_featurizers(self, featurizers: List[AbstractComparator]):
+    def fit_on_featurizers(self, featurizers: Optional[List[AbstractFeaturizer]] = None):
         """Fit Comparator instance on lower-level featurizers.
 
         Args:
-            featurizers (List[AbstractComparator]): List of lower-level comparators.
+            featurizers (Optional[List[AbstractFeaturizer]]): List of lower-level featurizers. Defaults to `None`.
 
         Returns:
             self : Instance of self with state updated.
         """
+        if featurizers is None:
+            self.featurizers = featurizers
+            return self
+        # Type check for AbstractFeaturizer instances
+        for ix, featurizer in enumerate(featurizers):
+            # Each featurizer must be specifically of type AbstractFeaturizer
+
+            if not isinstance(featurizer, AbstractFeaturizer):
+                raise ValueError(
+                    f"`{featurizer.__class__.__name__}` instance at index {ix} is not of type `AbstractFeaturizer`."
+                )
+
         self.featurizers = featurizers
 
         return self
+
+    def __str__(self):
+        """Return string representation.
+
+        Args:
+            None
+
+        Returns:
+            (str): String representation of `self`.
+        """
+        return self.__class__.__name__
 
     def _compare_on_featurizer(
         self,
@@ -408,13 +453,30 @@ class Comparator(AbstractComparator):
 class MultipleComparator(Comparator):
     """A Comparator to combine Comparators."""
 
-    def __init__(self, comparators: List[Comparator]):
+    def __init__(self, comparators: Optional[List[Comparator]] = None):
         """Instantiate class.
 
         Args:
-            comparators (List[Comparator]): List of Comparator instances.
+            comparators (Optional[List[Comparator]]): List of Comparator instances. Defaults to `None`.
         """
         super().__init__()
+
+        self.comparators = None
+
+        self.fit_on_comparators(comparators=comparators)  # If all comparators pass the check
+
+    def fit_on_comparators(self, comparators: Optional[List[Comparator]] = None):
+        """Fit MultipleComparator instance on lower-level comparators.
+
+        Args:
+            comparators (Optional[List[Comparator]]): List of lower-level comparators. Defaults to `None`.
+
+        Returns:
+            self : Instance of self with state updated.
+        """
+        if comparators is None:
+            self.comparators = comparators
+            return self
 
         # Type check for Comparator instances
         for ix, comparator in enumerate(comparators):
@@ -423,20 +485,9 @@ class MultipleComparator(Comparator):
 
             if not isinstance(comparator, Comparator):
                 raise ValueError(
-                    f"`{comparator.__class__.__name__}` instance at index {ix} is not of type `Comparator`."
+                    f"`{comparator.__class__.__name__}` instance at index {ix}",
+                    " is not of type `Comparator` or `MultipleComparator`.",
                 )
-
-        self.comparators = comparators  # If all comparators pass the check
-
-    def fit_on_comparators(self, comparators: List[Comparator]):
-        """Fit MultipleComparator instance on lower-level comparators.
-
-        Args:
-            comparators (List[Comparator]): List of lower-level comparators.
-
-        Returns:
-            self : Instance of self with state updated.
-        """
         self.comparators = comparators
 
         return self

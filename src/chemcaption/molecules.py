@@ -4,12 +4,12 @@
 
 from abc import ABC, abstractmethod
 from typing import Union
-from typing_extensions import TypeAlias
 
 import networkx as nx
 import rdkit
 from rdkit import Chem
 from selfies import decoder
+from typing_extensions import TypeAlias
 
 # Implemented molecular representation classes.
 

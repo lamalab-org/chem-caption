@@ -13,7 +13,7 @@ from chemcaption.featurize.composition import (
 )
 from chemcaption.featurize.electronicity import ValenceElectronCountFeaturizer
 from chemcaption.featurize.rules import LipinskiViolationsFeaturizer
-from chemcaption.featurize.substructure import SMARTSFeaturizer
+from chemcaption.featurize.substructure import IsomorphismFeaturizer, SMARTSFeaturizer
 from chemcaption.molecules import SMILESMolecule
 
 MOLECULAR_BANK = pd.read_json("data/molecular_bank.json", orient="index")
@@ -34,6 +34,7 @@ def generate_info(string: str):
     """
     keys = [
         "smiles",
+        "weisfeiler_lehman_hash",
         "num_bonds",
         "num_rotable_bonds",
         "num_non_rotable_bonds",
@@ -69,9 +70,11 @@ def generate_info(string: str):
     lipinski_featurizer = LipinskiViolationsFeaturizer()
 
     valence_featurizer = ValenceElectronCountFeaturizer()
+    isomorphism_featurizer = IsomorphismFeaturizer()
 
     mol = SMILESMolecule(string)
 
+    wl_hash = isomorphism_featurizer.featurize(mol).item()
     num_bonds = len(mol.rdkit_mol.GetBonds())
     rotable_strict = rdMolDescriptors.CalcNumRotatableBonds(mol.rdkit_mol, strict=True)
     rotable_non_strict = rdMolDescriptors.CalcNumRotatableBonds(mol.rdkit_mol, strict=False)
@@ -100,6 +103,7 @@ def generate_info(string: str):
 
     values = [
         string,
+        wl_hash,
         num_bonds,
         rotable_non_strict,
         non_rotable_non_strict,
