@@ -64,7 +64,7 @@ class AtomCountComparator(Comparator):
 
 
 class IsomerismComparator(Comparator):
-    """Compare molecular instances for isomerism."""
+    """Compare molecular instances for isomerism via molecular formulae."""
 
     def __init__(self):
         """Initialize instance."""
