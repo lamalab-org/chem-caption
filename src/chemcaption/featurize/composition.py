@@ -14,6 +14,7 @@ from chemcaption.molecules import Molecule
 # Implemented composition-related featurizers
 
 __all__ = [
+    "MolecularFormularFeaturizer",
     "MolecularMassFeaturizer",
     "ElementMassFeaturizer",
     "ElementMassProportionFeaturizer",
@@ -22,6 +23,38 @@ __all__ = [
     "AtomCountFeaturizer",
     "DegreeOfUnsaturationFeaturizer",
 ]
+
+
+class MolecularFormularFeaturizer(AbstractFeaturizer):
+    """Get the molecular formula of a molecule."""
+
+    def __init__(self):
+        super().__init__()
+        self.label = ["molecular_formular"]
+
+    def featurize(self, molecule: Molecule) -> np.array:
+        """
+        Featurize single molecule instance. Get the molecular mass of a molecule.
+
+        Args:
+            molecule (Molecule): Molecular representation.
+
+        Returns:
+            (str): Molecular formular of `molecule`.
+        """
+        return np.array([molecule.get_composition()]).reshape((1, 1))
+
+    def implementors(self) -> List[str]:
+        """
+        Return list of functionality implementors.
+
+        Args:
+            None
+
+        Returns:
+            List[str]: List of implementors.
+        """
+        return ["Benedict Oshomah Emoekabu"]
 
 
 class MolecularMassFeaturizer(AbstractFeaturizer):
