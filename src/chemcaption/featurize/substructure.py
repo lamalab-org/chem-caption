@@ -13,7 +13,11 @@ from chemcaption.presets import SMARTSPreset
 
 # Implemented molecular structure- and substructure-related featurizers
 
-__all__ = ["SMARTSFeaturizer", "IsomorphismFeaturizer", "TopologyCountFeaturizer"]
+__all__ = [
+    "SMARTSFeaturizer",
+    "IsomorphismFeaturizer",
+    "TopologyCountFeaturizer"
+]
 
 
 """Featurizer to obtain the presence or count of SMARTS in molecules."""
@@ -70,6 +74,18 @@ class SMARTSFeaturizer(AbstractFeaturizer):
 
         self.suffix = "_count" if count else "_presence"
         self.label = [self.prefix + element.lower() + self.suffix for element in self.names]
+
+        self.template = (
+            "What is the "
+            + self.suffix[1:]
+            + " of the provided {PROPERTY_NAME} (i.e., SMARTS patterns)"
+            " in the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
+        )
+        self._names = [
+            {
+                "noun": "functional groups",
+            }
+        ]
 
     @property
     def preset(self) -> Dict[str, List[str]]:
@@ -175,11 +191,22 @@ class SMARTSFeaturizer(AbstractFeaturizer):
 
 
 class IsomorphismFeaturizer(AbstractFeaturizer):
-    """Convert molecule graph to Weisfeiler-Lehman graph hash."""
+    """Convert molecule graph to Weisfeiler-Lehman hash."""
 
     def __init__(self):
         """Instantiate class."""
         super().__init__()
+
+        self.template = (
+            "According to the Weisfeiler-Lehman isomorphism test, what is the {PROPERTY_NAME} for "
+            "the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
+        )
+        self._names = [
+            {
+                "noun": "Weisfeiler-Lehman graph hash",
+            }
+        ]
+
         self.label = ["weisfeiler_lehman_hash"]
 
     def featurize(self, molecule: Molecule) -> np.array:
@@ -195,7 +222,7 @@ class IsomorphismFeaturizer(AbstractFeaturizer):
         """
         molecule_graph = molecule.to_graph()
 
-        return molecule_graph.weisfeiler_lehman_graph_hash()
+        return np.array(molecule_graph.weisfeiler_lehman_graph_hash()).reshape(1, 1)
 
     def implementors(self) -> List[str]:
         """
@@ -220,6 +247,15 @@ class TopologyCountFeaturizer(AbstractFeaturizer):
             reference_atomic_number (int): Atomic number for element of interest. Defaults to `6` (Carbon).
         """
         super().__init__()
+
+        self.template = (
+            "By NMR, what is the {PROPERTY_NAME} for the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
+        )
+        self._names = [
+            {
+                "noun": "number of unique {} environments",
+            }
+        ]
 
         self._reference_atomic_number = None
         self.reference_atomic_number = reference_atomic_number
@@ -246,6 +282,7 @@ class TopologyCountFeaturizer(AbstractFeaturizer):
         self._reference_atomic_number = atomic_number
         element = self.periodic_table.GetElementName(atomic_number)
         self.label = [f"num_{element.lower()}_environments"]
+        self._names[0]["noun"] = f"number of unique {element.lower()} environments"
 
         return
 

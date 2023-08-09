@@ -24,6 +24,16 @@ class LipinskiViolationsFeaturizer(AbstractFeaturizer):
     def __init__(self):
         """Instantiate class."""
         super().__init__()
+
+        self.template = (
+            "What is the {PROPERTY_NAME} for the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
+        )
+        self._names = [
+            {
+                "noun": "number of Lipinski violations",
+            }
+        ]
+
         self.label = ["num_lipinski_violations"]
 
     def _mass_violation(self, molecule: Molecule) -> np.array:

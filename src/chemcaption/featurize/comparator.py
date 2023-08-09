@@ -86,7 +86,7 @@ class IsomorphismComparator(Comparator):
         Returns:
             (np.array): Comparison results. 1 if all extracted features are equal, else 0.
         """
-        result = [self.featurizers[0].featurize(molecule) for molecule in molecules]
+        result = [featurizer.featurize(molecule).item() for molecule in molecules]
         return np.array([len(set(result)) == 1], dtype=int).reshape((1, -1))
 
     def implementors(self) -> List[str]:

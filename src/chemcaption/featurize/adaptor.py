@@ -20,6 +20,7 @@ __all__ = [
     "HydrogenAcceptorCountAdaptor",  # Hydrogen acceptor count featurizer
     "RotableBondCountAdaptor",  # Rotatable bond counter (non-strict)
     "StrictRotableBondCountAdaptor",  # Rotatable bond counter (strict)
+    "ValenceElectronCountAdaptor",
 ]
 
 """High-level featurizer adaptor."""
@@ -84,11 +85,20 @@ class RDKitAdaptor(AbstractFeaturizer):
 
 
 class MolecularMassAdaptor(RDKitAdaptor):
-    """Adaptor to extract molecular mass information."""
+    """Adaptor to extract molar mass information."""
 
     def __init__(self):
         """Initialize instance."""
         super().__init__(rdkit_function=Descriptors.MolWt, labels=["molecular_mass"])
+
+        self.template = (
+            "What is the {PROPERTY_NAME} of the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
+        )
+        self._names = [
+            {
+                "noun": "molecular mass",
+            }
+        ]
 
     def featurize(
         self,
@@ -127,6 +137,13 @@ class MonoisotopicMolecularMassAdaptor(RDKitAdaptor):
             rdkit_function=Descriptors.ExactMolWt, labels=["monoisotopic_molecular_mass"]
         )
 
+        self.template = "What is the {PROPERTY_NAME} of the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
+        self._names = [
+            {
+                "noun": "monoisotopic molecular mass",
+            }
+        ]
+
     def featurize(
         self,
         molecule: Molecule,
@@ -162,6 +179,16 @@ class HydrogenDonorCountAdaptor(RDKitAdaptor):
         """Initialize instance."""
         super().__init__(rdkit_function=Descriptors.NumHDonors, labels=["num_hydrogen_bond_donors"])
 
+        self.template = (
+            "What is the {PROPERTY_NAME} in the molecule"
+            " with {REPR_SYSTEM} `{REPR_STRING}`?"
+        )
+        self._names = [
+            {
+                "noun": "number of hydrogen bond acceptors",
+            }
+        ]
+
     def featurize(
         self,
         molecule: Molecule,
@@ -191,13 +218,23 @@ class HydrogenDonorCountAdaptor(RDKitAdaptor):
 
 
 class HydrogenAcceptorCountAdaptor(RDKitAdaptor):
-    """Adaptor to extract number of Hydrogen bond acceptors in a molecule."""
+    """Adaptor to extract number of Hydrogen bond acceptors."""
 
     def __init__(self):
         """Initialize instance."""
         super().__init__(
             rdkit_function=Descriptors.NumHAcceptors, labels=["num_hydrogen_bond_acceptors"]
         )
+
+        self.template = (
+            "What is the {PROPERTY_NAME} in the molecule"
+            " with {REPR_SYSTEM} `{REPR_STRING}`?"
+        )
+        self._names = [
+            {
+                "noun": "number of hydrogen bond donors",
+            }
+        ]
 
     def featurize(
         self,
@@ -238,12 +275,21 @@ class RotableBondCountAdaptor(RDKitAdaptor):
             **{"strict": False},
         )
 
+        self.template = (
+            "What is the {PROPERTY_NAME} in the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
+        )
+        self._names = [
+            {
+                "noun": "number of rotatable bonds",
+            }
+        ]
+
     def featurize(
         self,
         molecule: Molecule,
     ) -> np.array:
         """
-        Featurize single molecule instance. Extract and return the number of rotatable bonds in molecular instance.
+        Featurize single molecule instance. Extract and return the number of rotable bonds in molecular instance.
 
         Args:
             molecule (Molecule): Molecule representation.
@@ -277,6 +323,15 @@ class StrictRotableBondCountAdaptor(RDKitAdaptor):
             **{"strict": True},
         )
 
+        self.template = (
+            "What is the {PROPERTY_NAME} in the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
+        )
+        self._names = [
+            {
+                "noun": "number of rotatable bonds (by strict guidelines)",
+            }
+        ]
+
     def featurize(
         self,
         molecule: Molecule,
@@ -290,7 +345,62 @@ class StrictRotableBondCountAdaptor(RDKitAdaptor):
             molecule (Molecule): Molecule representation.
 
         Returns:
-            (np.array): Array containing number of strictly rotatable bonds.
+            (np.array): Array containing number of strictly rotable bonds.
+        """
+        return super().featurize(molecule=molecule)
+
+    def implementors(self) -> List[str]:
+        """
+        Return list of functionality implementors.
+
+        Args:
+            None
+
+        Returns:
+            List[str]: List of implementors.
+        """
+        return ["Benedict Oshomah Emoekabu"]
+
+
+class ValenceElectronCountAdaptor(RDKitAdaptor):
+    """Adaptor to extract for valence electron count."""
+
+    def __init__(self):
+        """Initialize class.
+
+        Args:
+            None
+        """
+        super().__init__(
+            rdkit_function=Descriptors.NumValenceElectrons,
+            labels=["num_valence_electrons"],
+        )
+
+        self.template = (
+            "What is the {PROPERTY_NAME} for the molecule"
+            " with {REPR_SYSTEM} `{REPR_STRING}` have in its outer shell?"
+        )
+        self._names = [
+            {
+                "noun": "number of valence electrons",
+            },
+            {
+                "noun": "valence electron count",
+            },
+            {
+                "noun": "count of valence electrons",
+            },
+        ]
+
+    def featurize(self, molecule: Molecule) -> np.array:
+        """
+        Featurize single molecule instance. Extract and return valence electron count for molecular object.
+
+        Args:
+            molecule (Molecule): Molecule representation.
+
+        Returns:
+            (np.array): Array containing number of valence electrons.
         """
         return super().featurize(molecule=molecule)
 
