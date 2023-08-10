@@ -6,6 +6,7 @@ import numpy as np
 import pytest
 
 from chemcaption.featurize.composition import (
+    AtomCountFeaturizer,
     DegreeOfUnsaturationFeaturizer,
     ElementCountFeaturizer,
     ElementCountProportionFeaturizer,
@@ -26,10 +27,11 @@ PRESET = ["carbon", "hydrogen", "oxygen", "nitrogen", "phosphorus"]
 
 __all__ = [
     "test_molar_mass_featurizer",
-    "test_mass_featurizer",
-    "test_mass_proportion_featurizer",
+    "test_element_mass_featurizer",
+    "test_element_mass_proportion_featurizer",
+    "test_element_atom_count_featurizer",
+    "test_element_atom_count_proportion_featurizer",
     "test_atom_count_featurizer",
-    "test_atom_count_proportion_featurizer",
     "test_get_degree_of_unsaturation_for_mol",
     "test_degree_of_unsaturation_featurizer",
 ]
@@ -64,7 +66,7 @@ def test_molar_mass_featurizer(test_input, expected):
         property=list(map(lambda x: x + "_mass", PRESET)),
     ),
 )
-def test_mass_featurizer(test_input, expected):
+def test_element_mass_featurizer(test_input, expected):
     """Test ElementMassFeaturizer."""
     featurizer = ElementMassFeaturizer(preset=PRESET)
     molecule = MOLECULE(test_input)
@@ -85,7 +87,7 @@ def test_mass_featurizer(test_input, expected):
         property=list(map(lambda x: x + "_mass_ratio", PRESET)),
     ),
 )
-def test_mass_proportion_featurizer(test_input, expected):
+def test_element_mass_proportion_featurizer(test_input, expected):
     """Test ElementMassProportionFeaturizer."""
     featurizer = ElementMassProportionFeaturizer(preset=PRESET)
     molecule = MOLECULE(test_input)
@@ -106,7 +108,7 @@ def test_mass_proportion_featurizer(test_input, expected):
         property=list(map(lambda x: "num_" + x + "_atoms", PRESET)),
     ),
 )
-def test_atom_count_featurizer(test_input, expected):
+def test_element_atom_count_featurizer(test_input, expected):
     """Test ElementCountFeaturizer."""
     featurizer = ElementCountFeaturizer(preset=PRESET)
     molecule = MOLECULE(test_input)
@@ -127,7 +129,7 @@ def test_atom_count_featurizer(test_input, expected):
         property=list(map(lambda x: x + "_atom_ratio", PRESET)),
     ),
 )
-def test_atom_count_proportion_featurizer(test_input, expected):
+def test_element_atom_count_proportion_featurizer(test_input, expected):
     """Test ElementCountProportionFeaturizer."""
     featurizer = ElementCountProportionFeaturizer(preset=PRESET)
     molecule = MOLECULE(test_input)
@@ -137,7 +139,28 @@ def test_atom_count_proportion_featurizer(test_input, expected):
     assert np.isclose(results, expected).all()
 
 
-"""Test for element atom count ratio contribution featurizer."""
+"""Test for molecular atom count featurizer."""
+
+
+@pytest.mark.parametrize(
+    "test_input, expected",
+    extract_molecule_properties(
+        property_bank=PROPERTY_BANK,
+        representation_name=KIND,
+        property="num_atoms",
+    ),
+)
+def test_atom_count_featurizer(test_input, expected):
+    """Test AtomCountFeaturizer."""
+    featurizer = AtomCountFeaturizer()
+    molecule = MOLECULE(test_input)
+
+    results = featurizer.featurize(molecule)
+
+    assert np.isclose(results, expected).all()
+
+
+"""Test for unsaturation degree featurizer."""
 
 
 def test_get_degree_of_unsaturation_for_mol():
