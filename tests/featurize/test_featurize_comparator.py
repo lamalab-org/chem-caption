@@ -5,7 +5,7 @@
 import pytest
 
 from chemcaption.featurize.comparator import IsoelectronicComparator
-from tests.conftests import DISPATCH_MAP
+from tests.conftests import DISPATCH_MAP, PROPERTY_BANK, extract_molecule_properties
 
 KIND = "smiles"
 MOLECULE = DISPATCH_MAP[KIND]
@@ -17,18 +17,63 @@ __all__ = [
 ]
 
 
+"""Test for isoelectronicity featurizer."""
+
+
 @pytest.mark.parametrize(
-    "test_input, expected",
-    [(("N#N", "[C-]#[O+]"), 1), (("[P-3]", "[S-2]"), 1), (("[Al+3]", "[Mg+2]"), 1)],
+    "test_values_1, test_values_2",
+    zip(
+        extract_molecule_properties(
+            property_bank=PROPERTY_BANK, representation_name=KIND, property="num_valence_electrons"
+        ),
+        sorted(
+            extract_molecule_properties(
+                property_bank=PROPERTY_BANK, representation_name=KIND, property="num_valence_electrons"
+            )
+        )
+    ),
 )
-def test_isoelectronicity_comparator(test_input, expected):
+def test_isoelectronicity_comparator(test_values_1, test_values_2):
     """Test IsoelectronicComparator."""
-    smiles1, smiles2 = test_input
-    mol1 = MOLECULE(smiles1)
-    mol2 = MOLECULE(smiles2)
+    test_input_1, expected_1 = test_values_1
+    test_input_2, expected_2 = test_values_2
 
-    comparator = IsoelectronicComparator()
+    featurizer = IsoelectronicComparator()
 
-    results = comparator.compare([mol1, mol2])
+    molecule_1 = MOLECULE(test_input_1)
+    molecule_2 = MOLECULE(test_input_2)
 
-    assert results == expected
+    results = featurizer.compare([molecule_1, molecule_2])
+
+    assert results == (expected_1.astype(int) == expected_2.astype(int))
+
+
+"""Test for isoelectronicity featurizer."""
+
+
+@pytest.mark.parametrize(
+    "test_values_1, test_values_2",
+    zip(
+        extract_molecule_properties(
+            property_bank=PROPERTY_BANK, representation_name=KIND, property="num_valence_electrons"
+        ),
+        sorted(
+            extract_molecule_properties(
+                property_bank=PROPERTY_BANK, representation_name=KIND, property="num_valence_electrons"
+            )
+        )
+    ),
+)
+def test_isoelectronicity_comparator(test_values_1, test_values_2):
+    """Test IsoelectronicComparator."""
+    test_input_1, expected_1 = test_values_1
+    test_input_2, expected_2 = test_values_2
+
+    featurizer = IsoelectronicComparator()
+
+    molecule_1 = MOLECULE(test_input_1)
+    molecule_2 = MOLECULE(test_input_2)
+
+    results = featurizer.compare([molecule_1, molecule_2])
+
+    assert results == (expected_1.astype(int) == expected_2.astype(int))
