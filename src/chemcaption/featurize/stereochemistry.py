@@ -61,7 +61,7 @@ class NumChiralCentersFeaturizer(AbstractFeaturizer):
             (np.array): number of chiral centers.
         """
         chiral_cc = self._find_chiral_centers(molecule)
-        return np.array([len(chiral_cc)])
+        return np.array([len(chiral_cc)]).reshape((1, 1))
 
     def implementors(self) -> List[str]:
         """

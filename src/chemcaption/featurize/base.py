@@ -231,7 +231,8 @@ class MultipleFeaturizer(AbstractFeaturizer):
         """
         super().__init__()
 
-        self.featurizers = self.fit_on_featurizers(featurizers=featurizers)
+        self.featurizers = None
+        self.fit_on_featurizers(featurizers=featurizers)
 
     def featurize(self, molecule: Molecule) -> np.array:
         """
@@ -248,6 +249,20 @@ class MultipleFeaturizer(AbstractFeaturizer):
         features = [featurizer.featurize(molecule=molecule) for featurizer in self.featurizers]
 
         return np.concatenate(features, axis=-1)
+
+    def text_featurize(
+        self,
+        molecule: Molecule,
+    ) -> List[Prompt]:
+        """Embed features in Prompt instance.
+
+        Args:
+            molecule (Molecule): Molecule representation.
+
+        Returns:
+            (Prompt): Instance of Prompt containing relevant information extracted from `molecule`.
+        """
+        return [featurizer.text_featurize(molecule=molecule) for featurizer in self.featurizers]
 
     def feature_labels(self) -> List[str]:
         """Return feature labels.
@@ -277,12 +292,14 @@ class MultipleFeaturizer(AbstractFeaturizer):
         for ix, featurizer in enumerate(featurizers):
             # Each featurizer must be specifically of type AbstractFeaturizer
 
-            if not isinstance(featurizers, AbstractFeaturizer):
+            if not isinstance(featurizer, AbstractFeaturizer):
                 raise ValueError(
                     f"`{featurizer.__class__.__name__}` instance at index {ix} is not of type `AbstractFeaturizer`."
                 )
 
         self.featurizers = featurizers
+
+        print(f"`{self.__class__.__name__}` instance fitted with {len(featurizers)} featurizers!\n")
         self.label = self.feature_labels()
 
         self.template = [featurizer.template for featurizer in featurizers]

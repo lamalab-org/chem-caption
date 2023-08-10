@@ -12,6 +12,7 @@ from chemcaption.featurize.composition import (
     ElementMassFeaturizer,
     ElementMassProportionFeaturizer,
     MolecularMassFeaturizer,
+    MonoisotopicMolecularMassFeaturizer
 )
 from chemcaption.molecules import InChIMolecule, SELFIESMolecule, SMILESMolecule
 from tests.conftests import DISPATCH_MAP, PROPERTY_BANK, extract_molecule_properties
@@ -26,6 +27,7 @@ PRESET = ["carbon", "hydrogen", "oxygen", "nitrogen", "phosphorus"]
 
 __all__ = [
     "test_molar_mass_featurizer",
+    "test_monoisotopic_molar_mass_featurizer",
     "test_mass_featurizer",
     "test_mass_proportion_featurizer",
     "test_atom_count_featurizer",
@@ -46,6 +48,25 @@ __all__ = [
 def test_molar_mass_featurizer(test_input, expected):
     """Test MolecularMassFeaturizer."""
     featurizer = MolecularMassFeaturizer()
+    molecule = MOLECULE(test_input)
+
+    results = featurizer.featurize(molecule)
+
+    assert np.isclose(results, expected, atol=1.1).all()
+
+
+"""Test for monoisotopic molecular mass featurizer."""
+
+
+@pytest.mark.parametrize(
+    "test_input, expected",
+    extract_molecule_properties(
+        property_bank=PROPERTY_BANK, representation_name=KIND, property="monoisotopic_molecular_mass"
+    ),
+)
+def test_monoisotopic_molar_mass_featurizer(test_input, expected):
+    """Test MonoisotopicMolecularMassFeaturizer."""
+    featurizer = MonoisotopicMolecularMassFeaturizer()
     molecule = MOLECULE(test_input)
 
     results = featurizer.featurize(molecule)

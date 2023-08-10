@@ -50,7 +50,7 @@ class RotationalSymmetryNumber(AbstractFeaturizer):
         mol = molecule.rdkit_mol
         m = _rdkit_to_pymatgen(mol)
         analyzer = _pmg_mol_to_pointgroup_analyzer(m)
-        return np.array([analyzer.get_rotational_symmetry_number()])
+        return np.array([analyzer.get_rotational_symmetry_number()]).reshape((1, -1))
 
     def implementors(self) -> List[str]:
         """
@@ -102,7 +102,7 @@ class PointGroupFeaturizer(AbstractFeaturizer):
         mol = molecule.rdkit_mol
         m = _rdkit_to_pymatgen(mol)
         analyzer = _pmg_mol_to_pointgroup_analyzer(m)
-        return np.array([analyzer.get_pointgroup().sch_symbol])
+        return np.array([analyzer.get_pointgroup().sch_symbol]).reshape((1, 1))
 
     def implementors(self) -> List[str]:
         """
