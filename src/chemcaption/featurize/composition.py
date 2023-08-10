@@ -63,6 +63,15 @@ class MolecularMassFeaturizer(AbstractFeaturizer):
     def __init__(self):
         """Get the molecular mass of a molecule."""
         super().__init__()
+
+        self.template = (
+            "What is the {PROPERTY_NAME} of the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
+        )
+        self._names = [
+            {
+                "noun": "molecular mass",
+            }
+        ]
         self.label = ["molecular_mass"]
 
     def featurize(
@@ -113,6 +122,13 @@ class ElementMassFeaturizer(AbstractFeaturizer):
         self.prefix = ""
         self.suffix = "_mass"
         self.label = [self.prefix + element.lower() + self.suffix for element in self.preset]
+
+        self.template = "What is the {PROPERTY_NAME} for the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
+        self._names = [
+            {
+                "noun": "contributed mass per element",
+            }
+        ]
 
     @property
     def preset(self) -> Optional[Union[List[str], Dict[str, str]]]:
@@ -252,6 +268,13 @@ class ElementMassProportionFeaturizer(ElementMassFeaturizer):
         self.suffix = "_mass_ratio"
         self.label = [self.prefix + element.lower() + self.suffix for element in self.preset]
 
+        self.template = "What is the {PROPERTY_NAME} for the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
+        self._names = [
+            {
+                "noun": "contributed mass proportion per element",
+            }
+        ]
+
     def featurize(self, molecule: Molecule) -> np.array:
         """
         Featurize single molecule instance. Get the total mass proportion for elements in a molecule.
@@ -288,6 +311,13 @@ class ElementCountFeaturizer(ElementMassFeaturizer):
         self.suffix = "_atoms"
 
         self.label = [self.prefix + element.lower() + self.suffix for element in self.preset]
+
+        self.template = "What is the {PROPERTY_NAME} for the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
+        self._names = [
+            {
+                "noun": "number of atoms per element",
+            }
+        ]
 
     def _get_atom_count(self, element: str, molecule: Molecule) -> int:
         """
@@ -367,6 +397,15 @@ class ElementCountProportionFeaturizer(ElementCountFeaturizer):
         self.suffix = "_atom_ratio"
         self.label = [self.prefix + element.lower() + self.suffix for element in self.preset]
 
+        self.template = (
+            "Based on atom count, what is the {PROPERTY_NAME} for the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
+        )
+        self._names = [
+            {
+                "noun": "atomic proportion per element",
+            }
+        ]
+
     def featurize(self, molecule: Molecule) -> np.array:
         """
         Featurize single molecule instance. Get the atom count proportion for elements in a molecule.
@@ -399,6 +438,13 @@ class AtomCountFeaturizer(ElementCountFeaturizer):
     def __init__(self):
         """Initialize instance."""
         super().__init__()
+
+        self.template = "What is the {PROPERTY_NAME} present in the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
+        self._names = [
+            {
+                "noun": "total number of atoms",
+            }
+        ]
 
         self.label = ["num_atoms"]
 
@@ -438,7 +484,7 @@ class DegreeOfUnsaturationFeaturizer(AbstractFeaturizer):
         """
         super().__init__()
         self.template = (
-            "What is the degree of unsaturation of a molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
+            "What is the {PROPERTY_NAME} of a molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
         )
         self._names = [
             {

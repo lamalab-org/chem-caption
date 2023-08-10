@@ -120,7 +120,7 @@ class IsomorphismComparator(Comparator):
         molecules: List[Molecule],
         epsilon: float = 0.0,
     ) -> np.array:
-        """Return results of feature comparison between molecule instances per featurizer.
+        """Return results of molecule feature comparison between molecule instance pairs.
 
         Args:
             featurizer (AbstractFeaturizer): Featurizer to compare on.
