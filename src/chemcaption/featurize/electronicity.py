@@ -29,7 +29,9 @@ class HydrogenAcceptorCountFeaturizer(AbstractFeaturizer):
         """Get the number of Hydrogen bond acceptors present in a molecule."""
         super().__init__()
 
-        self.template = "What is the {PROPERTY_NAME} in the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
+        self.template = (
+            "What is the {PROPERTY_NAME} in the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
+        )
         self._names = [
             {
                 "noun": "number of hydrogen bond acceptors",
@@ -73,7 +75,9 @@ class HydrogenDonorCountFeaturizer(AbstractFeaturizer):
         """Get the number of Hydrogen bond donors present in a molecule."""
         super().__init__()
 
-        self.template = "What is the {PROPERTY_NAME} in the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
+        self.template = (
+            "What is the {PROPERTY_NAME} in the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
+        )
         self._names = [
             {
                 "noun": "number of hydrogen bond donors",

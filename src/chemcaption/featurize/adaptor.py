@@ -74,7 +74,7 @@ class RDKitAdaptor(AbstractFeaturizer):
         Return list of functionality implementors.
 
         Args:
-            None
+            None.
 
         Returns:
             List[str]: List of implementors.
@@ -121,7 +121,7 @@ class MolecularMassAdaptor(RDKitAdaptor):
         Return list of functionality implementors.
 
         Args:
-            None
+            None.
 
         Returns:
             List[str]: List of implementors.
@@ -165,7 +165,7 @@ class ExactMolecularMassAdaptor(RDKitAdaptor):
         Return list of functionality implementors.
 
         Args:
-            None
+            None.
 
         Returns:
             List[str]: List of implementors.
@@ -182,7 +182,9 @@ class MonoisotopicMolecularMassAdaptor(RDKitAdaptor):
             rdkit_function=Descriptors.ExactMolWt, labels=["monoisotopic_molecular_mass"]
         )
 
-        self.template = "What is the {PROPERTY_NAME} of the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
+        self.template = (
+            "What is the {PROPERTY_NAME} of the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
+        )
         self._names = [
             {
                 "noun": "monoisotopic molecular mass",
@@ -209,7 +211,7 @@ class MonoisotopicMolecularMassAdaptor(RDKitAdaptor):
         Return list of functionality implementors.
 
         Args:
-            None
+            None.
 
         Returns:
             List[str]: List of implementors.
@@ -225,8 +227,7 @@ class HydrogenDonorCountAdaptor(RDKitAdaptor):
         super().__init__(rdkit_function=Descriptors.NumHDonors, labels=["num_hydrogen_bond_donors"])
 
         self.template = (
-            "What is the {PROPERTY_NAME} in the molecule"
-            " with {REPR_SYSTEM} `{REPR_STRING}`?"
+            "What is the {PROPERTY_NAME} in the molecule" " with {REPR_SYSTEM} `{REPR_STRING}`?"
         )
         self._names = [
             {
@@ -254,7 +255,7 @@ class HydrogenDonorCountAdaptor(RDKitAdaptor):
         Return list of functionality implementors.
 
         Args:
-            None
+            None.
 
         Returns:
             List[str]: List of implementors.
@@ -272,8 +273,7 @@ class HydrogenAcceptorCountAdaptor(RDKitAdaptor):
         )
 
         self.template = (
-            "What is the {PROPERTY_NAME} in the molecule"
-            " with {REPR_SYSTEM} `{REPR_STRING}`?"
+            "What is the {PROPERTY_NAME} in the molecule" " with {REPR_SYSTEM} `{REPR_STRING}`?"
         )
         self._names = [
             {
@@ -301,7 +301,7 @@ class HydrogenAcceptorCountAdaptor(RDKitAdaptor):
         Return list of functionality implementors.
 
         Args:
-            None
+            None.
 
         Returns:
             List[str]: List of implementors.
@@ -349,7 +349,7 @@ class RotableBondCountAdaptor(RDKitAdaptor):
         Return list of functionality implementors.
 
         Args:
-            None
+            None.
 
         Returns:
             List[str]: List of implementors.
@@ -399,7 +399,7 @@ class StrictRotableBondCountAdaptor(RDKitAdaptor):
         Return list of functionality implementors.
 
         Args:
-            None
+            None.
 
         Returns:
             List[str]: List of implementors.
@@ -454,7 +454,7 @@ class ValenceElectronCountAdaptor(RDKitAdaptor):
         Return list of functionality implementors.
 
         Args:
-            None
+            None.
 
         Returns:
             List[str]: List of implementors.
