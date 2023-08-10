@@ -16,7 +16,6 @@ __all__ = [
     "HydrogenAcceptorCountFeaturizer",
     "HydrogenDonorCountFeaturizer",
     "ValenceElectronCountFeaturizer",
-    "IsoelectronicDifferenceFeaturizer",
 ]
 
 
@@ -29,6 +28,14 @@ class HydrogenAcceptorCountFeaturizer(AbstractFeaturizer):
     def __init__(self):
         """Get the number of Hydrogen bond acceptors present in a molecule."""
         super().__init__()
+
+        self.template = "What is the {PROPERTY_NAME} in the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
+        self._names = [
+            {
+                "noun": "number of hydrogen bond acceptors",
+            }
+        ]
+
         self.label = ["num_hydrogen_bond_acceptors"]
 
     def featurize(self, molecule: Molecule) -> np.array:
@@ -65,6 +72,14 @@ class HydrogenDonorCountFeaturizer(AbstractFeaturizer):
     def __init__(self):
         """Get the number of Hydrogen bond donors present in a molecule."""
         super().__init__()
+
+        self.template = "What is the {PROPERTY_NAME} in the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
+        self._names = [
+            {
+                "noun": "number of hydrogen bond donors",
+            }
+        ]
+
         self.label = ["num_hydrogen_bond_donors"]
 
     def featurize(self, molecule: Molecule) -> np.array:
@@ -96,7 +111,7 @@ class HydrogenDonorCountFeaturizer(AbstractFeaturizer):
 
 
 class ValenceElectronCountFeaturizer(AbstractFeaturizer):
-    """A featurizer for molecular electronicity-based comparison."""
+    """A featurizer for extracting valence electron count."""
 
     def __init__(self):
         """Initialize class.
@@ -105,6 +120,23 @@ class ValenceElectronCountFeaturizer(AbstractFeaturizer):
             None
         """
         super().__init__()
+
+        self.template = (
+            "What is the {PROPERTY_NAME} for the molecule with {REPR_SYSTEM} `{REPR_STRING}` "
+            "have in its outer shell?"
+        )
+        self._names = [
+            {
+                "noun": "number of valence electrons",
+            },
+            {
+                "noun": "valence electron count",
+            },
+            {
+                "noun": "count of valence electrons",
+            },
+        ]
+
         self.label = ["num_valence_electrons"]
 
     def featurize(self, molecule: Molecule) -> np.array:
@@ -120,52 +152,6 @@ class ValenceElectronCountFeaturizer(AbstractFeaturizer):
         num_valence_electrons = Descriptors.NumValenceElectrons(molecule.reveal_hydrogens())
 
         return np.array([num_valence_electrons]).reshape((1, -1))
-
-    def implementors(self) -> List[str]:
-        """
-        Return list of functionality implementors.
-
-        Args:
-            None
-
-        Returns:
-            List[str]: List of implementors.
-        """
-        return ["Benedict Oshomah Emoekabu"]
-
-
-"""Featurizer to compare molecules for isoelectronic difference"""
-
-
-class IsoelectronicDifferenceFeaturizer(AbstractFeaturizer):
-    """A featurizer for molecular electronicity-based comparison."""
-
-    def __init__(self, reference_molecule: Molecule):
-        """Initialize class.
-
-        Args:
-            reference_molecule (Molecule): Molecule representation.
-        """
-        super().__init__()
-        self.reference_molecule = reference_molecule
-        self.label = ["isoelectronic_difference"]
-        self.comparer = ValenceElectronCountFeaturizer()
-
-    def featurize(self, molecule: Molecule) -> np.array:
-        """
-        Featurize single molecule instance. Extract and return features from molecular object.
-
-        Args:
-            molecule (Molecule): Molecule representation.
-
-        Returns:
-            (np.array): Array containing int representation of isoelectronic status between
-                `self.reference_molecule` and `molecule`.
-        """
-        num_valence_electrons = self.comparer.featurize(molecule)
-        num_reference_valence_electrons = self.comparer.featurize(self.reference_molecule)
-
-        return np.array([num_reference_valence_electrons - num_valence_electrons]).reshape((1, -1))
 
     def implementors(self) -> List[str]:
         """

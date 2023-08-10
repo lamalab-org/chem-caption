@@ -25,7 +25,7 @@ class NumChiralCentersFeaturizer(AbstractFeaturizer):
         """Instantiate class."""
         super().__init__()
         self.template = (
-            "What is the number of chiral centers of a molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
+            "What is the {PROPERTY_NAME} in the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
         )
         self._names = [
             {

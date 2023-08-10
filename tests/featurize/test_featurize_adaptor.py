@@ -13,6 +13,7 @@ from chemcaption.featurize.adaptor import (
     MonoisotopicMolecularMassAdaptor,
     RotableBondCountAdaptor,
     StrictRotableBondCountAdaptor,
+    ValenceElectronCountAdaptor,
 )
 from tests.conftests import DISPATCH_MAP, PROPERTY_BANK, extract_molecule_properties
 
@@ -23,10 +24,13 @@ MOLECULE = DISPATCH_MAP[KIND]
 
 __all__ = [
     "test_rdkit_adaptor_molar_mass_featurizer",
+    "test_rdkit_adaptor_exact_molar_mass_featurizer",
+    "test_rdkit_adaptor_monoisotopic_molar_mass_featurizer",
     "test_rdkit_adaptor_num_hacceptor_featurizer",
     "test_rdkit_adaptor_num_hdonor_featurizer",
     "test_rdkit_adaptor_strict_num_rotable_bond_featurizer",
     "test_rdkit_adaptor_non_strict_num_rotable_bond_featurizer",
+    "test_rdkit_adaptor_valence_electron_count_featurizer",
 ]
 
 
@@ -160,6 +164,25 @@ def test_rdkit_adaptor_strict_num_rotable_bond_featurizer(test_input, expected):
 def test_rdkit_adaptor_non_strict_num_rotable_bond_featurizer(test_input, expected):
     """Test RDKitAdaptor as NumRotableBondsFeaturizer (non-strict)."""
     featurizer = RotableBondCountAdaptor()
+    molecule = MOLECULE(test_input)
+
+    results = featurizer.featurize(molecule)
+
+    assert np.equal(results, expected.astype(int)).all()
+
+
+"""Test for number of valence electrons featurizer via higher-level RDKitAdaptor."""
+
+
+@pytest.mark.parametrize(
+    "test_input, expected",
+    extract_molecule_properties(
+        property_bank=PROPERTY_BANK, representation_name=KIND, property="num_valence_electrons"
+    ),
+)
+def test_rdkit_adaptor_valence_electron_count_featurizer(test_input, expected):
+    """Test RDKitAdaptor as ValenceElectronCountFeaturizer (non-strict)."""
+    featurizer = ValenceElectronCountAdaptor()
     molecule = MOLECULE(test_input)
 
     results = featurizer.featurize(molecule)

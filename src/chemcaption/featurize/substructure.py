@@ -74,6 +74,18 @@ class SMARTSFeaturizer(AbstractFeaturizer):
         self.suffix = "_count" if count else "_presence"
         self.label = [self.prefix + element.lower() + self.suffix for element in self.names]
 
+        self.template = (
+            "What is the "
+            + self.suffix[1:]
+            + " of the provided {PROPERTY_NAME} (i.e., SMARTS patterns)"
+            " in the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
+        )
+        self._names = [
+            {
+                "noun": "functional groups",
+            }
+        ]
+
     @property
     def preset(self) -> Dict[str, List[str]]:
         """Get molecular preset. Getter method.
@@ -178,11 +190,22 @@ class SMARTSFeaturizer(AbstractFeaturizer):
 
 
 class IsomorphismFeaturizer(AbstractFeaturizer):
-    """Convert molecule graph to adjacency matrix."""
+    """Convert molecule graph to Weisfeiler-Lehman hash."""
 
     def __init__(self):
         """Instantiate class."""
         super().__init__()
+
+        self.template = (
+            "According to the Weisfeiler-Lehman isomorphism test, what is the {PROPERTY_NAME} for "
+            "the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
+        )
+        self._names = [
+            {
+                "noun": "Weisfeiler-Lehman graph hash",
+            }
+        ]
+
         self.label = ["weisfeiler_lehman_hash"]
 
     def featurize(self, molecule: Molecule) -> np.array:
@@ -198,7 +221,7 @@ class IsomorphismFeaturizer(AbstractFeaturizer):
         """
         molecule_graph = molecule.to_graph()
 
-        return molecule_graph.weisfeiler_lehman_graph_hash()
+        return np.array(molecule_graph.weisfeiler_lehman_graph_hash()).reshape(1, 1)
 
     def implementors(self) -> List[str]:
         """
