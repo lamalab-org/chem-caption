@@ -25,7 +25,9 @@ class RotationalSymmetryNumber(AbstractFeaturizer):
         """Initialize instance."""
         super().__init__()
 
-        self.template = "What is the {PROPERTY_NAME} for a molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
+        self.template = (
+            "What is the {PROPERTY_NAME} for a molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
+        )
         self._names = [
             {
                 "noun": "rotational symmetry number",
@@ -55,7 +57,7 @@ class RotationalSymmetryNumber(AbstractFeaturizer):
         Return list of functionality implementors.
 
         Args:
-            None
+            None.
 
         Returns:
             List[str]: List of implementors.
@@ -70,7 +72,9 @@ class PointGroupFeaturizer(AbstractFeaturizer):
         """Initialize instance."""
         super().__init__()
 
-        self.template = "What is the {PROPERTY_NAME} of a molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
+        self.template = (
+            "What is the {PROPERTY_NAME} of a molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
+        )
         self._names = [
             {
                 "noun": "point group",
@@ -105,7 +109,7 @@ class PointGroupFeaturizer(AbstractFeaturizer):
         Return list of functionality implementors.
 
         Args:
-            None
+            None.
 
         Returns:
             List[str]: List of implementors.
