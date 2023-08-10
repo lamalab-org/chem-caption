@@ -19,11 +19,8 @@ BASE_DIR = os.getcwd().split("featurize")[0]
 BASE_DIR = BASE_DIR if "tests" in os.getcwd() else os.path.join(os.getcwd(), "tests")
 
 # Sources of truth
-MOLECULAR_BANK = pd.read_json(
-    os.path.join(BASE_DIR, "data", "molecular_bank.json"), orient="index"
-).drop_duplicates()
 PROPERTY_BANK = pd.read_csv(
-    os.path.join(BASE_DIR, "data", "merged_pubchem_response.csv")
+    os.path.join(BASE_DIR, "data", "pubchem_response.csv")
 ).drop_duplicates()
 
 DISPATCH_MAP = {
@@ -106,11 +103,12 @@ def _convert_molecule(
 
     if to_kind == "inchi":
         representation_string = Chem.MolToInchi(molecule.rdkit_mol)
-    else:
+    elif to_kind == "smiles":
         representation_string = Chem.MolToSmiles(molecule.rdkit_mol)
-        if to_kind == "selfies":
-            representation_string = encoder(representation_string)
-
+    elif to_kind == "selfies":
+        representation_string = encoder(Chem.MolToSmiles(molecule.rdkit_mol))
+    else:
+        raise ValueError(f"Invalid representation system: {to_kind}.")
     return DISPATCH_MAP[to_kind](representation_string)
 
 
