@@ -12,6 +12,7 @@ from chemcaption.featurize.composition import (
     ElementCountProportionFeaturizer,
     ElementMassFeaturizer,
     ElementMassProportionFeaturizer,
+    MolecularFormularFeaturizer,
     MolecularMassFeaturizer,
 )
 from chemcaption.molecules import InChIMolecule, SELFIESMolecule, SMILESMolecule
@@ -26,6 +27,7 @@ PRESET = ["carbon", "hydrogen", "oxygen", "nitrogen", "phosphorus"]
 # Implemented tests for composition-related featurizers.
 
 __all__ = [
+    "test_molecular_formular_featurizer",
     "test_molar_mass_featurizer",
     "test_element_mass_featurizer",
     "test_element_mass_proportion_featurizer",
@@ -35,6 +37,28 @@ __all__ = [
     "test_get_degree_of_unsaturation_for_mol",
     "test_degree_of_unsaturation_featurizer",
 ]
+
+
+"""Test for molecular formular featurizer."""
+
+
+@pytest.mark.parametrize(
+    "test_input, expected",
+    extract_molecule_properties(
+        property_bank=PROPERTY_BANK,
+        representation_name=KIND,
+        property="molecular_formular",
+    ),
+)
+def test_molecular_formular_featurizer(test_input, expected):
+    """Test MolecularFormularFeaturizer."""
+    featurizer = MolecularFormularFeaturizer()
+    molecule = MOLECULE(test_input)
+
+    results = featurizer.featurize(molecule)
+
+    assert np.equal(results, expected).all()
+
 
 """Test for molecular mass featurizer."""
 
@@ -157,7 +181,7 @@ def test_atom_count_featurizer(test_input, expected):
 
     results = featurizer.featurize(molecule)
 
-    assert np.isclose(results, expected).all()
+    assert np.equal(results, expected).all()
 
 
 """Test for unsaturation degree featurizer."""
