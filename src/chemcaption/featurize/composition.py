@@ -29,6 +29,7 @@ class MolecularFormularFeaturizer(AbstractFeaturizer):
     """Get the molecular formula of a molecule."""
 
     def __init__(self):
+        """Initialize class."""
         super().__init__()
 
         self.template = (
@@ -154,7 +155,7 @@ class ElementMassFeaturizer(AbstractFeaturizer):
             new_preset (Optional[Union[List[str], Dict[str, str]]]): List of chemical elements of interest.
 
         Returns:
-            None
+            None.
         """
         self._preset = new_preset
         if new_preset is not None:
@@ -412,7 +413,10 @@ class ElementCountProportionFeaturizer(ElementCountFeaturizer):
         self.suffix = "_atom_ratio"
         self.label = [self.prefix + element.lower() + self.suffix for element in self.preset]
 
-        self.template = "Based on atom count, what is the {PROPERTY_NAME} for the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
+        self.template = (
+            "Based on atom count, what is the {PROPERTY_NAME} "
+            "for the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
+        )
         self._names = [
             {
                 "noun": "atomic proportion per element",
@@ -493,7 +497,7 @@ class DegreeOfUnsaturationFeaturizer(AbstractFeaturizer):
         """Instantiate class.
 
         Args:
-            None
+            None.
         """
         super().__init__()
         self.template = (

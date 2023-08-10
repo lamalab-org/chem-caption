@@ -115,7 +115,7 @@ class AbstractFeaturizer(ABC):
         Return list of functionality implementors.
 
         Args:
-            None
+            None.
 
         Returns:
             List[str]: List of implementors.
@@ -135,7 +135,7 @@ class AbstractFeaturizer(ABC):
             new_label (str): New label for generated feature.
 
         Returns:
-            None
+            None.
         """
         self._label = new_label
         return
@@ -192,7 +192,7 @@ class AbstractComparator(ABC):
         Return list of functionality implementors.
 
         Args:
-            None
+            None.
 
         Returns:
             List[str]: List of implementors.
@@ -253,7 +253,7 @@ class MultipleFeaturizer(AbstractFeaturizer):
         """Return feature labels.
 
         Args:
-            None
+            None.
 
         Returns:
             List[str]: List of labels for all features extracted by all featurizers.
@@ -295,7 +295,7 @@ class MultipleFeaturizer(AbstractFeaturizer):
         Return list of functionality implementors.
 
         Args:
-            None
+            None.
 
         Returns:
             List[str]: List of implementors.
@@ -346,7 +346,7 @@ class Comparator(AbstractComparator):
         """Return string representation.
 
         Args:
-            None
+            None.
 
         Returns:
             (str): String representation of `self`.
@@ -406,7 +406,7 @@ class Comparator(AbstractComparator):
         """Return feature labels.
 
         Args:
-            None
+            None.
 
         Returns:
             List[str]: List of labels for all features extracted by all featurizers.
@@ -442,7 +442,7 @@ class Comparator(AbstractComparator):
         Return list of functionality implementors.
 
         Args:
-            None
+            None.
 
         Returns:
             List[str]: List of implementors.
@@ -521,7 +521,7 @@ class MultipleComparator(Comparator):
         """Return feature labels.
 
         Args:
-            None
+            None.
 
         Returns:
             List[str]: List of labels for all features extracted by all comparators.
@@ -537,7 +537,7 @@ class MultipleComparator(Comparator):
         Return list of functionality implementors.
 
         Args:
-            None
+            None.
 
         Returns:
             List[str]: List of implementors.

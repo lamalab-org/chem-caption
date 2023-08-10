@@ -36,7 +36,12 @@ class MoleculeGraph(nx.Graph):
     """Graph representation for molecular instances."""
 
     def __init__(self, molecule: Chem.Mol):
-        """Initialize instance."""
+        """Initialize instance.
+
+        Args:
+            molecule (Chem.Mol): RDKit molecular instance.
+
+        """
         super().__init__()
 
         self.molecule = molecule
@@ -44,14 +49,14 @@ class MoleculeGraph(nx.Graph):
         self.graph = self.molecule_to_graph()
         self._hash = None
 
-    def molecule_to_graph(self):
+    def molecule_to_graph(self) -> nx.Graph:
         """Convert molecule object to graph representation.
 
         Args:
-            None
+            None.
 
         Returns:
-            None
+            (nx.Graph): Molecular graph.
         """
         graph = nx.Graph()
 
@@ -83,14 +88,14 @@ class MoleculeGraph(nx.Graph):
 
         return graph
 
-    def weisfeiler_lehman_graph_hash(self):
+    def weisfeiler_lehman_graph_hash(self) -> str:
         """Return graph hash according to Weisfeiler-Lehman isomorphism test.
 
         Args:
-            None
+            None.
 
         Returns:
-            None
+            (str): Weisfeiler-Lehman graph hash.
         """
         if not self._hash:
             self._hash = nx.weisfeiler_lehman_graph_hash(self.graph)
@@ -127,7 +132,14 @@ class MoleculeBase(ABC):
         return
 
     def __repr__(self) -> str:
-        """Return string representation of molecule object."""
+        """Return string representation of molecule object.
+
+        Args:
+            None.
+
+        Returns:
+            (str): String representation of molecule.
+        """
         return f"{self.__class__.__name__}(REPRESENTATION = '{self.representation_string}')"
 
     def get_atoms(self, hydrogen=True, **kwargs):
@@ -156,11 +168,25 @@ class MoleculeBase(ABC):
         return Chem.rdmolops.AddHs(self.rdkit_mol, **kwargs)
 
     def get_composition(self) -> str:
-        """Get composition of molecule."""
+        """Get composition of molecule.
+
+        Args:
+            None.
+
+        Returns:
+            (str): Molecular formular.
+        """
         return Chem.rdMolDescriptors.CalcMolFormula(self.rdkit_mol)
 
     def to_graph(self) -> MoleculeGraph:
-        """Convert molecule to graph."""
+        """Convert molecule to graph.
+
+        Args:
+            None.
+
+        Returns:
+            (MoleculeGraph): Molecular graph instance.
+        """
         graph = MoleculeGraph(molecule=self.reveal_hydrogens())
         return graph
 

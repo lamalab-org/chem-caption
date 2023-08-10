@@ -3,6 +3,7 @@
 """Utilities for facilitating text featurization."""
 
 from random import shuffle
+from typing import Dict, List, Union
 
 import numpy as np
 
@@ -135,7 +136,7 @@ QA_TEMPLATES = dict(
 """Utility functions."""
 
 
-def generate_template(template_type: str = "qa", key: str = "single"):
+def generate_template(template_type: str = "qa", key: str = "single") -> str:
     """Randomly select prompt template.
 
     Args:
@@ -143,7 +144,7 @@ def generate_template(template_type: str = "qa", key: str = "single"):
         key (str): Cardinality of template. Can be `single` or `multiple`. Defaults to `single`.
 
     Returns:
-          template (str): Selected template.
+        template (str): Selected template.
     """
     templates = QA_TEMPLATES[key] if template_type == "qa" else TEXT_TEMPLATES[key]
 
@@ -151,14 +152,14 @@ def generate_template(template_type: str = "qa", key: str = "single"):
     return template
 
 
-def inspect_info(info: dict):
+def inspect_info(info: dict) -> Dict[str, Union[str, List[int], List[float]]]:
     """Inspect information dictionary and update contents if necessary.
 
     Args:
         info (dict): Dictionary of molecular information.
 
     Returns:
-        new_info (dict): Updated dictionary of molecular information.
+        new_info (Dict[str, Union[str, List[int], List[float]]]): Updated dictionary of molecular information.
 
     """
     new_info = info.copy()
@@ -199,7 +200,7 @@ def inspect_info(info: dict):
     return new_info
 
 
-def inspect_template(template: str, template_cardinality: str = "single"):
+def inspect_template(template: str, template_cardinality: str = "single") -> str:
     """Inspect and mutate template structure on the fly.
 
     Args:
@@ -252,14 +253,14 @@ def inspect_template(template: str, template_cardinality: str = "single"):
     return template
 
 
-def generate_info(info_cardinality: str = "single"):
+def generate_info(info_cardinality: str = "single") -> Dict[str, Union[str, float, int]]:
     """Generate dictionary of molecular information at random.
 
     Args:
         info_cardinality (str): Cardinality of template. Can be `single` or `multiple`. Defaults to `single`.
 
     Returns:
-        info (dict): Dictionary of molecular information.
+        info (Dict[str, Union[str, float, int]]): Dictionary of molecular information.
 
     """
     if info_cardinality == "single":

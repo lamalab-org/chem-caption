@@ -6,7 +6,6 @@ import numpy as np
 import pytest
 
 from chemcaption.featurize.adaptor import (
-    ExactMolecularMassAdaptor,
     HydrogenAcceptorCountAdaptor,
     HydrogenDonorCountAdaptor,
     MolecularMassAdaptor,
@@ -24,7 +23,6 @@ MOLECULE = DISPATCH_MAP[KIND]
 
 __all__ = [
     "test_rdkit_adaptor_molar_mass_featurizer",
-    "test_rdkit_adaptor_exact_molar_mass_featurizer",
     "test_rdkit_adaptor_monoisotopic_molar_mass_featurizer",
     "test_rdkit_adaptor_num_hacceptor_featurizer",
     "test_rdkit_adaptor_num_hdonor_featurizer",
@@ -46,25 +44,6 @@ __all__ = [
 def test_rdkit_adaptor_molar_mass_featurizer(test_input, expected):
     """Test RDKitAdaptor as MolecularMassFeaturizer."""
     featurizer = MolecularMassAdaptor()
-    molecule = MOLECULE(test_input)
-
-    results = featurizer.featurize(molecule)
-
-    assert np.isclose(results, expected, atol=1.1).all()
-
-
-"""Test for exact molecular mass featurizer via higher-level RDKitAdaptor."""
-
-
-@pytest.mark.parametrize(
-    "test_input, expected",
-    extract_molecule_properties(
-        property_bank=PROPERTY_BANK, representation_name=KIND, property="exact_molecular_mass"
-    ),
-)
-def test_rdkit_adaptor_exact_molar_mass_featurizer(test_input, expected):
-    """Test RDKitAdaptor as ExactMolecularMassAdaptor."""
-    featurizer = ExactMolecularMassAdaptor()
     molecule = MOLECULE(test_input)
 
     results = featurizer.featurize(molecule)

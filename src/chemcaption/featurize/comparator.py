@@ -35,7 +35,7 @@ class ValenceElectronCountComparator(Comparator):
         Return list of functionality implementors.
 
         Args:
-            None
+            None.
 
         Returns:
             List[str]: List of implementors.
@@ -55,7 +55,7 @@ class AtomCountComparator(Comparator):
         Return list of functionality implementors.
 
         Args:
-            None
+            None.
 
         Returns:
             List[str]: List of implementors.
@@ -99,7 +99,7 @@ class IsomerismComparator(Comparator):
         Return list of functionality implementors.
 
         Args:
-            None
+            None.
 
         Returns:
             List[str]: List of implementors.
@@ -139,7 +139,7 @@ class IsomorphismComparator(Comparator):
         Return list of functionality implementors.
 
         Args:
-            None
+            None.
 
         Returns:
             List[str]: List of implementors.
@@ -184,7 +184,7 @@ class IsoelectronicComparator(MultipleComparator):
         Return list of functionality implementors.
 
         Args:
-            None
+            None.
 
         Returns:
             List[str]: List of implementors.
