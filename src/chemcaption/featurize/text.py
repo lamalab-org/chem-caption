@@ -32,7 +32,7 @@ class Prompt:
         """Return dictionary representation of object.
 
         Args:
-            None
+            None.
 
         Returns:
             (dict): Dictionary containing all relevant prompt-related information.
@@ -89,7 +89,7 @@ class Prompt:
         Return list of functionality implementors.
 
         Args:
-            None
+            None.
 
         Returns:
             List[str]: List of implementors.

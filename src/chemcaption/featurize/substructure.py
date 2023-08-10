@@ -8,16 +8,13 @@ import numpy as np
 import rdkit
 
 from chemcaption.featurize.base import AbstractFeaturizer
+from chemcaption.featurize.text_utils import inspect_info
 from chemcaption.molecules import Molecule
 from chemcaption.presets import SMARTSPreset
 
 # Implemented molecular structure- and substructure-related featurizers
 
-__all__ = [
-    "SMARTSFeaturizer",
-    "IsomorphismFeaturizer",
-    "TopologyCountFeaturizer"
-]
+__all__ = ["SMARTSFeaturizer", "IsomorphismFeaturizer", "TopologyCountFeaturizer"]
 
 
 """Featurizer to obtain the presence or count of SMARTS in molecules."""
@@ -115,7 +112,7 @@ class SMARTSFeaturizer(AbstractFeaturizer):
                         Values: list of substance names and list of corresponding SMARTS strings.
 
         Returns:
-            None
+            None.
         """
         if new_preset is not None:
             if isinstance(new_preset, str):
@@ -182,7 +179,7 @@ class SMARTSFeaturizer(AbstractFeaturizer):
         Return list of functionality implementors.
 
         Args:
-            None
+            None.
 
         Returns:
             List[str]: List of implementors.
@@ -229,7 +226,7 @@ class IsomorphismFeaturizer(AbstractFeaturizer):
         Return list of functionality implementors.
 
         Args:
-            None
+            None.
 
         Returns:
             List[str]: List of implementors.
@@ -240,55 +237,67 @@ class IsomorphismFeaturizer(AbstractFeaturizer):
 class TopologyCountFeaturizer(AbstractFeaturizer):
     """Featurizer to return number of unique `element` environments in a molecule."""
 
-    def __init__(self, reference_atomic_number: int = 6):
+    def __init__(self, reference_atomic_numbers: Union[int, List[int]] = 6):
         """Initialize class object.
 
         Args:
-            reference_atomic_number (int): Atomic number for element of interest. Defaults to `6` (Carbon).
+            reference_atomic_numbers (Union[int, List[int]]): Atomic number for element of interest.
+                Can be either an integer or a list of integers. Defaults to `6` (Carbon).
         """
         super().__init__()
 
-        self.template = (
-            "By NMR, what is the {PROPERTY_NAME} for the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
-        )
+        self.template = "By NMR, what is the {PROPERTY_NAME} for the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
         self._names = [
             {
                 "noun": "number of unique {} environments",
             }
         ]
 
-        self._reference_atomic_number = None
-        self.reference_atomic_number = reference_atomic_number
+        self._reference_atomic_numbers = None
+        self.reference_atomic_numbers = reference_atomic_numbers
 
     @property
-    def reference_atomic_number(self):
+    def reference_atomic_numbers(self):
         """Getter for atomic number of `element` of interest.
 
         Returns:
             atomic_number (int): Atomic number for `element` of interest.
         """
-        return self._reference_atomic_number
+        return self._reference_atomic_numbers
 
-    @reference_atomic_number.setter
-    def reference_atomic_number(self, atomic_number: int):
-        """Setter of atomic number for `element` of interest.
+    @reference_atomic_numbers.setter
+    def reference_atomic_numbers(self, atomic_number: Union[int, List[int]]):
+        """Setter of atomic numbers for `elements` of interest.
 
         Args:
-            atomic_number (int): Atomic number for `element` of interest.
+            atomic_number (Union[int, List[int]]): Atomic numbers for `elements` of interest.
 
         Returns:
-            None
+            None.
         """
-        self._reference_atomic_number = atomic_number
-        element = self.periodic_table.GetElementName(atomic_number)
-        self.label = [f"num_{element.lower()}_environments"]
-        self._names[0]["noun"] = f"number of unique {element.lower()} environments"
+        self._reference_atomic_numbers = (
+            [
+                atomic_number,
+            ]
+            if not isinstance(atomic_number, (list, tuple))
+            else atomic_number
+        )
+        elements = [
+            self.periodic_table.GetElementName(atomic_number).lower()
+            for atomic_number in self.reference_atomic_numbers
+        ]
+        self.label = [f"num_{element}_environments" for element in elements]
+
+        info = {"PRECISION": 3, "PROPERTY_VALUE": elements}
+        info = inspect_info(info)
+
+        self._names[0]["noun"] = f"number of unique {info['PROPERTY_VALUE']} environments"
 
         return
 
     def featurize(self, molecule: Molecule) -> np.array:
         """
-        Featurize single molecule instance. Extract number of unique `element` environments.
+        Featurize single molecule instance. Extract number of unique environments for `elements` of interest.
 
         Args:
             molecule (Molecule): Molecule representation.
@@ -297,31 +306,37 @@ class TopologyCountFeaturizer(AbstractFeaturizer):
             (np.array): Array containing number of unique `element` environments.
         """
         return np.array(
-            self._get_number_of_topologically_distinct_atoms(molecule=molecule)
+            [
+                self._get_number_of_topologically_distinct_atoms(
+                    molecule=molecule, atomic_number=atomic_number
+                )
+                for atomic_number in self.reference_atomic_numbers
+            ]
         ).reshape((1, -1))
 
     def _get_number_of_topologically_distinct_atoms(
-        self, molecule: Molecule
+        self, molecule: Molecule, atomic_number: int = 12
     ):
         """Return the number of unique `element` environments based on environmental topology.
 
         Args:
             molecule (Molecule): Molecular instance.
+            atomic_number (int): Atomic number for `element` of interest.
 
         Returns:
             (int): Number of unique environments.
         """
-        mol = rdkit.Chem.AddHs(molecule.rdkit_mol) if self.reference_atomic_number == 1 else molecule.rdkit_mol
+        mol = rdkit.Chem.AddHs(molecule.rdkit_mol) if atomic_number == 1 else molecule.rdkit_mol
 
         # Get unique canonical atom rankings
         atom_ranks = list(rdkit.Chem.rdmolfiles.CanonicalRankAtoms(mol, breakTies=False))
 
-        # Select the unique carbon environments
+        # Select the unique element environments
         atom_ranks = np.array(atom_ranks)
 
         # Atom indices
         atom_indices = [
-            atom.GetIdx() for atom in mol.GetAtoms() if atom.GetAtomicNum() == self.reference_atomic_number
+            atom.GetIdx() for atom in mol.GetAtoms() if atom.GetAtomicNum() == atomic_number
         ]
         # Count them
         return len(set(atom_ranks[atom_indices]))
@@ -331,7 +346,7 @@ class TopologyCountFeaturizer(AbstractFeaturizer):
         Return list of functionality implementors.
 
         Args:
-            None
+            None.
 
         Returns:
             List[str]: List of implementors.

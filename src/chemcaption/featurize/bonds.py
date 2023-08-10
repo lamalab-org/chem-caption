@@ -28,7 +28,9 @@ class RotableBondCountFeaturizer(AbstractFeaturizer):
         """Initialize instance."""
         super().__init__()
 
-        self.template = "What is the {PROPERTY_NAME} in the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
+        self.template = (
+            "What is the {PROPERTY_NAME} in the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
+        )
         self._names = [
             {
                 "noun": "number of rotatable bonds",
@@ -54,7 +56,7 @@ class RotableBondCountFeaturizer(AbstractFeaturizer):
         Return list of functionality implementors.
 
         Args:
-            None
+            None.
 
         Returns:
             List[str]: List of implementors.
@@ -115,7 +117,7 @@ class BondRotabilityFeaturizer(AbstractFeaturizer):
         Return list of functionality implementors.
 
         Args:
-            None
+            None.
 
         Returns:
             List[str]: List of implementors.

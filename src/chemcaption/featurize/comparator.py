@@ -7,7 +7,7 @@ from typing import List
 import numpy as np
 
 from chemcaption.featurize.base import AbstractFeaturizer, Comparator, MultipleComparator
-from chemcaption.featurize.composition import AtomCountFeaturizer
+from chemcaption.featurize.composition import AtomCountFeaturizer, MolecularFormularFeaturizer
 from chemcaption.featurize.electronicity import ValenceElectronCountFeaturizer
 from chemcaption.featurize.substructure import IsomorphismFeaturizer
 from chemcaption.molecules import Molecule
@@ -17,6 +17,7 @@ from chemcaption.molecules import Molecule
 __all__ = [
     "ValenceElectronCountComparator",
     "AtomCountComparator",
+    "IsomerismComparator",
     "IsomorphismComparator",
     "IsoelectronicComparator",
 ]
@@ -34,7 +35,7 @@ class ValenceElectronCountComparator(Comparator):
         Return list of functionality implementors.
 
         Args:
-            None
+            None.
 
         Returns:
             List[str]: List of implementors.
@@ -54,7 +55,51 @@ class AtomCountComparator(Comparator):
         Return list of functionality implementors.
 
         Args:
-            None
+            None.
+
+        Returns:
+            List[str]: List of implementors.
+        """
+        return ["Benedict Oshomah Emoekabu"]
+
+
+class IsomerismComparator(Comparator):
+    """Compare molecular instances for isomerism via molecular formulae."""
+
+    def __init__(self):
+        """Initialize instance."""
+        super().__init__(
+            featurizers=[
+                MolecularFormularFeaturizer(),
+            ]
+        )
+
+    def _compare_on_featurizer(
+        self,
+        featurizer: AbstractFeaturizer,
+        molecules: List[Molecule],
+        epsilon: float = 0.0,
+    ) -> np.array:
+        """Return results of feature comparison between molecule instances per featurizer.
+
+        Args:
+            featurizer (AbstractFeaturizer): Featurizer to compare on.
+            molecules (List[Molecule]):
+                List containing a pair of molecule instances.
+            epsilon (float): Small float. Precision bound for numerical inconsistencies. Defaults to 0.0.
+
+        Returns:
+            (np.array): Comparison results. 1 if all extracted features are equal, else 0.
+        """
+        result = [self.featurizers[0].featurize(molecule).item() for molecule in molecules]
+        return np.array([len(set(result)) == 1], dtype=int).reshape((1, -1))
+
+    def implementors(self) -> List[str]:
+        """
+        Return list of functionality implementors.
+
+        Args:
+            None.
 
         Returns:
             List[str]: List of implementors.
@@ -86,7 +131,7 @@ class IsomorphismComparator(Comparator):
         Returns:
             (np.array): Comparison results. 1 if all extracted features are equal, else 0.
         """
-        result = [featurizer.featurize(molecule).item() for molecule in molecules]
+        result = [self.featurizers[0].featurize(molecule).item() for molecule in molecules]
         return np.array([len(set(result)) == 1], dtype=int).reshape((1, -1))
 
     def implementors(self) -> List[str]:
@@ -94,7 +139,7 @@ class IsomorphismComparator(Comparator):
         Return list of functionality implementors.
 
         Args:
-            None
+            None.
 
         Returns:
             List[str]: List of implementors.
@@ -139,7 +184,7 @@ class IsoelectronicComparator(MultipleComparator):
         Return list of functionality implementors.
 
         Args:
-            None
+            None.
 
         Returns:
             List[str]: List of implementors.

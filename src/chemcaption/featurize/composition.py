@@ -14,6 +14,7 @@ from chemcaption.molecules import Molecule
 # Implemented composition-related featurizers
 
 __all__ = [
+    "MolecularFormularFeaturizer",
     "MolecularMassFeaturizer",
     "ElementMassFeaturizer",
     "ElementMassProportionFeaturizer",
@@ -22,6 +23,48 @@ __all__ = [
     "AtomCountFeaturizer",
     "DegreeOfUnsaturationFeaturizer",
 ]
+
+
+class MolecularFormularFeaturizer(AbstractFeaturizer):
+    """Get the molecular formula of a molecule."""
+
+    def __init__(self):
+        """Initialize class."""
+        super().__init__()
+
+        self.template = (
+            "What is the {PROPERTY_NAME} of the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
+        )
+        self._names = [
+            {
+                "noun": "molecular formular",
+            }
+        ]
+        self.label = ["molecular_formular"]
+
+    def featurize(self, molecule: Molecule) -> np.array:
+        """
+        Featurize single molecule instance. Get the molecular mass of a molecule.
+
+        Args:
+            molecule (Molecule): Molecular representation.
+
+        Returns:
+            (str): Molecular formular of `molecule`.
+        """
+        return np.array([molecule.get_composition()]).reshape((1, 1))
+
+    def implementors(self) -> List[str]:
+        """
+        Return list of functionality implementors.
+
+        Args:
+            None.
+
+        Returns:
+            List[str]: List of implementors.
+        """
+        return ["Benedict Oshomah Emoekabu"]
 
 
 class MolecularMassFeaturizer(AbstractFeaturizer):
@@ -62,7 +105,7 @@ class MolecularMassFeaturizer(AbstractFeaturizer):
         Return list of functionality implementors.
 
         Args:
-            None
+            None.
 
         Returns:
             List[str]: List of implementors.
@@ -90,7 +133,9 @@ class ElementMassFeaturizer(AbstractFeaturizer):
         self.suffix = "_mass"
         self.label = [self.prefix + element.lower() + self.suffix for element in self.preset]
 
-        self.template = "What is the {PROPERTY_NAME} for the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
+        self.template = (
+            "What is the {PROPERTY_NAME} for the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
+        )
         self._names = [
             {
                 "noun": "contributed mass per element",
@@ -110,7 +155,7 @@ class ElementMassFeaturizer(AbstractFeaturizer):
             new_preset (Optional[Union[List[str], Dict[str, str]]]): List of chemical elements of interest.
 
         Returns:
-            None
+            None.
         """
         self._preset = new_preset
         if new_preset is not None:
@@ -217,7 +262,7 @@ class ElementMassFeaturizer(AbstractFeaturizer):
         Return list of functionality implementors.
 
         Args:
-            None
+            None.
 
         Returns:
             List[str]: List of implementors.
@@ -235,7 +280,9 @@ class ElementMassProportionFeaturizer(ElementMassFeaturizer):
         self.suffix = "_mass_ratio"
         self.label = [self.prefix + element.lower() + self.suffix for element in self.preset]
 
-        self.template = "What is the {PROPERTY_NAME} for the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
+        self.template = (
+            "What is the {PROPERTY_NAME} for the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
+        )
         self._names = [
             {
                 "noun": "contributed mass proportion per element",
@@ -260,7 +307,7 @@ class ElementMassProportionFeaturizer(ElementMassFeaturizer):
         Return list of functionality implementors.
 
         Args:
-            None
+            None.
 
         Returns:
             List[str]: List of implementors.
@@ -279,7 +326,9 @@ class ElementCountFeaturizer(ElementMassFeaturizer):
 
         self.label = [self.prefix + element.lower() + self.suffix for element in self.preset]
 
-        self.template = "What is the {PROPERTY_NAME} for the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
+        self.template = (
+            "What is the {PROPERTY_NAME} for the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
+        )
         self._names = [
             {
                 "noun": "number of atoms per element",
@@ -341,7 +390,7 @@ class ElementCountFeaturizer(ElementMassFeaturizer):
         Return list of functionality implementors.
 
         Args:
-            None
+            None.
 
         Returns:
             List[str]: List of implementors.
@@ -365,7 +414,8 @@ class ElementCountProportionFeaturizer(ElementCountFeaturizer):
         self.label = [self.prefix + element.lower() + self.suffix for element in self.preset]
 
         self.template = (
-            "Based on atom count, what is the {PROPERTY_NAME} for the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
+            "Based on atom count, what is the {PROPERTY_NAME} "
+            "for the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
         )
         self._names = [
             {
@@ -391,7 +441,7 @@ class ElementCountProportionFeaturizer(ElementCountFeaturizer):
         Return list of functionality implementors.
 
         Args:
-            None
+            None.
 
         Returns:
             List[str]: List of implementors.
@@ -432,7 +482,7 @@ class AtomCountFeaturizer(ElementCountFeaturizer):
         Return list of functionality implementors.
 
         Args:
-            None
+            None.
 
         Returns:
             List[str]: List of implementors.
@@ -447,7 +497,7 @@ class DegreeOfUnsaturationFeaturizer(AbstractFeaturizer):
         """Instantiate class.
 
         Args:
-            None
+            None.
         """
         super().__init__()
         self.template = (
@@ -499,7 +549,7 @@ class DegreeOfUnsaturationFeaturizer(AbstractFeaturizer):
         Return list of functionality implementors.
 
         Args:
-            None
+            None.
 
         Returns:
             List[str]: List of implementors.
