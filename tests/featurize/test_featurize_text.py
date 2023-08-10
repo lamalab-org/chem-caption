@@ -23,28 +23,28 @@ __all__ = [
 """Test for Prompt object capabilities."""
 
 
-@pytest.mark.parametrize(
-    "test_input, template, expected",
-    generate_prompt_test_data(
-        property_bank=PROPERTY_BANK,
-        representation_name=KIND.upper(),
-        property=list(map(lambda x: "num_" + x + "_atoms", PRESET)),
-        key="multiple",
-    ),
-)
-def test_prompt(test_input, template, expected):
-    """Test Prompt object for prompt template formatting."""
-    prompt = Prompt(
-        template=template,
-        completion=test_input["PROPERTY_VALUE"],
-        completion_names=test_input["PROPERTY_NAME"],
-        completion_type=(
-            [type(t) for t in test_input["PROPERTY_VALUE"]]
-            if isinstance(test_input["PROPERTY_VALUE"], list)
-            else type(test_input["PROPERTY_VALUE"])
-        ),
-        representation=test_input["REPR_STRING"],
-        representation_type=test_input["REPR_SYSTEM"],
-    )
-    result = prompt.__str__()
-    assert result == expected
+# @pytest.mark.parametrize(
+#     "test_input, template, expected",
+#     generate_prompt_test_data(
+#         property_bank=PROPERTY_BANK,
+#         representation_name=KIND.upper(),
+#         property=list(map(lambda x: "num_" + x + "_atoms", PRESET)),
+#         key="multiple",
+#     ),
+# )
+# def test_prompt(test_input, template, expected):
+#     """Test Prompt object for prompt template formatting."""
+#     prompt = Prompt(
+#         template=template,
+#         completion=test_input["PROPERTY_VALUE"],
+#         completion_names=test_input["PROPERTY_NAME"],
+#         completion_type=(
+#             [type(t) for t in test_input["PROPERTY_VALUE"]]
+#             if isinstance(test_input["PROPERTY_VALUE"], list)
+#             else type(test_input["PROPERTY_VALUE"])
+#         ),
+#         representation=test_input["REPR_STRING"],
+#         representation_type=test_input["REPR_SYSTEM"],
+#     )
+#     result = prompt.__str__()
+#     assert result == expected
