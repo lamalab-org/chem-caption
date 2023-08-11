@@ -16,6 +16,7 @@ from chemcaption.molecules import Molecule
 __all__ = [
     "MolecularFormularFeaturizer",
     "MolecularMassFeaturizer",
+    "MonoisotopicMolecularMassFeaturizer",
     "ElementMassFeaturizer",
     "ElementMassProportionFeaturizer",
     "ElementCountFeaturizer",
@@ -99,6 +100,52 @@ class MolecularMassFeaturizer(AbstractFeaturizer):
         """
         molar_mass = Descriptors.MolWt(molecule.rdkit_mol)
         return np.array([molar_mass]).reshape((1, -1))
+
+    def implementors(self) -> List[str]:
+        """
+        Return list of functionality implementors.
+
+        Args:
+            None.
+
+        Returns:
+            List[str]: List of implementors.
+        """
+        return ["Benedict Oshomah Emoekabu"]
+
+
+class MonoisotopicMolecularMassFeaturizer(AbstractFeaturizer):
+    """Get the monoisotopic molecular mass of a molecule."""
+
+    def __init__(self):
+        """Instantiate instance."""
+        super().__init__()
+
+        self.template = (
+            "What is the {PROPERTY_NAME} of the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
+        )
+        self._names = [
+            {
+                "noun": "monoisotopic molecular mass",
+            }
+        ]
+        self.label = ["monoisotopic_molecular_mass"]
+
+    def featurize(
+        self,
+        molecule: Molecule,
+    ) -> np.array:
+        """
+        Featurize single molecule instance. Get the monoisotopic molecular mass of a molecule.
+
+        Args:
+            molecule (Molecule): Molecular representation.
+
+        Returns:
+            molar_mass (float): Monoisotopic molecular mass of `molecule`.
+        """
+        monoisotopic_molar_mass = Descriptors.ExactMolWt(molecule.rdkit_mol)
+        return np.array([monoisotopic_molar_mass]).reshape((1, -1))
 
     def implementors(self) -> List[str]:
         """
@@ -542,7 +589,7 @@ class DegreeOfUnsaturationFeaturizer(AbstractFeaturizer):
         Returns:
             np.array: degree of unsaturation.
         """
-        return np.array([self._get_degree_of_unsaturation_for_mol(molecule)])
+        return np.array([self._get_degree_of_unsaturation_for_mol(molecule)]).reshape((1, 1))
 
     def implementors(self) -> List[str]:
         """
