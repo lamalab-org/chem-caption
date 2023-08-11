@@ -14,11 +14,11 @@ from chemcaption.molecules import Molecule
 # Implemented drug rule-related featurizers.
 
 __all__ = [
-    "LipinskiViolationsFeaturizer",
+    "LipinskiViolationCountFeaturizer",
 ]
 
 
-class LipinskiViolationsFeaturizer(AbstractFeaturizer):
+class LipinskiViolationCountFeaturizer(AbstractFeaturizer):
     """Returns the number of violations of Lipinski's Rule of 5."""
 
     def __init__(self):

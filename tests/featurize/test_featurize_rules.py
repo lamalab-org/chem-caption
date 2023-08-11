@@ -5,7 +5,7 @@
 import numpy as np
 import pytest
 
-from chemcaption.featurize.rules import LipinskiViolationsFeaturizer
+from chemcaption.featurize.rules import LipinskiViolationCountFeaturizer
 from tests.conftests import DISPATCH_MAP, PROPERTY_BANK, extract_molecule_properties
 
 KIND = "selfies"
@@ -32,7 +32,7 @@ __all__ = [
 )
 def test_lipinski_violation_featurizer(test_input, expected):
     """Test LipinskiViolationFeaturizer."""
-    featurizer = LipinskiViolationsFeaturizer()
+    featurizer = LipinskiViolationCountFeaturizer()
     molecule = MOLECULE(test_input)
 
     results = featurizer.featurize(molecule)

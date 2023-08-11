@@ -3,6 +3,7 @@
 """Global requirements for modular testing."""
 
 import os
+from random import random
 from typing import List, Tuple, Union
 
 import numpy as np
@@ -12,6 +13,18 @@ from selfies import encoder
 
 from chemcaption.featurize.text_utils import QA_TEMPLATES, TEXT_TEMPLATES, inspect_info
 from chemcaption.molecules import InChIMolecule, SELFIESMolecule, SMILESMolecule
+
+# Implemented utilities for testing
+
+__all__ = [
+    "extract_molecule_properties",
+    "batch_molecule_properties",
+    "extract_representation_strings",
+    "convert_molecule",
+    "extract_info",
+    "fill_template",
+    "generate_prompt_test_data",
+]
 
 """Test data."""
 
@@ -63,6 +76,36 @@ def extract_molecule_properties(
     return properties
 
 
+def batch_molecule_properties(
+    property_bank: pd.DataFrame,
+    representation_name: str = "smiles",
+    property: Union[List[str], str] = "molar_mass",
+    batch_size: int = 2,
+) -> List[List[Tuple[str, np.array]]]:
+    """Batch extracted SMILES strings and `property` values. Especially useful for `Comparator` testing.
+
+    Args:
+        property_bank (pd.DataFrame): Dataframe containing molecular properties.
+        representation_name (str): Name of molecular representation system.
+        property (Union[List[str], str]): Properties of interest. Must be a feature(s) in `property_bank`.
+        batch_size (int): Number of times to batch extracted properties. Defaults to `2`.
+
+    Returns:
+        properties (List[List[Tuple[str, np.array]]]): List containing multiple (molecular_string, property value) tuples.
+    """
+    results = extract_molecule_properties(
+        property_bank=property_bank,
+        representation_name=representation_name,
+        property=property,
+    )
+
+    properties = [sorted(results, key=lambda x: random()) for _ in range(batch_size)]
+
+    properties = [k for k in zip(*properties)]
+
+    return properties
+
+
 def extract_representation_strings(
     molecular_bank: pd.DataFrame,
     in_: str = "smiles",
@@ -86,7 +129,7 @@ def extract_representation_strings(
     return input_output
 
 
-def _convert_molecule(
+def convert_molecule(
     molecule: Union[InChIMolecule, SELFIESMolecule, SMILESMolecule], to_kind: str = "smiles"
 ) -> Union[InChIMolecule, SELFIESMolecule, SMILESMolecule]:
     """Convert molecules between representational systems.

@@ -7,7 +7,7 @@ import pytest
 from tests.conftests import (
     DISPATCH_MAP,
     PROPERTY_BANK,
-    _convert_molecule,
+    convert_molecule,
     extract_representation_strings,
 )
 
@@ -21,7 +21,7 @@ def test_selfies_to_smiles(test_input: str, expected: str):
     from_kind, to_kind = "selfies", "smiles"
 
     molecule = DISPATCH_MAP[from_kind](representation_string=test_input)
-    new_molecule = _convert_molecule(molecule, to_kind=to_kind)
+    new_molecule = convert_molecule(molecule, to_kind=to_kind)
     results = new_molecule.representation_string
 
     assert results == expected
@@ -36,7 +36,7 @@ def test_smiles_to_selfies(test_input: str, expected: str):
     from_kind, to_kind = "smiles", "selfies"
 
     molecule = DISPATCH_MAP[from_kind](representation_string=test_input)
-    new_molecule = _convert_molecule(molecule, to_kind=to_kind)
+    new_molecule = convert_molecule(molecule, to_kind=to_kind)
     results = new_molecule.representation_string
 
     assert results == expected
@@ -51,7 +51,7 @@ def test_selfies_to_inchi(test_input: str, expected: str):
     from_kind, to_kind = "selfies", "inchi"
 
     molecule = DISPATCH_MAP[from_kind](representation_string=test_input)
-    new_molecule = _convert_molecule(molecule, to_kind=to_kind)
+    new_molecule = convert_molecule(molecule, to_kind=to_kind)
     results = new_molecule.representation_string
 
     assert results == expected

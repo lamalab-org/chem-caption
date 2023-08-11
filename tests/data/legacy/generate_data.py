@@ -2,22 +2,27 @@
 
 """Script for generating test data."""
 
+import os
+
 import pandas as pd
 from rdkit.Chem import Lipinski, rdMolDescriptors
 
 from chemcaption.featurize.composition import (
+    AtomCountFeaturizer,
     ElementCountFeaturizer,
     ElementCountProportionFeaturizer,
     ElementMassFeaturizer,
     ElementMassProportionFeaturizer,
 )
 from chemcaption.featurize.electronicity import ValenceElectronCountFeaturizer
-from chemcaption.featurize.rules import LipinskiViolationsFeaturizer
+from chemcaption.featurize.rules import LipinskiViolationCountFeaturizer
 from chemcaption.featurize.substructure import IsomorphismFeaturizer, SMARTSFeaturizer
 from chemcaption.molecules import SMILESMolecule
 
-MOLECULAR_BANK = pd.read_json("data/molecular_bank.json", orient="index")
-PROPERTY_BANK = pd.read_csv("data/pubchem_response.csv")
+BASE_DIR = os.getcwd()
+
+MOLECULAR_BANK = pd.read_json(os.path.join(BASE_DIR, "molecular_bank.json"), orient="index")
+PROPERTY_BANK = pd.read_csv(os.path.join(BASE_DIR, "pubchem_response.csv"))
 
 smiles_list = PROPERTY_BANK["smiles"]
 
@@ -35,6 +40,7 @@ def generate_info(string: str):
     keys = [
         "smiles",
         "weisfeiler_lehman_hash",
+        "num_atoms",
         "num_bonds",
         "num_rotable_bonds",
         "num_non_rotable_bonds",
@@ -67,15 +73,21 @@ def generate_info(string: str):
 
     count_featurizer = ElementCountFeaturizer(preset=preset)
     count_ratio_featurizer = ElementCountProportionFeaturizer(preset=preset)
-    lipinski_featurizer = LipinskiViolationsFeaturizer()
+    lipinski_featurizer = LipinskiViolationCountFeaturizer()
 
     valence_featurizer = ValenceElectronCountFeaturizer()
     isomorphism_featurizer = IsomorphismFeaturizer()
 
+    atom_count_featurizer = AtomCountFeaturizer()
+
     mol = SMILESMolecule(string)
 
     wl_hash = isomorphism_featurizer.featurize(mol).item()
+
+    atom_count = atom_count_featurizer.featurize(mol).item()
+
     num_bonds = len(mol.rdkit_mol.GetBonds())
+
     rotable_strict = rdMolDescriptors.CalcNumRotatableBonds(mol.rdkit_mol, strict=True)
     rotable_non_strict = rdMolDescriptors.CalcNumRotatableBonds(mol.rdkit_mol, strict=False)
 
@@ -104,6 +116,7 @@ def generate_info(string: str):
     values = [
         string,
         wl_hash,
+        atom_count,
         num_bonds,
         rotable_non_strict,
         non_rotable_non_strict,
@@ -153,6 +166,7 @@ NEW_DATA = pd.merge(left=PROPERTY_SUBSET, right=data, left_on="smiles", right_on
 )
 
 
-NEW_DATA.to_csv("data/merged_pubchem_response.csv", index=False)
+NEW_PATH = os.path.join(BASE_DIR.replace("legacy", ""), "merged_pubchem_response.csv")
+NEW_DATA.to_csv(NEW_PATH, index=False)
 
 print(NEW_DATA.columns)
