@@ -3,6 +3,7 @@
 """Script for generating test data."""
 
 import os
+
 import pandas as pd
 from rdkit.Chem import Lipinski, rdMolDescriptors
 

@@ -10,7 +10,6 @@ from chemcaption.featurize.electronicity import (
     HydrogenDonorCountFeaturizer,
     ValenceElectronCountFeaturizer,
 )
-
 from tests.conftests import DISPATCH_MAP, PROPERTY_BANK, extract_molecule_properties
 
 KIND = "selfies"
