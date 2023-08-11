@@ -14,6 +14,18 @@ from selfies import encoder
 from chemcaption.featurize.text_utils import QA_TEMPLATES, TEXT_TEMPLATES, inspect_info
 from chemcaption.molecules import InChIMolecule, SELFIESMolecule, SMILESMolecule
 
+# Implemented utilities for testing
+
+__all__ = [
+    "extract_molecule_properties",
+    "batch_molecule_properties",
+    "extract_representation_strings",
+    "convert_molecule",
+    "extract_info",
+    "fill_template",
+    "generate_prompt_test_data",
+]
+
 """Test data."""
 
 BASE_DIR = os.getcwd().split("featurize")[0]
@@ -70,7 +82,7 @@ def batch_molecule_properties(
     property: Union[List[str], str] = "molar_mass",
     batch_size: int = 2,
 ) -> List[List[Tuple[str, np.array]]]:
-    """Batch extracted SMILES strings and `property` values.
+    """Batch extracted SMILES strings and `property` values. Especially useful for `Comparator` testing.
 
     Args:
         property_bank (pd.DataFrame): Dataframe containing molecular properties.
@@ -117,7 +129,7 @@ def extract_representation_strings(
     return input_output
 
 
-def _convert_molecule(
+def convert_molecule(
     molecule: Union[InChIMolecule, SELFIESMolecule, SMILESMolecule], to_kind: str = "smiles"
 ) -> Union[InChIMolecule, SELFIESMolecule, SMILESMolecule]:
     """Convert molecules between representational systems.
