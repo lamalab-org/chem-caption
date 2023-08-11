@@ -12,7 +12,7 @@ from rdkit import Chem
 from selfies import encoder
 
 from chemcaption.featurize.text_utils import QA_TEMPLATES, TEXT_TEMPLATES, inspect_info
-from chemcaption.molecules import InChIMolecule, SELFIESMolecule, SMILESMolecule
+from chemcaption.molecules import DISPATCH_MAP, Molecule
 
 # Implemented utilities for testing
 
@@ -35,12 +35,6 @@ BASE_DIR = BASE_DIR if "tests" in os.getcwd() else os.path.join(os.getcwd(), "te
 PROPERTY_BANK = pd.read_csv(
     os.path.join(BASE_DIR, "data", "pubchem_response.csv")
 ).drop_duplicates()
-
-DISPATCH_MAP = {
-    "smiles": SMILESMolecule,
-    "selfies": SELFIESMolecule,
-    "inchi": InChIMolecule,
-}
 
 
 """Utility functions."""
@@ -129,9 +123,7 @@ def extract_representation_strings(
     return input_output
 
 
-def convert_molecule(
-    molecule: Union[InChIMolecule, SELFIESMolecule, SMILESMolecule], to_kind: str = "smiles"
-) -> Union[InChIMolecule, SELFIESMolecule, SMILESMolecule]:
+def convert_molecule(molecule: Molecule, to_kind: str = "smiles") -> Molecule:
     """Convert molecules between representational systems.
 
     Args:

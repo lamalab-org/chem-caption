@@ -5,10 +5,9 @@
 import os
 from typing import List
 
-import numpy as np
 import pandas as pd
-from rdkit.Chem import Lipinski, rdMolDescriptors
 
+from chemcaption.featurize.base import Comparator
 from chemcaption.featurize.comparator import IsomorphismComparator
 from chemcaption.molecules import SMILESMolecule
 
@@ -20,19 +19,18 @@ PROPERTY_BANK = pd.read_csv(os.path.join(BASE_DIR, "pubchem_response.csv"))
 smiles_list = PROPERTY_BANK["smiles"]
 
 
-def generate_dataframe(smiles):
-    df = pd.DataFrame(
-        data=np.full(
-            [len(smiles), len(smiles)],
-            fill_value=0,
-        )
-    )
-    return df
+def generate_dataframe(smiles: List[str], comparator: Comparator):
+    """Generate a DataFrame containing comparison features between molecules using `comparator`
 
+    Args:
+        smiles (List[str]): List of SMILES strings.
+        comparator (Comparator): Comparator instance.
 
-def populate_dataframe(smiles, comparator):
-    df = generate_dataframe(smiles)
-    d = [
+    Returns:
+        (pd.DataFrame): DataFrame containing comparison features. Shape [`N` × `N`]:
+            where `N` = Number of strings in `smiles`.
+    """
+    df = [
         [
             comparator.compare(
                 molecules=[SMILESMolecule(outer_string), SMILESMolecule(inner_string)]
@@ -41,7 +39,7 @@ def populate_dataframe(smiles, comparator):
         ]
         for outer_string in smiles
     ]
-    return pd.DataFrame(data=d, columns=smiles, index=smiles)
+    return pd.DataFrame(data=df, columns=smiles, index=smiles)
 
 
 def generate_comparator_info(strings: List[str]):
@@ -79,4 +77,4 @@ def generate_comparator_info(strings: List[str]):
 if __name__ == "__main__":
     comparator = IsomorphismComparator()
     smiles = PROPERTY_BANK["smiles"].tolist()
-    print(populate_dataframe(smiles, comparator))
+    print(generate_dataframe(smiles, comparator))
