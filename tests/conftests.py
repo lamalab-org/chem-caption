@@ -2,9 +2,8 @@
 
 """Global requirements for modular testing."""
 
-from random import random
-
 import os
+from random import random
 from typing import List, Tuple, Union
 
 import numpy as np
