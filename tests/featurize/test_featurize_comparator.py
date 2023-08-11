@@ -4,7 +4,7 @@
 
 import pytest
 
-from chemcaption.featurize.comparator import IsoelectronicComparator
+from chemcaption.featurize.comparator import IsoelectronicComparator, ValenceElectronCountComparator, IsomerismComparator
 from tests.conftests import DISPATCH_MAP, PROPERTY_BANK, extract_molecule_properties
 
 KIND = "smiles"
@@ -13,11 +13,12 @@ MOLECULE = DISPATCH_MAP[KIND]
 # Implemented tests for comparator-related featurizers.
 
 __all__ = [
+    "test_valence_electron_count_comparator",
     "test_isoelectronicity_comparator",
 ]
 
 
-"""Test for isoelectronicity featurizer."""
+"""Test for valence electron comparator."""
 
 
 @pytest.mark.parametrize(
@@ -33,12 +34,12 @@ __all__ = [
         )
     ),
 )
-def test_isoelectronicity_comparator(test_values_1, test_values_2):
+def test_valence_electron_count_comparator(test_values_1, test_values_2):
     """Test IsoelectronicComparator."""
     test_input_1, expected_1 = test_values_1
     test_input_2, expected_2 = test_values_2
 
-    featurizer = IsoelectronicComparator()
+    featurizer = ValenceElectronCountComparator()
 
     molecule_1 = MOLECULE(test_input_1)
     molecule_2 = MOLECULE(test_input_2)
@@ -48,7 +49,7 @@ def test_isoelectronicity_comparator(test_values_1, test_values_2):
     assert results == (expected_1.astype(int) == expected_2.astype(int))
 
 
-"""Test for isoelectronicity featurizer."""
+"""Test for isoelectronicity comparator."""
 
 
 @pytest.mark.parametrize(
