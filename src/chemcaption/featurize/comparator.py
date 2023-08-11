@@ -9,6 +9,7 @@ import numpy as np
 from chemcaption.featurize.base import AbstractFeaturizer, Comparator, MultipleComparator
 from chemcaption.featurize.composition import AtomCountFeaturizer, MolecularFormularFeaturizer
 from chemcaption.featurize.electronicity import ValenceElectronCountFeaturizer
+from chemcaption.featurize.rules import LipinskiViolationCountFeaturizer
 from chemcaption.featurize.substructure import IsomorphismFeaturizer
 from chemcaption.molecules import Molecule
 
@@ -16,6 +17,7 @@ from chemcaption.molecules import Molecule
 
 __all__ = [
     "ValenceElectronCountComparator",
+    "LipinskiViolationCountComparator",
     "AtomCountComparator",
     "IsomerismComparator",
     "IsomorphismComparator",
@@ -29,6 +31,26 @@ class ValenceElectronCountComparator(Comparator):
     def __init__(self):
         """Initialize instance."""
         super().__init__(featurizers=[ValenceElectronCountFeaturizer()])
+
+    def implementors(self) -> List[str]:
+        """
+        Return list of functionality implementors.
+
+        Args:
+            None.
+
+        Returns:
+            List[str]: List of implementors.
+        """
+        return ["Benedict Oshomah Emoekabu"]
+
+
+class LipinskiViolationCountComparator(Comparator):
+    """Compare molecular instances for parity based on number of violations of Lipinski's rule of Five."""
+
+    def __init__(self):
+        """Initialize instance."""
+        super().__init__(featurizers=[LipinskiViolationCountFeaturizer()])
 
     def implementors(self) -> List[str]:
         """

@@ -15,7 +15,7 @@ from chemcaption.featurize.composition import (
     ElementMassProportionFeaturizer,
 )
 from chemcaption.featurize.electronicity import ValenceElectronCountFeaturizer
-from chemcaption.featurize.rules import LipinskiViolationsFeaturizer
+from chemcaption.featurize.rules import LipinskiViolationCountFeaturizer
 from chemcaption.featurize.substructure import IsomorphismFeaturizer, SMARTSFeaturizer
 from chemcaption.molecules import SMILESMolecule
 
@@ -73,7 +73,7 @@ def generate_info(string: str):
 
     count_featurizer = ElementCountFeaturizer(preset=preset)
     count_ratio_featurizer = ElementCountProportionFeaturizer(preset=preset)
-    lipinski_featurizer = LipinskiViolationsFeaturizer()
+    lipinski_featurizer = LipinskiViolationCountFeaturizer()
 
     valence_featurizer = ValenceElectronCountFeaturizer()
     isomorphism_featurizer = IsomorphismFeaturizer()
