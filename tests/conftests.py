@@ -2,6 +2,8 @@
 
 """Global requirements for modular testing."""
 
+from random import random
+
 import os
 from typing import List, Tuple, Union
 
@@ -59,6 +61,36 @@ def extract_molecule_properties(
     )
 
     properties = [(k, v) for k, v in zip(string_list, property_list)]
+
+    return properties
+
+
+def batch_molecule_properties(
+    property_bank: pd.DataFrame,
+    representation_name: str = "smiles",
+    property: Union[List[str], str] = "molar_mass",
+    batch_size: int = 2,
+) -> List[List[Tuple[str, np.array]]]:
+    """Batch extracted SMILES strings and `property` values.
+
+    Args:
+        property_bank (pd.DataFrame): Dataframe containing molecular properties.
+        representation_name (str): Name of molecular representation system.
+        property (Union[List[str], str]): Properties of interest. Must be a feature(s) in `property_bank`.
+        batch_size (int): Number of times to batch extracted properties. Defaults to `2`.
+
+    Returns:
+        properties (List[List[Tuple[str, np.array]]]): List containing multiple (molecular_string, property value) tuples.
+    """
+    results = extract_molecule_properties(
+        property_bank=property_bank,
+        representation_name=representation_name,
+        property=property,
+    )
+
+    properties = [sorted(results, key=lambda x: random()) for _ in range(batch_size)]
+
+    properties = [k for k in zip(*properties)]
 
     return properties
 
