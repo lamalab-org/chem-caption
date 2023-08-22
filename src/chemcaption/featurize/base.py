@@ -3,7 +3,7 @@
 """Abstract base class and wrappers for featurizers."""
 
 from abc import ABC, abstractmethod
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Generator
 
 import numpy as np
 import rdkit
@@ -253,7 +253,7 @@ class MultipleFeaturizer(AbstractFeaturizer):
     def text_featurize(
         self,
         molecule: Molecule,
-    ) -> List[Prompt]:
+    ) -> Generator[Prompt, None, None]:
         """Embed features in Prompt instance.
 
         Args:
@@ -262,7 +262,7 @@ class MultipleFeaturizer(AbstractFeaturizer):
         Returns:
             (Prompt): Instance of Prompt containing relevant information extracted from `molecule`.
         """
-        return [featurizer.text_featurize(molecule=molecule) for featurizer in self.featurizers]
+        return (featurizer.text_featurize(molecule=molecule) for featurizer in self.featurizers)
 
     def feature_labels(self) -> List[str]:
         """Return feature labels.

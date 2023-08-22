@@ -132,20 +132,19 @@ def test_isomorphism_comparator(test_values):
         batch_size=5,
     ),
 )
+
 def test_isoelectronicity_comparator(test_values):
     """Test IsoelectronicComparator."""
     string_and_values_pairs = [string_and_values for string_and_values in test_values]
     molecules = [MOLECULE(s[0]) for s in string_and_values_pairs]
 
-    expected_1 = set([s[1][0] for s in string_and_values_pairs])
-    expected_2 = set([s[1][1] for s in string_and_values_pairs])
-    expected_3 = set([s[1][2] for s in string_and_values_pairs])
+    expected = [
+        set([s[1][i] for s in string_and_values_pairs])
+        for i in range(len(string_and_values_pairs[0]))
+    ]
+    expected = [(np.array([1]) if len(e) == 1 else np.array([0])) for e in expected]
 
-    expected_1 = np.array([1]) if len(expected_1) == 1 else np.array([0])
-    expected_2 = np.array([1]) if len(expected_2) == 1 else np.array([0])
-    expected_3 = np.array([1]) if len(expected_3) == 1 else np.array([0])
-
-    expected = np.array([1]) if (expected_1 & expected_2 & expected_3) else np.array([0])
+    expected = np.array([1]) if sum(expected) == len(expected) else np.array([0])
 
     featurizer = IsoelectronicComparator()
 

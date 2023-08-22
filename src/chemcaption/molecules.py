@@ -20,6 +20,7 @@ __all__ = [
     "SMILESMolecule",
     "SELFIESMolecule",
     "InChIMolecule",
+    "DISPATCH_MAP",
 ]
 
 
@@ -236,3 +237,13 @@ class InChIMolecule(MoleculeBase):
     def get_rdkit_mol(self) -> Chem.Mol:
         """Get rdkit molecular representation from InChI string."""
         return Chem.MolFromInchi(self.representation_string)
+
+
+"""Molecular Dispatch Map"""
+
+
+DISPATCH_MAP = {
+    "smiles": SMILESMolecule,
+    "selfies": SELFIESMolecule,
+    "inchi": InChIMolecule,
+}
