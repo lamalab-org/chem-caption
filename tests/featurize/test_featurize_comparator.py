@@ -132,6 +132,7 @@ def test_isomorphism_comparator(test_values):
         batch_size=5,
     ),
 )
+
 def test_isoelectronicity_comparator(test_values):
     """Test IsoelectronicComparator."""
     string_and_values_pairs = [string_and_values for string_and_values in test_values]

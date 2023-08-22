@@ -8,6 +8,7 @@ from typing import List
 import pandas as pd
 
 from chemcaption.featurize.base import Comparator
+
 from chemcaption.featurize.comparator import IsomorphismComparator
 from chemcaption.molecules import SMILESMolecule
 
