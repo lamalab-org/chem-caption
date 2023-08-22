@@ -26,6 +26,18 @@ __all__ = [
     "generate_prompt_test_data",
 ]
 
+# Implemented utilities for testing
+
+__all__ = [
+    "extract_molecule_properties",
+    "batch_molecule_properties",
+    "extract_representation_strings",
+    "convert_molecule",
+    "extract_info",
+    "fill_template",
+    "generate_prompt_test_data",
+]
+
 """Test data."""
 
 BASE_DIR = os.getcwd().split("featurize")[0]

@@ -253,7 +253,7 @@ class MultipleFeaturizer(AbstractFeaturizer):
     def text_featurize(
         self,
         molecule: Molecule,
-    ) -> Generator[Prompt]:
+    ) -> Generator[Prompt, None, None]:
         """Embed features in Prompt instance.
 
         Args:
