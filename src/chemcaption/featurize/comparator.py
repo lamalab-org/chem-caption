@@ -86,7 +86,7 @@ class AtomCountComparator(Comparator):
 
 
 class IsomerismComparator(Comparator):
-    """Compare molecular instances for isomerism via molecular formulae."""
+    """Compare molecular instances for parity based on isomerism via molecular formulae."""
 
     def __init__(self):
         """Initialize instance."""
@@ -130,7 +130,7 @@ class IsomerismComparator(Comparator):
 
 
 class IsomorphismComparator(Comparator):
-    """Compare molecular instances for isomorphism."""
+    """Compare molecular instances for parity based on isomorphism."""
 
     def __init__(self):
         """Initialize instance."""
@@ -170,7 +170,7 @@ class IsomorphismComparator(Comparator):
 
 
 class IsoelectronicComparator(MultipleComparator):
-    """Compare molecular instances for isoelectronicity."""
+    """Compare molecular instances for parity based on isoelectronicity."""
 
     def __init__(self):
         """Initialize instance."""
