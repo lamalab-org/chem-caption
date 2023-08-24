@@ -268,6 +268,17 @@ class MultipleFeaturizer(AbstractFeaturizer):
         self,
         molecules: List[Molecule],
     ) -> PromptContainer:
+        """Embed features in PromptContainer for:
+            - multiple featurizers and
+            - multiple molecules.
+
+        Args:
+            molecules (List[Molecule]):
+                A sequence of molecule representations.
+
+        Returns:
+            (PromptContainer): Container class for all Prompt and Prompt generator objects.
+        """
         iterables = [(mol.representation_string, self.text_featurize(mol)) for mol in molecules]
         container = PromptContainer()
 

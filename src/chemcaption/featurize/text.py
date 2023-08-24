@@ -3,16 +3,18 @@
 """Classes for representing featurizer output as text."""
 
 from dataclasses import dataclass
-from typing import Any, Dict, Generator, List, Optional, Sequence, Union
+from typing import Any, Dict, Generator, List, Optional, Union
 
 import numpy as np
 
 from chemcaption.featurize.text_utils import inspect_info
+from chemcaption.molecules import Molecule
 
 # Implemented text-related classes
 
 __all__ = [
     "Prompt",
+    "PromptContainer",
 ]
 
 
@@ -98,30 +100,106 @@ class Prompt:
 
 
 class PromptContainer:
-    def __init__(self, prompt_iterable: Optional[Union[str, Generator[Prompt, None, None]]] = None):
+    """Contain Prompt object generators."""
+
+    def __init__(self, prompt_iterable: Optional[List[str, Generator[Prompt, None, None]]] = None):
+        """Initialize instance.
+
+        Args:
+            prompt_iterable (Optional[List[str, Generator[Prompt, None, None]]]): List of tuples/lists containing:
+                - Molecular string and
+                - generator for Prompt objects.
+
+        """
         self.db = [{prompt_iterable[0]: prompt_iterable[1]}] if prompt_iterable is not None else []
 
     def __add_iter__(
-        self, new_prompt_iterable: Optional[Union[str, Generator[Prompt, None, None]]]
-    ):
+        self, new_prompt_iterable: Optional[List[str, Generator[Prompt, None, None]]]
+    ) -> None:
+        """Store Prompt generator.
+
+        Args:
+            new_prompt_iterable (Optional[List[str, Generator[Prompt, None, None]]]): List of tuples/lists containing:
+                - Molecular string and
+                - generator for Prompt objects.
+        """
         self.db.append({new_prompt_iterable[0]: new_prompt_iterable[1]})
         return
 
-    def add(self, new_prompt_iterable: Optional[Union[str, Generator[Prompt, None, None]]]):
+    def add(self, new_prompt_iterable: Optional[Union[str, Generator[Prompt, None, None]]]) -> None:
+        """Store Prompt generator.
+
+        Args:
+            new_prompt_iterable (Optional[List[str, Generator[Prompt, None, None]]]): List of tuples/lists containing:
+                - Molecular string and
+                - generator for Prompt objects.
+        """
         self.__add_iter__(new_prompt_iterable)
         return
 
-    def batch_add(self, new_prompt_iterables: List[Union[str, Generator[Prompt, None, None]]]):
+    def batch_add(self, new_prompt_iterables: List[List[str, Generator[Prompt, None, None]]])-> None:
+        """Store a collection of Prompt generators.
+
+        Args:
+            new_prompt_iterables (List[List[str, Generator[Prompt, None, None]]]): List of tuples/lists containing:
+                - Molecular string and
+                - generator for Prompt objects.
+        """
         new_db = [{k: v} for k, v in new_prompt_iterables]
         self.db += new_db
         return
 
-    def get_iter(self, representation: str) -> Dict[str, Any]:
+    def get_iter(self, molecule: Molecule) -> Dict[str, Any]:
+        """Return Prompt generator for specific molecule.
+
+        Args:
+            molecule (Molecule): Molecular instance of interest.
+
+        Returns:
+            (Dict[str, Any]): Dictionary mapping between:
+                - Molecule representation string
+                - Prompt generator containing Prompt objects for different features.
+        """
+        representation = molecule.representation_string
         return list(filter(lambda x: x[0] == representation, self.db))[0]
 
-    def _unravel(self, dictionary):
+    def _unravel(self, dictionary) -> Dict[str, List[Dict[Any, Any]]]:
+        """Deconstruct inner generator objects.
+
+        Args:
+            dictionary (Dict[str, Any]): Dictionary mapping between:
+                - Molecule representation string
+                - Prompt generator containing Prompt objects for different features.
+
+        Returns:
+            (Dict[str, List[Dict[Any, Any]]]): Dictionary mapping between:
+                - Molecule representation string
+                - List of Prompt objects in Prompt generator for different features.
+        """
         return {key: [v.__dict__() for v in value] for key, value in dictionary.items()}
 
     def __iter__(self):
+        """Iterate over Prompt generator map.
+
+        Args:
+            (None)
+
+        Yields:
+            (Dict[str, List[Dict[Any, Any]]]): Dictionary mapping between:
+                - Molecule representation string
+                - List of Prompt objects in Prompt generator for different features.
+        """
         for d in self.db:
             yield self._unravel(d)
+
+    def implementors(self) -> List[str]:
+        """
+        Return list of functionality implementors.
+
+        Args:
+            None.
+
+        Returns:
+            List[str]: List of implementors.
+        """
+        return ["Benedict Oshomah Emoekabu"]
