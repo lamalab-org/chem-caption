@@ -9,7 +9,7 @@ import numpy as np
 import rdkit
 from scipy.spatial import distance_matrix
 
-from chemcaption.featurize.text import Prompt
+from chemcaption.featurize.text import Prompt, PromptContainer
 from chemcaption.molecules import Molecule
 
 # Implemented abstract and high-level classes
@@ -263,6 +263,17 @@ class MultipleFeaturizer(AbstractFeaturizer):
             (Prompt): Instance of Prompt containing relevant information extracted from `molecule`.
         """
         return (featurizer.text_featurize(molecule=molecule) for featurizer in self.featurizers)
+
+    def text_featurize_many(
+        self,
+        molecules: List[Molecule],
+    ) -> PromptContainer:
+        iterables = [(mol.representation_string, self.text_featurize(mol)) for mol in molecules]
+        container = PromptContainer()
+
+        container.batch_add(iterables)
+
+        return container
 
     def feature_labels(self) -> List[str]:
         """Return feature labels.

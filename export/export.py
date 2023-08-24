@@ -11,8 +11,6 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 
-# Import featurizers
-
 from chemcaption.featurize.adaptor import *
 from chemcaption.featurize.base import MultipleFeaturizer
 from chemcaption.featurize.bonds import *
@@ -23,7 +21,10 @@ from chemcaption.featurize.stereochemistry import *
 from chemcaption.featurize.substructure import *
 from chemcaption.featurize.symmetry import *
 from chemcaption.molecules import SMILESMolecule
-from tests.conftests import PROPERTY_BANK, FULL_PROPERTY_BANK, extract_representation_strings
+from tests.conftests import FULL_PROPERTY_BANK, PROPERTY_BANK, extract_representation_strings
+
+# Import featurizers
+
 
 # Collection of featurizer objects
 
@@ -52,7 +53,6 @@ featurizers = [
 ]
 
 featurizers = [f() for f in featurizers]
-
 
 
 def export_gnn_data(smiles, featurizer):
@@ -96,15 +96,18 @@ def export_llm_data(smiles, featurizer):
     mols = [SMILESMolecule(s) for s in smiles]
 
     # Generate Prompt objects
-    text_features = featurizer.text_featurize_many(mols)
+    prompt_container = featurizer.text_featurize_many(mols)
 
     # Persist Prompt objects to local memory
     os.makedirs(os.path.join(os.getcwd(), "data", "llm"), exist_ok=True)
-    file_name = os.path.join(os.path.join(os.getcwd(), "data", "llm"), featurizer.__class__.__name__ + "jsonl")
+    file_name = os.path.join(
+        os.path.join(os.getcwd(), "data", "llm"), featurizer.__class__.__name__ + ".jsonl"
+    )
 
     with open(file_name, "w") as f:
-        for prompt in tqdm(text_features):
-            json.dump(f, prompt.__dict__() + "\n")
+        for prompt in tqdm(iter(prompt_container)):
+            # for mini_prompt in prompt:
+            f.write(json.dumps(prompt) + "\n")
 
         print("\n\nLLM data export complete!\n")
 
@@ -135,5 +138,7 @@ if __name__ == "__main__":
     )
     featurizer = MultipleFeaturizer(featurizers=featurizers)
 
-    #export_gnn_data(smiles=smiles, featurizer=featurizer)
+    # export_all(smiles=smiles, featurizer=featurizer)
+
+    # export_gnn_data(smiles=smiles, featurizer=featurizer)
     export_llm_data(smiles=smiles, featurizer=featurizer)

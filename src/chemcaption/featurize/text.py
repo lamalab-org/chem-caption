@@ -3,7 +3,7 @@
 """Classes for representing featurizer output as text."""
 
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, Generator, List, Optional, Sequence, Union
 
 import numpy as np
 
@@ -95,3 +95,33 @@ class Prompt:
             List[str]: List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]
+
+
+class PromptContainer:
+    def __init__(self, prompt_iterable: Optional[Union[str, Generator[Prompt, None, None]]] = None):
+        self.db = [{prompt_iterable[0]: prompt_iterable[1]}] if prompt_iterable is not None else []
+
+    def __add_iter__(
+        self, new_prompt_iterable: Optional[Union[str, Generator[Prompt, None, None]]]
+    ):
+        self.db.append({new_prompt_iterable[0]: new_prompt_iterable[1]})
+        return
+
+    def add(self, new_prompt_iterable: Optional[Union[str, Generator[Prompt, None, None]]]):
+        self.__add_iter__(new_prompt_iterable)
+        return
+
+    def batch_add(self, new_prompt_iterables: List[Union[str, Generator[Prompt, None, None]]]):
+        new_db = [{k: v} for k, v in new_prompt_iterables]
+        self.db += new_db
+        return
+
+    def get_iter(self, representation: str) -> Dict[str, Any]:
+        return list(filter(lambda x: x[0] == representation, self.db))[0]
+
+    def _unravel(self, dictionary):
+        return {key: [v.__dict__() for v in value] for key, value in dictionary.items()}
+
+    def __iter__(self):
+        for d in self.db:
+            yield self._unravel(d)
