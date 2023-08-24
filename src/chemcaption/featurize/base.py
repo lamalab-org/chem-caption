@@ -3,7 +3,9 @@
 """Abstract base class and wrappers for featurizers."""
 
 from abc import ABC, abstractmethod
+
 from typing import Dict, Generator, List, Optional
+
 
 import numpy as np
 import rdkit
