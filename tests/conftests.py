@@ -17,6 +17,8 @@ from chemcaption.molecules import DISPATCH_MAP, Molecule
 # Implemented utilities for testing
 
 __all__ = [
+    "PROPERTY_BANK",
+    "FULL_PROPERTY_BANK",
     "extract_molecule_properties",
     "batch_molecule_properties",
     "extract_representation_strings",
@@ -26,26 +28,19 @@ __all__ = [
     "generate_prompt_test_data",
 ]
 
-# Implemented utilities for testing
-
-__all__ = [
-    "extract_molecule_properties",
-    "batch_molecule_properties",
-    "extract_representation_strings",
-    "convert_molecule",
-    "extract_info",
-    "fill_template",
-    "generate_prompt_test_data",
-]
 
 """Test data."""
 
-BASE_DIR = os.getcwd().split("featurize")[0]
-BASE_DIR = BASE_DIR if "tests" in os.getcwd() else os.path.join(os.getcwd(), "tests")
+PACKAGE_NAME = "chem-caption"
+BASE_DIR = os.path.join(os.getcwd().split(PACKAGE_NAME)[0], PACKAGE_NAME)
 
 # Sources of truth
 PROPERTY_BANK = pd.read_csv(
-    os.path.join(BASE_DIR, "data", "pubchem_response.csv")
+    os.path.join(BASE_DIR, "tests", "data", "pubchem_response.csv")
+).drop_duplicates()
+
+FULL_PROPERTY_BANK = pd.read_csv(
+    os.path.join(BASE_DIR, "tests", "data", "merged_pubchem_response.csv")
 ).drop_duplicates()
 
 
