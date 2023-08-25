@@ -7,9 +7,13 @@
 import json
 import os
 
+from typing import List
+
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
+
+# Import featurizers
 
 from chemcaption.featurize.adaptor import *
 from chemcaption.featurize.base import MultipleFeaturizer
@@ -23,39 +27,52 @@ from chemcaption.featurize.symmetry import *
 from chemcaption.molecules import SMILESMolecule
 from tests.conftests import FULL_PROPERTY_BANK, PROPERTY_BANK, extract_representation_strings
 
-# Import featurizers
 
+# Implemented functionality
+
+__all__ = [
+    "export_all",
+    "export_gnn_data",
+    "export_llm_data"
+]
 
 # Collection of featurizer objects
 
 featurizers = [
-    RotableBondCountFeaturizer,
-    BondRotabilityFeaturizer,
-    MolecularFormularFeaturizer,
-    MolecularMassFeaturizer,
-    ElementMassFeaturizer,
-    ElementMassProportionFeaturizer,
-    ElementCountFeaturizer,
-    ElementCountProportionFeaturizer,
-    AtomCountFeaturizer,
-    DegreeOfUnsaturationFeaturizer,
-    HydrogenAcceptorCountFeaturizer,
-    HydrogenDonorCountFeaturizer,
-    ValenceElectronCountFeaturizer,
-    LipinskiViolationCountFeaturizer,
-    NumChiralCentersFeaturizer,
-    SMARTSFeaturizer,
-    IsomorphismFeaturizer,
-    TopologyCountFeaturizer,
-    RotationalSymmetryNumber,
-    PointGroupFeaturizer,
-    MonoisotopicMolecularMassAdaptor,
+    RotableBondCountFeaturizer(),
+    BondRotabilityFeaturizer(),
+    MolecularFormularFeaturizer(),
+    MolecularMassFeaturizer(),
+    ElementMassFeaturizer(),
+    ElementMassProportionFeaturizer(),
+    ElementCountFeaturizer(),
+    ElementCountProportionFeaturizer(),
+    AtomCountFeaturizer(),
+    DegreeOfUnsaturationFeaturizer(),
+    HydrogenAcceptorCountFeaturizer(),
+    HydrogenDonorCountFeaturizer(),
+    ValenceElectronCountFeaturizer(),
+    LipinskiViolationCountFeaturizer(),
+    NumChiralCentersFeaturizer(),
+    SMARTSFeaturizer(),
+    IsomorphismFeaturizer(),
+    TopologyCountFeaturizer(),
+    RotationalSymmetryNumber(),
+    PointGroupFeaturizer(),
+    MonoisotopicMolecularMassAdaptor(),
 ]
 
-featurizers = [f() for f in featurizers]
 
+def export_gnn_data(smiles: List[str], featurizer: MultipleFeaturizer):
+    """Generate data and export for GNN pretraining.
 
-def export_gnn_data(smiles, featurizer):
+    Args:
+        smiles (List[str]): List of SMILES strings.
+        featurizer (MultipleFeaturizer): MultipleFeaturizer instance.
+
+    Returns:
+        None.
+    """
     print(f"Featurizers are {len(featurizer.featurizers)} in number.\n")
 
     for f in featurizer.featurizers:
@@ -86,7 +103,16 @@ def export_gnn_data(smiles, featurizer):
     return
 
 
-def export_llm_data(smiles, featurizer):
+def export_llm_data(smiles: List[str], featurizer: MultipleFeaturizer):
+    """Generate data and export for LLM pretraining.
+
+    Args:
+        smiles (List[str]): List of SMILES strings.
+        featurizer (MultipleFeaturizer): MultipleFeaturizer instance.
+
+    Returns:
+        None.
+    """
     print(f"Featurizers are {len(featurizer.featurizers)} in number.\n")
 
     for f in featurizer.featurizers:
@@ -115,6 +141,15 @@ def export_llm_data(smiles, featurizer):
 
 
 def export_all(smiles, featurizer):
+    """Generate data and export for both GNN and LLM pretraining.
+
+    Args:
+        smiles (List[str]): List of SMILES strings.
+        featurizer (MultipleFeaturizer): MultipleFeaturizer instance.
+
+    Returns:
+        None.
+    """
     print(f"Featurizers are {len(featurizer.featurizers)} in number.\n")
 
     for f in featurizer.featurizers:
