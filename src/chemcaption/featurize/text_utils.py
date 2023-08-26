@@ -22,8 +22,10 @@ __all__ = [
 
 TEXT_TEMPLATES = dict(
     single=[
-        "The {PROPERTY_NAME} property has a magnitude {PROPERTY_VALUE}.",
-        "The {PROPERTY_NAME} property has a magnitude of {PROPERTY_VALUE}.",
+        "The {PROPERTY_NAME} property for molecule represented by representation `{REPR_STRING}` via the {REPR_SYSTEM} "
+        "representational system has a magnitude {PROPERTY_VALUE}.",
+        "The {PROPERTY_NAME} property molecule represented by representation `{REPR_STRING}` via the {REPR_SYSTEM} "
+        "representational system has a magnitude of {PROPERTY_VALUE}.",
         "The {PROPERTY_NAME} has a magnitude {PROPERTY_VALUE}.",
         "The {PROPERTY_NAME} has a magnitude of {PROPERTY_VALUE}.",
         "The {PROPERTY_NAME} property has a value of {PROPERTY_VALUE}.",
