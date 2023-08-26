@@ -7,7 +7,7 @@ from typing import Any, Dict, Generator, List, Optional, Tuple, Union
 
 import numpy as np
 
-from chemcaption.featurize.text_utils import inspect_info
+from chemcaption.featurize.text_utils import inspect_info, generate_template
 from chemcaption.molecules import Molecule
 
 # Implemented text-related classes
@@ -30,6 +30,12 @@ class Prompt:
     completion_labels: Union[str, List[str]]
     template: Optional[str] = None
 
+    def __post_init__(self):
+        self.answer_template = generate_template(
+            template_type="text",
+            key="single" if len(self.completion) < 2 else "multiple"
+        )
+
     def __dict__(self) -> Dict[str, Any]:
         """Return dictionary representation of object.
 
@@ -46,13 +52,15 @@ class Prompt:
             "completion": self.completion,
             "completion_names": self.completion_names,
             "completion_labels": self.completion_labels,
-            "filled_prompt": self.fill_template(),
+            "filled_prompt": self.fill_template(template="q"),
+            "filled_completion": self.fill_template(template="a"),
         }
 
-    def fill_template(self, precision_type: str = "decimal") -> str:
+    def fill_template(self, template: str = "q", precision_type: str = "decimal") -> str:
         """Fill up the prompt template with appropriate values.
 
         Args:
+            template (str): Type of template to fill. May be `q` or `a` fo `question` and `answer` respectively.
             precision_type (str): Level of precision for approximation purposes. Can be `decimal` or `significant`.
                 Defaults to `decimal`.
 
@@ -69,7 +77,10 @@ class Prompt:
         )
         molecular_info = inspect_info(molecular_info)
 
-        return self.template.format(**molecular_info)
+        return (
+            self.template.format(**molecular_info) if template == "q" else
+            self.answer_template.format(**molecular_info)
+        )
 
     def __str__(self) -> str:
         """Return string representation of object.
@@ -80,7 +91,7 @@ class Prompt:
         Returns:
             (str): Appropriately formatted template.
         """
-        return self.fill_template()
+        return self.fill_template(template="a")
 
     def to_meta_yaml(self):
         """Convert all prompt information from string to YAML format."""

@@ -80,7 +80,7 @@ class SMARTSFeaturizer(AbstractFeaturizer):
         )
         self._names = [
             {
-                "noun": "functional groups",
+                "noun": f"functional groups (i.e., {self.prefix[:-1]} preset)",
             }
         ]
 
