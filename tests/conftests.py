@@ -14,7 +14,6 @@ from selfies import encoder
 from chemcaption.featurize.text_utils import QA_TEMPLATES, TEXT_TEMPLATES, inspect_info
 from chemcaption.molecules import DISPATCH_MAP, Molecule
 
-
 # Implemented utilities for testing
 
 __all__ = [

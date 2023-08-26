@@ -13,12 +13,12 @@ from chemcaption.molecules import Molecule
 # Implemented helper functions.
 
 __all__ = [
-    "RotationalSymmetryNumber",  # Featurizer
+    "RotationalSymmetryNumberFeaturizer",  # Featurizer
     "PointGroupFeaturizer",  # Featurizer
 ]
 
 
-class RotationalSymmetryNumber(AbstractFeaturizer):
+class RotationalSymmetryNumberFeaturizer(AbstractFeaturizer):
     """Obtain the rotational symmetry number of a molecule."""
 
     def __init__(self):

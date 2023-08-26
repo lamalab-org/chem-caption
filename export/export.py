@@ -6,14 +6,11 @@
 
 import json
 import os
-
 from typing import List
 
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
-
-# Import featurizers
 
 from chemcaption.featurize.adaptor import *
 from chemcaption.featurize.base import MultipleFeaturizer
@@ -27,14 +24,13 @@ from chemcaption.featurize.symmetry import *
 from chemcaption.molecules import SMILESMolecule
 from tests.conftests import FULL_PROPERTY_BANK, PROPERTY_BANK, extract_representation_strings
 
+# Import featurizers
+
+
 
 # Implemented functionality
 
-__all__ = [
-    "export_all",
-    "export_gnn_data",
-    "export_llm_data"
-]
+__all__ = ["export_all", "export_gnn_data", "export_llm_data"]
 
 # Collection of featurizer objects
 
@@ -57,7 +53,7 @@ featurizers = [
     SMARTSFeaturizer(),
     IsomorphismFeaturizer(),
     TopologyCountFeaturizer(),
-    RotationalSymmetryNumber(),
+    RotationalSymmetryNumberFeaturizer(),
     PointGroupFeaturizer(),
     MonoisotopicMolecularMassAdaptor(),
 ]
@@ -83,7 +79,7 @@ def export_gnn_data(smiles: List[str], featurizer: MultipleFeaturizer):
     new_smiles = np.array(smiles).reshape((-1, 1))
 
     # Generate features
-    features = featurizer.featurize(mols)
+    features = featurizer.featurize_many(mols)
 
     # Prepare feature names
     columns = ["SMILES"] + featurizer.feature_labels()

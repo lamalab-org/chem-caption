@@ -3,7 +3,7 @@
 """Classes for representing featurizer output as text."""
 
 from dataclasses import dataclass
-from typing import Any, Dict, Generator, List, Optional, Union
+from typing import Any, Dict, Generator, List, Optional, Tuple, Union
 
 import numpy as np
 
@@ -102,26 +102,30 @@ class Prompt:
 class PromptContainer:
     """Contain Prompt object generators."""
 
-    def __init__(self, prompt_iterable: Optional[List[str, Generator[Prompt, None, None]]] = None):
+    def __init__(
+        self, prompt_iterable: Optional[List[Tuple[str, Generator[Prompt, None, None]]]] = None
+    ):
         """Initialize instance.
 
         Args:
-            prompt_iterable (Optional[List[str, Generator[Prompt, None, None]]]): List of tuples/lists containing:
-                - Molecular string and
-                - generator for Prompt objects.
+            prompt_iterable (Optional[List[Tuple[str, Generator[Prompt, None, None]]]]):
+                List of tuples/lists containing:
+                    - Molecular string and
+                    - generator for Prompt objects.
 
         """
         self.db = [{prompt_iterable[0]: prompt_iterable[1]}] if prompt_iterable is not None else []
 
     def __add_iter__(
-        self, new_prompt_iterable: Optional[List[str, Generator[Prompt, None, None]]]
+        self, new_prompt_iterable: Optional[List[Tuple[str, Generator[Prompt, None, None]]]]
     ) -> None:
         """Store Prompt generator.
 
         Args:
-            new_prompt_iterable (Optional[List[str, Generator[Prompt, None, None]]]): List of tuples/lists containing:
-                - Molecular string and
-                - generator for Prompt objects.
+            new_prompt_iterable (Optional[List[Tuple[str, Generator[Prompt, None, None]]]]):
+                List of tuples/lists containing:
+                    - Molecular string and
+                    - generator for Prompt objects.
         """
         self.db.append({new_prompt_iterable[0]: new_prompt_iterable[1]})
         return
@@ -137,11 +141,13 @@ class PromptContainer:
         self.__add_iter__(new_prompt_iterable)
         return
 
-    def batch_add(self, new_prompt_iterables: List[List[str, Generator[Prompt, None, None]]])-> None:
+    def batch_add(
+        self, new_prompt_iterables: List[Tuple[str, Generator[Prompt, None, None]]]
+    ) -> None:
         """Store a collection of Prompt generators.
 
         Args:
-            new_prompt_iterables (List[List[str, Generator[Prompt, None, None]]]): List of tuples/lists containing:
+            new_prompt_iterables (List[Tuple[str, Generator[Prompt, None, None]]]): List of tuples/lists containing:
                 - Molecular string and
                 - generator for Prompt objects.
         """
