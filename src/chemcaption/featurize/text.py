@@ -7,7 +7,7 @@ from typing import Any, Dict, Generator, List, Optional, Tuple, Union
 
 import numpy as np
 
-from chemcaption.featurize.text_utils import inspect_info, generate_template
+from chemcaption.featurize.text_utils import generate_template, inspect_info
 from chemcaption.molecules import Molecule
 
 # Implemented text-related classes
@@ -32,8 +32,7 @@ class Prompt:
 
     def __post_init__(self):
         self.answer_template = generate_template(
-            template_type="text",
-            key="single" if len(self.completion) < 2 else "multiple"
+            template_type="text", key="single" if len(self.completion) < 2 else "multiple"
         )
 
     def __dict__(self) -> Dict[str, Any]:
@@ -78,8 +77,9 @@ class Prompt:
         molecular_info = inspect_info(molecular_info)
 
         return (
-            self.template.format(**molecular_info) if template == "q" else
-            self.answer_template.format(**molecular_info)
+            self.template.format(**molecular_info)
+            if template == "q"
+            else self.answer_template.format(**molecular_info)
         )
 
     def __str__(self) -> str:
@@ -113,23 +113,22 @@ class Prompt:
 class PromptContainer:
     """Contain Prompt object generators."""
 
-    def __init__(
-        self, prompt_iterable: Optional[Tuple[str, Generator[Prompt, None, None]]] = None
-    ):
+    def __init__(self, prompt_iterable: Optional[Tuple[str, Generator[Prompt, None, None]]] = None):
         """Initialize instance.
 
         Args:
-            prompt_iterable (Optional[List[Tuple[str, Generator[Prompt, None, None]]]]):
+            prompt_iterable (Optional[Tuple[str, Generator[Prompt, None, None]]]):
                 List of tuples/lists containing:
                     - Molecular string and
                     - generator for Prompt objects.
 
         """
-        self.db = [{prompt_iterable[0]: prompt_iterable[1]}] if prompt_iterable is not None else []
+        self.db = []
 
-    def __add_iter__(
-        self, new_prompt_iterable: Tuple[str, Generator[Prompt, None, None]]
-    ) -> None:
+        if prompt_iterable is not None:
+            self.add(prompt_iterable)
+
+    def __add_iter__(self, new_prompt_iterable: Tuple[str, Generator[Prompt, None, None]]) -> None:
         """Store Prompt generator.
 
         Args:
@@ -182,7 +181,9 @@ class PromptContainer:
         representation = molecule.representation_string
         return list(filter(lambda x: x[0] == representation, self.db))[0]
 
-    def _unravel(self, dictionary: Dict[str, Generator[Prompt, None, None]]) -> Dict[str, List[Dict[str, Any]]]:
+    def _unravel(
+        self, dictionary: Dict[str, Generator[Prompt, None, None]]
+    ) -> Dict[str, List[Dict[str, Any]]]:
         """Deconstruct inner generator objects.
 
         Args:
@@ -193,7 +194,7 @@ class PromptContainer:
         Returns:
             (Dict[str, List[Dict[str, Any]]]): Dictionary mapping between:
                 - Molecule representation string
-                - List of Prompt objects in Prompt generator for different features.
+                - List of dictionary representations for Prompt objects in Prompt generator for different features.
         """
         return {key: [v.__dict__() for v in value] for key, value in dictionary.items()}
 
