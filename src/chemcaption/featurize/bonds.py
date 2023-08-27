@@ -2,7 +2,7 @@
 
 """Featurizers for chemical bond-related information."""
 
-from typing import List
+from typing import List, Union
 
 import numpy as np
 from rdkit.Chem import rdMolDescriptors
@@ -12,10 +12,7 @@ from chemcaption.molecules import Molecule
 
 # Implemented bond-related featurizers
 
-__all__ = [
-    "RotableBondCountFeaturizer",
-    "BondRotabilityFeaturizer",
-]
+__all__ = ["RotableBondCountFeaturizer", "BondRotabilityFeaturizer", "BondTypeFeaturizer"]
 
 
 """Featurizer for counting rotatable bonds in molecule."""
@@ -118,6 +115,148 @@ class BondRotabilityFeaturizer(AbstractFeaturizer):
 
         Args:
             None.
+
+        Returns:
+            List[str]: List of implementors.
+        """
+        return ["Benedict Oshomah Emoekabu"]
+
+
+"""Featurizer for calculating number of molecule bonds types."""
+
+
+class BondTypeFeaturizer(AbstractFeaturizer):
+    """Featurizer for bond type count (or presence) extraction."""
+
+    def __init__(self, count: bool = True, bond_type: Union[str, List[str]] = "all"):
+        """
+        Initialize class.
+
+        Args:
+            count (bool): If set to True, count pattern frequency. Otherwise, only encode presence. Defaults to True.
+            bond_type (Union[str, List[str]]): Type of bond to enumerate.
+                If `all`, enumerates all bonds irrespective of type. Default (ALL).
+        """
+        super().__init__()
+
+        self.count = count
+        self.prefix = "num_" if self.count else ""
+        self.suffix = "_bonds" if self.count else "_bond_presence"
+
+        self.bond_type = (
+            [bond_type.upper()] if isinstance(bond_type, str) else [b.upper() for b in bond_type]
+        )
+
+        self.label = [
+            self.prefix + f"{bond_type.lower()}" + self.suffix for bond_type in self.bond_type
+        ]
+
+    def _count_bonds(self, molecule: Molecule) -> List[int]:
+        """
+        Count the frequency of a bond_type in a molecule.
+
+        Args:
+            molecule (Molecule): Molecule representation.
+
+        Returns:
+            num_bonds (List[int]): Number of occurrences of `bond_type` in molecule.
+        """
+        all_bonds = self._get_bonds(molecule)
+        num_bonds = []
+
+        bond_types = self._parse_labels(molecule=molecule)
+
+        if ("ALL" in self.bond_type) and self.count:
+            num_bonds.append(len(all_bonds))
+
+        num_bonds = [all_bonds.count(bond_type) for bond_type in bond_types] + num_bonds
+
+        if not self.count:
+            num_bonds = [min(1, count) for count in num_bonds]
+
+        return num_bonds
+
+    def _parse_labels(self, molecule: Molecule):
+        """
+        Parse featurizer labels.
+
+        Args:
+            molecule (Molecule): Molecule representation.
+
+        Returns:
+            bond_types (List[str]): List of strings of bond types.
+        """
+        label = []
+
+        if "ALL" in self.bond_type:
+            bond_types = self._get_unique_bond_types(molecule)
+
+            if self.count:
+                label.append("num_bonds")
+        else:
+            bond_types = self.bond_type
+
+        self.label = [
+            self.prefix + f"{bond_type.lower()}" + self.suffix for bond_type in bond_types
+        ] + label
+
+        return bond_types
+
+    def _get_bonds(
+        self,
+        molecule: Molecule,
+    ) -> List[str]:
+        """
+        Extract all individual bonds present in a molecule.
+
+        Args:
+            molecule (Molecule): Molecule representation.
+
+        Returns:
+            bonds (List[str]): List of all bonds present in molecule.
+        """
+        bonds = [str(bond.GetBondType()).split(".")[-1] for bond in molecule.rdkit_mol.GetBonds()]
+
+        return bonds
+
+    def _get_unique_bond_types(self, molecule: Molecule) -> List[str]:
+        """
+        Get the unique bond types present in a molecule.
+
+        Args:
+            molecule (Molecule): Molecular representation.
+
+        Returns:
+            unique_bonds (List[str]): Set of unique bonds present in `molecule`.
+        """
+        bonds = self._get_bonds(molecule)
+        unique_bonds = list(set(bonds))
+
+        return unique_bonds
+
+    def featurize(self, molecule: Molecule) -> np.array:
+        """
+        Featurize single molecule instance.
+
+        Return integer array representing the:
+            - frequency or
+            - presence
+            of bond types in a molecule.
+
+        Args:
+            molecule (Molecule): Molecule representation.
+
+        Returns:
+            (np.array): Array containing integer counts/signifier of bond type(s).
+        """
+        return np.array(self._count_bonds(molecule=molecule)).reshape(1, -1)
+
+    def implementors(self) -> List[str]:
+        """
+        Return list of functionality implementors.
+
+        Args:
+            None
 
         Returns:
             List[str]: List of implementors.
