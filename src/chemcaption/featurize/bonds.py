@@ -12,7 +12,12 @@ from chemcaption.molecules import Molecule
 
 # Implemented bond-related featurizers
 
-__all__ = ["RotableBondCountFeaturizer", "BondRotabilityFeaturizer", "BondTypeFeaturizer", "BondTypeProportionFeaturizer"]
+__all__ = [
+    "RotableBondCountFeaturizer",
+    "BondRotabilityFeaturizer",
+    "BondTypeFeaturizer",
+    "BondTypeProportionFeaturizer",
+]
 
 
 """Featurizer for counting rotatable bonds in molecule."""
@@ -268,8 +273,17 @@ class BondTypeFeaturizer(AbstractFeaturizer):
 
 
 class BondTypeProportionFeaturizer(BondTypeFeaturizer):
+    """Featurizer for bond type proportion extraction."""
+
     def __init__(self, bond_type: Union[str, List[str]] = "all"):
-        super().__init__(count = True, bond_type=bond_type)
+        """
+        Initialize class.
+
+        Args:
+            bond_type (Union[str, List[str]]): Type of bond to enumerate.
+                If `all`, enumerates all bonds irrespective of type. Default (ALL).
+        """
+        super().__init__(count=True, bond_type=bond_type)
 
         self.prefix = ""
         self.suffix = "_bond_proportion"
@@ -284,13 +298,15 @@ class BondTypeProportionFeaturizer(BondTypeFeaturizer):
             molecule (Molecule): Molecular representation.
 
         Returns:
-            bond_distribution (Dict[float]): Map of BondType string representation to BondType frequency.
+            bond_distribution (List[float]): List of bond type proportions.
         """
         num_bonds = self._count_bonds(molecule=molecule)
-        if len(num_bonds) > 2:
-            bond_proportion = [count / num_bonds[-1] for count in num_bonds]
-        else:
-            bond_proportion = [count / len(self._get_bonds(molecule=molecule)) for count in num_bonds]
+
+        total_bond_count = (
+            sum(num_bonds) if "ALL" in self.bond_type else len(self._get_bonds(molecule=molecule))
+        )
+
+        bond_proportion = [count / total_bond_count for count in num_bonds]
 
         return bond_proportion
 
@@ -305,7 +321,7 @@ class BondTypeProportionFeaturizer(BondTypeFeaturizer):
             bond_types (List[str]): List of strings of bond types.
         """
         bond_types = super()._parse_labels(molecule=molecule)
-        self.label = self.label[:-1] if len(self.label) > 1 else self.label
+        self.label = self.label[:-1] if "ALL" in self.bond_type else self.label
 
         return bond_types
 
@@ -320,14 +336,13 @@ class BondTypeProportionFeaturizer(BondTypeFeaturizer):
             num_bonds (List[int]): Number of occurrences of `bond_type` in molecule.
         """
         num_bonds = super()._count_bonds(molecule=molecule)
-        num_bonds = num_bonds[:-1] if len(num_bonds) > 1 else num_bonds
+        num_bonds = num_bonds[:-1] if "ALL" in self.bond_type else num_bonds
+
         return num_bonds
 
-    def featurize(
-        self, molecule: Molecule
-    ) -> np.array:
+    def featurize(self, molecule: Molecule) -> np.array:
         """
-        Return integer containing on bond type proportion.
+        Return float(s) containing on bond type proportion(s).
 
         Args:
             molecule (Molecule): Molecule representation.
