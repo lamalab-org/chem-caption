@@ -12,7 +12,7 @@ from chemcaption.molecules import Molecule
 
 # Implemented bond-related featurizers
 
-__all__ = ["RotableBondCountFeaturizer", "BondRotabilityFeaturizer", "BondTypeFeaturizer"]
+__all__ = ["RotableBondCountFeaturizer", "BondRotabilityFeaturizer", "BondTypeFeaturizer", "BondTypeProportionFeaturizer"]
 
 
 """Featurizer for counting rotatable bonds in molecule."""
@@ -122,7 +122,7 @@ class BondRotabilityFeaturizer(AbstractFeaturizer):
         return ["Benedict Oshomah Emoekabu"]
 
 
-"""Featurizer for calculating number of molecule bonds types."""
+"""Featurizer for calculating number of molecule bond types."""
 
 
 class BondTypeFeaturizer(AbstractFeaturizer):
@@ -153,7 +153,7 @@ class BondTypeFeaturizer(AbstractFeaturizer):
 
     def _count_bonds(self, molecule: Molecule) -> List[int]:
         """
-        Count the frequency of a bond_type in a molecule.
+        Count the frequency of appearance for bond_type in a molecule.
 
         Args:
             molecule (Molecule): Molecule representation.
@@ -176,7 +176,7 @@ class BondTypeFeaturizer(AbstractFeaturizer):
 
         return num_bonds
 
-    def _parse_labels(self, molecule: Molecule):
+    def _parse_labels(self, molecule: Molecule) -> List[str]:
         """
         Parse featurizer labels.
 
@@ -210,7 +210,7 @@ class BondTypeFeaturizer(AbstractFeaturizer):
         Extract all individual bonds present in a molecule.
 
         Args:
-            molecule (Molecule): Molecule representation.
+            molecule (Molecule): Molecular representation.
 
         Returns:
             bonds (List[str]): List of all bonds present in molecule.
@@ -262,3 +262,77 @@ class BondTypeFeaturizer(AbstractFeaturizer):
             List[str]: List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]
+
+
+"""Featurizer for calculating proportion of molecule bond types."""
+
+
+class BondTypeProportionFeaturizer(BondTypeFeaturizer):
+    def __init__(self, bond_type: Union[str, List[str]] = "all"):
+        super().__init__(count = True, bond_type=bond_type)
+
+        self.prefix = ""
+        self.suffix = "_bond_proportion"
+
+        self.label = [
+            self.prefix + f"{bond_type.lower()}" + self.suffix for bond_type in self.bond_type
+        ]
+
+    def _get_bond_distribution(self, molecule: Molecule) -> List[float]:
+        """Return a frequency distribution for the bonds present in a molecule.
+        Args:
+            molecule (Molecule): Molecular representation.
+
+        Returns:
+            bond_distribution (Dict[float]): Map of BondType string representation to BondType frequency.
+        """
+        num_bonds = self._count_bonds(molecule=molecule)
+        if len(num_bonds) > 2:
+            bond_proportion = [count / num_bonds[-1] for count in num_bonds]
+        else:
+            bond_proportion = [count / len(self._get_bonds(molecule=molecule)) for count in num_bonds]
+
+        return bond_proportion
+
+    def _parse_labels(self, molecule: Molecule) -> List[str]:
+        """
+        Parse featurizer labels.
+
+        Args:
+            molecule (Molecule): Molecule representation.
+
+        Returns:
+            bond_types (List[str]): List of strings of bond types.
+        """
+        bond_types = super()._parse_labels(molecule=molecule)
+        self.label = self.label[:-1] if len(self.label) > 1 else self.label
+
+        return bond_types
+
+    def _count_bonds(self, molecule: Molecule) -> List[int]:
+        """
+        Count the frequency of appearance for bond_type in a molecule.
+
+        Args:
+            molecule (Molecule): Molecule representation.
+
+        Returns:
+            num_bonds (List[int]): Number of occurrences of `bond_type` in molecule.
+        """
+        num_bonds = super()._count_bonds(molecule=molecule)
+        num_bonds = num_bonds[:-1] if len(num_bonds) > 1 else num_bonds
+        return num_bonds
+
+    def featurize(
+        self, molecule: Molecule
+    ) -> np.array:
+        """
+        Return integer containing on bond type proportion.
+
+        Args:
+            molecule (Molecule): Molecule representation.
+
+        Returns:
+            (np.array): Array containing bond type proportion(s).
+        """
+        return np.array(self._get_bond_distribution(molecule=molecule)).reshape(1, -1)
