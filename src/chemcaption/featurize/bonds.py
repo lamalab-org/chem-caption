@@ -5,7 +5,7 @@
 from typing import List, Union
 
 import numpy as np
-from rdkit.Chem import rdMolDescriptors
+from rdkit.Chem import rdchem, rdMolDescriptors
 
 from chemcaption.featurize.base import AbstractFeaturizer
 from chemcaption.molecules import Molecule
@@ -156,6 +156,9 @@ class BondTypeFeaturizer(AbstractFeaturizer):
             self.prefix + f"{bond_type.lower()}" + self.suffix for bond_type in self.bond_type
         ]
 
+        self.bond_map = None
+        self._rdkit_bond_type_map()  # Generate bond type map
+
     def _count_bonds(self, molecule: Molecule) -> List[int]:
         """
         Count the frequency of appearance for bond_type in a molecule.
@@ -169,7 +172,7 @@ class BondTypeFeaturizer(AbstractFeaturizer):
         all_bonds = self._get_bonds(molecule)
         num_bonds = []
 
-        bond_types = self._parse_labels(molecule=molecule)
+        bond_types = self._parse_labels()
 
         if ("ALL" in self.bond_type) and self.count:
             num_bonds.append(len(all_bonds))
@@ -181,12 +184,12 @@ class BondTypeFeaturizer(AbstractFeaturizer):
 
         return num_bonds
 
-    def _parse_labels(self, molecule: Molecule) -> List[str]:
+    def _parse_labels(self) -> List[str]:
         """
         Parse featurizer labels.
 
         Args:
-            molecule (Molecule): Molecule representation.
+            None.
 
         Returns:
             bond_types (List[str]): List of strings of bond types.
@@ -194,7 +197,7 @@ class BondTypeFeaturizer(AbstractFeaturizer):
         label = []
 
         if "ALL" in self.bond_type:
-            bond_types = self._get_unique_bond_types(molecule)
+            bond_types = self._rdkit_bond_types()
 
             if self.count:
                 label.append("num_bonds")
@@ -223,6 +226,33 @@ class BondTypeFeaturizer(AbstractFeaturizer):
         bonds = [str(bond.GetBondType()).split(".")[-1] for bond in molecule.rdkit_mol.GetBonds()]
 
         return bonds
+
+    def _rdkit_bond_type_map(self) -> None:
+        """
+        Generate a map of bonds from rdkit codebase.
+
+        Args:
+            None.
+
+        Returns:
+            None.
+        """
+        bond_indices = list(rdchem.BondType.values)
+        bonds = [str(rdchem.BondType.values[idx]).split(".")[-1] for idx in bond_indices]
+        self.bond_map = dict(zip(bonds, bond_indices))
+        return
+
+    def _rdkit_bond_types(self) -> List[str]:
+        """
+        Returns a list of bonds supported by rdkit.
+
+        Args:
+            None.
+
+        Returns:
+            (List[str]): List of all bonds present in rdkit.
+        """
+        return list(self.bond_map.keys())
 
     def _get_unique_bond_types(self, molecule: Molecule) -> List[str]:
         """
@@ -310,17 +340,17 @@ class BondTypeProportionFeaturizer(BondTypeFeaturizer):
 
         return bond_proportion
 
-    def _parse_labels(self, molecule: Molecule) -> List[str]:
+    def _parse_labels(self) -> List[str]:
         """
         Parse featurizer labels.
 
         Args:
-            molecule (Molecule): Molecule representation.
+            None.
 
         Returns:
             bond_types (List[str]): List of strings of bond types.
         """
-        bond_types = super()._parse_labels(molecule=molecule)
+        bond_types = super()._parse_labels()
         self.label = self.label[:-1] if "ALL" in self.bond_type else self.label
 
         return bond_types
