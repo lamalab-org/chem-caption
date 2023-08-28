@@ -205,3 +205,57 @@ class InertialShapeFactorFeaturizer(ThreeDimensionalFeaturizer):
             List[str]: List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]
+
+
+"""Abstract Featurizer for extracting Normalized principal moments ratio (NPR) from molecule."""
+
+
+class NPRFeaturizer(ThreeDimensionalFeaturizer):
+    """Featurizer to return the Normalized principal moments ratio (NPR) value of a molecule."""
+
+    def __init__(self, npr: int = 1, conformer_id: Optional[int] = -1, use_masses: bool = True, force=True):
+        """Initialize class object.
+
+        Args:
+            npr (int): Normalized principal moments ratio (NPR) value to calculate.
+                May take either value of `1` or `2`. Defaults to `1`.
+            conformer_id (Optional[int]): Integer identifier for molecule conformation. Defaults to `-1`.
+            use_masses (bool): Utilize elemental masses in calculating the NPR. Defaults to `True`.
+            force (bool):
+        """
+        super().__init__(conformer_id=conformer_id, use_masses=use_masses, force=force)
+        self.npr = npr
+
+        self.label = [f"npr{self.npr}_value"]
+
+    def featurize(self, molecule: Molecule) -> np.array:
+        """
+        Featurize single molecule instance. Extract NPR value for `molecule`.
+
+        Args:
+            molecule (Molecule): Molecule representation.
+
+        Returns:
+            (np.array): Array containing value for NPR.
+        """
+        mol = molecule.reveal_hydrogens()
+        _ = EmbedMolecule(mol)
+
+        NPR_FUNCTION = Descriptors3D.NPR1 if self.npr == 1 else Descriptors3D.NPR2
+
+        npr_value = NPR_FUNCTION(
+            mol, confId=self.conformer_id, force=self.force, useAtomicMasses=self.use_masses
+        )
+        return np.array([npr_value]).reshape(1, -1)
+
+    def implementors(self) -> List[str]:
+        """
+        Return list of functionality implementors.
+
+        Args:
+            None.
+
+        Returns:
+            List[str]: List of implementors.
+        """
+        return ["Benedict Oshomah Emoekabu"]
