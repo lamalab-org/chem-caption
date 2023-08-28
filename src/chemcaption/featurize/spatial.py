@@ -6,13 +6,16 @@ from typing import List, Optional
 
 import numpy as np
 from rdkit.Chem import Descriptors3D, rdMolDescriptors
+from rdkit.Chem.AllChem import EmbedMolecule
 
 from chemcaption.featurize.base import AbstractFeaturizer
 from chemcaption.molecules import Molecule
 
 # Implemented bond-related featurizers
 
-__all__ = []
+__all__ = [
+    "EccentricityFeaturizer",
+]
 
 
 class ThreeDimensionalFeaturizer(AbstractFeaturizer):
@@ -50,8 +53,10 @@ class EccentricityFeaturizer(ThreeDimensionalFeaturizer):
         Returns:
             (np.array): Array containing eccentricity value.
         """
-        eccentricity_value = Descriptors3D.RadiusOfGyration(
-            molecule.rdkit_mol
+        mol = molecule.reveal_hydrogens()
+        _ = EmbedMolecule(mol)
+        eccentricity_value = Descriptors3D.Eccentricity(
+            mol
         )
         return np.array([eccentricity_value]).reshape(1, -1)
 
@@ -66,15 +71,3 @@ class EccentricityFeaturizer(ThreeDimensionalFeaturizer):
             List[str]: List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]
-
-
-if __name__ == "__main__":
-    from chemcaption.molecules import SMILESMolecule
-    from givemeconformer.api import get_conformer
-
-    feat = EccentricityFeaturizer()
-    mol = get_conformer("C1CCCCC1", max_conformers=10)[0]
-    print(mol.GetPropNames())
-
-    print(dir(mol))
-
