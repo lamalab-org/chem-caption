@@ -7,7 +7,9 @@ from typing import Dict, List, Optional, Union
 import numpy as np
 from rdkit import Chem
 from rdkit.Chem import Descriptors3D
-from rdkit.Chem.AllChem import EmbedMolecule
+from rdkit.Chem.AllChem import EmbedMultipleConfs
+
+from givemeconformer.api import get_conformer
 
 from chemcaption.featurize.base import AbstractFeaturizer
 from chemcaption.molecules import Molecule
@@ -123,8 +125,14 @@ class EccentricityFeaturizer(ThreeDimensionalFeaturizer):
         Returns:
             (np.array): Array containing eccentricity value.
         """
+        mol = molecule.rdkit_mol
+
+        smiles = Chem.MolToSmiles(mol)
+        conformers = get_conformer(smiles=smiles, num_samples=10)
+
         mol = molecule.reveal_hydrogens()
-        _ = EmbedMolecule(mol)
+        for conf in conformers:
+            mol.AddConformer(conf)
 
         eccentricity_value = Descriptors3D.Eccentricity(
             mol, confId=self.conformer_id, force=self.force, useAtomicMasses=self.use_masses
@@ -172,8 +180,14 @@ class AsphericityFeaturizer(ThreeDimensionalFeaturizer):
         Returns:
             (np.array): Array containing asphericity value.
         """
+        mol = molecule.rdkit_mol
+
+        smiles = Chem.MolToSmiles(mol)
+        conformers = get_conformer(smiles=smiles, num_samples=10)
+
         mol = molecule.reveal_hydrogens()
-        _ = EmbedMolecule(mol)
+        for conf in conformers:
+            mol.AddConformer(conf)
 
         asphericity_value = Descriptors3D.Asphericity(
             mol, confId=self.conformer_id, force=self.force, useAtomicMasses=self.use_masses
@@ -221,8 +235,14 @@ class InertialShapeFactorFeaturizer(ThreeDimensionalFeaturizer):
         Returns:
             (np.array): Array containing inertia shape factor.
         """
+        mol = molecule.rdkit_mol
+
+        smiles = Chem.MolToSmiles(mol)
+        conformers = get_conformer(smiles=smiles, num_samples=10)
+
         mol = molecule.reveal_hydrogens()
-        _ = EmbedMolecule(mol)
+        for conf in conformers:
+            mol.AddConformer(conf)
 
         asphericity_value = Descriptors3D.InertialShapeFactor(
             mol, confId=self.conformer_id, force=self.force, useAtomicMasses=self.use_masses
@@ -250,7 +270,7 @@ class NPRFeaturizer(ThreeDimensionalFeaturizer):
 
     def __init__(
         self,
-        variant: Union[int, str] = 1,
+        variant: Union[int, str] = "all",
         conformer_id: Optional[int] = -1,
         use_masses: bool = True,
         force=True,
@@ -306,8 +326,14 @@ class NPRFeaturizer(ThreeDimensionalFeaturizer):
         Returns:
             (np.array): Array containing value for NPR.
         """
+        mol = molecule.rdkit_mol
+
+        smiles = Chem.MolToSmiles(mol)
+        conformers = get_conformer(smiles=smiles, num_samples=10)
+
         mol = molecule.reveal_hydrogens()
-        _ = EmbedMolecule(mol)
+        for conf in conformers:
+            mol.AddConformer(conf)
 
         npr_function = self.FUNCTION_MAP.get(self.variant, self._measure_all)
         npr_value = npr_function(
@@ -336,7 +362,7 @@ class PMIFeaturizer(ThreeDimensionalFeaturizer):
 
     def __init__(
         self,
-        variant: Union[int, str] = 1,
+        variant: Union[int, str] = "all",
         conformer_id: Optional[int] = -1,
         use_masses: bool = True,
         force=True,
@@ -390,8 +416,14 @@ class PMIFeaturizer(ThreeDimensionalFeaturizer):
         Returns:
             (np.array): Array containing value for PMI.
         """
+        mol = molecule.rdkit_mol
+
+        smiles = Chem.MolToSmiles(mol)
+        conformers = get_conformer(smiles=smiles, num_samples=10)
+
         mol = molecule.reveal_hydrogens()
-        _ = EmbedMolecule(mol)
+        for conf in conformers:
+            mol.AddConformer(conf)
 
         pmi_function = self.FUNCTION_MAP.get(self.variant, self._measure_all)
 

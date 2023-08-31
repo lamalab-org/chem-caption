@@ -16,6 +16,7 @@ from chemcaption.featurize.composition import (
 )
 from chemcaption.featurize.electronicity import ValenceElectronCountFeaturizer
 from chemcaption.featurize.rules import LipinskiViolationCountFeaturizer
+from chemcaption.featurize.spatial import NPRFeaturizer, PMIFeaturizer, AsphericityFeaturizer, EccentricityFeaturizer, InertialShapeFactorFeaturizer
 from chemcaption.featurize.substructure import IsomorphismFeaturizer, SMARTSFeaturizer
 from chemcaption.molecules import SMILESMolecule
 
@@ -79,6 +80,11 @@ def generate_info(string: str):
     isomorphism_featurizer = IsomorphismFeaturizer()
 
     atom_count_featurizer = AtomCountFeaturizer()
+    npr_featurizer = NPRFeaturizer()
+    pmi_featurizer = PMIFeaturizer()
+    asphericity_featurizer = AsphericityFeaturizer()
+    eccentricity_featurizer = EccentricityFeaturizer()
+    inertial_featurizer = InertialShapeFactorFeaturizer()
 
     mol = SMILESMolecule(string)
 
@@ -97,7 +103,7 @@ def generate_info(string: str):
     num_donors = Lipinski.NumHDonors(mol.rdkit_mol)
     num_acceptors = Lipinski.NumHAcceptors(mol.rdkit_mol)
 
-    num_lipinski_violations = lipinski_featurizer.featurize(mol).item()
+    num_lipinski_violations = lipinski_featurizer.featurize(molecule=mol).item()
 
     masses = mass_featurizer.featurize(molecule=mol).reshape((-1,)).tolist()
     keys += mass_featurizer.feature_labels()
@@ -136,6 +142,35 @@ def generate_info(string: str):
 
     values += counts
     values += count_ratios
+
+    print("Done 1!")
+
+    npr_values = npr_featurizer.featurize(molecule=mol).reshape((-1,)).tolist()
+    keys += npr_featurizer.feature_labels()
+    values += npr_values
+    print("Done 2!")
+
+    pmi_values = pmi_featurizer.featurize(molecule=mol).reshape((-1,)).tolist()
+    keys += pmi_featurizer.feature_labels()
+    values += pmi_values
+    print("Done 3!")
+
+    asphericity = asphericity_featurizer.featurize(molecule=mol).item()
+    print("Done 4!")
+    eccentricity = eccentricity_featurizer.featurize(molecule=mol).item()
+    print("Done 5!")
+    inertia = inertial_featurizer.featurize(molecule=mol).item()
+    print("Done 6!")
+
+    keys += asphericity_featurizer.feature_labels()
+    keys += eccentricity_featurizer.feature_labels()
+    keys += inertial_featurizer.feature_labels()
+
+    values += [asphericity]
+    values += [eccentricity]
+    values += [inertia]
+
+    print("Done 2!")
 
     for preset in ["rings", "organic", "heterocyclic", "warheads", "scaffolds", "amino"]:
         for val in [True, False]:
