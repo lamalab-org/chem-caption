@@ -50,7 +50,7 @@ class RotableBondCountFeaturizer(AbstractFeaturizer):
         Returns:
             num_rotable (np.array): Number of rotable bonds in molecule.
         """
-        num_rotable = rdMolDescriptors.CalcNumRotatableBonds(molecule.rdkit_mol, strict=True)
+        num_rotable = rdMolDescriptors.CalcNumRotatableBonds(molecule.reveal_hydrogens(), strict=True)
         return np.array([num_rotable]).reshape((1, -1))
 
     def implementors(self) -> List[str]:
@@ -95,8 +95,8 @@ class BondRotabilityFeaturizer(AbstractFeaturizer):
         Returns:
             bond_distribution (List[float]): Distribution of bonds based on rotability.
         """
-        num_bonds = len(molecule.rdkit_mol.GetBonds())
-        num_rotable = rdMolDescriptors.CalcNumRotatableBonds(molecule.rdkit_mol, strict=False)
+        num_bonds = len(molecule.reveal_hydrogens().GetBonds())
+        num_rotable = rdMolDescriptors.CalcNumRotatableBonds(molecule.reveal_hydrogens(), strict=False)
         num_non_rotable = num_bonds - num_rotable
 
         bond_distribution = [num_rotable / num_bonds, num_non_rotable / num_bonds]
