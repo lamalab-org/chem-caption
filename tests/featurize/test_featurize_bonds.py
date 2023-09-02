@@ -5,7 +5,12 @@
 import numpy as np
 import pytest
 
-from chemcaption.featurize.bonds import BondRotabilityFeaturizer, RotableBondCountFeaturizer
+from chemcaption.featurize.bonds import (
+    BondRotabilityFeaturizer,
+    RotableBondCountFeaturizer,
+    BondTypeFeaturizer,
+)
+from chemcaption.molecules import SMILESMolecule
 from tests.conftests import DISPATCH_MAP, PROPERTY_BANK, extract_molecule_properties
 
 KIND = "selfies"
@@ -57,3 +62,15 @@ def test_bond_distribution_featurizer(test_input, expected):
     results = featurizer.featurize(molecule)
 
     assert np.isclose(results, expected).all()
+
+
+def test_bond_type_featurizer():
+    bt = BondTypeFeaturizer()
+    molecule = SMILESMolecule("C1=CC=CC=C1")
+    results = bt.featurize(molecule)
+    print(bt.feature_labels())
+    assert len(results) == len(bt.feature_labels())
+    results_dict = dict(zip(bt.feature_labels(), results))
+    assert results_dict["num_bonds"] == 12
+    assert results_dict["num_aromatic_bonds"] == 6
+    assert results_dict["num_single_bonds"] == 6
