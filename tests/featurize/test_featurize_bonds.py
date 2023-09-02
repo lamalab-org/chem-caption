@@ -7,8 +7,8 @@ import pytest
 
 from chemcaption.featurize.bonds import (
     BondRotabilityFeaturizer,
-    RotableBondCountFeaturizer,
     BondTypeFeaturizer,
+    RotableBondCountFeaturizer,
 )
 from chemcaption.molecules import SMILESMolecule
 from tests.conftests import DISPATCH_MAP, PROPERTY_BANK, extract_molecule_properties
@@ -69,8 +69,8 @@ def test_bond_type_featurizer():
     molecule = SMILESMolecule("C1=CC=CC=C1")
     results = bt.featurize(molecule)
     print(bt.feature_labels())
-    assert len(results) == len(bt.feature_labels())
-    results_dict = dict(zip(bt.feature_labels(), results))
+    assert len(results.flatten().tolist()) == len(bt.feature_labels())
+    results_dict = dict(zip(bt.feature_labels(), results.flatten().tolist()))
     assert results_dict["num_bonds"] == 12
     assert results_dict["num_aromatic_bonds"] == 6
     assert results_dict["num_single_bonds"] == 6

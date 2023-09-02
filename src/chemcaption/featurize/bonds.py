@@ -223,7 +223,10 @@ class BondTypeFeaturizer(AbstractFeaturizer):
         Returns:
             bonds (List[str]): List of all bonds present in molecule.
         """
-        bonds = [str(bond.GetBondType()).split(".")[-1] for bond in molecule.rdkit_mol.GetBonds()]
+        bonds = [
+            str(bond.GetBondType()).split(".")[-1]
+            for bond in molecule.reveal_hydrogens().GetBonds()
+        ]
 
         return bonds
 
