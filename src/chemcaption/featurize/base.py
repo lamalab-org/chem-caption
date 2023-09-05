@@ -7,10 +7,16 @@ from typing import Dict, List, Optional, Generator
 
 import numpy as np
 import rdkit
+
+import os
 from scipy.spatial import distance_matrix
 
 from chemcaption.featurize.text import Prompt
 from chemcaption.molecules import Molecule
+
+from chemcaption.featurize.utils import find_indices
+
+from concurrent.futures import ProcessPoolExecutor, as_completed
 
 # Implemented abstract and high-level classes
 
@@ -36,6 +42,17 @@ class AbstractFeaturizer(ABC):
         self.template = None
         self._names = []
 
+    def __getstate__(self):
+        properties = self.__dict__.copy()
+        del properties["periodic_table"]
+        return None
+
+    def __setstate__(self, state=None):
+        self.periodic_table = rdkit.Chem.GetPeriodicTable()
+        os.remove(os.path.join(os.getcwd(), "table.file"))
+
+        return None
+
     @abstractmethod
     def featurize(self, molecule: Molecule) -> np.array:
         """Featurize single Molecule instance."""
@@ -52,7 +69,24 @@ class AbstractFeaturizer(ABC):
         Returns:
             np.array: An array of features for each molecule instance.
         """
-        return np.concatenate([self.featurize(molecule) for molecule in molecules])
+        with ProcessPoolExecutor() as executor:
+            futures = {executor.submit(self.featurize, molecule): molecule for molecule in molecules}
+
+        obtained_pairs = [(futures[future], future.result()) for future in as_completed(futures)]
+
+        original_indices = [
+            indices for (mol, result) in obtained_pairs for indices in find_indices(mol, molecules)# for i in indices
+        ]
+
+        final_triplets = sorted(
+            [
+                (index, mol, result)
+                for (index, (mol, result)) in zip(original_indices, obtained_pairs)
+            ]
+            , key=lambda x: x[0]
+        )
+        results = [x[-1] for x in final_triplets]
+        return np.concatenate(results)
 
     def text_featurize(
         self,
