@@ -2,7 +2,10 @@
 
 """Script for generating test data."""
 
+from argparse import ArgumentParser
+
 import os
+import gc
 
 import pandas as pd
 from rdkit.Chem import Lipinski, rdMolDescriptors
@@ -25,8 +28,11 @@ BASE_DIR = os.getcwd()
 MOLECULAR_BANK = pd.read_json(os.path.join(BASE_DIR, "molecular_bank.json"), orient="index")
 PROPERTY_BANK = pd.read_csv(os.path.join(BASE_DIR, "pubchem_response.csv"))
 
-smiles_list = PROPERTY_BANK["smiles"]
 
+def main(args):
+    args = args.parse_args()
+    persist_data(chunk_size=args.chunk_size)
+    return
 
 def generate_info(string: str):
     """
@@ -150,10 +156,10 @@ def generate_info(string: str):
     values += npr_values
     print("Done 2!")
 
-    pmi_values = pmi_featurizer.featurize(molecule=mol).reshape((-1,)).tolist()
-    keys += pmi_featurizer.feature_labels()
-    values += pmi_values
-    print("Done 3!")
+    # pmi_values = pmi_featurizer.featurize(molecule=mol).reshape((-1,)).tolist()
+    # keys += pmi_featurizer.feature_labels()
+    # values += pmi_values
+    # print("Done 3!")
 
     asphericity = asphericity_featurizer.featurize(molecule=mol).item()
     print("Done 4!")
@@ -180,28 +186,67 @@ def generate_info(string: str):
             keys += smarts_featurizer.feature_labels()
             values += smarts_presence
 
+    gc.collect()
+
     return dict(zip(keys, values))
 
 
-data = [generate_info(string) for string in smiles_list]
+def persist_data(chunk_size=30):
+    """Break data into chunks and persist."""
+    smiles_list = PROPERTY_BANK["smiles"]
+    PROPERTY_SUBSET = PROPERTY_BANK.drop(
+        labels=[col for col in PROPERTY_BANK.columns if col.__contains__("num")], axis=1
+    )
+    NEW_PATH = os.path.join(BASE_DIR.replace("legacy", ""), "generated_data.csv")
 
-data = pd.DataFrame(data=data)
-# data.to_csv("data/generated_data.csv", index=False)
+    if os.path.isfile(NEW_PATH):
+        old_data = pd.read_csv(NEW_PATH)
+        start_index = len(old_data)
+    else:
+        start_index = 0
 
-PROPERTY_SUBSET = PROPERTY_BANK.drop(
-    labels=[col for col in PROPERTY_BANK.columns if col.__contains__("num")], axis=1
-)
+    print(f"Starting from index {start_index} out of {len(smiles_list)}: {start_index}/{len(smiles_list)}...")
 
-NEW_DATA = pd.merge(left=PROPERTY_SUBSET, right=data, left_on="smiles", right_on="smiles").rename(
-    columns={
-        "molar_mass": "molecular_mass",
-        "exact_mass": "exact_molecular_mass",
-        "monoisotopic_mass": "monoisotopic_molecular_mass",
-    }
-)
+    chunks = [smiles_list[i: i+chunk_size] for i in range(start_index, len(smiles_list), chunk_size)]
 
+    running_size = start_index
 
-NEW_PATH = os.path.join(BASE_DIR.replace("legacy", ""), "merged_pubchem_response.csv")
-NEW_DATA.to_csv(NEW_PATH, index=False)
+    for chunk in chunks:
+        data = [generate_info(string) for string in chunk]
+        data = pd.DataFrame(data=data).rename(
+            columns={
+                "molar_mass": "molecular_mass",
+                "exact_mass": "exact_molecular_mass",
+                "monoisotopic_mass": "monoisotopic_molecular_mass",
+            }
+        )
+        # data.to_csv("data/generated_data_.csv", index=False)
 
-print(NEW_DATA.columns)
+        if os.path.isfile(NEW_PATH):
+            old_data = pd.read_csv(NEW_PATH)
+            #columns = old_data.columns
+            data = pd.concat((old_data, data), axis=0)
+
+        data.to_csv(NEW_PATH, index=False)
+        running_size += len(chunk)
+
+        print(f"Persisted {running_size}/{len(smiles_list)} SMILES strings!\n")
+
+        gc.collect()
+
+    print("All SMILES strings processed!\n")
+
+    data = pd.read_csv(NEW_PATH)
+    NEW_DATA = pd.merge(left=PROPERTY_SUBSET, right=data, left_on="smiles", right_on="smiles")
+    NEW_DATA.to_csv(NEW_PATH, index=False)
+
+    print("Data persisted!\n")
+
+    return
+
+if __name__ == "__main__":
+    args = ArgumentParser()
+    args.add_argument(
+        "--chunk_size", default = 10, type=int
+    )
+    main(args)

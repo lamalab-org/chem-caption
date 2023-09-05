@@ -128,7 +128,7 @@ class EccentricityFeaturizer(ThreeDimensionalFeaturizer):
         mol = molecule.rdkit_mol
 
         smiles = Chem.MolToSmiles(mol)
-        conformers = get_conformer(smiles=smiles, num_samples=10)
+        conformers = get_conformer(smiles=smiles, max_conformers = 2, num_samples=10)
 
         mol = molecule.reveal_hydrogens()
         for conf in conformers:
@@ -183,7 +183,7 @@ class AsphericityFeaturizer(ThreeDimensionalFeaturizer):
         mol = molecule.rdkit_mol
 
         smiles = Chem.MolToSmiles(mol)
-        conformers = get_conformer(smiles=smiles, num_samples=10)
+        conformers = get_conformer(smiles=smiles, max_conformers = 2, num_samples=10)
 
         mol = molecule.reveal_hydrogens()
         for conf in conformers:
@@ -238,7 +238,7 @@ class InertialShapeFactorFeaturizer(ThreeDimensionalFeaturizer):
         mol = molecule.rdkit_mol
 
         smiles = Chem.MolToSmiles(mol)
-        conformers = get_conformer(smiles=smiles, num_samples=10)
+        conformers = get_conformer(smiles=smiles, max_conformers = 2, num_samples=10)
 
         mol = molecule.reveal_hydrogens()
         for conf in conformers:
@@ -329,7 +329,7 @@ class NPRFeaturizer(ThreeDimensionalFeaturizer):
         mol = molecule.rdkit_mol
 
         smiles = Chem.MolToSmiles(mol)
-        conformers = get_conformer(smiles=smiles, num_samples=10)
+        conformers = get_conformer(smiles=smiles, max_conformers = 2, num_samples=10)
 
         mol = molecule.reveal_hydrogens()
         for conf in conformers:
@@ -419,7 +419,7 @@ class PMIFeaturizer(ThreeDimensionalFeaturizer):
         mol = molecule.rdkit_mol
 
         smiles = Chem.MolToSmiles(mol)
-        conformers = get_conformer(smiles=smiles, num_samples=10)
+        conformers = get_conformer(smiles=smiles, max_conformers = 2, num_samples=10)
 
         mol = molecule.reveal_hydrogens()
         for conf in conformers:
