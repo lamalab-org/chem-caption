@@ -2,8 +2,8 @@
 
 """Utilities for `featurize` module."""
 
-from typing import List, Tuple, Union, Any
 from functools import lru_cache
+from typing import Any, List, Tuple, Union
 
 from givemeconformer.api import get_conformer
 from pymatgen.core import IMolecule  # use immutable for caching
@@ -16,7 +16,7 @@ __all__ = [
     "_rdkit_to_pymatgen",  # Helper function
     "_pmg_mol_to_pointgroup_analyzer",  # Helper function
     "get_atom_symbols_and_positions",  # Helper function
-    "find_indices", # Helper function
+    "find_indices",  # Helper function
 ]
 
 
@@ -38,6 +38,7 @@ def get_atom_symbols_and_positions(conf):
     symbols = [atom.GetSymbol() for atom in mol.GetAtoms()]
     positions = conf.GetPositions()
     return symbols, positions
+
 
 def find_indices(instance: Any, sequence: Union[List, Tuple]):
     count = sequence.count(instance)

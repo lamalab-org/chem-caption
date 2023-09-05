@@ -2,21 +2,19 @@
 
 """Abstract base class and wrappers for featurizers."""
 
+import os
 from abc import ABC, abstractmethod
-from typing import Dict, List, Optional, Generator
+from concurrent.futures import ProcessPoolExecutor, as_completed
+
+from typing import Dict, Generator, List, Optional
 
 import numpy as np
 import rdkit
-
-import os
 from scipy.spatial import distance_matrix
 
 from chemcaption.featurize.text import Prompt
-from chemcaption.molecules import Molecule
-
 from chemcaption.featurize.utils import find_indices
-
-from concurrent.futures import ProcessPoolExecutor, as_completed
+from chemcaption.molecules import Molecule
 
 # Implemented abstract and high-level classes
 
@@ -70,20 +68,24 @@ class AbstractFeaturizer(ABC):
             np.array: An array of features for each molecule instance.
         """
         with ProcessPoolExecutor() as executor:
-            futures = {executor.submit(self.featurize, molecule): molecule for molecule in molecules}
+            futures = {
+                executor.submit(self.featurize, molecule): molecule for molecule in molecules
+            }
 
         obtained_pairs = [(futures[future], future.result()) for future in as_completed(futures)]
 
         original_indices = [
-            indices for (mol, result) in obtained_pairs for indices in find_indices(mol, molecules)# for i in indices
+            indices
+            for (mol, result) in obtained_pairs
+            for indices in find_indices(mol, molecules)  # for i in indices
         ]
 
         final_triplets = sorted(
             [
                 (index, mol, result)
                 for (index, (mol, result)) in zip(original_indices, obtained_pairs)
-            ]
-            , key=lambda x: x[0]
+            ],
+            key=lambda x: x[0],
         )
         results = [x[-1] for x in final_triplets]
         return np.concatenate(results)
