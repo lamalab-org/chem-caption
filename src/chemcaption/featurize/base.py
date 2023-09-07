@@ -2,10 +2,8 @@
 
 """Abstract base class and wrappers for featurizers."""
 
-import os
 from abc import ABC, abstractmethod
 from concurrent.futures import ProcessPoolExecutor, as_completed
-
 from typing import Dict, Generator, List, Optional
 
 import numpy as np
@@ -24,8 +22,10 @@ __all__ = [
     "MultipleFeaturizer",  # Combines multiple featurizers.
     "Comparator",  # Class for comparing featurizer results amongst molecules.
     "MultipleComparator",  # Higher-level Comparator. Returns lower-level Comparator instances.
+    "PERIODIC_TABLE",  # Periodic table
 ]
 
+PERIODIC_TABLE = rdkit.Chem.GetPeriodicTable()  # Periodic table
 
 """Abstract class"""
 
@@ -35,21 +35,9 @@ class AbstractFeaturizer(ABC):
 
     def __init__(self):
         """Initialize class. Initialize periodic table."""
-        self.periodic_table = rdkit.Chem.GetPeriodicTable()
         self._label = []
         self.template = None
         self._names = []
-
-    def __getstate__(self):
-        properties = self.__dict__.copy()
-        del properties["periodic_table"]
-        return None
-
-    def __setstate__(self, state=None):
-        self.periodic_table = rdkit.Chem.GetPeriodicTable()
-        os.remove(os.path.join(os.getcwd(), "table.file"))
-
-        return None
 
     @abstractmethod
     def featurize(self, molecule: Molecule) -> np.array:
@@ -208,7 +196,6 @@ class AbstractComparator(ABC):
 
     def __init__(self):
         """Initialize class. Initialize periodic table."""
-        self.periodic_table = rdkit.Chem.GetPeriodicTable()
         self.template = None
         self._names = []
 

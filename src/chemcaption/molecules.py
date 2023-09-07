@@ -46,7 +46,6 @@ class MoleculeGraph(nx.Graph):
         super().__init__()
 
         self.molecule = molecule
-        self.periodic_table = rdkit.Chem.GetPeriodicTable()
         self.graph = self.molecule_to_graph()
         self._hash = None
 
@@ -67,9 +66,9 @@ class MoleculeGraph(nx.Graph):
             (
                 atom.GetIdx(),
                 {
-                    "atomic_mass": self.periodic_table.GetAtomicWeight(atom.GetAtomicNum()),
+                    "atomic_mass": PERIODIC_TABLE.GetAtomicWeight(atom.GetAtomicNum()),
                     "atomic_num": atom.GetAtomicNum(),
-                    "atom_symbol": self.periodic_table.GetElementSymbol(atom.GetAtomicNum()),
+                    "atom_symbol": PERIODIC_TABLE.GetElementSymbol(atom.GetAtomicNum()),
                 },
             )
             for atom in self.molecule.GetAtoms()

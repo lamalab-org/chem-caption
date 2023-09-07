@@ -40,7 +40,16 @@ def get_atom_symbols_and_positions(conf):
     return symbols, positions
 
 
-def find_indices(instance: Any, sequence: Union[List, Tuple]):
+def find_indices(instance: Any, sequence: Union[List, Tuple]) -> List[int]:
+    """Track indices of `instance` in `sequence`.
+
+    Args:
+        instance (Any): Object to track.
+        sequence (Union[List, Tuple]): Iterable in which `instance` index is to be tracked.
+
+    Returns:
+        indices (List): List if indices where `instance` is found in `sequence`.
+    """
     count = sequence.count(instance)
     first_index = 0
     indices = []
