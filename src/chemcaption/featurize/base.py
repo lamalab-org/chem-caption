@@ -7,6 +7,7 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 from typing import Dict, Generator, List, Optional
 
 import numpy as np
+import pandas as pd
 import rdkit
 from scipy.spatial import distance_matrix
 
@@ -329,6 +330,24 @@ class MultipleFeaturizer(AbstractFeaturizer):
         self._names = [featurizer._names for featurizer in featurizers]
 
         return self
+
+    def generate_data(self, molecules: List[Molecule]) -> pd.DataFrame:
+        """Convert generated feature array to DataFrame.
+
+        Args:
+            molecules (List[Molecule]): Collection of molecular instances.
+
+        Returns:
+            (pd.DataFrame) : DataFrame generated from feature array.
+        """
+        features = self.featurize_many(molecules=molecules)
+        columns = ["representation_system", "representation_string"] + self.feature_labels()
+        features_ = np.array(
+            [[mol.__repr__().split("Molecule")[0], mol.representation_string] for mol in molecules]
+        ).reshape((-1, 2))
+        features = np.concatenate([features_, features], axis=-1)
+
+        return pd.DataFrame(data=features, columns=columns)
 
     def implementors(self) -> List[str]:
         """
