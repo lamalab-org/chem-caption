@@ -232,7 +232,7 @@ class HydrogenAcceptorCountAdaptor(RDKitAdaptor):
         )
         self._names = [
             {
-                "noun": "number of hydrogen bond donors",
+                "noun": "number of hydrogen bond acceptors",
             }
         ]
 

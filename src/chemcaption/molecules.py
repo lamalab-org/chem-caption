@@ -21,6 +21,7 @@ __all__ = [
     "SELFIESMolecule",
     "InChIMolecule",
     "DISPATCH_MAP",
+    "PERIODIC_TABLE",
 ]
 
 
@@ -29,6 +30,7 @@ Molecule: TypeAlias = Union["SMILESMolecule", "InChIMolecule", "SELFIESMolecule"
 
 """Molecular type alias."""
 
+PERIODIC_TABLE = rdkit.Chem.GetPeriodicTable()  # Periodic table
 
 """Graph representation"""
 
