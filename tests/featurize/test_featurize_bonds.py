@@ -21,6 +21,7 @@ MOLECULE = DISPATCH_MAP[KIND]
 __all__ = [
     "test_rotable_bond_count_featurizer",
     "test_bond_distribution_featurizer",
+    "test_bond_type_featurizer",
 ]
 
 

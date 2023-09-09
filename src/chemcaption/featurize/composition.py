@@ -8,7 +8,7 @@ from typing import Dict, List, Optional, Union
 import numpy as np
 from rdkit.Chem import Descriptors
 
-from chemcaption.featurize.base import AbstractFeaturizer
+from chemcaption.featurize.base import PERIODIC_TABLE, AbstractFeaturizer
 from chemcaption.molecules import Molecule
 
 # Implemented composition-related featurizers
@@ -249,15 +249,15 @@ class ElementMassFeaturizer(AbstractFeaturizer):
         """
         if len(element) > 2:
             element_mass = [
-                self.periodic_table.GetAtomicWeight(atom.GetAtomicNum())
+                PERIODIC_TABLE.GetAtomicWeight(atom.GetAtomicNum())
                 for atom in molecule.get_atoms(True)
-                if self.periodic_table.GetElementName(atom.GetAtomicNum()) == element
+                if PERIODIC_TABLE.GetElementName(atom.GetAtomicNum()) == element
             ]
         else:
             element_mass = [
-                self.periodic_table.GetAtomicWeight(atom.GetAtomicNum())
+                PERIODIC_TABLE.GetAtomicWeight(atom.GetAtomicNum())
                 for atom in molecule.get_atoms(True)
-                if self.periodic_table.GetElementSymbol(atom.GetAtomicNum()) == element
+                if PERIODIC_TABLE.GetElementSymbol(atom.GetAtomicNum()) == element
             ]
         return sum(element_mass)
 
@@ -287,7 +287,7 @@ class ElementMassFeaturizer(AbstractFeaturizer):
             unique_elements (List[str]): Unique list of element_names or element_symbols in `molecule`.
         """
         unique_elements = [
-            self.periodic_table.GetElementName(atom.GetAtomicNum()).capitalize()
+            PERIODIC_TABLE.GetElementName(atom.GetAtomicNum()).capitalize()
             for atom in set(molecule.get_atoms(True))
         ]
         return unique_elements
@@ -398,8 +398,8 @@ class ElementCountFeaturizer(ElementMassFeaturizer):
                 atom
                 for atom in molecule.get_atoms()
                 if (
-                    self.periodic_table.GetElementName(atom.GetAtomicNum()) == element
-                    or self.periodic_table.GetElementSymbol(atom.GetAtomicNum()) == element
+                    PERIODIC_TABLE.GetElementName(atom.GetAtomicNum()) == element
+                    or PERIODIC_TABLE.GetElementSymbol(atom.GetAtomicNum()) == element
                 )
             ]
         )

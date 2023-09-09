@@ -7,7 +7,7 @@ from typing import Dict, List, Optional, Union
 import numpy as np
 import rdkit
 
-from chemcaption.featurize.base import AbstractFeaturizer
+from chemcaption.featurize.base import PERIODIC_TABLE, AbstractFeaturizer
 from chemcaption.featurize.text_utils import inspect_info
 from chemcaption.molecules import Molecule
 from chemcaption.presets import SMARTSPreset
@@ -283,7 +283,7 @@ class TopologyCountFeaturizer(AbstractFeaturizer):
             else atomic_number
         )
         elements = [
-            self.periodic_table.GetElementName(atomic_number).lower()
+            PERIODIC_TABLE.GetElementName(atomic_number).lower()
             for atomic_number in self.reference_atomic_numbers
         ]
         self.label = [f"num_{element}_environments" for element in elements]
