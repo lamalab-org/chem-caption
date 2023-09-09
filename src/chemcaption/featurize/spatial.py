@@ -32,17 +32,15 @@ __all__ = [
 class ThreeDimensionalFeaturizer(AbstractFeaturizer):
     """Abstract class for 3-D featurizers."""
 
-    def __init__(self, conformer_id: Optional[int] = -1, use_masses: bool = True, force=True):
+    def __init__(self, use_masses: bool = True, force=True):
         """Instantiate initialization scheme to be inherited.
 
         Args:
-            conformer_id (Optional[int]): Integer identifier for molecule conformation. Defaults to `-1`.
             use_masses (bool): Utilize elemental masses in eccentricity calculation. Defaults to `True`.
-            force (bool):
+            force (bool): Utilize force field calculations for energy minimization.
         """
         super().__init__()
 
-        self.conformer_id = conformer_id
         self.use_masses = use_masses
         self.force = force
 
@@ -103,15 +101,14 @@ class ThreeDimensionalFeaturizer(AbstractFeaturizer):
 class EccentricityFeaturizer(ThreeDimensionalFeaturizer):
     """Featurizer to return eccentricity value of a molecule."""
 
-    def __init__(self, conformer_id: Optional[int] = -1, use_masses: bool = True, force=True):
+    def __init__(self, use_masses: bool = True, force=True):
         """Initialize class object.
 
         Args:
-            conformer_id (Optional[int]): Integer identifier for molecule conformation. Defaults to `-1`.
             use_masses (bool): Utilize elemental masses in eccentricity calculation. Defaults to `True`.
-            force (bool):
+            force (bool): Utilize force field calculations for energy minimization.
         """
-        super().__init__(conformer_id=conformer_id, use_masses=use_masses, force=force)
+        super().__init__(use_masses=use_masses, force=force)
 
         self.label = ["eccentricity"]
 
@@ -158,15 +155,14 @@ class EccentricityFeaturizer(ThreeDimensionalFeaturizer):
 class AsphericityFeaturizer(ThreeDimensionalFeaturizer):
     """Featurizer to return number of asphericity value of a molecule."""
 
-    def __init__(self, conformer_id: Optional[int] = -1, use_masses: bool = True, force=True):
+    def __init__(self, use_masses: bool = True, force=True):
         """Initialize class object.
 
         Args:
-            conformer_id (Optional[int]): Integer identifier for molecule conformation. Defaults to `-1`.
             use_masses (bool): Utilize elemental masses in asphericity calculation. Defaults to `True`.
-            force (bool):
+            force (bool): Utilize force field calculations for energy minimization.
         """
-        super().__init__(conformer_id=conformer_id, use_masses=use_masses, force=force)
+        super().__init__(use_masses=use_masses, force=force)
 
         self.label = ["asphericity"]
 
@@ -213,15 +209,14 @@ class AsphericityFeaturizer(ThreeDimensionalFeaturizer):
 class InertialShapeFactorFeaturizer(ThreeDimensionalFeaturizer):
     """Featurizer to return inertia shape factor of a molecule."""
 
-    def __init__(self, conformer_id: Optional[int] = -1, use_masses: bool = True, force=True):
+    def __init__(self, use_masses: bool = True, force=True):
         """Initialize class object.
 
         Args:
-            conformer_id (Optional[int]): Integer identifier for molecule conformation. Defaults to `-1`.
-            use_masses (bool): Utilize elemental masses in calculation of inertia shape factor. Defaults to `True`.
-            force (bool):
+            use_masses (bool): Utilize elemental masses in eccentricity calculation. Defaults to `True`.
+            force (bool): Utilize force field calculations for energy minimization.
         """
-        super().__init__(conformer_id=conformer_id, use_masses=use_masses, force=force)
+        super().__init__(use_masses=use_masses, force=force)
 
         self.label = ["inertia_shape_factor"]
 
@@ -271,7 +266,6 @@ class NPRFeaturizer(ThreeDimensionalFeaturizer):
     def __init__(
         self,
         variant: Union[int, str] = "all",
-        conformer_id: Optional[int] = -1,
         use_masses: bool = True,
         force=True,
     ):
@@ -280,13 +274,12 @@ class NPRFeaturizer(ThreeDimensionalFeaturizer):
         Args:
             variant (int): Variant of normalized principal moments ratio (NPR) to calculate.
                 May take either value of `1` or `2`. Defaults to `1`.
-            conformer_id (Optional[int]): Integer identifier for molecule conformation. Defaults to `-1`.
             use_masses (bool): Utilize elemental masses in calculating the NPR. Defaults to `True`.
-            force (bool):
+            force (bool): Utilize force field calculations for energy minimization.
         """
         variant = variant if isinstance(variant, int) else variant.lower()
 
-        super().__init__(conformer_id=conformer_id, use_masses=use_masses, force=force)
+        super().__init__(use_masses=use_masses, force=force)
 
         if variant not in list(range(1, 3)) + ["all"]:
             raise ValueError("Argument `variant` must have a value of either `1`, `2`, or `all`.")
@@ -337,7 +330,7 @@ class NPRFeaturizer(ThreeDimensionalFeaturizer):
 
         npr_function = self.FUNCTION_MAP.get(self.variant, self._measure_all)
         npr_value = npr_function(
-            mol, confId=self.conformer_id, force=self.force, useAtomicMasses=self.use_masses
+            mol, force=self.force, useAtomicMasses=self.use_masses
         )
         return np.array([npr_value]).reshape(1, -1)
 
@@ -363,7 +356,6 @@ class PMIFeaturizer(ThreeDimensionalFeaturizer):
     def __init__(
         self,
         variant: Union[int, str] = "all",
-        conformer_id: Optional[int] = -1,
         use_masses: bool = True,
         force=True,
     ):
@@ -372,12 +364,11 @@ class PMIFeaturizer(ThreeDimensionalFeaturizer):
         Args:
            variant(int): Variant of principal moments of inertia (PMI) to calculate.
                 May take either value of `1`, `2`, or `3`. Defaults to `1`.
-            conformer_id (Optional[int]): Integer identifier for molecule conformation. Defaults to `-1`.
             use_masses (bool): Utilize elemental masses in calculating the PMI. Defaults to `True`.
-            force (bool):
+            force (bool): Utilize force field calculations for energy minimization.
         """
 
-        super().__init__(conformer_id=conformer_id, use_masses=use_masses, force=force)
+        super().__init__(use_masses=use_masses, force=force)
 
         variant = variant if isinstance(variant, int) else variant.lower()
 
@@ -428,7 +419,7 @@ class PMIFeaturizer(ThreeDimensionalFeaturizer):
         pmi_function = self.FUNCTION_MAP.get(self.variant, self._measure_all)
 
         pmi_value = pmi_function(
-            mol, confId=self.conformer_id, force=self.force, useAtomicMasses=self.use_masses
+            mol, force=self.force, useAtomicMasses=self.use_masses
         )
         return np.array([pmi_value]).reshape(1, -1)
 
