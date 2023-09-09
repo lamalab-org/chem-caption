@@ -57,7 +57,7 @@ class MolecularScraper:
             )
         )
         self.columns = ["smiles", "selfies"] + [self.column_map[k] for k in self.properties]
-        self.filename = "data/pubchem_response.csv"
+        self.filename = "data/legacy/pubchem_response.csv"
 
     def get_properties(self, substance: str) -> pd.DataFrame:
         """
@@ -81,7 +81,7 @@ class MolecularScraper:
             df (pd.DataFrame): Stacked DataFrame.
 
         Returns:
-            new_df (pd.DataFrame): Formmated DataFrame.
+            new_df (pd.DataFrame): Formatted DataFrame.
         """
         new_df = pd.DataFrame(columns=self.columns)
 
