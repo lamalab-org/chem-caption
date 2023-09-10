@@ -16,11 +16,12 @@ from typing_extensions import TypeAlias
 __all__ = [
     "Molecule",
     "MoleculeGraph",
-    "MoleculeBase",
+    "AbstractMolecule",
     "SMILESMolecule",
     "SELFIESMolecule",
     "InChIMolecule",
     "DISPATCH_MAP",
+    "PERIODIC_TABLE",
 ]
 
 
@@ -29,6 +30,7 @@ Molecule: TypeAlias = Union["SMILESMolecule", "InChIMolecule", "SELFIESMolecule"
 
 """Molecular type alias."""
 
+PERIODIC_TABLE = rdkit.Chem.GetPeriodicTable()  # Periodic table
 
 """Graph representation"""
 
@@ -46,7 +48,6 @@ class MoleculeGraph(nx.Graph):
         super().__init__()
 
         self.molecule = molecule
-        self.periodic_table = rdkit.Chem.GetPeriodicTable()
         self.graph = self.molecule_to_graph()
         self._hash = None
 
@@ -67,9 +68,9 @@ class MoleculeGraph(nx.Graph):
             (
                 atom.GetIdx(),
                 {
-                    "atomic_mass": self.periodic_table.GetAtomicWeight(atom.GetAtomicNum()),
+                    "atomic_mass": PERIODIC_TABLE.GetAtomicWeight(atom.GetAtomicNum()),
                     "atomic_num": atom.GetAtomicNum(),
-                    "atom_symbol": self.periodic_table.GetElementSymbol(atom.GetAtomicNum()),
+                    "atom_symbol": PERIODIC_TABLE.GetElementSymbol(atom.GetAtomicNum()),
                 },
             )
             for atom in self.molecule.GetAtoms()
@@ -106,7 +107,7 @@ class MoleculeGraph(nx.Graph):
 """Abstract class."""
 
 
-class MoleculeBase(ABC):
+class AbstractMolecule(ABC):
     """Base class for molecular representation."""
 
     def __init__(
@@ -142,6 +143,17 @@ class MoleculeBase(ABC):
             (str): String representation of molecule.
         """
         return f"{self.__class__.__name__}(REPRESENTATION = '{self.representation_string}')"
+
+    def get_representation(self):
+        """Return molecular representation type as string.
+
+        Args:
+            None.
+
+        Returns:
+            (str): Name of representation system.
+        """
+        return self.__repr__().split("Molecule")[0]
 
     def get_atoms(self, hydrogen=True, **kwargs):
         """
@@ -195,7 +207,7 @@ class MoleculeBase(ABC):
 """Lower level Molecule classes"""
 
 
-class SMILESMolecule(MoleculeBase):
+class SMILESMolecule(AbstractMolecule):
     """Lower level molecular representation for SMILES string representation."""
 
     def __init__(self, representation_string: str):
@@ -209,7 +221,7 @@ class SMILESMolecule(MoleculeBase):
         return Chem.MolFromSmiles(self.representation_string)
 
 
-class SELFIESMolecule(MoleculeBase):
+class SELFIESMolecule(AbstractMolecule):
     """Lower level molecular representation for SELFIES string representation."""
 
     def __init__(self, representation_string: str):
@@ -225,7 +237,7 @@ class SELFIESMolecule(MoleculeBase):
         return Chem.MolFromSmiles(self.smiles_rep)
 
 
-class InChIMolecule(MoleculeBase):
+class InChIMolecule(AbstractMolecule):
     """Lower level molecular representation for InChI string representation."""
 
     def __init__(self, representation_string: str):

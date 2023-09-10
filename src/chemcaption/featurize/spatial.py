@@ -5,11 +5,10 @@
 from typing import Dict, List, Optional, Union
 
 import numpy as np
+from givemeconformer.api import get_conformer
 from rdkit import Chem
 from rdkit.Chem import Descriptors3D
 from rdkit.Chem.AllChem import EmbedMultipleConfs
-
-from givemeconformer.api import get_conformer
 
 from chemcaption.featurize.base import AbstractFeaturizer
 from chemcaption.molecules import Molecule
@@ -125,7 +124,7 @@ class EccentricityFeaturizer(ThreeDimensionalFeaturizer):
         mol = molecule.rdkit_mol
 
         smiles = Chem.MolToSmiles(mol)
-        conformers = get_conformer(smiles=smiles, max_conformers = 2, num_samples=10)
+        conformers = get_conformer(smiles=smiles, max_conformers=2, num_samples=10)
 
         mol = molecule.reveal_hydrogens()
         for conf in conformers:
@@ -179,7 +178,7 @@ class AsphericityFeaturizer(ThreeDimensionalFeaturizer):
         mol = molecule.rdkit_mol
 
         smiles = Chem.MolToSmiles(mol)
-        conformers = get_conformer(smiles=smiles, max_conformers = 2, num_samples=10)
+        conformers = get_conformer(smiles=smiles, max_conformers=2, num_samples=10)
 
         mol = molecule.reveal_hydrogens()
         for conf in conformers:
@@ -233,7 +232,7 @@ class InertialShapeFactorFeaturizer(ThreeDimensionalFeaturizer):
         mol = molecule.rdkit_mol
 
         smiles = Chem.MolToSmiles(mol)
-        conformers = get_conformer(smiles=smiles, max_conformers = 2, num_samples=10)
+        conformers = get_conformer(smiles=smiles, max_conformers=2, num_samples=10)
 
         mol = molecule.reveal_hydrogens()
         for conf in conformers:
@@ -322,16 +321,14 @@ class NPRFeaturizer(ThreeDimensionalFeaturizer):
         mol = molecule.rdkit_mol
 
         smiles = Chem.MolToSmiles(mol)
-        conformers = get_conformer(smiles=smiles, max_conformers = 2, num_samples=10)
+        conformers = get_conformer(smiles=smiles, max_conformers=2, num_samples=10)
 
         mol = molecule.reveal_hydrogens()
         for conf in conformers:
             mol.AddConformer(conf)
 
         npr_function = self.FUNCTION_MAP.get(self.variant, self._measure_all)
-        npr_value = npr_function(
-            mol, force=self.force, useAtomicMasses=self.use_masses
-        )
+        npr_value = npr_function(mol, force=self.force, useAtomicMasses=self.use_masses)
         return np.array([npr_value]).reshape(1, -1)
 
     def implementors(self) -> List[str]:
@@ -410,7 +407,7 @@ class PMIFeaturizer(ThreeDimensionalFeaturizer):
         mol = molecule.rdkit_mol
 
         smiles = Chem.MolToSmiles(mol)
-        conformers = get_conformer(smiles=smiles, max_conformers = 2, num_samples=10)
+        conformers = get_conformer(smiles=smiles, max_conformers=2, num_samples=10)
 
         mol = molecule.reveal_hydrogens()
         for conf in conformers:
@@ -418,9 +415,7 @@ class PMIFeaturizer(ThreeDimensionalFeaturizer):
 
         pmi_function = self.FUNCTION_MAP.get(self.variant, self._measure_all)
 
-        pmi_value = pmi_function(
-            mol, force=self.force, useAtomicMasses=self.use_masses
-        )
+        pmi_value = pmi_function(mol, force=self.force, useAtomicMasses=self.use_masses)
         return np.array([pmi_value]).reshape(1, -1)
 
     def implementors(self) -> List[str]:

@@ -2,10 +2,9 @@
 
 """Script for generating test data."""
 
-from argparse import ArgumentParser
-
-import os
 import gc
+import os
+from argparse import ArgumentParser
 
 import pandas as pd
 from rdkit.Chem import Lipinski, rdMolDescriptors
@@ -19,7 +18,13 @@ from chemcaption.featurize.composition import (
 )
 from chemcaption.featurize.electronicity import ValenceElectronCountFeaturizer
 from chemcaption.featurize.rules import LipinskiViolationCountFeaturizer
-from chemcaption.featurize.spatial import NPRFeaturizer, PMIFeaturizer, AsphericityFeaturizer, EccentricityFeaturizer, InertialShapeFactorFeaturizer
+from chemcaption.featurize.spatial import (
+    AsphericityFeaturizer,
+    EccentricityFeaturizer,
+    InertialShapeFactorFeaturizer,
+    NPRFeaturizer,
+    PMIFeaturizer,
+)
 from chemcaption.featurize.substructure import IsomorphismFeaturizer, SMARTSFeaturizer
 from chemcaption.molecules import SMILESMolecule
 
@@ -33,6 +38,7 @@ def main(args):
     args = args.parse_args()
     persist_data(chunk_size=args.chunk_size)
     return
+
 
 def generate_info(string: str):
     """
@@ -149,32 +155,32 @@ def generate_info(string: str):
     values += counts
     values += count_ratios
 
-    print("Done 1!")
-
-    npr_values = npr_featurizer.featurize(molecule=mol).reshape((-1,)).tolist()
-    keys += npr_featurizer.feature_labels()
-    values += npr_values
-    print("Done 2!")
-
+    # print("Done 1!")
+    #
+    # npr_values = npr_featurizer.featurize(molecule=mol).reshape((-1,)).tolist()
+    # keys += npr_featurizer.feature_labels()
+    # values += npr_values
+    # print("Done 2!")
+    #
     # pmi_values = pmi_featurizer.featurize(molecule=mol).reshape((-1,)).tolist()
     # keys += pmi_featurizer.feature_labels()
     # values += pmi_values
     # print("Done 3!")
-
-    asphericity = asphericity_featurizer.featurize(molecule=mol).item()
-    print("Done 4!")
-    eccentricity = eccentricity_featurizer.featurize(molecule=mol).item()
-    print("Done 5!")
-    inertia = inertial_featurizer.featurize(molecule=mol).item()
-    print("Done 6!")
-
-    keys += asphericity_featurizer.feature_labels()
-    keys += eccentricity_featurizer.feature_labels()
-    keys += inertial_featurizer.feature_labels()
-
-    values += [asphericity]
-    values += [eccentricity]
-    values += [inertia]
+    #
+    # asphericity = asphericity_featurizer.featurize(molecule=mol).item()
+    # print("Done 4!")
+    # eccentricity = eccentricity_featurizer.featurize(molecule=mol).item()
+    # print("Done 5!")
+    # inertia = inertial_featurizer.featurize(molecule=mol).item()
+    # print("Done 6!")
+    #
+    # keys += asphericity_featurizer.feature_labels()
+    # keys += eccentricity_featurizer.feature_labels()
+    # keys += inertial_featurizer.feature_labels()
+    #
+    # values += [asphericity]
+    # values += [eccentricity]
+    # values += [inertia]
 
     print("Done 2!")
 
@@ -197,7 +203,16 @@ def persist_data(chunk_size=30):
     PROPERTY_SUBSET = PROPERTY_BANK.drop(
         labels=[col for col in PROPERTY_BANK.columns if col.__contains__("num")], axis=1
     )
-    NEW_PATH = os.path.join(BASE_DIR.replace("legacy", ""), "generated_data.csv")
+
+    PROPERTY_SUBSET = PROPERTY_SUBSET.rename(
+        columns={
+            "molar_mass": "molecular_mass",
+            "exact_mass": "exact_molecular_mass",
+            "monoisotopic_mass": "monoisotopic_molecular_mass",
+        }
+    )
+
+    NEW_PATH = os.path.join(BASE_DIR.replace("legacy", ""), "merged_pubchem_response.csv")
 
     if os.path.isfile(NEW_PATH):
         old_data = pd.read_csv(NEW_PATH)
@@ -205,26 +220,24 @@ def persist_data(chunk_size=30):
     else:
         start_index = 0
 
-    print(f"Starting from index {start_index} out of {len(smiles_list)}: {start_index}/{len(smiles_list)}...")
+    print(
+        f"Starting from index {start_index} out of {len(smiles_list)}: {start_index}/{len(smiles_list)}..."
+    )
 
-    chunks = [smiles_list[i: i+chunk_size] for i in range(start_index, len(smiles_list), chunk_size)]
+    chunks = [
+        smiles_list[i : i + chunk_size] for i in range(start_index, len(smiles_list), chunk_size)
+    ]
 
     running_size = start_index
 
     for chunk in chunks:
         data = [generate_info(string) for string in chunk]
-        data = pd.DataFrame(data=data).rename(
-            columns={
-                "molar_mass": "molecular_mass",
-                "exact_mass": "exact_molecular_mass",
-                "monoisotopic_mass": "monoisotopic_molecular_mass",
-            }
-        )
-        # data.to_csv("data/generated_data_.csv", index=False)
+        data = pd.DataFrame(data=data)
+        # data.to_csv("data/merged_pubchem_response_.csv", index=False)
 
         if os.path.isfile(NEW_PATH):
             old_data = pd.read_csv(NEW_PATH)
-            #columns = old_data.columns
+            # columns = old_data.columns
             data = pd.concat((old_data, data), axis=0)
 
         data.to_csv(NEW_PATH, index=False)
@@ -244,9 +257,8 @@ def persist_data(chunk_size=30):
 
     return
 
+
 if __name__ == "__main__":
     args = ArgumentParser()
-    args.add_argument(
-        "--chunk_size", default = 10, type=int
-    )
+    args.add_argument("--chunk_size", default=10, type=int)
     main(args)
