@@ -163,6 +163,8 @@ class BondTypeCountFeaturizer(AbstractFeaturizer):
         self.bond_map = None
         self._rdkit_bond_type_map()  # Generate bond type map
 
+        _ = self._parse_labels()
+
     def _count_bonds(self, molecule: Molecule) -> List[int]:
         """
         Count the frequency of appearance for bond_type in a molecule.
@@ -298,7 +300,7 @@ class BondTypeCountFeaturizer(AbstractFeaturizer):
         Return list of functionality implementors.
 
         Args:
-            None
+            None.
 
         Returns:
             List[str]: List of implementors.
@@ -325,9 +327,7 @@ class BondTypeProportionFeaturizer(BondTypeCountFeaturizer):
         self.prefix = ""
         self.suffix = "_bond_proportion"
 
-        self.label = [
-            self.prefix + f"{bond_type.lower()}" + self.suffix for bond_type in self.bond_type
-        ]
+        _ = self._parse_labels()
 
     def _get_bond_distribution(self, molecule: Molecule) -> List[float]:
         """Return a frequency distribution for the bonds present in a molecule.

@@ -5,16 +5,29 @@
 import gc
 import os
 from argparse import ArgumentParser
+from typing import List, Optional
 
 import pandas as pd
-from rdkit.Chem import Lipinski, rdMolDescriptors
 
+from chemcaption.featurize.adaptor import (
+    HydrogenAcceptorCountAdaptor,
+    HydrogenDonorCountAdaptor,
+    NonRotableBondCountAdaptor,
+    RotableBondCountAdaptor,
+    RotableBondDistributionAdaptor,
+    StrictNonRotableBondCountAdaptor,
+    StrictRotableBondCountAdaptor,
+    StrictRotableBondDistributionAdaptor,
+)
+from chemcaption.featurize.base import MultipleFeaturizer
+from chemcaption.featurize.bonds import BondTypeCountFeaturizer
 from chemcaption.featurize.composition import (
     AtomCountFeaturizer,
     ElementCountFeaturizer,
     ElementCountProportionFeaturizer,
     ElementMassFeaturizer,
     ElementMassProportionFeaturizer,
+    MoleculeStringFeaturizer,
 )
 from chemcaption.featurize.electronicity import ValenceElectronCountFeaturizer
 from chemcaption.featurize.rules import LipinskiViolationCountFeaturizer
@@ -25,7 +38,11 @@ from chemcaption.featurize.spatial import (
     NPRFeaturizer,
     PMIFeaturizer,
 )
-from chemcaption.featurize.substructure import IsomorphismFeaturizer, SMARTSFeaturizer
+from chemcaption.featurize.substructure import (
+    IsomorphismFeaturizer,
+    SMARTSFeaturizer,
+    TopologyCountFeaturizer,
+)
 from chemcaption.molecules import SMILESMolecule
 
 BASE_DIR = os.getcwd()
@@ -33,172 +50,124 @@ BASE_DIR = os.getcwd()
 MOLECULAR_BANK = pd.read_json(os.path.join(BASE_DIR, "molecular_bank.json"), orient="index")
 PROPERTY_BANK = pd.read_csv(os.path.join(BASE_DIR, "pubchem_response.csv"))
 
+# Implemented functionality
+
+__all__ = [
+    "main",
+    "generate_featurizer",
+    "persist_data"
+]
+
 
 def main(args):
     args = args.parse_args()
-    persist_data(chunk_size=args.chunk_size)
+    persist_data(chunk_size=args.chunk_size, delete=args.delete)
     return
 
 
-def generate_info(string: str):
+def generate_featurizer(preset: Optional[List[str]] = None) -> MultipleFeaturizer:
     """
-    Return generated profile for a SMILES string.
+    Return MultipleFeaturizer instance.
 
     Args:
-        string (str): SMILES string.
+        None.
 
     Returns:
-        (Dict[str, Union[int, float]]): Hash map from property name to property value of type int or float.
+        (MultipleFeaturizer): MultipleFeaturizer instance.
     """
-    keys = [
-        "smiles",
-        "weisfeiler_lehman_hash",
-        "num_atoms",
-        "num_bonds",
-        "num_rotable_bonds",
-        "num_non_rotable_bonds",
-        "num_rotable_bonds_strict",
-        "num_non_rotable_bonds_strict",
-        "rotable_proportion",
-        "non_rotable_proportion",
-        "rotable_proportion_strict",
-        "non_rotable_proportion_strict",
-        "num_hydrogen_bond_donors",
-        "num_hydrogen_bond_acceptors",
-        "num_valence_electrons",
-        "num_lipinski_violations",
-    ]
-    preset = [
-        "Carbon",
-        "Hydrogen",
-        "Nitrogen",
-        "Oxygen",
-        "Sulfur",
-        "Phosphorus",
-        "Fluorine",
-        "Chlorine",
-        "Bromine",
-        "Iodine",
+    if preset is None:
+        preset = [
+            "Carbon",
+            "Hydrogen",
+            "Nitrogen",
+            "Oxygen",
+            "Sulfur",
+            "Phosphorus",
+            "Fluorine",
+            "Chlorine",
+            "Bromine",
+            "Iodine",
+        ]
+
+    first_set = [
+        IsomorphismFeaturizer(),
+        AtomCountFeaturizer(),
+        ElementMassFeaturizer(preset=preset),
+        ElementMassProportionFeaturizer(preset=preset),
+        ElementCountFeaturizer(preset=preset),
+        ElementCountProportionFeaturizer(preset=preset),
     ]
 
-    mass_featurizer = ElementMassFeaturizer(preset=preset)
-    mass_ratio_featurizer = ElementMassProportionFeaturizer(preset=preset)
+    # second_set = [
+    #     BondTypeCountFeaturizer(bond_type="all"),
+    #     RotableBondCountAdaptor(),
+    #     NonRotableBondCountAdaptor(),
+    #     StrictRotableBondCountAdaptor(),
+    #     StrictNonRotableBondCountAdaptor(),
+    #     RotableBondDistributionAdaptor(),
+    #     StrictRotableBondDistributionAdaptor(),
+    # ]
 
-    count_featurizer = ElementCountFeaturizer(preset=preset)
-    count_ratio_featurizer = ElementCountProportionFeaturizer(preset=preset)
-    lipinski_featurizer = LipinskiViolationCountFeaturizer()
+    # third_set = [
+    #     HydrogenDonorCountAdaptor(),
+    #     HydrogenAcceptorCountAdaptor(),
+    #     ValenceElectronCountFeaturizer(),
+    #     LipinskiViolationCountFeaturizer(),
+    #     TopologyCountFeaturizer(),
+    #     NPRFeaturizer(variant="all"),
+    #     PMIFeaturizer(variant="all"),
+    # ]
+    #
+    # fourth_set = [
+    #     AsphericityFeaturizer(),
+    #     EccentricityFeaturizer(),
+    #     InertialShapeFactorFeaturizer(),
+    # ]
+    #
+    # fifth_set = [
+    #     SMARTSFeaturizer(names="rings", count=True),
+    #     SMARTSFeaturizer(names="rings", count=False),
+    #     SMARTSFeaturizer(names="organic", count=True),
+    #     SMARTSFeaturizer(names="organic", count=False),
+    #     SMARTSFeaturizer(names="heterocyclic", count=True),
+    #     SMARTSFeaturizer(names="heterocyclic", count=False),
+    # ]
+    #
+    # sixth_set = [
+    #     SMARTSFeaturizer(names="warheads", count=True),
+    #     SMARTSFeaturizer(names="warheads", count=False),
+    #     SMARTSFeaturizer(names="scaffolds", count=True),
+    #     SMARTSFeaturizer(names="scaffolds", count=False),
+    #     SMARTSFeaturizer(names="amino", count=True),
+    #     SMARTSFeaturizer(names="amino", count=False),
+    # ]
 
-    valence_featurizer = ValenceElectronCountFeaturizer()
-    isomorphism_featurizer = IsomorphismFeaturizer()
-
-    atom_count_featurizer = AtomCountFeaturizer()
-    npr_featurizer = NPRFeaturizer()
-    pmi_featurizer = PMIFeaturizer()
-    asphericity_featurizer = AsphericityFeaturizer()
-    eccentricity_featurizer = EccentricityFeaturizer()
-    inertial_featurizer = InertialShapeFactorFeaturizer()
-
-    mol = SMILESMolecule(string)
-
-    wl_hash = isomorphism_featurizer.featurize(mol).item()
-
-    atom_count = atom_count_featurizer.featurize(mol).item()
-
-    num_bonds = len(mol.rdkit_mol.GetBonds())
-
-    rotable_strict = rdMolDescriptors.CalcNumRotatableBonds(mol.rdkit_mol, strict=True)
-    rotable_non_strict = rdMolDescriptors.CalcNumRotatableBonds(mol.rdkit_mol, strict=False)
-
-    non_rotable_strict = num_bonds - rotable_strict
-    non_rotable_non_strict = num_bonds - rotable_non_strict
-
-    num_donors = Lipinski.NumHDonors(mol.rdkit_mol)
-    num_acceptors = Lipinski.NumHAcceptors(mol.rdkit_mol)
-
-    num_lipinski_violations = lipinski_featurizer.featurize(molecule=mol).item()
-
-    masses = mass_featurizer.featurize(molecule=mol).reshape((-1,)).tolist()
-    keys += mass_featurizer.feature_labels()
-
-    mass_ratios = mass_ratio_featurizer.featurize(molecule=mol).reshape((-1,)).tolist()
-    keys += mass_ratio_featurizer.feature_labels()
-
-    counts = count_featurizer.featurize(molecule=mol).reshape((-1,)).tolist()
-    keys += count_featurizer.feature_labels()
-
-    count_ratios = count_ratio_featurizer.featurize(molecule=mol).reshape((-1,)).tolist()
-    keys += count_ratio_featurizer.feature_labels()
-
-    valence_count = valence_featurizer.featurize(molecule=mol).item()
-
-    values = [
-        string,
-        wl_hash,
-        atom_count,
-        num_bonds,
-        rotable_non_strict,
-        non_rotable_non_strict,
-        rotable_strict,
-        non_rotable_strict,
-        rotable_non_strict / num_bonds,
-        non_rotable_non_strict / num_bonds,
-        rotable_strict / num_bonds,
-        non_rotable_strict / num_bonds,
-        num_donors,
-        num_acceptors,
-        valence_count,
-        num_lipinski_violations,
-    ]
-    values += masses
-    values += mass_ratios
-
-    values += counts
-    values += count_ratios
-
-    print("Done 1!")
-
-    npr_values = npr_featurizer.featurize(molecule=mol).reshape((-1,)).tolist()
-    keys += npr_featurizer.feature_labels()
-    values += npr_values
-    print("Done 2!")
-
-    pmi_values = pmi_featurizer.featurize(molecule=mol).reshape((-1,)).tolist()
-    keys += pmi_featurizer.feature_labels()
-    values += pmi_values
-    print("Done 3!")
-
-    asphericity = asphericity_featurizer.featurize(molecule=mol).item()
-    print("Done 4!")
-    eccentricity = eccentricity_featurizer.featurize(molecule=mol).item()
-    print("Done 5!")
-    inertia = inertial_featurizer.featurize(molecule=mol).item()
-    print("Done 6!")
-
-    keys += asphericity_featurizer.feature_labels()
-    keys += eccentricity_featurizer.feature_labels()
-    keys += inertial_featurizer.feature_labels()
-
-    values += [asphericity]
-    values += [eccentricity]
-    values += [inertia]
-
-    print("Done 2!")
-
-    for preset in ["rings", "organic", "heterocyclic", "warheads", "scaffolds", "amino"]:
-        for val in [True, False]:
-            smarts_featurizer = SMARTSFeaturizer(count=val, names=preset)
-            smarts_presence = smarts_featurizer.featurize(molecule=mol).reshape((-1,)).tolist()
-
-            keys += smarts_featurizer.feature_labels()
-            values += smarts_presence
+    featurizer = MultipleFeaturizer(
+        featurizers=[
+            MultipleFeaturizer(featurizers=first_set),
+            # MultipleFeaturizer(featurizers=second_set),
+            # MultipleFeaturizer(featurizers=third_set),
+            # MultipleFeaturizer(featurizers=fourth_set),
+            # MultipleFeaturizer(featurizers=fifth_set),
+            # MultipleFeaturizer(featurizers=sixth_set)
+        ]
+    )
 
     gc.collect()
 
-    return dict(zip(keys, values))
+    return featurizer
 
 
-def persist_data(chunk_size=30):
-    """Break data into chunks and persist."""
+def persist_data(chunk_size: int = 30, delete: bool = False) -> None:
+    """Break data into chunks and persist.
+
+    Args:
+        chunk_size (int): Size of chunks.
+        delete (bool): Delete previous version of file. Defaults to `False`.
+
+    Returns:
+        None.
+    """
     smiles_list = PROPERTY_BANK["smiles"]
     PROPERTY_SUBSET = PROPERTY_BANK.drop(
         labels=[col for col in PROPERTY_BANK.columns if col.__contains__("num")], axis=1
@@ -214,26 +183,41 @@ def persist_data(chunk_size=30):
 
     NEW_PATH = os.path.join(BASE_DIR.replace("legacy", ""), "merged_pubchem_response.csv")
 
+    # Delete previous data version if required
+    if delete:
+        if os.path.isfile(NEW_PATH):
+            os.remove(NEW_PATH)
+            print("Previous data bank deleted!")
+
     if os.path.isfile(NEW_PATH):
         old_data = pd.read_csv(NEW_PATH)
         start_index = len(old_data)
     else:
         start_index = 0
 
+    # End script run if all strings have been processed
+    if start_index >= len(smiles_list):
+        print(f"All SMILES strings processed!")
+        return
+
+    # If there are strings to process...
     print(
         f"Starting from index {start_index} out of {len(smiles_list)}: {start_index}/{len(smiles_list)}..."
     )
 
+    # Arrange SMILES strings into chunks
     chunks = [
         smiles_list[i : i + chunk_size] for i in range(start_index, len(smiles_list), chunk_size)
     ]
 
-    running_size = start_index
+    # Obtain MultipleFeaturizer instance
+    featurizer = generate_featurizer()
 
-    for chunk in chunks:
-        data = [generate_info(string) for string in chunk]
-        data = pd.DataFrame(data=data)
-        # data.to_csv("data/merged_pubchem_response_.csv", index=False)
+    running_size = start_index # Keep track of the count of all SMILES strings processed so far
+
+    for chunk in chunks: # Process string chunks
+        chunk = [SMILESMolecule(string) for string in chunk]
+        data = featurizer.generate_data(molecules=chunk, metadata=True)
 
         if os.path.isfile(NEW_PATH):
             old_data = pd.read_csv(NEW_PATH)
@@ -245,12 +229,25 @@ def persist_data(chunk_size=30):
 
         print(f"Persisted {running_size}/{len(smiles_list)} SMILES strings!\n")
 
+        try:
+            del data
+            del old_data
+        except:
+            pass
+
         gc.collect()
 
     print("All SMILES strings processed!\n")
 
     data = pd.read_csv(NEW_PATH)
-    NEW_DATA = pd.merge(left=PROPERTY_SUBSET, right=data, left_on="smiles", right_on="smiles")
+    NEW_DATA = pd.merge(
+        left=PROPERTY_SUBSET, right=data, left_on="smiles", right_on="representation_string"
+    )
+    # Drop duplicates and redundant columns
+    NEW_DATA.drop(labels=["representation_system", "representation_string"], axis=1, inplace=True)
+    NEW_DATA.drop_duplicates(inplace=True)
+
+    # Save to disk
     NEW_DATA.to_csv(NEW_PATH, index=False)
 
     print("Data persisted!\n")
@@ -261,4 +258,6 @@ def persist_data(chunk_size=30):
 if __name__ == "__main__":
     args = ArgumentParser()
     args.add_argument("--chunk_size", default=10, type=int)
+    args.add_argument("--delete", default=True, type=bool)
+
     main(args)
