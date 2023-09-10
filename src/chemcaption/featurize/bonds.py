@@ -15,7 +15,7 @@ from chemcaption.molecules import Molecule
 __all__ = [
     "RotableBondCountFeaturizer",
     "BondRotabilityFeaturizer",
-    "BondTypeFeaturizer",
+    "BondTypeCountFeaturizer",
     "BondTypeProportionFeaturizer",
 ]
 
@@ -134,7 +134,7 @@ class BondRotabilityFeaturizer(AbstractFeaturizer):
 """Featurizer for calculating number of molecule bond types."""
 
 
-class BondTypeFeaturizer(AbstractFeaturizer):
+class BondTypeCountFeaturizer(AbstractFeaturizer):
     """Featurizer for bond type count (or presence) extraction."""
 
     def __init__(self, count: bool = True, bond_type: Union[str, List[str]] = "all"):
@@ -309,7 +309,7 @@ class BondTypeFeaturizer(AbstractFeaturizer):
 """Featurizer for calculating proportion of molecule bond types."""
 
 
-class BondTypeProportionFeaturizer(BondTypeFeaturizer):
+class BondTypeProportionFeaturizer(BondTypeCountFeaturizer):
     """Featurizer for bond type proportion extraction."""
 
     def __init__(self, bond_type: Union[str, List[str]] = "all"):
