@@ -13,6 +13,7 @@ import rdkit
 from scipy.spatial import distance_matrix
 
 from chemcaption.featurize.text import Prompt
+from chemcaption.featurize.utils import apply_featurizer
 from chemcaption.molecules import Molecule
 
 # Implemented abstract and high-level classes
@@ -253,7 +254,10 @@ class MultipleFeaturizer(AbstractFeaturizer):
                 extracted from molecule.
                 `num_featurizers` is the number of featurizers passed to MultipleFeaturizer.
         """
-        features = [featurizer.featurize(molecule=molecule) for featurizer in self.featurizers]
+        featurizer_molecule_pairs = [(featurizer, molecule) for featurizer in self.featurizers]
+
+        with ProcessPoolExecutor() as executor:
+            features = list(executor.map(apply_featurizer, featurizer_molecule_pairs))
 
         return np.concatenate(features, axis=-1)
 
@@ -314,21 +318,29 @@ class MultipleFeaturizer(AbstractFeaturizer):
 
         return self
 
-    def generate_data(self, molecules: List[Molecule]) -> pd.DataFrame:
+    def generate_data(self, molecules: List[Molecule], metadata: bool = False) -> pd.DataFrame:
         """Convert generated feature array to DataFrame.
 
         Args:
             molecules (List[Molecule]): Collection of molecular instances.
+            metadata (bool): Include extra molecule information.
 
         Returns:
             (pd.DataFrame): DataFrame generated from feature array.
         """
         features = self.featurize_many(molecules=molecules)
-        columns = ["representation_system", "representation_string"] + self.feature_labels()
-        features_ = np.array(
-            [[mol.get_representation(), mol.representation_string] for mol in molecules]
-        ).reshape((-1, 2))
-        features = np.concatenate([features_, features], axis=-1)
+
+        if metadata:
+            extra_columns = ["representation_system", "representation_string"]
+            extra_features = np.array(
+                [[mol.get_representation(), mol.representation_string] for mol in molecules]
+            ).reshape((-1, 2))
+
+            features = np.concatenate([extra_features, features], axis=-1)
+        else:
+            extra_columns = []
+
+        columns = extra_columns + self.feature_labels()
 
         return pd.DataFrame(data=features, columns=columns)
 

@@ -291,7 +291,7 @@ class TopologyCountFeaturizer(AbstractFeaturizer):
         info = {"PRECISION": 3, "PROPERTY_VALUE": elements}
         info = inspect_info(info)
 
-        self._names[0]["noun"] = f"number of unique {info['PROPERTY_VALUE']} environments"
+        self._names[0]["noun"] = self._names[0]["noun"].format(info["PROPERTY_VALUE"])
 
         return
 
