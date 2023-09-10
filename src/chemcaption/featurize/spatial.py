@@ -131,7 +131,7 @@ class EccentricityFeaturizer(ThreeDimensionalFeaturizer):
             mol.AddConformer(conf)
 
         eccentricity_value = Descriptors3D.Eccentricity(
-            mol, confId=self.conformer_id, force=self.force, useAtomicMasses=self.use_masses
+            mol, force=self.force, useAtomicMasses=self.use_masses
         )
         return np.array([eccentricity_value]).reshape(1, -1)
 
@@ -185,7 +185,7 @@ class AsphericityFeaturizer(ThreeDimensionalFeaturizer):
             mol.AddConformer(conf)
 
         asphericity_value = Descriptors3D.Asphericity(
-            mol, confId=self.conformer_id, force=self.force, useAtomicMasses=self.use_masses
+            mol, force=self.force, useAtomicMasses=self.use_masses
         )
         return np.array([asphericity_value]).reshape(1, -1)
 
@@ -239,7 +239,7 @@ class InertialShapeFactorFeaturizer(ThreeDimensionalFeaturizer):
             mol.AddConformer(conf)
 
         asphericity_value = Descriptors3D.InertialShapeFactor(
-            mol, confId=self.conformer_id, force=self.force, useAtomicMasses=self.use_masses
+            mol, force=self.force, useAtomicMasses=self.use_masses
         )
         return np.array([asphericity_value]).reshape(1, -1)
 

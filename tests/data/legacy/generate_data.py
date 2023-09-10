@@ -155,32 +155,32 @@ def generate_info(string: str):
     values += counts
     values += count_ratios
 
-    # print("Done 1!")
-    #
-    # npr_values = npr_featurizer.featurize(molecule=mol).reshape((-1,)).tolist()
-    # keys += npr_featurizer.feature_labels()
-    # values += npr_values
-    # print("Done 2!")
-    #
-    # pmi_values = pmi_featurizer.featurize(molecule=mol).reshape((-1,)).tolist()
-    # keys += pmi_featurizer.feature_labels()
-    # values += pmi_values
-    # print("Done 3!")
-    #
-    # asphericity = asphericity_featurizer.featurize(molecule=mol).item()
-    # print("Done 4!")
-    # eccentricity = eccentricity_featurizer.featurize(molecule=mol).item()
-    # print("Done 5!")
-    # inertia = inertial_featurizer.featurize(molecule=mol).item()
-    # print("Done 6!")
-    #
-    # keys += asphericity_featurizer.feature_labels()
-    # keys += eccentricity_featurizer.feature_labels()
-    # keys += inertial_featurizer.feature_labels()
-    #
-    # values += [asphericity]
-    # values += [eccentricity]
-    # values += [inertia]
+    print("Done 1!")
+
+    npr_values = npr_featurizer.featurize(molecule=mol).reshape((-1,)).tolist()
+    keys += npr_featurizer.feature_labels()
+    values += npr_values
+    print("Done 2!")
+
+    pmi_values = pmi_featurizer.featurize(molecule=mol).reshape((-1,)).tolist()
+    keys += pmi_featurizer.feature_labels()
+    values += pmi_values
+    print("Done 3!")
+
+    asphericity = asphericity_featurizer.featurize(molecule=mol).item()
+    print("Done 4!")
+    eccentricity = eccentricity_featurizer.featurize(molecule=mol).item()
+    print("Done 5!")
+    inertia = inertial_featurizer.featurize(molecule=mol).item()
+    print("Done 6!")
+
+    keys += asphericity_featurizer.feature_labels()
+    keys += eccentricity_featurizer.feature_labels()
+    keys += inertial_featurizer.feature_labels()
+
+    values += [asphericity]
+    values += [eccentricity]
+    values += [inertia]
 
     print("Done 2!")
 
