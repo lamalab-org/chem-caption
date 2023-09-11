@@ -25,7 +25,7 @@ def join_list_elements(elements) -> str:
     if len(elements) == 1:
         return elements[0]
 
-    return ", ".join(elements[:-1]) + " and " + elements[-1]
+    return ", ".join(elements[:-1]) + ", and " + elements[-1]
 
 
 @lru_cache(maxsize=128)
