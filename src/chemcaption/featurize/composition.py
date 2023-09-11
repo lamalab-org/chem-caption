@@ -363,19 +363,12 @@ class ElementCountFeaturizer(ElementMassFeaturizer):
     def __init__(self, preset: Optional[List[str]] = None):
         """Initialize class."""
         super().__init__(preset=preset)
-        self.prefix = "num_"
-        self.suffix = "_atoms"
 
-        self.label = [self.prefix + element.lower() + self.suffix for element in self.preset]
+    def feature_labels(self) -> List[str]:
+        return ["num_" + element.lower() + "_atoms" for element in self.preset]
 
-        self.template = (
-            "What is the {PROPERTY_NAME} for the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
-        )
-        self._names = [
-            {
-                "noun": "number of atoms per element",
-            }
-        ]
+    def get_names(self):
+        return [{"noun": "atom count of " + join_list_elements(self.preset)}]
 
     def _get_atom_count(self, element: str, molecule: Molecule) -> int:
         """
@@ -495,6 +488,9 @@ class AtomCountFeaturizer(ElementCountFeaturizer):
                 "noun": "total number of atoms",
             }
         ]
+
+    def get_names(self):
+        return [{"noun": "total number of atoms"}]
 
     def feature_labels(self) -> List[str]:
         return ["num_atoms"]
