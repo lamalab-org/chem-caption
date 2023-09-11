@@ -2,13 +2,12 @@
 
 """Featurizers for chemical bond-related information."""
 
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Union
 
 import numpy as np
 from givemeconformer.api import get_conformer
 from rdkit import Chem
 from rdkit.Chem import Descriptors3D
-from rdkit.Chem.AllChem import EmbedMultipleConfs
 
 from chemcaption.featurize.base import AbstractFeaturizer
 from chemcaption.molecules import Molecule

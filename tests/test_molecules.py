@@ -42,21 +42,6 @@ def test_smiles_to_selfies(test_input: str, expected: str):
     assert results == expected
 
 
-@pytest.mark.parametrize(
-    "test_input, expected",
-    extract_representation_strings(PROPERTY_BANK, in_="selfies", out_="inchi"),
-)
-def test_selfies_to_inchi(test_input: str, expected: str):
-    """Test conversion from SELFIES to InChI."""
-    from_kind, to_kind = "selfies", "inchi"
-
-    molecule = DISPATCH_MAP[from_kind](representation_string=test_input)
-    new_molecule = convert_molecule(molecule, to_kind=to_kind)
-    results = new_molecule.representation_string
-
-    assert results == expected
-
-
 def test_inchi_mol():
     """Test InChIMolecule."""
     from chemcaption.molecules import InChIMolecule

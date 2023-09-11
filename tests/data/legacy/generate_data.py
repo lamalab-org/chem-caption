@@ -27,7 +27,6 @@ from chemcaption.featurize.composition import (
     ElementCountProportionFeaturizer,
     ElementMassFeaturizer,
     ElementMassProportionFeaturizer,
-    MoleculeStringFeaturizer,
 )
 from chemcaption.featurize.electronicity import ValenceElectronCountFeaturizer
 from chemcaption.featurize.rules import LipinskiViolationCountFeaturizer
@@ -52,11 +51,7 @@ PROPERTY_BANK = pd.read_csv(os.path.join(BASE_DIR, "pubchem_response.csv"))
 
 # Implemented functionality
 
-__all__ = [
-    "main",
-    "generate_featurizer",
-    "persist_data"
-]
+__all__ = ["main", "generate_featurizer", "persist_data"]
 
 
 def main(args):
@@ -213,9 +208,9 @@ def persist_data(chunk_size: int = 30, delete: bool = False) -> None:
     # Obtain MultipleFeaturizer instance
     featurizer = generate_featurizer()
 
-    running_size = start_index # Keep track of the count of all SMILES strings processed so far
+    running_size = start_index  # Keep track of the count of all SMILES strings processed so far
 
-    for chunk in chunks: # Process string chunks
+    for chunk in chunks:  # Process string chunks
         chunk = [SMILESMolecule(string) for string in chunk]
         data = featurizer.generate_data(molecules=chunk, metadata=True)
 

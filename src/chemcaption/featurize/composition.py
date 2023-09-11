@@ -14,7 +14,6 @@ from chemcaption.molecules import Molecule
 # Implemented composition-related featurizers
 
 __all__ = [
-    "MoleculeStringFeaturizer",
     "MolecularFormularFeaturizer",
     "MolecularMassFeaturizer",
     "MonoisotopicMolecularMassFeaturizer",
@@ -25,48 +24,6 @@ __all__ = [
     "AtomCountFeaturizer",
     "DegreeOfUnsaturationFeaturizer",
 ]
-
-
-class MoleculeStringFeaturizer(AbstractFeaturizer):
-    """Get the molecular string of a molecule."""
-
-    def __init__(self):
-        """Initialize class."""
-        super().__init__()
-
-        self.template = (
-            "What is the {PROPERTY_NAME} of the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
-        )
-        self._names = [
-            {
-                "noun": "molecular string",
-            }
-        ]
-        self.label = ["molecular_string"]
-
-    def featurize(self, molecule: Molecule) -> np.array:
-        """
-        Featurize single molecule instance. Get the molecular string of a molecule.
-
-        Args:
-            molecule (Molecule): Molecular representation.
-
-        Returns:
-            (str): Molecular string of `molecule`.
-        """
-        return np.array([molecule.representation_string]).reshape((1, 1))
-
-    def implementors(self) -> List[str]:
-        """
-        Return list of functionality implementors.
-
-        Args:
-            None.
-
-        Returns:
-            List[str]: List of implementors.
-        """
-        return ["Benedict Oshomah Emoekabu"]
 
 
 class MolecularFormularFeaturizer(AbstractFeaturizer):

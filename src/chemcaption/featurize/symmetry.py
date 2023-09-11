@@ -33,7 +33,9 @@ class RotationalSymmetryNumber(AbstractFeaturizer):
                 "noun": "rotational symmetry number",
             }
         ]
-        self.label = ["rotational_symmetry_number"]
+
+    def feature_labels(self) -> List[str]:
+        return ["rotational_symmetry_number"]
 
     def featurize(self, molecule: Molecule) -> np.array:
         """
@@ -80,7 +82,9 @@ class PointGroupFeaturizer(AbstractFeaturizer):
                 "noun": "point group",
             }
         ]
-        self.label = ["point_group"]
+
+    def feature_labels(self) -> List[str]:
+        return ["point_group"]
 
     # ToDo: consider if we want to continue
     # returning the point group as a string

@@ -20,6 +20,14 @@ __all__ = [
 ]
 
 
+def join_list_elements(elements) -> str:
+    """Join list elements into a string. First elements separated by comma, last element separated by `and`."""
+    if len(elements) == 1:
+        return elements[0]
+
+    return ", ".join(elements[:-1]) + " and " + elements[-1]
+
+
 @lru_cache(maxsize=128)
 def _rdkit_to_pymatgen(mol):
     c = get_conformer(Chem.MolToSmiles(mol))[0]
