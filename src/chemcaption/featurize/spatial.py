@@ -99,16 +99,19 @@ class ThreeDimensionalFeaturizer(AbstractFeaturizer):
 class EccentricityFeaturizer(ThreeDimensionalFeaturizer):
     """Featurizer to return eccentricity value of a molecule."""
 
-    def __init__(self, use_masses: bool = True, force=True):
+    def __init__(self, use_masses: bool = True, force=True, conformer_generation_kwargs=None):
         """Initialize class object.
 
         Args:
             use_masses (bool): Utilize elemental masses in eccentricity calculation. Defaults to `True`.
             force (bool): Utilize force field calculations for energy minimization.
+            conformer_generation_kwargs (dict): Keyword arguments for conformer generation.
         """
         super().__init__(use_masses=use_masses, force=force)
+        self._conf_gen_kwargs = conformer_generation_kwargs or {}
 
-        self.label = ["eccentricity"]
+    def feature_labels(self) -> List[str]:
+        return ["eccentricity"]
 
     def featurize(self, molecule: Molecule) -> np.array:
         """
@@ -123,7 +126,7 @@ class EccentricityFeaturizer(ThreeDimensionalFeaturizer):
         mol = molecule.rdkit_mol
 
         smiles = Chem.MolToSmiles(mol)
-        conformers = get_conformer(smiles=smiles, max_conformers=2, num_samples=10)
+        conformers = get_conformer(smiles=smiles, **self._conf_gen_kwargs)
 
         mol = molecule.reveal_hydrogens()
         for conf in conformers:
@@ -153,16 +156,19 @@ class EccentricityFeaturizer(ThreeDimensionalFeaturizer):
 class AsphericityFeaturizer(ThreeDimensionalFeaturizer):
     """Featurizer to return number of asphericity value of a molecule."""
 
-    def __init__(self, use_masses: bool = True, force=True):
+    def __init__(self, use_masses: bool = True, force=True, conformer_generation_kwargs=None):
         """Initialize class object.
 
         Args:
             use_masses (bool): Utilize elemental masses in asphericity calculation. Defaults to `True`.
             force (bool): Utilize force field calculations for energy minimization.
+            conformer_generation_kwargs (dict): Keyword arguments for conformer generation.
         """
         super().__init__(use_masses=use_masses, force=force)
+        self._conf_gen_kwargs = conformer_generation_kwargs or {}
 
-        self.label = ["asphericity"]
+    def feature_labels(self) -> List[str]:
+        return ["asphericity"]
 
     def featurize(self, molecule: Molecule) -> np.array:
         """
@@ -207,16 +213,19 @@ class AsphericityFeaturizer(ThreeDimensionalFeaturizer):
 class InertialShapeFactorFeaturizer(ThreeDimensionalFeaturizer):
     """Featurizer to return inertia shape factor of a molecule."""
 
-    def __init__(self, use_masses: bool = True, force=True):
+    def __init__(self, use_masses: bool = True, force=True, conformer_generation_kwargs=None):
         """Initialize class object.
 
         Args:
             use_masses (bool): Utilize elemental masses in eccentricity calculation. Defaults to `True`.
             force (bool): Utilize force field calculations for energy minimization.
+            conformer_generation_kwargs (dict): Keyword arguments for conformer generation.
         """
         super().__init__(use_masses=use_masses, force=force)
+        self._conf_gen_kwargs = conformer_generation_kwargs or {}
 
-        self.label = ["inertia_shape_factor"]
+    def feature_labels(self) -> List[str]:
+        return ["inertia_shape_factor"]
 
     def featurize(self, molecule: Molecule) -> np.array:
         """
@@ -263,9 +272,10 @@ class NPRFeaturizer(ThreeDimensionalFeaturizer):
 
     def __init__(
         self,
-        variant: Union[int, str] = "all",
+        variant: Union[int, str] = "all",  # today make iterable
         use_masses: bool = True,
         force=True,
+        conformer_generation_kwargs=None,
     ):
         """Initialize class object.
 
@@ -274,10 +284,12 @@ class NPRFeaturizer(ThreeDimensionalFeaturizer):
                 May take either value of `1` or `2`. Defaults to `1`.
             use_masses (bool): Utilize elemental masses in calculating the NPR. Defaults to `True`.
             force (bool): Utilize force field calculations for energy minimization.
+            conformer_generation_kwargs (dict): Keyword arguments for conformer generation.
         """
         variant = variant if isinstance(variant, int) else variant.lower()
 
         super().__init__(use_masses=use_masses, force=force)
+        self._conf_gen_kwargs = conformer_generation_kwargs or {}
 
         if variant not in list(range(1, 3)) + ["all"]:
             raise ValueError("Argument `variant` must have a value of either `1`, `2`, or `all`.")
@@ -354,6 +366,7 @@ class PMIFeaturizer(ThreeDimensionalFeaturizer):
         variant: Union[int, str] = "all",
         use_masses: bool = True,
         force=True,
+        conformer_generation_kwargs=None,
     ):
         """Initialize class object.
 
@@ -362,6 +375,7 @@ class PMIFeaturizer(ThreeDimensionalFeaturizer):
                 May take either value of `1`, `2`, or `3`. Defaults to `1`.
             use_masses (bool): Utilize elemental masses in calculating the PMI. Defaults to `True`.
             force (bool): Utilize force field calculations for energy minimization.
+            conformer_generation_kwargs (dict): Keyword arguments for conformer generation.
         """
 
         super().__init__(use_masses=use_masses, force=force)
@@ -374,6 +388,8 @@ class PMIFeaturizer(ThreeDimensionalFeaturizer):
         self.variant = variant
 
         self.FUNCTION_MAP = {1: Descriptors3D.PMI1, 2: Descriptors3D.PMI2, 3: Descriptors3D.PMI3}
+
+        self._conf_gen_kwargs = conformer_generation_kwargs or {}
 
         self._parse_labels()
 
