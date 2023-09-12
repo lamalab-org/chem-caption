@@ -50,7 +50,7 @@ class SMARTSFeaturizer(AbstractFeaturizer):
         self.constraint = (
             "Constraint: return a list of integers."
             if self.count
-            else "Constrain: return a list of 1s and 0s if the pattern is present or not."
+            else "Constraint: return a list of 1s and 0s if the pattern is present or not."
         )
 
         self.prompt_template = "{PROPERTY_NAME} in the molecule with {REPR_SYSTEM} {REPR_STRING}?"
@@ -68,7 +68,7 @@ class SMARTSFeaturizer(AbstractFeaturizer):
             name = "Question: What is the count of " + join_list_elements(self.smart_names)
 
         else:
-            if len(self.names) == 1:
+            if len(self.smart_names) == 1:
                 name = "Question: Is " + join_list_elements(self.smart_names)
             else:
                 name = "Question: Are " + join_list_elements(self.smart_names)
