@@ -6,11 +6,14 @@ from typing import Dict, List, Optional, Union
 
 import numpy as np
 import rdkit
+from rdkit.Chem import GetPeriodicTable, PeriodicTable
+
 
 from chemcaption.featurize.base import PERIODIC_TABLE, AbstractFeaturizer
 from chemcaption.featurize.text_utils import inspect_info
 from chemcaption.molecules import Molecule
 from chemcaption.presets import SMARTSPreset
+from chemcaption.featurize.utils import join_list_elements
 
 # Implemented molecular structure- and substructure-related featurizers
 
@@ -240,56 +243,39 @@ class IsomorphismFeaturizer(AbstractFeaturizer):
 class TopologyCountFeaturizer(AbstractFeaturizer):
     """Featurizer to return number of unique `element` environments in a molecule."""
 
-    def __init__(self, reference_atomic_numbers: Union[int, List[int]] = 6):
+    def __init__(self, reference_atomic_numbers: List[int]):
         """Initialize class object.
 
         Args:
-            reference_atomic_numbers (Union[int, List[int]]): Atomic number for element of interest.
-                Can be either an integer or a list of integers. Defaults to `6` (Carbon).
+            reference_atomic_numbers (List[int]): Atomic number for element of interest.
         """
         super().__init__()
-
-        self._reference_atomic_numbers = None
         self.reference_atomic_numbers = reference_atomic_numbers
 
-    @property
-    def reference_atomic_numbers(self):
-        """Getter for atomic number of `element` of interest.
-
-        Returns:
-            atomic_number (int): Atomic number for `element` of interest.
-        """
-        return self._reference_atomic_numbers
-
-    @reference_atomic_numbers.setter
-    def reference_atomic_numbers(self, atomic_number: Union[int, List[int]]):
-        """Setter of atomic numbers for `elements` of interest.
-
-        Args:
-            atomic_number (Union[int, List[int]]): Atomic numbers for `elements` of interest.
-
-        Returns:
-            None.
-        """
-        self._reference_atomic_numbers = (
-            [
-                atomic_number,
-            ]
-            if not isinstance(atomic_number, (list, tuple))
-            else atomic_number
-        )
-        elements = [
-            PERIODIC_TABLE.GetElementName(atomic_number).lower()
+    def feature_labels(self) -> List[str]:
+        return [
+            "topology_count_" + str(atomic_number)
             for atomic_number in self.reference_atomic_numbers
         ]
-        self.label = [f"num_{element}_environments" for element in elements]
 
-        info = {"PRECISION": 3, "PROPERTY_VALUE": elements}
-        info = inspect_info(info)
+    def get_names(self) -> List[Dict[str, str]]:
+        # map the numbers to names
+        periodic_table = GetPeriodicTable()
+        names = [
+            PeriodicTable.GetElementSymbol(periodic_table, atomic_number)
+            for atomic_number in self.reference_atomic_numbers
+        ]
+        return [{"noun": f"topologically unique environments of {join_list_elements(names)}"}]
 
-        self._names[0]["noun"] = self._names[0]["noun"].format(info["PROPERTY_VALUE"])
-
-        return
+    @classmethod
+    def from_presets(cls, preset: str):
+        if preset == "organic":
+            # Use C, H, N, O, P, S, F, Cl, Br, I
+            return cls(reference_atomic_numbers=[6, 1, 7, 8, 15, 16, 9, 17, 35, 53])
+        elif preset == "carbon":
+            return cls(reference_atomic_numbers=[6])
+        elif preset == "nitrogen":
+            return cls(reference_atomic_numbers=[7])
 
     def featurize(self, molecule: Molecule) -> np.array:
         """
