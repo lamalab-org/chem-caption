@@ -1397,23 +1397,25 @@ ORGANIC = {
 """Preset map."""
 
 
-ALLSMART_NAMES = [
+ALLSMART_NAMES = (
     AMINO_PROTECTORS["names"]
     + RINGS["names"]
     + HETEROCYCLIC["names"]
     + SCAFFOLDS["names"]
     + WARHEADS["names"]
     + ORGANIC["names"]
-]
+)
 
-ALLSMART_SMARTS = [
+
+ALLSMART_SMARTS = (
     AMINO_PROTECTORS["smarts"]
     + RINGS["smarts"]
     + HETEROCYCLIC["smarts"]
     + SCAFFOLDS["smarts"]
     + WARHEADS["smarts"]
     + ORGANIC["smarts"]
-]
+)
+
 
 ALL_SMARTS = dict(zip(ALLSMART_NAMES, ALLSMART_SMARTS))
 

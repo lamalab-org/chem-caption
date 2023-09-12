@@ -6,14 +6,14 @@ import numpy as np
 
 def test_topology_count_featurizer():
     molecule = SMILESMolecule("C1=CC=CC=C1")
-    featurizer = TopologyCountFeaturizer.from_presets("carbon")
+    featurizer = TopologyCountFeaturizer.from_preset("carbon")
     results = featurizer.featurize(molecule)
     assert len(results) == 1
     assert len(results[0]) == len(featurizer.feature_labels())
     text = featurizer.text_featurize(molecule)
     assert isinstance(text, Prompt)
 
-    featurizer = TopologyCountFeaturizer.from_presets("organic")
+    featurizer = TopologyCountFeaturizer.from_preset("organic")
     results = featurizer.featurize(molecule)
     assert len(results) == 1
     assert len(results[0]) == len(featurizer.feature_labels())
@@ -28,3 +28,12 @@ def test_topology_count_featurizer():
     )
 
     assert text.to_dict()["filled_completion"] == "Answer: 1, 1, 0, 0, 0, 0, 0, 0, 0, and 0"
+
+
+def test_smarts_featurizer():
+    molecule = SMILESMolecule("C1=CC=CC=C1")
+    featurizer = SMARTSFeaturizer.from_preset("organic")
+    results = featurizer.featurize(molecule)
+
+    assert len(results) == 1
+    assert len(results[0]) == len(featurizer.feature_labels())

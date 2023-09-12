@@ -12,7 +12,7 @@ from rdkit.Chem import GetPeriodicTable, PeriodicTable
 from chemcaption.featurize.base import AbstractFeaturizer
 from chemcaption.molecules import Molecule
 from chemcaption.featurize.utils import join_list_elements
-
+from chemcaption.presets import SMARTS_MAP
 
 __all__ = ["SMARTSFeaturizer", "IsomorphismFeaturizer", "TopologyCountFeaturizer"]
 
@@ -44,12 +44,12 @@ class SMARTSFeaturizer(AbstractFeaturizer):
         """
         super().__init__()
 
-        self.names = names
+        self.names = names if names is not None else smarts
         self.smarts = smarts
         self.count = count
 
     @classmethod
-    def from_presets(cls, preset: str):
+    def from_preset(cls, preset: str):
         """
         Args:
             preset (str): Preset name of the substructures
@@ -63,7 +63,13 @@ class SMARTSFeaturizer(AbstractFeaturizer):
                 - `organic`.
                 - `all`
         """
-        ...
+        if not preset in SMARTS_MAP:
+            raise ValueError(
+                f"Invalid preset name '{preset}'. "
+                f"Valid preset names are: {', '.join(SMARTS_MAP.keys())}."
+            )
+        smarts_set = SMARTS_MAP[preset]
+        return cls(smarts=smarts_set["smarts"], names=smarts_set["names"], count=True)
 
     def featurize(self, molecule: Molecule) -> np.array:
         """
@@ -102,7 +108,8 @@ class SMARTSFeaturizer(AbstractFeaturizer):
         Returns:
             (List[str]): List of names of extracted features.
         """
-        return list(map(lambda x: "".join([("_" if c in "[]()-" else c) for c in x]), self.label))
+        suffix = "_count" if self.count else "_presence"
+        return [name + suffix for name in self.names]
 
     def implementors(self) -> List[str]:
         """
@@ -194,7 +201,7 @@ class TopologyCountFeaturizer(AbstractFeaturizer):
         ]
 
     @classmethod
-    def from_presets(cls, preset: str):
+    def from_preset(cls, preset: str):
         if preset == "organic":
             # Use C, H, N, O, P, S, F, Cl, Br, I
             return cls(reference_atomic_numbers=[6, 1, 7, 8, 15, 16, 9, 17, 35, 53])
