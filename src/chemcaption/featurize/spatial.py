@@ -5,12 +5,13 @@
 from typing import Dict, List, Union
 
 import numpy as np
-from givemeconformer.api import get_conformer
+from givemeconformer.api import _get_conformer
 from rdkit import Chem
 from rdkit.Chem import Descriptors3D
 
 from chemcaption.featurize.base import AbstractFeaturizer
 from chemcaption.molecules import Molecule
+from functools import lru_cache
 
 # Implemented bond-related featurizers
 
@@ -27,15 +28,24 @@ __all__ = [
 """Abstract Featurizer for extracting 3D features from molecule."""
 
 
+@lru_cache(maxsize=None)
+def cached_conformer(smiles, kwargs):
+    mol, conformers = _get_conformer(smiles=smiles, **kwargs)
+    for conf in conformers[:1]:
+        mol.AddConformer(conf)
+    return mol
+
+
 class ThreeDimensionalFeaturizer(AbstractFeaturizer):
     """Abstract class for 3-D featurizers."""
 
-    def __init__(self, use_masses: bool = True, force=True):
+    def __init__(self, use_masses: bool = True, force=True, conformer_generation_kwargs=None):
         """Instantiate initialization scheme to be inherited.
 
         Args:
             use_masses (bool): Utilize elemental masses in eccentricity calculation. Defaults to `True`.
             force (bool): Utilize force field calculations for energy minimization.
+            conformer_generation_kwargs (dict): Keyword arguments for conformer generation.
         """
         super().__init__()
 
@@ -43,6 +53,11 @@ class ThreeDimensionalFeaturizer(AbstractFeaturizer):
         self.force = force
 
         self.FUNCTION_MAP = None
+        self._conf_gen_kwargs = conformer_generation_kwargs or {}
+
+    def _get_conformer(self, mol):
+        smiles = Chem.MolToSmiles(mol)
+        return cached_conformer(smiles, self._conf_gen_kwargs)
 
     def _base_rdkit_utility_keys(self) -> List[str]:
         """Returns sorted identifiers for `rdkit` functions in function map.
@@ -93,9 +108,6 @@ class ThreeDimensionalFeaturizer(AbstractFeaturizer):
         return ["Benedict Oshomah Emoekabu"]
 
 
-"""Abstract Featurizer for extracting eccentricity property from molecule."""
-
-
 class EccentricityFeaturizer(ThreeDimensionalFeaturizer):
     """Featurizer to return eccentricity value of a molecule."""
 
@@ -107,8 +119,11 @@ class EccentricityFeaturizer(ThreeDimensionalFeaturizer):
             force (bool): Utilize force field calculations for energy minimization.
             conformer_generation_kwargs (dict): Keyword arguments for conformer generation.
         """
-        super().__init__(use_masses=use_masses, force=force)
-        self._conf_gen_kwargs = conformer_generation_kwargs or {}
+        super().__init__(
+            use_masses=use_masses,
+            force=force,
+            conformer_generation_kwargs=conformer_generation_kwargs,
+        )
 
     def feature_labels(self) -> List[str]:
         return ["eccentricity"]
@@ -124,13 +139,7 @@ class EccentricityFeaturizer(ThreeDimensionalFeaturizer):
             (np.array): Array containing eccentricity value.
         """
         mol = molecule.rdkit_mol
-
-        smiles = Chem.MolToSmiles(mol)
-        conformers = get_conformer(smiles=smiles, **self._conf_gen_kwargs)
-
-        mol = molecule.reveal_hydrogens()
-        for conf in conformers:
-            mol.AddConformer(conf)
+        mol = self._get_conformer(mol)
 
         eccentricity_value = Descriptors3D.Eccentricity(
             mol, force=self.force, useAtomicMasses=self.use_masses
@@ -150,9 +159,6 @@ class EccentricityFeaturizer(ThreeDimensionalFeaturizer):
         return ["Benedict Oshomah Emoekabu"]
 
 
-"""Abstract Featurizer for extracting asphericity property from molecule."""
-
-
 class AsphericityFeaturizer(ThreeDimensionalFeaturizer):
     """Featurizer to return number of asphericity value of a molecule."""
 
@@ -164,8 +170,11 @@ class AsphericityFeaturizer(ThreeDimensionalFeaturizer):
             force (bool): Utilize force field calculations for energy minimization.
             conformer_generation_kwargs (dict): Keyword arguments for conformer generation.
         """
-        super().__init__(use_masses=use_masses, force=force)
-        self._conf_gen_kwargs = conformer_generation_kwargs or {}
+        super().__init__(
+            use_masses=use_masses,
+            force=force,
+            conformer_generation_kwargs=conformer_generation_kwargs,
+        )
 
     def feature_labels(self) -> List[str]:
         return ["asphericity"]
@@ -180,14 +189,9 @@ class AsphericityFeaturizer(ThreeDimensionalFeaturizer):
         Returns:
             (np.array): Array containing asphericity value.
         """
-        mol = molecule.rdkit_mol
-
-        smiles = Chem.MolToSmiles(mol)
-        conformers = get_conformer(smiles=smiles, max_conformers=2, num_samples=10)
-
         mol = molecule.reveal_hydrogens()
-        for conf in conformers:
-            mol.AddConformer(conf)
+
+        mol = self._get_conformer(mol)
 
         asphericity_value = Descriptors3D.Asphericity(
             mol, force=self.force, useAtomicMasses=self.use_masses
@@ -207,9 +211,6 @@ class AsphericityFeaturizer(ThreeDimensionalFeaturizer):
         return ["Benedict Oshomah Emoekabu"]
 
 
-"""Abstract Featurizer for extracting asphericity property from molecule."""
-
-
 class InertialShapeFactorFeaturizer(ThreeDimensionalFeaturizer):
     """Featurizer to return inertia shape factor of a molecule."""
 
@@ -221,7 +222,11 @@ class InertialShapeFactorFeaturizer(ThreeDimensionalFeaturizer):
             force (bool): Utilize force field calculations for energy minimization.
             conformer_generation_kwargs (dict): Keyword arguments for conformer generation.
         """
-        super().__init__(use_masses=use_masses, force=force)
+        super().__init__(
+            use_masses=use_masses,
+            force=force,
+            conformer_generation_kwargs=conformer_generation_kwargs,
+        )
         self._conf_gen_kwargs = conformer_generation_kwargs or {}
 
     def feature_labels(self) -> List[str]:
@@ -239,12 +244,7 @@ class InertialShapeFactorFeaturizer(ThreeDimensionalFeaturizer):
         """
         mol = molecule.rdkit_mol
 
-        smiles = Chem.MolToSmiles(mol)
-        conformers = get_conformer(smiles=smiles, max_conformers=2, num_samples=10)
-
-        mol = molecule.reveal_hydrogens()
-        for conf in conformers:
-            mol.AddConformer(conf)
+        mol = self._get_conformer(mol)
 
         asphericity_value = Descriptors3D.InertialShapeFactor(
             mol, force=self.force, useAtomicMasses=self.use_masses
@@ -262,9 +262,6 @@ class InertialShapeFactorFeaturizer(ThreeDimensionalFeaturizer):
             List[str]: List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]
-
-
-"""Abstract Featurizer for extracting Normalized principal moments ratio (NPR) from molecule."""
 
 
 class NPRFeaturizer(ThreeDimensionalFeaturizer):
@@ -288,8 +285,11 @@ class NPRFeaturizer(ThreeDimensionalFeaturizer):
         """
         variant = variant if isinstance(variant, int) else variant.lower()
 
-        super().__init__(use_masses=use_masses, force=force)
-        self._conf_gen_kwargs = conformer_generation_kwargs or {}
+        super().__init__(
+            use_masses=use_masses,
+            force=force,
+            conformer_generation_kwargs=conformer_generation_kwargs,
+        )
 
         if variant not in list(range(1, 3)) + ["all"]:
             raise ValueError("Argument `variant` must have a value of either `1`, `2`, or `all`.")
@@ -331,12 +331,7 @@ class NPRFeaturizer(ThreeDimensionalFeaturizer):
         """
         mol = molecule.rdkit_mol
 
-        smiles = Chem.MolToSmiles(mol)
-        conformers = get_conformer(smiles=smiles, max_conformers=2, num_samples=10)
-
-        mol = molecule.reveal_hydrogens()
-        for conf in conformers:
-            mol.AddConformer(conf)
+        mol = self._get_conformer(mol)
 
         npr_function = self.FUNCTION_MAP.get(self.variant, self._measure_all)
         npr_value = npr_function(mol, force=self.force, useAtomicMasses=self.use_masses)
@@ -353,9 +348,6 @@ class NPRFeaturizer(ThreeDimensionalFeaturizer):
             List[str]: List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]
-
-
-"""Abstract Featurizer for extracting principal moments of inertia (PMI) from molecule."""
 
 
 class PMIFeaturizer(ThreeDimensionalFeaturizer):
@@ -378,7 +370,11 @@ class PMIFeaturizer(ThreeDimensionalFeaturizer):
             conformer_generation_kwargs (dict): Keyword arguments for conformer generation.
         """
 
-        super().__init__(use_masses=use_masses, force=force)
+        super().__init__(
+            use_masses=use_masses,
+            force=force,
+            conformer_generation_kwargs=conformer_generation_kwargs,
+        )
 
         variant = variant if isinstance(variant, int) else variant.lower()
 
@@ -388,8 +384,6 @@ class PMIFeaturizer(ThreeDimensionalFeaturizer):
         self.variant = variant
 
         self.FUNCTION_MAP = {1: Descriptors3D.PMI1, 2: Descriptors3D.PMI2, 3: Descriptors3D.PMI3}
-
-        self._conf_gen_kwargs = conformer_generation_kwargs or {}
 
         self._parse_labels()
 
@@ -421,12 +415,7 @@ class PMIFeaturizer(ThreeDimensionalFeaturizer):
         """
         mol = molecule.rdkit_mol
 
-        smiles = Chem.MolToSmiles(mol)
-        conformers = get_conformer(smiles=smiles, max_conformers=2, num_samples=10)
-
-        mol = molecule.reveal_hydrogens()
-        for conf in conformers:
-            mol.AddConformer(conf)
+        mol = self._get_conformer(mol)
 
         pmi_function = self.FUNCTION_MAP.get(self.variant, self._measure_all)
 
