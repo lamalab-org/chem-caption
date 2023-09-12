@@ -19,3 +19,6 @@ def test_multiple_featurizer():
     results = featurizer.featurize(smiles)
     assert len(results[0]) == 2
     assert len(results[0]) == len(featurizer.feature_labels())
+
+    text = featurizer.text_featurize(smiles)
+    assert len(text)
