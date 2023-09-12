@@ -131,6 +131,8 @@ class EccentricityFeaturizer(ThreeDimensionalFeaturizer):
             conformer_generation_kwargs=conformer_generation_kwargs,
         )
 
+        self._names = [{"noun": "eccentricity"}]
+
     def feature_labels(self) -> List[str]:
         return ["eccentricity"]
 
@@ -182,6 +184,8 @@ class AsphericityFeaturizer(ThreeDimensionalFeaturizer):
             conformer_generation_kwargs=conformer_generation_kwargs,
         )
 
+        self._names = [{"noun": "asphericity"}]
+
     def feature_labels(self) -> List[str]:
         return ["asphericity"]
 
@@ -218,7 +222,7 @@ class AsphericityFeaturizer(ThreeDimensionalFeaturizer):
 
 
 class InertialShapeFactorFeaturizer(ThreeDimensionalFeaturizer):
-    """Featurizer to return inertia shape factor of a molecule."""
+    """Featurizer to return inertial shape factor of a molecule."""
 
     def __init__(self, use_masses: bool = True, force=True, conformer_generation_kwargs=None):
         """Initialize class object.
@@ -233,10 +237,11 @@ class InertialShapeFactorFeaturizer(ThreeDimensionalFeaturizer):
             force=force,
             conformer_generation_kwargs=conformer_generation_kwargs,
         )
-        self._conf_gen_kwargs = conformer_generation_kwargs or {}
+
+        self._names = [{"noun": "inertial shape factor"}]
 
     def feature_labels(self) -> List[str]:
-        return ["inertia_shape_factor"]
+        return ["inertial_shape_factor"]
 
     def featurize(self, molecule: Molecule) -> np.array:
         """
@@ -307,7 +312,18 @@ class NPRFeaturizer(ThreeDimensionalFeaturizer):
             2: Descriptors3D.NPR2,
         }
 
-        self._parse_labels()
+    def get_names(self) -> List[Dict[str, str]]:
+        names = []
+        for label in self._parse_labels():
+            if "1" in label:
+                names.append("first")
+            elif "2" in label:
+                names.append("second")
+            elif "3" in label:
+                names.append("third")
+        name = " normalized principal moments ratio (NPR)"
+
+        return [{"noun": join_list_elements(names) + name}]
 
     def _parse_labels(self) -> None:
         """
@@ -320,10 +336,11 @@ class NPRFeaturizer(ThreeDimensionalFeaturizer):
             None.
         """
         if self.variant == "all":
-            self.label = [f"npr{i}_value" for i in range(1, 3)]
-        else:
-            self.label = [f"npr{self.variant}_value"]
-        return
+            return [f"npr{i}_value" for i in range(1, 3)]
+        return [f"npr{self.variant}_value"]
+
+    def feature_labels(self) -> List[str]:
+        return self._parse_labels()
 
     def featurize(self, molecule: Molecule) -> np.array:
         """

@@ -11,7 +11,6 @@ from rdkit.Chem import AllChem
 from chemcaption.featurize.base import AbstractFeaturizer
 from chemcaption.molecules import Molecule
 
-# Implemented symmetry-related featurizers.
 
 __all__ = [
     "NumChiralCentersFeaturizer",
@@ -24,15 +23,24 @@ class NumChiralCentersFeaturizer(AbstractFeaturizer):
     def __init__(self):
         """Instantiate class."""
         super().__init__()
-        self.template = (
-            "What is the {PROPERTY_NAME} in the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
-        )
+
         self._names = [
             {
                 "noun": "number of chiral centers",
             }
         ]
-        self.label = ["num_chiral_centers"]
+
+    def feature_labels(self) -> List[str]:
+        """
+        Return list of feature labels.
+
+        Args:
+            None.
+
+        Returns:
+            List[str]: List of feature labels.
+        """
+        return ["num_chiral_centers"]
 
     def _find_chiral_centers(self, molecule: Molecule) -> List[Tuple[Any, Union[Any, str]]]:
         """Return indices for the chiral centers in `molecule`.
