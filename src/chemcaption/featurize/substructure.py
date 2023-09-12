@@ -265,7 +265,9 @@ class TopologyCountFeaturizer(AbstractFeaturizer):
             PeriodicTable.GetElementSymbol(periodic_table, atomic_number)
             for atomic_number in self.reference_atomic_numbers
         ]
-        return [{"noun": f"topologically unique environments of {join_list_elements(names)}"}]
+        return [
+            {"noun": f"number of topologically unique environments of {join_list_elements(names)}"}
+        ]
 
     @classmethod
     def from_presets(cls, preset: str):

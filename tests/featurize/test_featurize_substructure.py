@@ -1,6 +1,7 @@
 from chemcaption.featurize.substructure import TopologyCountFeaturizer, SMARTSFeaturizer
 from chemcaption.molecules import SMILESMolecule
 from chemcaption.featurize.text import Prompt
+import numpy as np
 
 
 def test_topology_count_featurizer():
@@ -11,3 +12,19 @@ def test_topology_count_featurizer():
     assert len(results[0]) == len(featurizer.feature_labels())
     text = featurizer.text_featurize(molecule)
     assert isinstance(text, Prompt)
+
+    featurizer = TopologyCountFeaturizer.from_presets("organic")
+    results = featurizer.featurize(molecule)
+    assert len(results) == 1
+    assert len(results[0]) == len(featurizer.feature_labels())
+    assert results[0][0] == 1
+    assert results[0][1] == 1
+    assert np.sum(results) == 2
+
+    text = featurizer.text_featurize(molecule)
+    assert (
+        text.to_dict()["filled_prompt"]
+        == "Question: What is the number of topologically unique environments of C, H, N, O, P, S, F, Cl, Br, and I of the molecule with SMILES c1ccccc1?"
+    )
+
+    assert text.to_dict()["filled_completion"] == "Answer: 1, 1, 0, 0, 0, 0, 0, 0, 0, and 0"
