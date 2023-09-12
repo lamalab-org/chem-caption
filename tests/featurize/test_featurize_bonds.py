@@ -48,6 +48,13 @@ def test_bondrotability_featurizer():
     text = brf.text_featurize(molecule)
     assert isinstance(text, Prompt)
 
+    assert (
+        text.to_dict()["filled_prompt"]
+        == """Question: What is the proportion of rotatable and non-rotatable bonds of the molecule with SMILES c1ccccc1?"""
+    )
+
+    assert text.to_dict()["filled_completion"] == "Answer: 0.0 and 1.0"
+
 
 def test_rotable_bond_count_featurizer():
     rbcf = RotableBondCountFeaturizer()
