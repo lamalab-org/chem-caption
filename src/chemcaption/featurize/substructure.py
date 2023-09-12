@@ -44,32 +44,60 @@ class SMARTSFeaturizer(AbstractFeaturizer):
         """
         super().__init__()
 
-        self.names = names if names is not None else smarts
+        self.smart_names = names if names is not None else smarts
         self.smarts = smarts
         self.count = count
+        self.constraint = (
+            "Constraint: return a list of integers."
+            if self.count
+            else "Constrain: return a list of 1s and 0s if the pattern is present or not."
+        )
+
+        self.prompt_template = "{PROPERTY_NAME} in the molecule with {REPR_SYSTEM} {REPR_STRING}?"
+
+    def get_names(self) -> List[Dict[str, str]]:
+        """Return names of extracted features.
+
+        Args:
+            None.
+
+        Returns:
+            (List[Dict[str, str]]): List of dictionaries containing feature names.
+        """
+        if self.count:
+            name = "Question: What is the count of " + join_list_elements(self.smart_names)
+
+        else:
+            if len(self.names) == 1:
+                name = "Question: Is " + join_list_elements(self.smart_names)
+            else:
+                name = "Question: Are " + join_list_elements(self.smart_names)
+
+        return [{"noun": name}]
 
     @classmethod
-    def from_preset(cls, preset: str):
+    def from_preset(cls, preset: str, count: bool = True):
         """
         Args:
             preset (str): Preset name of the substructures
-            encoded by the SMARTS strings.
-            Predefined presets can be specified as strings, and can be one of:
-                - `heterocyclic`,
-                - `rings`,
-                - `amino`,
-                - `scaffolds`,
-                - `warheads` or
-                - `organic`.
-                - `all`
+                encoded by the SMARTS strings.
+                Predefined presets can be specified as strings, and can be one of:
+                    - `heterocyclic`,
+                    - `rings`,
+                    - `amino`,
+                    - `scaffolds`,
+                    - `warheads` or
+                    - `organic`.
+                    - `all`
+            count (bool): If set to True, count pattern frequency.
         """
-        if not preset in SMARTS_MAP:
+        if preset not in SMARTS_MAP:
             raise ValueError(
                 f"Invalid preset name '{preset}'. "
                 f"Valid preset names are: {', '.join(SMARTS_MAP.keys())}."
             )
         smarts_set = SMARTS_MAP[preset]
-        return cls(smarts=smarts_set["smarts"], names=smarts_set["names"], count=True)
+        return cls(smarts=smarts_set["smarts"], names=smarts_set["names"], count=count)
 
     def featurize(self, molecule: Molecule) -> np.array:
         """
@@ -109,7 +137,7 @@ class SMARTSFeaturizer(AbstractFeaturizer):
             (List[str]): List of names of extracted features.
         """
         suffix = "_count" if self.count else "_presence"
-        return [name + suffix for name in self.names]
+        return [name + suffix for name in self.smart_names]
 
     def implementors(self) -> List[str]:
         """

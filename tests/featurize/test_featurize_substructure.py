@@ -37,3 +37,32 @@ def test_smarts_featurizer():
 
     assert len(results) == 1
     assert len(results[0]) == len(featurizer.feature_labels())
+
+    assert sum(results[0]) == 0
+
+    text = featurizer.text_featurize(molecule)
+
+    assert (
+        text.to_dict()["filled_prompt"]
+        == "Question: What is the count of carboxyl, carbonyl, ether, alkanol, thiol, halogen, amine, amide, and ketone in the molecule with SMILES c1ccccc1?"
+    )
+
+    assert text.to_dict()["filled_completion"] == "Answer: 0, 0, 0, 0, 0, 0, 0, 0, and 0"
+
+    featurizer = SMARTSFeaturizer.from_preset("organic", False)
+    results = featurizer.featurize(molecule)
+
+    assert len(results) == 1
+    assert len(results[0]) == len(featurizer.feature_labels())
+
+    assert sum(results[0]) == 0
+
+    text = featurizer.text_featurize(molecule)
+
+    assert (
+        text.to_dict()["filled_prompt"]
+        == "Question: Are carboxyl, carbonyl, ether, alkanol, thiol, halogen, amine, amide, and ketone in the molecule with SMILES c1ccccc1?"
+        ""
+    )
+
+    assert text.to_dict()["filled_completion"] == "Answer: 0, 0, 0, 0, 0, 0, 0, 0, and 0"

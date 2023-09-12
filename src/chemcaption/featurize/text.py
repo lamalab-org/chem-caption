@@ -28,6 +28,7 @@ class Prompt:
     completion_labels: Union[str, List[str]]
     prompt_template: Optional[str] = None
     completion_template: Optional[str] = None
+    constraint: Optional[str] = None
 
     def to_dict(self) -> Dict[str, Any]:
         """Return dictionary representation of object.
@@ -40,7 +41,6 @@ class Prompt:
         """
 
         return self.__dict__()
-    
 
     def __dict__(self) -> Dict[str, Any]:
         """Return dictionary representation of object.
@@ -60,7 +60,10 @@ class Prompt:
             "completion": self.completion,
             "completion_names": self.completion_names,
             "completion_labels": self.completion_labels,
-            "filled_prompt": self.fill_template(self.prompt_template),
+            "constraint": self.constraint,
+            "filled_prompt": self.fill_template(self.prompt_template) + f"\n{self.constraint}"
+            if self.constraint
+            else self.fill_template(self.prompt_template),
             "filled_completion": self.fill_template(self.completion_template),
         }
 

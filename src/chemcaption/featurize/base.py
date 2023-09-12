@@ -41,6 +41,7 @@ class AbstractFeaturizer(ABC):
         self.prompt_template = "Question: What is the {PROPERTY_NAME} of the molecule with {REPR_SYSTEM} {REPR_STRING}?"
         self.completion_template = "Answer: {COMPLETION}"
         self._names = []
+        self.constraint = None
 
     def get_names(self) -> List[Dict[str, str]]:
         """Return feature names.
@@ -105,6 +106,7 @@ class AbstractFeaturizer(ABC):
             completion_labels=completion_labels,
             prompt_template=self.prompt_template,
             completion_template=self.completion_template,
+            constraint=self.constraint,
         )
 
     def text_featurize_many(
