@@ -26,26 +26,26 @@ __all__ = [
 # compared to "all" implemented rdkit bond types we drop
 # some of the dative bonds
 _MAP_BOND_TYPE_TO_CLEAN_NAME = {
-    "num_unspecified_bond": "number of unspecified bonds",
-    "num_single_bonds": "number of single bonds",
-    "num_double_bonds": "number of double bonds",
-    "num_triple_bonds": "number of triple bonds",
-    "num_quadruple_bonds": "number of quadruple bonds",
-    "num_quintuple_bonds": "number of quintuble bonds",
-    "num_hextuple_bonds": "number of hextuple bonds",
-    "num_oneandahalf_bonds": "number of one-and-a-half bonds",
-    "num_twoandahalf_bonds": "number of two-and-a-half bonds",
-    "num_threeandahalf_bonds": "number of three-and-a-half bonds",
-    "num_fourandahalf_bonds": "number of four-and-a-half bonds",
-    "num_fiveandahalf_bonds": "number of five-and-a-half bonds",
-    "num_aromatic_bonds": "number of aromatic bonds",
-    "num_ionic_bonds": "number of ionic bonds",
-    "num_hydrogen_bonds": "number of hydrogen bonds",
-    "num_threecenter_bonds": "number of three-center bonds",
-    "num_dativeone_bonds": "number of dative one-electron bonds",
-    "num_dative_bonds": "number of two-electron dative bonds",
-    "num_other_bonds": "number of other bonds",
-    "num_zero_bonds": "number of zero-order bonds",
+    "num_unspecified_bond": "unspecified",
+    "num_single_bonds": "single",
+    "num_double_bonds": "double",
+    "num_triple_bonds": "triple",
+    "num_quadruple_bonds": "quadruple",
+    "num_quintuple_bonds": "quintuble",
+    "num_hextuple_bonds": "hextuple",
+    "num_oneandahalf_bonds": "one-and-a-half",
+    "num_twoandahalf_bonds": "two-and-a-half",
+    "num_threeandahalf_bonds": "three-and-a-half",
+    "num_fourandahalf_bonds": "four-and-a-half",
+    "num_fiveandahalf_bonds": "five-and-a-half",
+    "num_aromatic_bonds": "aromatic",
+    "num_ionic_bonds": "ionic",
+    "num_hydrogen_bonds": "hydrogen",
+    "num_threecenter_bonds": "three-center",
+    "num_dativeone_bonds": "dative one-electron",
+    "num_dative_bonds": "dative  two-electron",
+    "num_other_bonds": "other",
+    "num_zero_bonds": "zero-order",
     "num_bonds": "total number of bonds",
 }
 
@@ -178,7 +178,9 @@ class BondTypeCountFeaturizer(AbstractFeaturizer):
         self.count = count
         self.prefix = "num_" if self.count else ""
         self.suffix = "_bonds" if self.count else "_bond_presence"
-        self.prompt_template = "Question: What is the {PROPERTY_NAME} in the molecule with {REPR_SYSTEM} {REPR_STRING}?"
+        self.prompt_template = (
+            "Question: {PROPERTY_NAME} in the molecule with {REPR_SYSTEM} {REPR_STRING}?"
+        )
 
         self.constraint = "Constraint: Return a list of comma separated integers."
         self.bond_type = (
@@ -225,13 +227,12 @@ class BondTypeCountFeaturizer(AbstractFeaturizer):
         Returns:
             bond_types (List[str]): List of strings of bond types.
         """
-        label = []
 
         if "ALL" in self.bond_type:
             bond_types = self._rdkit_bond_types()
 
             if self.count:
-                label.append("num_bonds")
+                bond_types.append("num_bonds")
         else:
             bond_types = self.bond_type
 
@@ -241,6 +242,9 @@ class BondTypeCountFeaturizer(AbstractFeaturizer):
         mapped_names = [
             _MAP_BOND_TYPE_TO_CLEAN_NAME[bond_type] for bond_type in self.feature_labels()
         ]
+
+        # if we have the
+
         return [{"noun": join_list_elements(mapped_names)}]
 
     def _get_bonds(
@@ -273,7 +277,7 @@ class BondTypeCountFeaturizer(AbstractFeaturizer):
         Returns:
             (List[str]): List of all bonds present in rdkit.
         """
-        return list(_MAP_BOND_TYPE_TO_CLEAN_NAME.keys())
+        return [k for k in _MAP_BOND_TYPE_TO_CLEAN_NAME.keys() if "num_bonds" != k]
 
     def _get_unique_bond_types(self, molecule: Molecule) -> List[str]:
         """
@@ -334,12 +338,33 @@ class BondTypeProportionFeaturizer(BondTypeCountFeaturizer):
             bond_type (Union[str, List[str]]): Type of bond to enumerate.
                 If `all`, enumerates all bonds irrespective of type. Default (ALL).
         """
-        super().__init__(count=True, bond_type=bond_type)
+        super().__init__(count=False, bond_type=bond_type)
 
-        self.prefix = ""
-        self.suffix = "_bond_proportion"
+        print(self.bond_type)
 
-        _ = self._parse_labels()
+    def feature_labels(self) -> List[str]:
+        """
+        Parse featurizer labels.
+
+        Args:
+            None.
+
+        Returns:
+            bond_types (List[str]): List of strings of bond types.
+        """
+        if "ALL" in self.bond_type:
+            bond_types = self._rdkit_bond_types()
+
+        else:
+            bond_types = self.bond_type
+
+        return bond_types
+
+    def get_names(self) -> List[str]:
+        mapped_names = [
+            _MAP_BOND_TYPE_TO_CLEAN_NAME[bond_type] for bond_type in self.feature_labels()
+        ]
+        return [{"noun": join_list_elements(mapped_names)}]
 
     def _get_bond_distribution(self, molecule: Molecule) -> List[float]:
         """Return a frequency distribution for the bonds present in a molecule.
@@ -370,7 +395,6 @@ class BondTypeProportionFeaturizer(BondTypeCountFeaturizer):
             num_bonds (List[int]): Number of occurrences of `bond_type` in molecule.
         """
         num_bonds = super()._count_bonds(molecule=molecule)
-        num_bonds = num_bonds[:-1] if "ALL" in self.bond_type else num_bonds
 
         return num_bonds
 
