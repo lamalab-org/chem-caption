@@ -2,7 +2,7 @@
 
 """Featurizers describing the structure of (and/or the count and/or presence of substructures in) a molecule."""
 
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional
 
 import numpy as np
 import rdkit

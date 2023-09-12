@@ -65,3 +65,10 @@ def test_rotable_bond_count_featurizer():
     assert np.sum(results) == 0
     text = rbcf.text_featurize(molecule)
     assert isinstance(text, Prompt)
+
+    assert (
+        text.to_dict()["filled_prompt"]
+        == """Question: What is the number of rotatable bonds of the molecule with SMILES c1ccccc1?"""
+    )
+
+    assert text.to_dict()["filled_completion"] == "Answer: 0"

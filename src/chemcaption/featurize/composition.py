@@ -15,7 +15,7 @@ from chemcaption.featurize.utils import join_list_elements
 # Implemented composition-related featurizers
 
 __all__ = [
-    "MolecularFormularFeaturizer",
+    "MolecularFormulaFeaturizer",
     "MolecularMassFeaturizer",
     "MonoisotopicMolecularMassFeaturizer",
     "ElementMassFeaturizer",
