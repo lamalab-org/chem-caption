@@ -171,6 +171,9 @@ class IsomorphismFeaturizer(AbstractFeaturizer):
 
         self.label = ["weisfeiler_lehman_hash"]
 
+    def feature_labels(self) -> List[str]:
+        return ["weisfeiler_lehman_hash"]
+
     def featurize(self, molecule: Molecule) -> np.array:
         """
         Featurize single molecule instance. Extract and return features from molecular object.

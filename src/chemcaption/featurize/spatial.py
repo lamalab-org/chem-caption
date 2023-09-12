@@ -5,14 +5,14 @@
 from typing import Dict, List, Union
 
 import numpy as np
-from givemeconformer.api import _get_conformer
+
 from rdkit import Chem
 from rdkit.Chem import Descriptors3D
 
 from chemcaption.featurize.base import AbstractFeaturizer
 from chemcaption.molecules import Molecule
-from functools import lru_cache
-from chemcaption.featurize.utils import join_list_elements
+
+from chemcaption.featurize.utils import join_list_elements, cached_conformer
 from frozendict import frozendict
 
 # Implemented bond-related featurizers
@@ -28,14 +28,6 @@ __all__ = [
 
 
 """Abstract Featurizer for extracting 3D features from molecule."""
-
-
-@lru_cache(maxsize=None)
-def cached_conformer(smiles, kwargs):
-    mol, conformers = _get_conformer(smiles=smiles, **kwargs)
-    for conf in conformers.keys():
-        mol.AddConformer(mol.GetConformer(conf))
-    return mol
 
 
 class ThreeDimensionalFeaturizer(AbstractFeaturizer):
@@ -164,7 +156,7 @@ class EccentricityFeaturizer(ThreeDimensionalFeaturizer):
         Returns:
             List[str]: List of implementors.
         """
-        return ["Benedict Oshomah Emoekabu"]
+        return ["Benedict Oshomah Emoekabu", "Kevin Maik Jablonka"]
 
 
 class AsphericityFeaturizer(ThreeDimensionalFeaturizer):
@@ -218,7 +210,7 @@ class AsphericityFeaturizer(ThreeDimensionalFeaturizer):
         Returns:
             List[str]: List of implementors.
         """
-        return ["Benedict Oshomah Emoekabu"]
+        return ["Benedict Oshomah Emoekabu", "Kevin Maik Jablonka"]
 
 
 class InertialShapeFactorFeaturizer(ThreeDimensionalFeaturizer):
@@ -272,7 +264,7 @@ class InertialShapeFactorFeaturizer(ThreeDimensionalFeaturizer):
         Returns:
             List[str]: List of implementors.
         """
-        return ["Benedict Oshomah Emoekabu"]
+        return ["Benedict Oshomah Emoekabu",  "Kevin Maik Jablonka"]
 
 
 class NPRFeaturizer(ThreeDimensionalFeaturizer):
@@ -325,7 +317,7 @@ class NPRFeaturizer(ThreeDimensionalFeaturizer):
 
         return [{"noun": join_list_elements(names) + name}]
 
-    def _parse_labels(self) -> None:
+    def _parse_labels(self) -> List[str]:
         """
         Parse featurizer labels.
 
@@ -370,7 +362,7 @@ class NPRFeaturizer(ThreeDimensionalFeaturizer):
         Returns:
             List[str]: List of implementors.
         """
-        return ["Benedict Oshomah Emoekabu"]
+        return ["Benedict Oshomah Emoekabu",  "Kevin Maik Jablonka"]
 
 
 class PMIFeaturizer(ThreeDimensionalFeaturizer):
@@ -470,4 +462,4 @@ class PMIFeaturizer(ThreeDimensionalFeaturizer):
         Returns:
             List[str]: List of implementors.
         """
-        return ["Benedict Oshomah Emoekabu"]
+        return ["Benedict Oshomah Emoekabu", "Kevin Maik Jablonka"]

@@ -13,11 +13,11 @@ from chemcaption.molecules import Molecule
 
 
 __all__ = [
-    "NumChiralCentersFeaturizer",
+    "ChiralCenterCountFeaturizer",
 ]
 
 
-class NumChiralCentersFeaturizer(AbstractFeaturizer):
+class ChiralCenterCountFeaturizer(AbstractFeaturizer):
     """Return the number of chiral centers."""
 
     def __init__(self):

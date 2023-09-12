@@ -302,7 +302,9 @@ class MultipleFeaturizer(AbstractFeaturizer):
         print(f"`{self.__class__.__name__}` instance fitted with {len(featurizers)} featurizers!\n")
         self.label = self.feature_labels()
 
-        self.template = [featurizer.template for featurizer in featurizers]
+        self.prompt_template = [featurizer.prompt_template for featurizer in featurizers]
+        self.completion_template = [featurizer.completion_template for featurizer in featurizers]
+
         self._names = [featurizer._names for featurizer in featurizers]
 
         return self

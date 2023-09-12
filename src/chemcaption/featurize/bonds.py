@@ -337,9 +337,7 @@ class BondTypeProportionFeaturizer(BondTypeCountFeaturizer):
         super().__init__(count=True, bond_type=bond_type)
 
         self.prefix = ""
-        self.suffix = "_bond_proportion"
-
-        _ = self._parse_labels()
+        self.suffix = "_bond_ratio"
 
     def _get_bond_distribution(self, molecule: Molecule) -> List[float]:
         """Return a frequency distribution for the bonds present in a molecule.
@@ -385,3 +383,33 @@ class BondTypeProportionFeaturizer(BondTypeCountFeaturizer):
             (np.array): Array containing bond type proportion(s).
         """
         return np.array(self._get_bond_distribution(molecule=molecule)).reshape(1, -1)
+
+    def feature_labels(self) -> List[str]:
+        """
+        Parse featurizer labels.
+
+        Args:
+            None.
+
+        Returns:
+            (List[str]): List of strings of bond types.
+        """
+        labels = super().feature_labels()
+        labels = [
+            "_".join(x.split("_")[:-1] + [self.suffix])
+            for x in labels
+        ]
+
+        return labels
+
+    def implementors(self) -> List[str]:
+        """
+        Return list of functionality implementors.
+
+        Args:
+            None.
+
+        Returns:
+            List[str]: List of implementors.
+        """
+        return ["Benedict Oshomah Emoekabu"]

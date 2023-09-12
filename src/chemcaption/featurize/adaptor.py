@@ -72,6 +72,17 @@ class RDKitAdaptor(AbstractFeaturizer):
         )
         return np.array(feature).reshape((1, -1))
 
+    def feature_labels(self) -> List[str]:
+        """Return feature label(s).
+
+        Args:
+            None.
+
+        Returns:
+            (List[str]): List of names of extracted features.
+        """
+        return self._label
+
     def implementors(self) -> List[str]:
         """
         Return list of functionality implementors.

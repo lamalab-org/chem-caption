@@ -5,7 +5,7 @@
 
 import numpy as np
 
-from chemcaption.featurize.stereochemistry import NumChiralCentersFeaturizer
+from chemcaption.featurize.stereochemistry import ChiralCenterCountFeaturizer
 from chemcaption.molecules import SMILESMolecule
 
 # Implemented tests for stereochemistry-related classes.
@@ -18,7 +18,7 @@ __all__ = [
 def test_num_chiral_centers():
     mol = SMILESMolecule(representation_string="CC")
 
-    featurizer = NumChiralCentersFeaturizer()
+    featurizer = ChiralCenterCountFeaturizer()
     results = featurizer.featurize(mol)
     assert results == np.array([0.0])
 
