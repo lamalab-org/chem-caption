@@ -3,7 +3,6 @@
 """Tests for chemcaption.featurize.bonds subpackage."""
 
 import numpy as np
-import pytest
 
 from chemcaption.featurize.bonds import (
     BondRotabilityFeaturizer,
