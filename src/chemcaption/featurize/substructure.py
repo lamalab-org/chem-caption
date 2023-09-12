@@ -9,13 +9,10 @@ import rdkit
 from rdkit.Chem import GetPeriodicTable, PeriodicTable
 
 
-from chemcaption.featurize.base import PERIODIC_TABLE, AbstractFeaturizer
-from chemcaption.featurize.text_utils import inspect_info
+from chemcaption.featurize.base import AbstractFeaturizer
 from chemcaption.molecules import Molecule
-from chemcaption.presets import SMARTSPreset
 from chemcaption.featurize.utils import join_list_elements
 
-# Implemented molecular structure- and substructure-related featurizers
 
 __all__ = ["SMARTSFeaturizer", "IsomorphismFeaturizer", "TopologyCountFeaturizer"]
 
@@ -28,118 +25,45 @@ class SMARTSFeaturizer(AbstractFeaturizer):
 
     def __init__(
         self,
+        smarts: List[str],
+        names: Optional[List[str]],
         count: bool = True,
-        names: Optional[Union[str, List[str]]] = "rings",
-        smarts: Optional[List[str]] = None,
     ):
         """
         Initialize class.
 
         Args:
-            count (bool): If set to True, count pattern frequency. Otherwise, only encode presence.
-                Defaults to True.
-            names (Optional[Union[str, List[str]]]): Preset name(s) of the substructures
-                encoded by the SMARTS strings.
-                Predefined presets can be specified as strings, and can be one of:
-                    - `heterocyclic`,
-                    - `rings`,
-                    - `amino`,
-                    - `scaffolds`,
-                    - `warheads` or
-                    - `organic`.
-                Defaults to `rings`.
             smarts (Optional[List[str]]): SMARTS strings that are matched with the molecules.
                 Defaults to None.
+            names (Optional[List[str]]): Names of the SMARTS strings.
+                If None, the SMARTS strings are used as names.
+                Defaults to None.
+            count (bool): If set to True, count pattern frequency.
+                Otherwise, only encode presence.
+                Defaults to True.
         """
         super().__init__()
-
-        if isinstance(names, str):
-            try:
-                self.prefix = f"{names}_"
-                names, smarts = SMARTSPreset(names).preset
-            except KeyError:
-                raise KeyError(
-                    f"`{names}` preset not defined. \
-                    Use `heterocyclic`, `rings`, 'amino`, `scaffolds`, `warheads`, or `organic`"
-                )
-        else:
-            if bool(names) != bool(smarts):
-                raise Exception("Both `names` and `smarts` must either be or not be provided.")
-
-            if len(names) != len(smarts):
-                raise Exception("Both `names` and `smarts` must be lists of the same length.")
-
-            self.prefix = "user_provided_"
 
         self.names = names
         self.smarts = smarts
         self.count = count
 
-        self.suffix = "_count" if count else "_presence"
-        self.label = [self.prefix + element.lower() + self.suffix for element in self.names]
-
-        self.template = (
-            "What is the "
-            + self.suffix[1:]
-            + " of the provided {PROPERTY_NAME} (i.e., SMARTS patterns)"
-            " in the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
-        )
-        self._names = [
-            {
-                "noun": "functional groups",
-            }
-        ]
-
-    @property
-    def preset(self) -> Dict[str, List[str]]:
-        """Get molecular preset. Getter method.
-
-        Args:
-            None.
-
-        Returns:
-            (Dict[str, List[str]]): Dictionary of substance names and substance SMARTS strings.
+    @classmethod
+    def from_presets(cls, preset: str):
         """
-        return dict(names=self.names, smarts=self.smarts)
-
-    @preset.setter
-    def preset(
-        self,
-        new_preset: Optional[Union[str, Dict[str, List[str]]]],
-    ) -> None:
-        """Set molecular preset. Setter method.
-
         Args:
-            new_preset (Optional[Union[str, Dict[str, List[str]]]]): New preset of interest.
-                Could be a:
-                    (str): string representing new predefined preset.
-                    (Dict[str, List[str]]): dictionary.
-                        Keys: `name` and `smarts`.
-                        Values: list of substance names and list of corresponding SMARTS strings.
-
-        Returns:
-            None.
+            preset (str): Preset name of the substructures
+            encoded by the SMARTS strings.
+            Predefined presets can be specified as strings, and can be one of:
+                - `heterocyclic`,
+                - `rings`,
+                - `amino`,
+                - `scaffolds`,
+                - `warheads` or
+                - `organic`.
+                - `all`
         """
-        if new_preset is not None:
-            if isinstance(new_preset, str):
-                names, smarts = SMARTSPreset(preset=new_preset).preset
-            elif isinstance(new_preset, (tuple, list)):
-                names = new_preset[0]
-                smarts = new_preset[1]
-            else:
-                names = new_preset["names"]
-                smarts = new_preset["smarts"]
-
-            self.prefix = f"{new_preset}_" if isinstance(new_preset, str) else "user_provided_"
-            self.names = names
-            self.smarts = smarts
-
-            self.label = [self.prefix + element.lower() + self.suffix for element in self.names]
-        else:
-            self.names = None
-            self.smarts = None
-            self.label = [None]
-        return
+        ...
 
     def featurize(self, molecule: Molecule) -> np.array:
         """
