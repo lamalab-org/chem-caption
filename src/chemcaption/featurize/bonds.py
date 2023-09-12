@@ -104,12 +104,9 @@ class BondRotabilityFeaturizer(AbstractFeaturizer):
         """Initialize instance."""
         super().__init__()
 
-        self.template = (
-            "What are the {PROPERTY_NAME} for the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
-        )
         self._names = [
             {
-                "noun": "proportions of rotatable and non-rotatable bonds",
+                "noun": "proportion of rotatable and non-rotatable bonds",
             }
         ]
 
@@ -136,7 +133,8 @@ class BondRotabilityFeaturizer(AbstractFeaturizer):
         return bond_distribution
 
     def featurize(self, molecule: Molecule) -> np.array:
-        """Featurize single molecule instance. Return distribution of bonds based on rotability.
+        """Featurize single molecule instance.
+        Return distribution of bonds based on rotability.
 
         Args:
             molecule (Molecule): Molecular representation.
@@ -170,7 +168,8 @@ class BondTypeCountFeaturizer(AbstractFeaturizer):
         Initialize class.
 
         Args:
-            count (bool): If set to True, count pattern frequency. Otherwise, only encode presence. Defaults to True.
+            count (bool): If set to True, count pattern frequency.
+                Otherwise, only encode presence. Defaults to True.
             bond_type (Union[str, List[str]]): Type of bond to enumerate.
                 If `all`, enumerates all bonds irrespective of type. Default (ALL).
         """
@@ -179,7 +178,9 @@ class BondTypeCountFeaturizer(AbstractFeaturizer):
         self.count = count
         self.prefix = "num_" if self.count else ""
         self.suffix = "_bonds" if self.count else "_bond_presence"
+        self.prompt_template = "Question: What is the {PROPERTY_NAME} in the molecule with {REPR_SYSTEM} {REPR_STRING}?"
 
+        self.constraint = "Constraint: Return a list of comma separated integers."
         self.bond_type = (
             [bond_type.upper()] if isinstance(bond_type, str) else [b.upper() for b in bond_type]
         )

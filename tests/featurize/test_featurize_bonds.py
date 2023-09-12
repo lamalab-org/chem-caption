@@ -25,6 +25,18 @@ def test_bond_type_featurizer():
     text = bt.text_featurize(molecule)
     assert isinstance(text, Prompt)
 
+    print(text.to_dict()["filled_prompt"])
+    assert (
+        text.to_dict()["filled_prompt"]
+        == """Question: What is the number of unspecified bonds, number of single bonds, number of double bonds, number of triple bonds, number of quadruple bonds, number of quintuble bonds, number of hextuple bonds, number of one-and-a-half bonds, number of two-and-a-half bonds, number of three-and-a-half bonds, number of four-and-a-half bonds, number of five-and-a-half bonds, number of aromatic bonds, number of ionic bonds, number of hydrogen bonds, number of three-center bonds, number of dative one-electron bonds, number of two-electron dative bonds, number of other bonds, number of zero-order bonds, and total number of bonds in the molecule with SMILES c1ccccc1?
+Constraint: Return a list of comma separated integers."""
+    )
+
+    assert (
+        text.to_dict()["filled_completion"]
+        == "Answer: 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, and 12"
+    )
+
 
 def test_bondrotability_featurizer():
     brf = BondRotabilityFeaturizer()
