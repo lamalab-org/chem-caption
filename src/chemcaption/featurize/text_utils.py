@@ -179,7 +179,7 @@ def inspect_info(info: dict) -> Dict[str, Union[str, List[int], List[float]]]:
 
             if list_len > 2:
                 properties = ", ".join(value[:-1])
-                properties += " and " + value[-1]
+                properties += ", and " + value[-1]
             elif list_len == 2:
                 properties = " and ".join(value)
             else:

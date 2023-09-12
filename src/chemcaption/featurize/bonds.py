@@ -5,22 +5,49 @@
 from typing import List, Union
 
 import numpy as np
-from rdkit.Chem import rdchem, rdMolDescriptors
+from rdkit.Chem import rdMolDescriptors
 
 from chemcaption.featurize.base import AbstractFeaturizer
 from chemcaption.molecules import Molecule
+from chemcaption.featurize.utils import join_list_elements
 
 # Implemented bond-related featurizers
 
 __all__ = [
     "RotableBondCountFeaturizer",
     "BondRotabilityFeaturizer",
-    "BondTypeFeaturizer",
+    "BondTypeCountFeaturizer",
     "BondTypeProportionFeaturizer",
 ]
 
 
 """Featurizer for counting rotatable bonds in molecule."""
+
+# compared to "all" implemented rdkit bond types we drop
+# some of the dative bonds
+_MAP_BOND_TYPE_TO_CLEAN_NAME = {
+    "num_unspecified_bond": "number of unspecified bonds",
+    "num_single_bonds": "number of single bonds",
+    "num_double_bonds": "number of double bonds",
+    "num_triple_bonds": "number of triple bonds",
+    "num_quadruple_bonds": "number of quadruple bonds",
+    "num_quintuple_bonds": "number of quintuble bonds",
+    "num_hextuple_bonds": "number of hextuple bonds",
+    "num_oneandahalf_bonds": "number of one-and-a-half bonds",
+    "num_twoandahalf_bonds": "number of two-and-a-half bonds",
+    "num_threeandahalf_bonds": "number of three-and-a-half bonds",
+    "num_fourandahalf_bonds": "number of four-and-a-half bonds",
+    "num_fiveandahalf_bonds": "number of five-and-a-half bonds",
+    "num_aromatic_bonds": "number of aromatic bonds",
+    "num_ionic_bonds": "number of ionic bonds",
+    "num_hydrogen_bonds": "number of hydrogen bonds",
+    "num_threecenter_bonds": "number of three-center bonds",
+    "num_dativeone_bonds": "number of dative one-electron bonds",
+    "num_dative_bonds": "number of two-electron dative bonds",
+    "num_other_bonds": "number of other bonds",
+    "num_zero_bonds": "number of zero-order bonds",
+    "num_bonds": "total number of bonds",
+}
 
 
 class RotableBondCountFeaturizer(AbstractFeaturizer):
@@ -30,15 +57,14 @@ class RotableBondCountFeaturizer(AbstractFeaturizer):
         """Initialize instance."""
         super().__init__()
 
-        self.template = (
-            "What is the {PROPERTY_NAME} in the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
-        )
         self._names = [
             {
                 "noun": "number of rotatable bonds",
             }
         ]
-        self.label = ["num_rotable_bonds"]
+
+    def feature_labels(self) -> List[str]:
+        return ["num_rotable_bonds"]
 
     def featurize(self, molecule: Molecule) -> np.array:
         """
@@ -78,15 +104,14 @@ class BondRotabilityFeaturizer(AbstractFeaturizer):
         """Initialize instance."""
         super().__init__()
 
-        self.template = (
-            "What are the {PROPERTY_NAME} for the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
-        )
         self._names = [
             {
-                "noun": "proportions of rotatable and non-rotatable bonds",
+                "noun": "proportion of rotatable and non-rotatable bonds",
             }
         ]
-        self.label = ["rotable_proportion", "non_rotable_proportion"]
+
+    def feature_labels(self) -> List[str]:
+        return ["rotable_proportion", "non_rotable_proportion"]
 
     def _get_bond_types(self, molecule: Molecule) -> List[float]:
         """Return distribution of bonds based on rotability.
@@ -108,7 +133,8 @@ class BondRotabilityFeaturizer(AbstractFeaturizer):
         return bond_distribution
 
     def featurize(self, molecule: Molecule) -> np.array:
-        """Featurize single molecule instance. Return distribution of bonds based on rotability.
+        """Featurize single molecule instance.
+        Return distribution of bonds based on rotability.
 
         Args:
             molecule (Molecule): Molecular representation.
@@ -134,7 +160,7 @@ class BondRotabilityFeaturizer(AbstractFeaturizer):
 """Featurizer for calculating number of molecule bond types."""
 
 
-class BondTypeFeaturizer(AbstractFeaturizer):
+class BondTypeCountFeaturizer(AbstractFeaturizer):
     """Featurizer for bond type count (or presence) extraction."""
 
     def __init__(self, count: bool = True, bond_type: Union[str, List[str]] = "all"):
@@ -142,7 +168,8 @@ class BondTypeFeaturizer(AbstractFeaturizer):
         Initialize class.
 
         Args:
-            count (bool): If set to True, count pattern frequency. Otherwise, only encode presence. Defaults to True.
+            count (bool): If set to True, count pattern frequency.
+                Otherwise, only encode presence. Defaults to True.
             bond_type (Union[str, List[str]]): Type of bond to enumerate.
                 If `all`, enumerates all bonds irrespective of type. Default (ALL).
         """
@@ -151,17 +178,12 @@ class BondTypeFeaturizer(AbstractFeaturizer):
         self.count = count
         self.prefix = "num_" if self.count else ""
         self.suffix = "_bonds" if self.count else "_bond_presence"
+        self.prompt_template = "Question: What is the {PROPERTY_NAME} in the molecule with {REPR_SYSTEM} {REPR_STRING}?"
 
+        self.constraint = "Constraint: Return a list of comma separated integers."
         self.bond_type = (
             [bond_type.upper()] if isinstance(bond_type, str) else [b.upper() for b in bond_type]
         )
-
-        self.label = [
-            self.prefix + f"{bond_type.lower()}" + self.suffix for bond_type in self.bond_type
-        ]
-
-        self.bond_map = None
-        self._rdkit_bond_type_map()  # Generate bond type map
 
     def _count_bonds(self, molecule: Molecule) -> List[int]:
         """
@@ -174,21 +196,26 @@ class BondTypeFeaturizer(AbstractFeaturizer):
             num_bonds (List[int]): Number of occurrences of `bond_type` in molecule.
         """
         all_bonds = self._get_bonds(molecule)
+
         num_bonds = []
 
-        bond_types = self._parse_labels()
+        bond_types = self.feature_labels()
 
-        if ("ALL" in self.bond_type) and self.count:
+        num_bonds = [
+            all_bonds.count(bond_type.split("_")[1].upper())
+            for bond_type in bond_types
+            if bond_type != "num_bonds"
+        ]
+
+        if self.count:
             num_bonds.append(len(all_bonds))
-
-        num_bonds = [all_bonds.count(bond_type) for bond_type in bond_types] + num_bonds
 
         if not self.count:
             num_bonds = [min(1, count) for count in num_bonds]
 
         return num_bonds
 
-    def _parse_labels(self) -> List[str]:
+    def feature_labels(self) -> List[str]:
         """
         Parse featurizer labels.
 
@@ -208,11 +235,13 @@ class BondTypeFeaturizer(AbstractFeaturizer):
         else:
             bond_types = self.bond_type
 
-        self.label = [
-            self.prefix + f"{bond_type.lower()}" + self.suffix for bond_type in bond_types
-        ] + label
-
         return bond_types
+
+    def get_names(self) -> List[str]:
+        mapped_names = [
+            _MAP_BOND_TYPE_TO_CLEAN_NAME[bond_type] for bond_type in self.feature_labels()
+        ]
+        return [{"noun": join_list_elements(mapped_names)}]
 
     def _get_bonds(
         self,
@@ -234,21 +263,6 @@ class BondTypeFeaturizer(AbstractFeaturizer):
 
         return bonds
 
-    def _rdkit_bond_type_map(self) -> None:
-        """
-        Generate a map of bonds from rdkit codebase.
-
-        Args:
-            None.
-
-        Returns:
-            None.
-        """
-        bond_indices = list(rdchem.BondType.values)
-        bonds = [str(rdchem.BondType.values[idx]).split(".")[-1] for idx in bond_indices]
-        self.bond_map = dict(zip(bonds, bond_indices))
-        return
-
     def _rdkit_bond_types(self) -> List[str]:
         """
         Returns a list of bonds supported by rdkit.
@@ -259,7 +273,7 @@ class BondTypeFeaturizer(AbstractFeaturizer):
         Returns:
             (List[str]): List of all bonds present in rdkit.
         """
-        return list(self.bond_map.keys())
+        return list(_MAP_BOND_TYPE_TO_CLEAN_NAME.keys())
 
     def _get_unique_bond_types(self, molecule: Molecule) -> List[str]:
         """
@@ -298,7 +312,7 @@ class BondTypeFeaturizer(AbstractFeaturizer):
         Return list of functionality implementors.
 
         Args:
-            None
+            None.
 
         Returns:
             List[str]: List of implementors.
@@ -309,7 +323,7 @@ class BondTypeFeaturizer(AbstractFeaturizer):
 """Featurizer for calculating proportion of molecule bond types."""
 
 
-class BondTypeProportionFeaturizer(BondTypeFeaturizer):
+class BondTypeProportionFeaturizer(BondTypeCountFeaturizer):
     """Featurizer for bond type proportion extraction."""
 
     def __init__(self, bond_type: Union[str, List[str]] = "all"):
@@ -325,9 +339,7 @@ class BondTypeProportionFeaturizer(BondTypeFeaturizer):
         self.prefix = ""
         self.suffix = "_bond_proportion"
 
-        self.label = [
-            self.prefix + f"{bond_type.lower()}" + self.suffix for bond_type in self.bond_type
-        ]
+        _ = self._parse_labels()
 
     def _get_bond_distribution(self, molecule: Molecule) -> List[float]:
         """Return a frequency distribution for the bonds present in a molecule.
@@ -346,21 +358,6 @@ class BondTypeProportionFeaturizer(BondTypeFeaturizer):
         bond_proportion = [count / total_bond_count for count in num_bonds]
 
         return bond_proportion
-
-    def _parse_labels(self) -> List[str]:
-        """
-        Parse featurizer labels.
-
-        Args:
-            None.
-
-        Returns:
-            bond_types (List[str]): List of strings of bond types.
-        """
-        bond_types = super()._parse_labels()
-        self.label = self.label[:-1] if "ALL" in self.bond_type else self.label
-
-        return bond_types
 
     def _count_bonds(self, molecule: Molecule) -> List[int]:
         """

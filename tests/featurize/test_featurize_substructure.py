@@ -1,82 +1,85 @@
-# -*- coding: utf-8 -*-
-
-"""Tests for chemcaption.featurize.substructure subpackage."""
-
+from chemcaption.featurize.substructure import TopologyCountFeaturizer, SMARTSFeaturizer
+from chemcaption.molecules import SMILESMolecule
+from chemcaption.featurize.text import Prompt
 import numpy as np
-import pytest
-
-from chemcaption.featurize.substructure import SMARTSFeaturizer
-from chemcaption.presets import SMARTS_MAP
-from tests.conftests import DISPATCH_MAP, PROPERTY_BANK, extract_molecule_properties
-
-KIND = "selfies"
-MOLECULE = DISPATCH_MAP[KIND]
-
-# SMARTS substructure search-related presets
-SMARTS_PRESET = "amino"
-PRESET_BASE_LABELS = SMARTS_MAP[SMARTS_PRESET]["names"]
-
-# Implemented tests for substructure-related featurizers.
-
-__all__ = [
-    "test_smarts_count_featurizer",
-    "test_smarts_presence_featurizer",
-]
 
 
-"""Test for SMARTS substructure count featurizer."""
+def test_topology_count_featurizer():
+    molecule = SMILESMolecule("C1=CC=CC=C1")
+    featurizer = TopologyCountFeaturizer.from_preset("carbon")
+    results = featurizer.featurize(molecule)
+    assert len(results) == 1
+    assert len(results[0]) == len(featurizer.feature_labels())
+    text = featurizer.text_featurize(molecule)
+    assert isinstance(text, Prompt)
+
+    featurizer = TopologyCountFeaturizer.from_preset("organic")
+    results = featurizer.featurize(molecule)
+    assert len(results) == 1
+    assert len(results[0]) == len(featurizer.feature_labels())
+    assert results[0][0] == 1
+    assert results[0][1] == 1
+    assert np.sum(results) == 2
+
+    text = featurizer.text_featurize(molecule)
+    assert (
+        text.to_dict()["filled_prompt"]
+        == "Question: What is the number of topologically unique environments of C, H, N, O, P, S, F, Cl, Br, and I of the molecule with SMILES c1ccccc1?"
+    )
+
+    assert text.to_dict()["filled_completion"] == "Answer: 1, 1, 0, 0, 0, 0, 0, 0, 0, and 0"
 
 
-@pytest.mark.parametrize(
-    "test_input, expected",
-    extract_molecule_properties(
-        property_bank=PROPERTY_BANK,
-        representation_name=KIND,
-        property=list(
-            map(
-                lambda x: SMARTS_PRESET
-                + "_"
-                + "".join([("_" if c in "[]()-" else c) for c in x]).lower()
-                + "_count",
-                PRESET_BASE_LABELS,
-            )
-        ),
-    ),
-)
-def test_smarts_count_featurizer(test_input, expected):
-    """Test SMARTSFeaturizer for SMARTS occurrence count."""
-    featurizer = SMARTSFeaturizer(count=True, names=SMARTS_PRESET)
-    molecule = MOLECULE(test_input)
-
+def test_smarts_featurizer():
+    molecule = SMILESMolecule("C1=CC=CC=C1")
+    featurizer = SMARTSFeaturizer.from_preset("organic")
     results = featurizer.featurize(molecule)
 
-    assert np.equal(results, expected).all()
+    assert len(results) == 1
+    assert len(results[0]) == len(featurizer.feature_labels())
 
+    assert sum(results[0]) == 0
 
-"""Test for SMARTS substructure presence featurizer."""
+    text = featurizer.text_featurize(molecule)
 
+    assert (
+        text.to_dict()["filled_prompt"]
+        == "Question: What is the count of carboxyl, carbonyl, ether, alkanol, thiol, halogen, amine, amide, and ketone in the molecule with SMILES c1ccccc1?\nConstraint: return a list of integers."
+    )
 
-@pytest.mark.parametrize(
-    "test_input, expected",
-    extract_molecule_properties(
-        property_bank=PROPERTY_BANK,
-        representation_name=KIND,
-        property=list(
-            map(
-                lambda x: SMARTS_PRESET
-                + "_"
-                + "".join([("_" if c in "[]()-" else c) for c in x]).lower()
-                + "_presence",
-                PRESET_BASE_LABELS,
-            )
-        ),
-    ),
-)
-def test_smarts_presence_featurizer(test_input, expected):
-    """Test SMARTSFeaturizer for SMARTS presence detection."""
-    featurizer = SMARTSFeaturizer(count=False, names=SMARTS_PRESET)
-    molecule = MOLECULE(test_input)
+    assert text.to_dict()["filled_completion"] == "Answer: 0, 0, 0, 0, 0, 0, 0, 0, and 0"
 
+    featurizer = SMARTSFeaturizer.from_preset("organic", False)
     results = featurizer.featurize(molecule)
 
-    assert np.equal(results, expected).all()
+    assert len(results) == 1
+    assert len(results[0]) == len(featurizer.feature_labels())
+
+    assert sum(results[0]) == 0
+
+    text = featurizer.text_featurize(molecule)
+
+    assert (
+        text.to_dict()["filled_prompt"]
+        == "Question: Are carboxyl, carbonyl, ether, alkanol, thiol, halogen, amine, amide, and ketone in the molecule with SMILES c1ccccc1?\nConstraint: return a list of 1s and 0s if the pattern is present or not."
+        ""
+    )
+
+    assert text.to_dict()["filled_completion"] == "Answer: 0, 0, 0, 0, 0, 0, 0, 0, and 0"
+
+    featurizer = SMARTSFeaturizer(["[#6]1:[#6]:[#6]:[#6]:[#6]:[#6]:1"], ["benzene"], False)
+    results = featurizer.featurize(molecule)
+
+    assert len(results) == 1
+    assert len(results[0]) == len(featurizer.feature_labels())
+
+    assert sum(results[0]) == 1
+
+    text = featurizer.text_featurize(molecule)
+
+    assert (
+        text.to_dict()["filled_prompt"]
+        == "Question: Is benzene in the molecule with SMILES c1ccccc1?\nConstraint: return a list of 1s and 0s if the pattern is present or not."
+    )
+
+    assert text.to_dict()["filled_completion"] == "Answer: 1"

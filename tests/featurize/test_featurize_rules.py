@@ -1,40 +1,21 @@
-# -*- coding: utf-8 -*-
-
-"""Test chemcaption.featurize.rules classes for drug properties."""
-
-import numpy as np
-import pytest
-
 from chemcaption.featurize.rules import LipinskiViolationCountFeaturizer
-from tests.conftests import DISPATCH_MAP, PROPERTY_BANK, extract_molecule_properties
-
-KIND = "selfies"
-MOLECULE = DISPATCH_MAP[KIND]
-
-# Element mass-related presets
-PRESET = ["carbon", "hydrogen", "oxygen", "nitrogen", "phosphorus"]
-
-# Implemented tests for drug rule-related classes.
-
-__all__ = [
-    "test_lipinski_violation_featurizer",
-]
+from chemcaption.molecules import SMILESMolecule
 
 
-"""Test for Lipinski violation count featurizer."""
-
-
-@pytest.mark.parametrize(
-    "test_input, expected",
-    extract_molecule_properties(
-        property_bank=PROPERTY_BANK, representation_name=KIND, property="num_lipinski_violations"
-    ),
-)
-def test_lipinski_violation_featurizer(test_input, expected):
-    """Test LipinskiViolationFeaturizer."""
+def test_lipinski_violation_count_featurizer():
+    molecule = SMILESMolecule("O")
     featurizer = LipinskiViolationCountFeaturizer()
-    molecule = MOLECULE(test_input)
-
     results = featurizer.featurize(molecule)
+    assert results[0] == 0
 
-    assert np.equal(results, expected).all()
+    molecule = SMILESMolecule("CCCCCCCCCCCCCCCC")
+    featurizer = LipinskiViolationCountFeaturizer()
+    results = featurizer.featurize(molecule)
+    assert results[0] == 1
+
+    text = featurizer.text_featurize(molecule)
+    assert (
+        text.to_dict()["filled_prompt"]
+        == "Question: What is the number of Lipinski violations of the molecule with SMILES CCCCCCCCCCCCCCCC?"
+    )
+    assert text.to_dict()["filled_completion"] == "Answer: 1"

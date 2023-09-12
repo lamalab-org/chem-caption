@@ -2,17 +2,17 @@
 
 """Featurizers describing the structure of (and/or the count and/or presence of substructures in) a molecule."""
 
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional
 
 import numpy as np
 import rdkit
+from rdkit.Chem import GetPeriodicTable, PeriodicTable
 
-from chemcaption.featurize.base import PERIODIC_TABLE, AbstractFeaturizer
-from chemcaption.featurize.text_utils import inspect_info
+
+from chemcaption.featurize.base import AbstractFeaturizer
 from chemcaption.molecules import Molecule
-from chemcaption.presets import SMARTSPreset
-
-# Implemented molecular structure- and substructure-related featurizers
+from chemcaption.featurize.utils import join_list_elements
+from chemcaption.presets import SMARTS_MAP
 
 __all__ = ["SMARTSFeaturizer", "IsomorphismFeaturizer", "TopologyCountFeaturizer"]
 
@@ -25,16 +25,62 @@ class SMARTSFeaturizer(AbstractFeaturizer):
 
     def __init__(
         self,
+        smarts: List[str],
+        names: Optional[List[str]],
         count: bool = True,
-        names: Optional[Union[str, List[str]]] = "rings",
-        smarts: Optional[List[str]] = None,
     ):
         """
         Initialize class.
 
         Args:
-            count (bool): If set to True, count pattern frequency. Otherwise, only encode presence. Defaults to True.
-            names (Optional[Union[str, List[str]]]): Preset name(s) of the substructures encoded by the SMARTS strings.
+            smarts (Optional[List[str]]): SMARTS strings that are matched with the molecules.
+                Defaults to None.
+            names (Optional[List[str]]): Names of the SMARTS strings.
+                If None, the SMARTS strings are used as names.
+                Defaults to None.
+            count (bool): If set to True, count pattern frequency.
+                Otherwise, only encode presence.
+                Defaults to True.
+        """
+        super().__init__()
+
+        self.smart_names = names if names is not None else smarts
+        self.smarts = smarts
+        self.count = count
+        self.constraint = (
+            "Constraint: return a list of integers."
+            if self.count
+            else "Constraint: return a list of 1s and 0s if the pattern is present or not."
+        )
+
+        self.prompt_template = "{PROPERTY_NAME} in the molecule with {REPR_SYSTEM} {REPR_STRING}?"
+
+    def get_names(self) -> List[Dict[str, str]]:
+        """Return names of extracted features.
+
+        Args:
+            None.
+
+        Returns:
+            (List[Dict[str, str]]): List of dictionaries containing feature names.
+        """
+        if self.count:
+            name = "Question: What is the count of " + join_list_elements(self.smart_names)
+
+        else:
+            if len(self.smart_names) == 1:
+                name = "Question: Is " + join_list_elements(self.smart_names)
+            else:
+                name = "Question: Are " + join_list_elements(self.smart_names)
+
+        return [{"noun": name}]
+
+    @classmethod
+    def from_preset(cls, preset: str, count: bool = True):
+        """
+        Args:
+            preset (str): Preset name of the substructures
+                encoded by the SMARTS strings.
                 Predefined presets can be specified as strings, and can be one of:
                     - `heterocyclic`,
                     - `rings`,
@@ -42,98 +88,16 @@ class SMARTSFeaturizer(AbstractFeaturizer):
                     - `scaffolds`,
                     - `warheads` or
                     - `organic`.
-                Defaults to `rings`.
-            smarts (Optional[List[str]]): SMARTS strings that are matched with the molecules. Defaults to None.
+                    - `all`
+            count (bool): If set to True, count pattern frequency.
         """
-        super().__init__()
-
-        if isinstance(names, str):
-            try:
-                self.prefix = f"{names}_"
-                names, smarts = SMARTSPreset(names).preset
-            except KeyError:
-                raise KeyError(
-                    f"`{names}` preset not defined. \
-                    Use `heterocyclic`, `rings`, 'amino`, `scaffolds`, `warheads`, or `organic`"
-                )
-        else:
-            if bool(names) != bool(smarts):
-                raise Exception("Both `names` and `smarts` must either be or not be provided.")
-
-            if len(names) != len(smarts):
-                raise Exception("Both `names` and `smarts` must be lists of the same length.")
-
-            self.prefix = "user_provided_"
-
-        self.names = names
-        self.smarts = smarts
-        self.count = count
-
-        self.suffix = "_count" if count else "_presence"
-        self.label = [self.prefix + element.lower() + self.suffix for element in self.names]
-
-        self.template = (
-            "What is the "
-            + self.suffix[1:]
-            + " of the provided {PROPERTY_NAME} (i.e., SMARTS patterns)"
-            " in the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
-        )
-        self._names = [
-            {
-                "noun": "functional groups",
-            }
-        ]
-
-    @property
-    def preset(self) -> Dict[str, List[str]]:
-        """Get molecular preset. Getter method.
-
-        Args:
-            None.
-
-        Returns:
-            (Dict[str, List[str]]): Dictionary of substance names and substance SMARTS strings.
-        """
-        return dict(names=self.names, smarts=self.smarts)
-
-    @preset.setter
-    def preset(
-        self,
-        new_preset: Optional[Union[str, Dict[str, List[str]]]],
-    ) -> None:
-        """Set molecular preset. Setter method.
-
-        Args:
-            new_preset (Optional[Union[str, Dict[str, List[str]]]]): New preset of interest.
-                Could be a:
-                    (str): string representing new predefined preset.
-                    (Dict[str, List[str]]): dictionary.
-                        Keys: `name` and `smarts`.
-                        Values: list of substance names and list of corresponding SMARTS strings.
-
-        Returns:
-            None.
-        """
-        if new_preset is not None:
-            if isinstance(new_preset, str):
-                names, smarts = SMARTSPreset(preset=new_preset).preset
-            elif isinstance(new_preset, (tuple, list)):
-                names = new_preset[0]
-                smarts = new_preset[1]
-            else:
-                names = new_preset["names"]
-                smarts = new_preset["smarts"]
-
-            self.prefix = f"{new_preset}_" if isinstance(new_preset, str) else "user_provided_"
-            self.names = names
-            self.smarts = smarts
-
-            self.label = [self.prefix + element.lower() + self.suffix for element in self.names]
-        else:
-            self.names = None
-            self.smarts = None
-            self.label = [None]
-        return
+        if preset not in SMARTS_MAP:
+            raise ValueError(
+                f"Invalid preset name '{preset}'. "
+                f"Valid preset names are: {', '.join(SMARTS_MAP.keys())}."
+            )
+        smarts_set = SMARTS_MAP[preset]
+        return cls(smarts=smarts_set["smarts"], names=smarts_set["names"], count=count)
 
     def featurize(self, molecule: Molecule) -> np.array:
         """
@@ -172,7 +136,8 @@ class SMARTSFeaturizer(AbstractFeaturizer):
         Returns:
             (List[str]): List of names of extracted features.
         """
-        return list(map(lambda x: "".join([("_" if c in "[]()-" else c) for c in x]), self.label))
+        suffix = "_count" if self.count else "_presence"
+        return [name + suffix for name in self.smart_names]
 
     def implementors(self) -> List[str]:
         """
@@ -237,63 +202,41 @@ class IsomorphismFeaturizer(AbstractFeaturizer):
 class TopologyCountFeaturizer(AbstractFeaturizer):
     """Featurizer to return number of unique `element` environments in a molecule."""
 
-    def __init__(self, reference_atomic_numbers: Union[int, List[int]] = 6):
+    def __init__(self, reference_atomic_numbers: List[int]):
         """Initialize class object.
 
         Args:
-            reference_atomic_numbers (Union[int, List[int]]): Atomic number for element of interest.
-                Can be either an integer or a list of integers. Defaults to `6` (Carbon).
+            reference_atomic_numbers (List[int]): Atomic number for element of interest.
         """
         super().__init__()
-
-        self.template = "By NMR, what is the {PROPERTY_NAME} for the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
-        self._names = [
-            {
-                "noun": "number of unique {} environments",
-            }
-        ]
-
-        self._reference_atomic_numbers = None
         self.reference_atomic_numbers = reference_atomic_numbers
 
-    @property
-    def reference_atomic_numbers(self):
-        """Getter for atomic number of `element` of interest.
-
-        Returns:
-            atomic_number (int): Atomic number for `element` of interest.
-        """
-        return self._reference_atomic_numbers
-
-    @reference_atomic_numbers.setter
-    def reference_atomic_numbers(self, atomic_number: Union[int, List[int]]):
-        """Setter of atomic numbers for `elements` of interest.
-
-        Args:
-            atomic_number (Union[int, List[int]]): Atomic numbers for `elements` of interest.
-
-        Returns:
-            None.
-        """
-        self._reference_atomic_numbers = (
-            [
-                atomic_number,
-            ]
-            if not isinstance(atomic_number, (list, tuple))
-            else atomic_number
-        )
-        elements = [
-            PERIODIC_TABLE.GetElementName(atomic_number).lower()
+    def feature_labels(self) -> List[str]:
+        return [
+            "topology_count_" + str(atomic_number)
             for atomic_number in self.reference_atomic_numbers
         ]
-        self.label = [f"num_{element}_environments" for element in elements]
 
-        info = {"PRECISION": 3, "PROPERTY_VALUE": elements}
-        info = inspect_info(info)
+    def get_names(self) -> List[Dict[str, str]]:
+        # map the numbers to names
+        periodic_table = GetPeriodicTable()
+        names = [
+            PeriodicTable.GetElementSymbol(periodic_table, atomic_number)
+            for atomic_number in self.reference_atomic_numbers
+        ]
+        return [
+            {"noun": f"number of topologically unique environments of {join_list_elements(names)}"}
+        ]
 
-        self._names[0]["noun"] = f"number of unique {info['PROPERTY_VALUE']} environments"
-
-        return
+    @classmethod
+    def from_preset(cls, preset: str):
+        if preset == "organic":
+            # Use C, H, N, O, P, S, F, Cl, Br, I
+            return cls(reference_atomic_numbers=[6, 1, 7, 8, 15, 16, 9, 17, 35, 53])
+        elif preset == "carbon":
+            return cls(reference_atomic_numbers=[6])
+        elif preset == "nitrogen":
+            return cls(reference_atomic_numbers=[7])
 
     def featurize(self, molecule: Molecule) -> np.array:
         """

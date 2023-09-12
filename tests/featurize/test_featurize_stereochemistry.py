@@ -36,3 +36,10 @@ def test_num_chiral_centers():
 
     results = featurizer.featurize(mol)
     assert results == np.array([11.0])
+
+    text = featurizer.text_featurize(mol)
+    assert (
+        text.to_dict()["filled_prompt"]
+        == "Question: What is the number of chiral centers of the molecule with SMILES CC(=O)OC1C(=O)C2(C)C(O)CC3OCC3(OC(C)=O)C2C(OC(=O)c2ccccc2)C2(O)CC(OC(=O)C(O)C(NC(=O)c3ccccc3)c3ccccc3)C(C)=C1C2(C)C?"
+    )
+    assert text.to_dict()["filled_completion"] == "Answer: 11"

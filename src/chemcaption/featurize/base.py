@@ -13,6 +13,7 @@ import rdkit
 from scipy.spatial import distance_matrix
 
 from chemcaption.featurize.text import Prompt
+from chemcaption.featurize.utils import apply_featurizer, join_list_elements
 from chemcaption.molecules import Molecule
 
 # Implemented abstract and high-level classes
@@ -37,9 +38,21 @@ class AbstractFeaturizer(ABC):
 
     def __init__(self):
         """Initialize class. Initialize periodic table."""
-        self._label = []
-        self.template = None
+        self.prompt_template = "Question: What is the {PROPERTY_NAME} of the molecule with {REPR_SYSTEM} {REPR_STRING}?"
+        self.completion_template = "Answer: {COMPLETION}"
         self._names = []
+        self.constraint = None
+
+    def get_names(self) -> List[Dict[str, str]]:
+        """Return feature names.
+
+        Args:
+            None.
+
+        Returns:
+            (List[Dict[str, str]]): List of names for extracted features according to parts-of-speech.
+        """
+        return self._names
 
     @abstractmethod
     def featurize(self, molecule: Molecule) -> np.array:
@@ -75,30 +88,25 @@ class AbstractFeaturizer(ABC):
             (Prompt): Instance of Prompt containing relevant information extracted from `molecule`.
         """
         completion = self.featurize(molecule=molecule).tolist()
-        completion = completion[0] if len(completion) == 1 else completion
 
-        completion_type = (
-            [type(c) for c in completion] if isinstance(completion, list) else type(completion)
-        )
-
+        completion_type = [type(c) for c in completion]
         representation = molecule.representation_string
         representation_type = molecule.__repr__().split("Mole")[0]
 
         completion_labels = self.feature_labels()
-        completion_labels = (
-            completion_labels[0] if len(completion_labels) == 0 else completion_labels
-        )
 
-        completion_name = self._names[0]["noun"]
+        completion_name = self.get_names()[0]["noun"]
 
         return Prompt(
-            completion=completion,
+            completion=join_list_elements(completion),
             completion_type=completion_type,
             representation=representation,
             representation_type=representation_type,
             completion_names=completion_name,
             completion_labels=completion_labels,
-            template=self.template,
+            prompt_template=self.prompt_template,
+            completion_template=self.completion_template,
+            constraint=self.constraint,
         )
 
     def text_featurize_many(
@@ -130,24 +138,6 @@ class AbstractFeaturizer(ABC):
         """
         raise NotImplementedError
 
-    @property
-    def label(self) -> List[str]:
-        """Get label attribute. Getter method."""
-        return self._label
-
-    @label.setter
-    def label(self, new_label: List[str]) -> None:
-        """Set label attribute. Setter method. Changes instance state.
-
-        Args:
-            new_label (str): New label for generated feature.
-
-        Returns:
-            None.
-        """
-        self._label = new_label
-        return
-
     def feature_labels(self) -> List[str]:
         """Return feature label(s).
 
@@ -157,7 +147,7 @@ class AbstractFeaturizer(ABC):
         Returns:
             (List[str]): List of names of extracted features.
         """
-        return self.label
+        raise NotImplementedError
 
     def feature_names(self) -> List[Dict[str, str]]:
         """Return feature names.
@@ -172,7 +162,7 @@ class AbstractFeaturizer(ABC):
 
     def citations(self):
         """Return citation for this project."""
-        return None
+        raise NotImplementedError
 
 
 class AbstractComparator(ABC):
@@ -253,7 +243,10 @@ class MultipleFeaturizer(AbstractFeaturizer):
                 extracted from molecule.
                 `num_featurizers` is the number of featurizers passed to MultipleFeaturizer.
         """
-        features = [featurizer.featurize(molecule=molecule) for featurizer in self.featurizers]
+        featurizer_molecule_pairs = [(featurizer, molecule) for featurizer in self.featurizers]
+
+        with ProcessPoolExecutor() as executor:
+            features = list(executor.map(apply_featurizer, featurizer_molecule_pairs))
 
         return np.concatenate(features, axis=-1)
 
@@ -314,21 +307,29 @@ class MultipleFeaturizer(AbstractFeaturizer):
 
         return self
 
-    def generate_data(self, molecules: List[Molecule]) -> pd.DataFrame:
+    def generate_data(self, molecules: List[Molecule], metadata: bool = False) -> pd.DataFrame:
         """Convert generated feature array to DataFrame.
 
         Args:
             molecules (List[Molecule]): Collection of molecular instances.
+            metadata (bool): Include extra molecule information.
 
         Returns:
             (pd.DataFrame): DataFrame generated from feature array.
         """
         features = self.featurize_many(molecules=molecules)
-        columns = ["representation_system", "representation_string"] + self.feature_labels()
-        features_ = np.array(
-            [[mol.__repr__().split("Molecule")[0], mol.representation_string] for mol in molecules]
-        ).reshape((-1, 2))
-        features = np.concatenate([features_, features], axis=-1)
+
+        if metadata:
+            extra_columns = ["representation_system", "representation_string"]
+            extra_features = np.array(
+                [[mol.get_representation(), mol.representation_string] for mol in molecules]
+            ).reshape((-1, 2))
+
+            features = np.concatenate([extra_features, features], axis=-1)
+        else:
+            extra_columns = []
+
+        columns = extra_columns + self.feature_labels()
 
         return pd.DataFrame(data=features, columns=columns)
 
@@ -347,7 +348,7 @@ class MultipleFeaturizer(AbstractFeaturizer):
         """
         if not os.path.isdir(fpath):
             raise FileExistsError(
-                f"Value of `fpath` parameter is a directory. Specify a file handle.`"
+                "Value of `fpath` parameter is a directory. Specify a file handle.`"
             )
 
         # Split molecules into batches

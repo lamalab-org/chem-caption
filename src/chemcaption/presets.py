@@ -2,12 +2,7 @@
 
 """Presets for SMARTS and molecular substructure matching."""
 
-from typing import Dict, List, Union
-
-# Implemented SMARTS presets.
-
 __all__ = [
-    "SMARTSPreset",
     "HETEROCYCLIC",
     "SCAFFOLDS",
     "RINGS",
@@ -18,40 +13,6 @@ __all__ = [
 ]
 
 """Preset class."""
-
-
-class SMARTSPreset:
-    """Container class for SMARTS string presets."""
-
-    def __init__(self, preset: Union[str, Dict[str, List[str]]] = "rings"):
-        """Initialize class.
-
-        Args:
-            preset (Union[str, Dict[str, List[str]]]): Predefined SMARTS map or user-defined map.
-        """
-        self._preset = None
-        self.preset = preset
-
-    @property
-    def preset(self):
-        """Return preset. Getter method.
-
-        Args:
-            None.
-
-        Returns:
-            (self): Instance of self.
-        """
-        return self._preset
-
-    @preset.setter
-    def preset(self, new_preset: Union[str, Dict[str, List[str]]]):
-        if isinstance(new_preset, str):
-            self._preset = (SMARTS_MAP[new_preset]["names"], SMARTS_MAP[new_preset]["smarts"])
-        else:
-            self._preset = new_preset["names"], new_preset["smarts"]
-
-        return
 
 
 """Pre-defined presets
@@ -1435,6 +1396,29 @@ ORGANIC = {
 
 """Preset map."""
 
+
+ALLSMART_NAMES = (
+    AMINO_PROTECTORS["names"]
+    + RINGS["names"]
+    + HETEROCYCLIC["names"]
+    + SCAFFOLDS["names"]
+    + WARHEADS["names"]
+    + ORGANIC["names"]
+)
+
+
+ALLSMART_SMARTS = (
+    AMINO_PROTECTORS["smarts"]
+    + RINGS["smarts"]
+    + HETEROCYCLIC["smarts"]
+    + SCAFFOLDS["smarts"]
+    + WARHEADS["smarts"]
+    + ORGANIC["smarts"]
+)
+
+
+ALL_SMARTS = dict(zip(ALLSMART_NAMES, ALLSMART_SMARTS))
+
 SMARTS_MAP = dict(
     amino=AMINO_PROTECTORS,
     rings=RINGS,
@@ -1442,4 +1426,5 @@ SMARTS_MAP = dict(
     scaffolds=SCAFFOLDS,
     warheads=WARHEADS,
     organic=ORGANIC,
+    all=ALL_SMARTS,
 )

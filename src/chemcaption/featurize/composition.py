@@ -10,11 +10,12 @@ from rdkit.Chem import Descriptors
 
 from chemcaption.featurize.base import PERIODIC_TABLE, AbstractFeaturizer
 from chemcaption.molecules import Molecule
+from chemcaption.featurize.utils import join_list_elements
 
 # Implemented composition-related featurizers
 
 __all__ = [
-    "MolecularFormularFeaturizer",
+    "MolecularFormulaFeaturizer",
     "MolecularMassFeaturizer",
     "MonoisotopicMolecularMassFeaturizer",
     "ElementMassFeaturizer",
@@ -26,26 +27,25 @@ __all__ = [
 ]
 
 
-class MolecularFormularFeaturizer(AbstractFeaturizer):
+class MolecularFormulaFeaturizer(AbstractFeaturizer):
     """Get the molecular formula of a molecule."""
 
     def __init__(self):
         """Initialize class."""
         super().__init__()
 
-        self.template = (
-            "What is the {PROPERTY_NAME} of the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
-        )
         self._names = [
             {
-                "noun": "molecular formular",
+                "noun": "molecular formula",
             }
         ]
-        self.label = ["molecular_formular"]
+
+    def feature_labels(self) -> List[str]:
+        return ["molecular_formula"]
 
     def featurize(self, molecule: Molecule) -> np.array:
         """
-        Featurize single molecule instance. Get the molecular mass of a molecule.
+        Featurize single molecule instance. Get the molecular formular of a molecule.
 
         Args:
             molecule (Molecule): Molecular representation.
@@ -83,7 +83,9 @@ class MolecularMassFeaturizer(AbstractFeaturizer):
                 "noun": "molecular mass",
             }
         ]
-        self.label = ["molecular_mass"]
+
+    def feature_labels(self) -> List[str]:
+        return ["molecular_mass"]
 
     def featurize(
         self,
@@ -129,7 +131,9 @@ class MonoisotopicMolecularMassFeaturizer(AbstractFeaturizer):
                 "noun": "monoisotopic molecular mass",
             }
         ]
-        self.label = ["monoisotopic_molecular_mass"]
+
+    def feature_labels(self) -> List[str]:
+        return ["monoisotopic_molecular_mass"]
 
     def featurize(
         self,
@@ -176,18 +180,15 @@ class ElementMassFeaturizer(AbstractFeaturizer):
         else:
             self._preset = ["Carbon", "Hydrogen", "Nitrogen", "Oxygen"]
 
-        self.prefix = ""
-        self.suffix = "_mass"
-        self.label = [self.prefix + element.lower() + self.suffix for element in self.preset]
-
         self.template = (
             "What is the {PROPERTY_NAME} for the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
         )
-        self._names = [
-            {
-                "noun": "contributed mass per element",
-            }
-        ]
+
+    def get_names(self) -> List[Dict[str, str]]:
+        return [{"noun": "total mass of " + join_list_elements(self.preset)}]
+
+    def feature_labels(self) -> List[str]:
+        return [element.lower() + "_mass" for element in self.preset]
 
     @property
     def preset(self) -> Optional[Union[List[str], Dict[str, str]]]:
@@ -327,14 +328,8 @@ class ElementMassProportionFeaturizer(ElementMassFeaturizer):
         self.suffix = "_mass_ratio"
         self.label = [self.prefix + element.lower() + self.suffix for element in self.preset]
 
-        self.template = (
-            "What is the {PROPERTY_NAME} for the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
-        )
-        self._names = [
-            {
-                "noun": "contributed mass proportion per element",
-            }
-        ]
+    def get_names(self) -> List[Dict[str, str]]:
+        return [{"noun": "mass proportion of " + join_list_elements(self.preset)}]
 
     def featurize(self, molecule: Molecule) -> np.array:
         """
@@ -368,19 +363,12 @@ class ElementCountFeaturizer(ElementMassFeaturizer):
     def __init__(self, preset: Optional[List[str]] = None):
         """Initialize class."""
         super().__init__(preset=preset)
-        self.prefix = "num_"
-        self.suffix = "_atoms"
 
-        self.label = [self.prefix + element.lower() + self.suffix for element in self.preset]
+    def feature_labels(self) -> List[str]:
+        return ["num_" + element.lower() + "_atoms" for element in self.preset]
 
-        self.template = (
-            "What is the {PROPERTY_NAME} for the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
-        )
-        self._names = [
-            {
-                "noun": "number of atoms per element",
-            }
-        ]
+    def get_names(self):
+        return [{"noun": "atom count of " + join_list_elements(self.preset)}]
 
     def _get_atom_count(self, element: str, molecule: Molecule) -> int:
         """
@@ -456,19 +444,12 @@ class ElementCountProportionFeaturizer(ElementCountFeaturizer):
                 Defaults to `None`.
         """
         super().__init__(preset=preset)
-        self.prefix = ""
-        self.suffix = "_atom_ratio"
-        self.label = [self.prefix + element.lower() + self.suffix for element in self.preset]
 
-        self.template = (
-            "Based on atom count, what is the {PROPERTY_NAME} "
-            "for the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
-        )
-        self._names = [
-            {
-                "noun": "atomic proportion per element",
-            }
-        ]
+    def get_names(self):
+        return [{"noun": "relative atom count of " + join_list_elements(self.preset)}]
+
+    def feature_labels(self) -> List[str]:
+        return [element.lower() + "_atom_ratio" for element in self.preset]
 
     def featurize(self, molecule: Molecule) -> np.array:
         """
@@ -502,15 +483,17 @@ class AtomCountFeaturizer(ElementCountFeaturizer):
     def __init__(self):
         """Initialize instance."""
         super().__init__()
-
-        self.template = "What is the {PROPERTY_NAME} present in the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
         self._names = [
             {
                 "noun": "total number of atoms",
             }
         ]
 
-        self.label = ["num_atoms"]
+    def get_names(self):
+        return [{"noun": "total number of atoms"}]
+
+    def feature_labels(self) -> List[str]:
+        return ["num_atoms"]
 
     def featurize(self, molecule: Molecule) -> np.array:
         """
@@ -547,15 +530,15 @@ class DegreeOfUnsaturationFeaturizer(AbstractFeaturizer):
             None.
         """
         super().__init__()
-        self.template = (
-            "What is the {PROPERTY_NAME} of a molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
-        )
+
         self._names = [
             {
                 "noun": "degree of unsaturation",
             }
         ]
-        self._label = ["degree_of_unsaturation"]
+
+    def feature_labels(self) -> List[str]:
+        return ["degree_of_unsaturation"]
 
     def _get_degree_of_unsaturation_for_mol(self, molecule: Molecule):
         """Return the degree of unsaturation for a molecule.

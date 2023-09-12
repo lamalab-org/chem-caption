@@ -23,8 +23,8 @@ sys.path.insert(0, os.path.abspath("../../src"))
 # -- Project information -----------------------------------------------------
 
 project = "chemcaption"
-copyright = f"{date.today().year}, Kevin Maik Jablonka "
-author = "Kevin Maik Jablonka "
+copyright = f"{date.today().year}, Kevin Maik Jablonka and Benedict Oshomah Emoekabu"
+author = "Kevin Maik Jablonka and Benedict Oshomah Emoekabu"
 
 # The full version, including alpha/beta/rc tags.
 release = "0.0.1-dev"
@@ -36,8 +36,6 @@ parsed_version = re.match(
 )
 version = parsed_version.expand("\g<major>.\g<minor>.\g<patch>")
 
-if parsed_version.group("release"):
-    tags.add("prerelease")
 
 # -- General configuration ---------------------------------------------------
 
@@ -56,18 +54,22 @@ modindex_common_prefix = ["chemcaption."]
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    "sphinx.ext.autosummary",
     "sphinx.ext.autodoc",
-    "sphinx.ext.coverage",
-    "sphinx.ext.intersphinx",
-    "sphinx.ext.todo",
-    "sphinx.ext.mathjax",
-    "sphinx.ext.viewcode",
+    "sphinx.ext.napoleon",
     "sphinx_autodoc_typehints",
-    "sphinx_automodapi.automodapi",
-    "sphinx_automodapi.smart_resolver",
-    # 'texext',
+    "sphinxcontrib.katex",
+    "sphinx_copybutton",
+    "sphinx.ext.viewcode",
+    "sphinx.ext.autosectionlabel",
+    "sphinx.ext.intersphinx",
 ]
+
+intersphinx_mapping = {
+    "pandas": ("https://pandas.pydata.org/docs/", None),
+    "sklearn": ("https://scikit-learn.org/stable/", None),
+    "numpy": ("https://numpy.org/doc/stable/", None),
+    "scipy": ("https://docs.scipy.org/doc/scipy/", None),
+}
 
 
 extensions.append("sphinx_click.ext")
@@ -108,7 +110,7 @@ pygments_style = "sphinx"
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = "sphinx_rtd_theme"
+html_theme = "furo"
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -227,14 +229,6 @@ texinfo_documents = [
 
 # -- Options for intersphinx extension ---------------------------------------
 
-# Example configuration for intersphinx: refer to the Python standard library.
-intersphinx_mapping = {
-    "https://docs.python.org/3/": None,
-    "pandas": ("https://pandas.pydata.org/docs/", None),
-    "sklearn": ("https://scikit-learn.org/stable/", None),
-    "numpy": ("https://numpy.org/doc/stable/", None),
-    "scipy": ("https://docs.scipy.org/doc/scipy/", None),
-}
 
 autoclass_content = "both"
 

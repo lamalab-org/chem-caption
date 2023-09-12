@@ -29,16 +29,14 @@ class HydrogenAcceptorCountFeaturizer(AbstractFeaturizer):
         """Get the number of Hydrogen bond acceptors present in a molecule."""
         super().__init__()
 
-        self.template = (
-            "What is the {PROPERTY_NAME} in the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
-        )
         self._names = [
             {
                 "noun": "number of hydrogen bond acceptors",
             }
         ]
 
-        self.label = ["num_hydrogen_bond_acceptors"]
+    def feature_labels(self) -> List[str]:
+        return ["num_hydrogen_bond_acceptors"]
 
     def featurize(self, molecule: Molecule) -> np.array:
         """
@@ -50,7 +48,7 @@ class HydrogenAcceptorCountFeaturizer(AbstractFeaturizer):
         Returns:
             (np.array): Number of Hydrogen bond acceptors present in `molecule`.
         """
-        return np.array([rdMolDescriptors.CalcNumHBA(molecule.rdkit_mol)]).reshape((1, -1))
+        return np.array([rdMolDescriptors.CalcNumHBA(molecule.reveal_hydrogens())]).reshape((1, -1))
 
     def implementors(self) -> List[str]:
         """
@@ -75,16 +73,14 @@ class HydrogenDonorCountFeaturizer(AbstractFeaturizer):
         """Get the number of Hydrogen bond donors present in a molecule."""
         super().__init__()
 
-        self.template = (
-            "What is the {PROPERTY_NAME} in the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
-        )
         self._names = [
             {
                 "noun": "number of hydrogen bond donors",
             }
         ]
 
-        self.label = ["num_hydrogen_bond_donors"]
+    def feature_labels(self) -> List[str]:
+        return ["num_hydrogen_bond_donors"]
 
     def featurize(self, molecule: Molecule) -> np.array:
         """
@@ -96,7 +92,7 @@ class HydrogenDonorCountFeaturizer(AbstractFeaturizer):
         Returns:
             np.array: Number of Hydrogen bond donors present in `molecule`.
         """
-        return np.array([rdMolDescriptors.CalcNumHBD(molecule.rdkit_mol)]).reshape((1, -1))
+        return np.array([rdMolDescriptors.CalcNumHBD(molecule.reveal_hydrogens())]).reshape((1, -1))
 
     def implementors(self) -> List[str]:
         """
@@ -125,10 +121,6 @@ class ValenceElectronCountFeaturizer(AbstractFeaturizer):
         """
         super().__init__()
 
-        self.template = (
-            "What is the {PROPERTY_NAME} for the molecule with {REPR_SYSTEM} `{REPR_STRING}` "
-            "have in its outer shell?"
-        )
         self._names = [
             {
                 "noun": "number of valence electrons",
@@ -136,12 +128,10 @@ class ValenceElectronCountFeaturizer(AbstractFeaturizer):
             {
                 "noun": "valence electron count",
             },
-            {
-                "noun": "count of valence electrons",
-            },
         ]
 
-        self.label = ["num_valence_electrons"]
+    def feature_labels(self) -> List[str]:
+        return ["num_valence_electrons"]
 
     def featurize(self, molecule: Molecule) -> np.array:
         """
