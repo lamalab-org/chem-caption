@@ -33,8 +33,10 @@ class SMARTSFeaturizer(AbstractFeaturizer):
         Initialize class.
 
         Args:
-            count (bool): If set to True, count pattern frequency. Otherwise, only encode presence. Defaults to True.
-            names (Optional[Union[str, List[str]]]): Preset name(s) of the substructures encoded by the SMARTS strings.
+            count (bool): If set to True, count pattern frequency. Otherwise, only encode presence.
+                Defaults to True.
+            names (Optional[Union[str, List[str]]]): Preset name(s) of the substructures
+                encoded by the SMARTS strings.
                 Predefined presets can be specified as strings, and can be one of:
                     - `heterocyclic`,
                     - `rings`,
@@ -43,7 +45,8 @@ class SMARTSFeaturizer(AbstractFeaturizer):
                     - `warheads` or
                     - `organic`.
                 Defaults to `rings`.
-            smarts (Optional[List[str]]): SMARTS strings that are matched with the molecules. Defaults to None.
+            smarts (Optional[List[str]]): SMARTS strings that are matched with the molecules.
+                Defaults to None.
         """
         super().__init__()
 
@@ -245,13 +248,6 @@ class TopologyCountFeaturizer(AbstractFeaturizer):
                 Can be either an integer or a list of integers. Defaults to `6` (Carbon).
         """
         super().__init__()
-
-        self.template = "By NMR, what is the {PROPERTY_NAME} for the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
-        self._names = [
-            {
-                "noun": "number of unique {} environments",
-            }
-        ]
 
         self._reference_atomic_numbers = None
         self.reference_atomic_numbers = reference_atomic_numbers
