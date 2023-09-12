@@ -7,7 +7,7 @@ import pytest
 
 from chemcaption.featurize.bonds import (
     BondRotabilityFeaturizer,
-    BondTypeFeaturizer,
+    BondTypeCountFeaturizer,
     RotableBondCountFeaturizer,
 )
 from chemcaption.molecules import SMILESMolecule
@@ -21,7 +21,7 @@ MOLECULE = DISPATCH_MAP[KIND]
 __all__ = [
     "test_rotable_bond_count_featurizer",
     "test_bond_distribution_featurizer",
-    "test_bond_type_featurizer",
+    "test_bond_type_count_featurizer",
 ]
 
 
@@ -65,8 +65,8 @@ def test_bond_distribution_featurizer(test_input, expected):
     assert np.isclose(results, expected).all()
 
 
-def test_bond_type_featurizer():
-    bt = BondTypeFeaturizer()
+def test_bond_type_count_featurizer():
+    bt = BondTypeCountFeaturizer()
     molecule = SMILESMolecule("C1=CC=CC=C1")
     results = bt.featurize(molecule)
     print(bt.feature_labels())

@@ -9,6 +9,8 @@ from rdkit.Chem import Lipinski, rdMolDescriptors
 
 from chemcaption.featurize.base import MultipleFeaturizer
 
+from chemcaption.featurize.bonds import BondTypeCountFeaturizer
+
 from chemcaption.featurize.composition import (
     AtomCountFeaturizer,
     ElementCountFeaturizer,
@@ -46,24 +48,6 @@ def generate_info(string: str):
     Returns:
         (Dict[str, Union[int, float]]): Hash map from property name to property value of type int or float.
     """
-    keys = [
-        "smiles",
-        "weisfeiler_lehman_hash",
-        "num_atoms",
-        "num_bonds",
-        "num_rotable_bonds",
-        "num_non_rotable_bonds",
-        "num_rotable_bonds_strict",
-        "num_non_rotable_bonds_strict",
-        "rotable_proportion",
-        "non_rotable_proportion",
-        "rotable_proportion_strict",
-        "non_rotable_proportion_strict",
-        "num_hydrogen_bond_donors",
-        "num_hydrogen_bond_acceptors",
-        "num_valence_electrons",
-        "num_lipinski_violations",
-    ]
     preset = [
         "Carbon",
         "Hydrogen",
@@ -88,6 +72,7 @@ def generate_info(string: str):
     isomorphism_featurizer = IsomorphismFeaturizer()
 
     atom_count_featurizer = AtomCountFeaturizer()
+    bond_type_count_featurizer = BondTypeCountFeaturizer()
 
     # shape_featurizer = MultipleFeaturizer(
     #     featurizers=[
@@ -110,18 +95,41 @@ def generate_info(string: str):
 
     atom_count = atom_count_featurizer.featurize(mol).item()
 
-    num_bonds = len(mol.rdkit_mol.GetBonds())
+    num_bonds = len(mol.reveal_hydrogens().GetBonds())
 
-    rotable_strict = rdMolDescriptors.CalcNumRotatableBonds(mol.rdkit_mol, strict=True)
-    rotable_non_strict = rdMolDescriptors.CalcNumRotatableBonds(mol.rdkit_mol, strict=False)
+    rotable_strict = rdMolDescriptors.CalcNumRotatableBonds(mol.reveal_hydrogens(), strict=True)
+    rotable_non_strict = rdMolDescriptors.CalcNumRotatableBonds(mol.reveal_hydrogens(), strict=False)
 
     non_rotable_strict = num_bonds - rotable_strict
     non_rotable_non_strict = num_bonds - rotable_non_strict
 
-    num_donors = Lipinski.NumHDonors(mol.rdkit_mol)
-    num_acceptors = Lipinski.NumHAcceptors(mol.rdkit_mol)
+    num_donors = Lipinski.NumHDonors(mol.reveal_hydrogens())
+    num_acceptors = Lipinski.NumHAcceptors(mol.reveal_hydrogens())
 
     num_lipinski_violations = lipinski_featurizer.featurize(mol).item()
+
+    keys = [
+        "smiles",
+        "weisfeiler_lehman_hash",
+        "num_atoms"
+    ]
+
+    keys += bond_type_count_featurizer.feature_labels()
+
+    keys += [
+        "num_rotable_bonds",
+        "num_non_rotable_bonds",
+        "num_rotable_bonds_strict",
+        "num_non_rotable_bonds_strict",
+        "rotable_proportion",
+        "non_rotable_proportion",
+        "rotable_proportion_strict",
+        "non_rotable_proportion_strict",
+        "num_hydrogen_bond_donors",
+        "num_hydrogen_bond_acceptors",
+        "num_valence_electrons",
+        "num_lipinski_violations",
+    ]
 
     masses = mass_featurizer.featurize(molecule=mol).reshape((-1,)).tolist()
     keys += mass_featurizer.feature_labels()
@@ -137,6 +145,8 @@ def generate_info(string: str):
 
     valence_count = valence_featurizer.featurize(molecule=mol).item()
 
+    bond_type_counts = bond_type_count_featurizer.featurize(molecule=mol).flatten().tolist()
+
     # shape_features = shape_featurizer.featurize(molecule=mol).tolist()
     # npr_pmi = npr_pmi_featurizer.featurize(molecule=mol).tolist()
 
@@ -144,7 +154,10 @@ def generate_info(string: str):
         string,
         wl_hash,
         atom_count,
-        num_bonds,
+    ]
+
+    values += bond_type_counts
+    values += [
         rotable_non_strict,
         non_rotable_non_strict,
         rotable_strict,
