@@ -12,6 +12,8 @@ from rdkit.Chem import Descriptors3D
 from chemcaption.featurize.base import AbstractFeaturizer
 from chemcaption.molecules import Molecule
 from functools import lru_cache
+from chemcaption.featurize.utils import join_list_elements
+from frozendict import frozendict
 
 # Implemented bond-related featurizers
 
@@ -31,8 +33,8 @@ __all__ = [
 @lru_cache(maxsize=None)
 def cached_conformer(smiles, kwargs):
     mol, conformers = _get_conformer(smiles=smiles, **kwargs)
-    for conf in conformers[:1]:
-        mol.AddConformer(conf)
+    for conf in conformers.keys():
+        mol.AddConformer(mol.GetConformer(conf))
     return mol
 
 
@@ -53,7 +55,11 @@ class ThreeDimensionalFeaturizer(AbstractFeaturizer):
         self.force = force
 
         self.FUNCTION_MAP = None
-        self._conf_gen_kwargs = conformer_generation_kwargs or {}
+        self._conf_gen_kwargs = (
+            frozendict(conformer_generation_kwargs)
+            if conformer_generation_kwargs
+            else frozendict({})
+        )
 
     def _get_conformer(self, mol):
         smiles = Chem.MolToSmiles(mol)
@@ -385,8 +391,6 @@ class PMIFeaturizer(ThreeDimensionalFeaturizer):
 
         self.FUNCTION_MAP = {1: Descriptors3D.PMI1, 2: Descriptors3D.PMI2, 3: Descriptors3D.PMI3}
 
-        self._parse_labels()
-
     def _parse_labels(self) -> None:
         """
         Parse featurizer labels.
@@ -398,10 +402,27 @@ class PMIFeaturizer(ThreeDimensionalFeaturizer):
             None.
         """
         if self.variant == "all":
-            self.label = [f"pmi{i}_value" for i in range(1, 4)]
-        else:
-            self.label = [f"pmi{self.variant}_value"]
-        return
+            return [f"pmi{i}_value" for i in range(1, 4)]
+        return [f"pmi{self.variant}_value"]
+
+    def feature_labels(self) -> List[str]:
+        return self._parse_labels()
+
+    def get_names(self) -> List[Dict[str, str]]:
+        names = []
+        for label in self._parse_labels():
+            if "1" in label:
+                names.append("first")
+            elif "2" in label:
+                names.append("second")
+            elif "3" in label:
+                names.append("third")
+        name = (
+            " principal moment of inertia (PMI)"
+            if len(names) == 1
+            else " principal moments of inertia (PMI)"
+        )
+        return [{"noun": join_list_elements(names) + name}]
 
     def featurize(self, molecule: Molecule) -> np.array:
         """
