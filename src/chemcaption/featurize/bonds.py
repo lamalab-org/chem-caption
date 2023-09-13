@@ -8,8 +8,8 @@ import numpy as np
 from rdkit.Chem import rdMolDescriptors
 
 from chemcaption.featurize.base import AbstractFeaturizer
-from chemcaption.molecules import Molecule
 from chemcaption.featurize.utils import join_list_elements
+from chemcaption.molecules import Molecule
 
 # Implemented bond-related featurizers
 
@@ -395,10 +395,7 @@ class BondTypeProportionFeaturizer(BondTypeCountFeaturizer):
             (List[str]): List of strings of bond types.
         """
         labels = super().feature_labels()
-        labels = [
-            "_".join(x.split("_")[:-1] + [self.suffix])
-            for x in labels
-        ]
+        labels = ["_".join(x.split("_")[:-1] + [self.suffix]) for x in labels]
 
         return labels
 

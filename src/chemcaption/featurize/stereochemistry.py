@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""Featurizers for stereochemistry."""
+"""Featurizers for stereochemistry-related features."""
 
 from typing import Any, List, Tuple, Union
 
@@ -11,6 +11,7 @@ from rdkit.Chem import AllChem
 from chemcaption.featurize.base import AbstractFeaturizer
 from chemcaption.molecules import Molecule
 
+# Implemented stereochemistry-related featurizers
 
 __all__ = [
     "ChiralCenterCountFeaturizer",

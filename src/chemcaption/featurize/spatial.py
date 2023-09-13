@@ -1,21 +1,19 @@
 # -*- coding: utf-8 -*-
 
-"""Featurizers for chemical bond-related information."""
+"""Featurizers for 3D, spatial features."""
 
 from typing import Dict, List, Union
 
 import numpy as np
-
+from frozendict import frozendict
 from rdkit import Chem
 from rdkit.Chem import Descriptors3D
 
 from chemcaption.featurize.base import AbstractFeaturizer
+from chemcaption.featurize.utils import cached_conformer, join_list_elements
 from chemcaption.molecules import Molecule
 
-from chemcaption.featurize.utils import join_list_elements, cached_conformer
-from frozendict import frozendict
-
-# Implemented bond-related featurizers
+# Implemented spatial featurizers
 
 __all__ = [
     "ThreeDimensionalFeaturizer",
@@ -264,7 +262,7 @@ class InertialShapeFactorFeaturizer(ThreeDimensionalFeaturizer):
         Returns:
             List[str]: List of implementors.
         """
-        return ["Benedict Oshomah Emoekabu",  "Kevin Maik Jablonka"]
+        return ["Benedict Oshomah Emoekabu", "Kevin Maik Jablonka"]
 
 
 class NPRFeaturizer(ThreeDimensionalFeaturizer):
@@ -362,7 +360,7 @@ class NPRFeaturizer(ThreeDimensionalFeaturizer):
         Returns:
             List[str]: List of implementors.
         """
-        return ["Benedict Oshomah Emoekabu",  "Kevin Maik Jablonka"]
+        return ["Benedict Oshomah Emoekabu", "Kevin Maik Jablonka"]
 
 
 class PMIFeaturizer(ThreeDimensionalFeaturizer):

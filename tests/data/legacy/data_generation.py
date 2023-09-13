@@ -8,9 +8,7 @@ import pandas as pd
 from rdkit.Chem import Lipinski, rdMolDescriptors
 
 from chemcaption.featurize.base import MultipleFeaturizer
-
 from chemcaption.featurize.bonds import BondTypeCountFeaturizer
-
 from chemcaption.featurize.composition import (
     AtomCountFeaturizer,
     ElementCountFeaturizer,
@@ -21,11 +19,11 @@ from chemcaption.featurize.composition import (
 from chemcaption.featurize.electronicity import ValenceElectronCountFeaturizer
 from chemcaption.featurize.rules import LipinskiViolationCountFeaturizer
 from chemcaption.featurize.spatial import (
-    EccentricityFeaturizer,
     AsphericityFeaturizer,
+    EccentricityFeaturizer,
     InertialShapeFactorFeaturizer,
     NPRFeaturizer,
-    PMIFeaturizer
+    PMIFeaturizer,
 )
 from chemcaption.featurize.substructure import IsomorphismFeaturizer, SMARTSFeaturizer
 from chemcaption.molecules import SMILESMolecule
@@ -98,7 +96,9 @@ def generate_info(string: str):
     num_bonds = len(mol.reveal_hydrogens().GetBonds())
 
     rotable_strict = rdMolDescriptors.CalcNumRotatableBonds(mol.reveal_hydrogens(), strict=True)
-    rotable_non_strict = rdMolDescriptors.CalcNumRotatableBonds(mol.reveal_hydrogens(), strict=False)
+    rotable_non_strict = rdMolDescriptors.CalcNumRotatableBonds(
+        mol.reveal_hydrogens(), strict=False
+    )
 
     non_rotable_strict = num_bonds - rotable_strict
     non_rotable_non_strict = num_bonds - rotable_non_strict
@@ -108,11 +108,7 @@ def generate_info(string: str):
 
     num_lipinski_violations = lipinski_featurizer.featurize(mol).item()
 
-    keys = [
-        "smiles",
-        "weisfeiler_lehman_hash",
-        "num_atoms"
-    ]
+    keys = ["smiles", "weisfeiler_lehman_hash", "num_atoms"]
 
     keys += bond_type_count_featurizer.feature_labels()
 

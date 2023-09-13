@@ -9,8 +9,8 @@ import numpy as np
 from rdkit.Chem import Descriptors
 
 from chemcaption.featurize.base import PERIODIC_TABLE, AbstractFeaturizer
-from chemcaption.molecules import Molecule
 from chemcaption.featurize.utils import join_list_elements
+from chemcaption.molecules import Molecule
 
 # Implemented composition-related featurizers
 
@@ -206,8 +206,6 @@ class ElementMassFeaturizer(AbstractFeaturizer):
             None.
         """
         self._preset = new_preset
-        if new_preset is not None:
-            self.label = [self.prefix + element.lower() + self.suffix for element in self.preset]
         return
 
     def fit(

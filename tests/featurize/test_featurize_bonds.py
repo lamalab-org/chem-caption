@@ -9,8 +9,8 @@ from chemcaption.featurize.bonds import (
     BondTypeCountFeaturizer,
     RotableBondCountFeaturizer,
 )
-from chemcaption.molecules import SMILESMolecule
 from chemcaption.featurize.text import Prompt
+from chemcaption.molecules import SMILESMolecule
 
 
 def test_bond_type_featurizer():
