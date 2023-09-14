@@ -208,7 +208,7 @@ class TopologyCountFeaturizer(AbstractFeaturizer):
         """Initialize class object.
 
         Args:
-            reference_atomic_numbers (List[int]): Atomic number for element of interest.
+            reference_atomic_numbers (List[int]): Atomic numbers for elements of interest.
         """
         super().__init__()
         self.reference_atomic_numbers = reference_atomic_numbers
