@@ -72,4 +72,11 @@ Bonds
    :members:
    :undoc-members:
    :show-inheritance:
-   
+
+Adaptor 
+.......
+
+.. automodule:: chemcaption.featurize.adaptor
+   :members:
+   :undoc-members:
+   :show-inheritance:
