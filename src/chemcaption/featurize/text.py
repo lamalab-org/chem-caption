@@ -99,7 +99,7 @@ class Prompt:
         Returns:
             (str): Appropriately formatted template.
         """
-        return self.fill_template()
+        return str(self.__dict__())
 
     def to_meta_yaml(self):
         """Convert all prompt information from string to YAML format."""
@@ -116,3 +116,11 @@ class Prompt:
             List[str]: List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]
+
+
+class PromptContainer:
+    def __init__(self, prompts: List[Prompt]):
+        self.prompts = prompts
+
+    def to_list(self):
+        return [prompt.to_dict() for prompt in self.prompts]
