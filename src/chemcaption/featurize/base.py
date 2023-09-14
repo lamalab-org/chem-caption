@@ -2,10 +2,9 @@
 
 """Abstract base class and wrappers for featurizers."""
 
-import os
 from abc import ABC, abstractmethod
 from concurrent.futures import ProcessPoolExecutor
-from typing import Dict, Generator, List, Optional
+from typing import Dict, List, Optional
 
 import numpy as np
 import pandas as pd
@@ -13,7 +12,7 @@ import rdkit
 from scipy.spatial import distance_matrix
 
 from chemcaption.featurize.text import Prompt
-from chemcaption.featurize.utils import apply_featurizer, join_list_elements
+from chemcaption.featurize.utils import join_list_elements
 from chemcaption.molecules import Molecule
 
 # Implemented abstract and high-level classes
@@ -223,37 +222,38 @@ class MultipleFeaturizer(AbstractFeaturizer):
         """Initialize class instance.
 
         Args:
-            featurizers (Optional[List[AbstractFeaturizer]]): A list of featurizer objects. Defaults to `None`.
+            featurizers (Optional[List[AbstractFeaturizer]]):
+                A list of featurizer objects. Defaults to `None`.
 
         """
         super().__init__()
 
-        self.featurizers = None
-        self.fit_on_featurizers(featurizers=featurizers)
+        self.featurizers = featurizers
 
     def featurize(self, molecule: Molecule) -> np.array:
         """
-        Featurize a molecule instance. Returns results from multiple lower-level featurizers.
+        Featurize a molecule instance.
+        Returns results from multiple lower-level featurizers.
 
         Args:
             molecule (Molecule): Molecule representation.
 
         Returns:
-            features (np.array), array shape [1, num_featurizers]: Array containing features
-                extracted from molecule.
-                `num_featurizers` is the number of featurizers passed to MultipleFeaturizer.
+            features (np.array), array shape [1, num_featurizers]:
+                Array containing features extracted from molecule.
+                `num_featurizers` is the number of featurizers passed to MultipleFeaturizer
+                i.e., `num_featurizers` = len(self.featurizers).
         """
-        featurizer_molecule_pairs = [(featurizer, molecule) for featurizer in self.featurizers]
+        features = [
+            feature for f in self.featurizers for feature in f.featurize(molecule).flatten()
+        ]
 
-        with ProcessPoolExecutor() as executor:
-            features = list(executor.map(apply_featurizer, featurizer_molecule_pairs))
-
-        return np.concatenate(features, axis=-1)
+        return np.array(features).reshape((1, -1))
 
     def text_featurize(
         self,
         molecule: Molecule,
-    ) -> Generator[Prompt, None, None]:
+    ) -> List[Prompt]:
         """Embed features in Prompt instance.
 
         Args:
@@ -262,7 +262,7 @@ class MultipleFeaturizer(AbstractFeaturizer):
         Returns:
             (Prompt): Instance of Prompt containing relevant information extracted from `molecule`.
         """
-        return (featurizer.text_featurize(molecule=molecule) for featurizer in self.featurizers)
+        return [f.text_featurize(molecule=molecule) for f in self.featurizers]
 
     def feature_labels(self) -> List[str]:
         """Return feature labels.
@@ -273,9 +273,7 @@ class MultipleFeaturizer(AbstractFeaturizer):
         Returns:
             List[str]: List of labels for all features extracted by all featurizers.
         """
-        labels = list()
-        for featurizer in self.featurizers:
-            labels += featurizer.feature_labels()
+        labels = [label for f in self.featurizers for label in f.feature_labels()]
 
         return labels
 
@@ -315,6 +313,7 @@ class MultipleFeaturizer(AbstractFeaturizer):
         Args:
             molecules (List[Molecule]): Collection of molecular instances.
             metadata (bool): Include extra molecule information.
+                Defaults to `False`.
 
         Returns:
             (pd.DataFrame): DataFrame generated from feature array.
@@ -334,73 +333,6 @@ class MultipleFeaturizer(AbstractFeaturizer):
         columns = extra_columns + self.feature_labels()
 
         return pd.DataFrame(data=features, columns=columns)
-
-    def batch_generate_data(
-        self, molecules: List[Molecule], batch_size: int = 2, fpath: str = "molecule_features.csv"
-    ) -> None:
-        """Generate and persist molecular features in batches.
-
-        Args:
-            molecules (List[Molecule]): Collection of molecular instances.
-            batch_size (int): Number of batches to extract at a time.
-            fpath (str): Path to persisted data.
-
-        Returns:
-            None.
-        """
-        if not os.path.isdir(fpath):
-            raise FileExistsError(
-                "Value of `fpath` parameter is a directory. Specify a file handle.`"
-            )
-
-        # Split molecules into batches
-        molecule_batches = [
-            molecules[i : i + batch_size] for i in range(0, len(molecules), batch_size)
-        ]
-        num_batches = len(molecule_batches)
-
-        for i, molecule_batch in enumerate(molecule_batches, start=1):
-            molecule_features = self.generate_data(molecules=molecule_batch)
-
-            if os.path.isfile(fpath):
-                try:
-                    source_of_truth = pd.read_csv(fpath)
-                    molecule_features = pd.concat((source_of_truth, molecule_features), axis=0)
-                except:
-                    pass
-
-            molecule_features.to_csv(path_or_buf=fpath, index=False)
-            print(f"Data batch persisted ({i}/{num_batches})!\n")
-
-        print("=" * 30, f"\nAll data persisted ({num_batches}/{num_batches})!")
-
-        return None
-
-    def generate_text_data(self, molecules: List[Molecule]):
-        """Convert generated feature array to text and embed in PromptContainer.
-
-        Args:
-            molecules (List[Molecule]): Collection of molecular instances.
-
-        Returns:
-            (PromptContainer): PromptContainer generated from feature array.
-        """
-        raise NotImplementedError
-
-    def batch_generate_text_data(
-        self, molecules: List[Molecule], batch_size: int = 2, fpath: str = "molecule_features.jsonl"
-    ) -> None:
-        """Generate and persist generated PromptContainer object.
-
-        Args:
-            molecules (List[Molecule]): Collection of molecular instances.
-            batch_size (int): Number of batches to extract at a time.
-            fpath (str): Path to persisted data.
-
-        Returns:
-            None.
-        """
-        raise NotImplementedError
 
     def implementors(self) -> List[str]:
         """

@@ -69,7 +69,6 @@ def test_bond_type_count_featurizer():
     bt = BondTypeCountFeaturizer()
     molecule = SMILESMolecule("C1=CC=CC=C1")
     results = bt.featurize(molecule)
-    print(bt.feature_labels())
     assert len(results.flatten().tolist()) == len(bt.feature_labels())
     results_dict = dict(zip(bt.feature_labels(), results.flatten().tolist()))
     assert results_dict["num_bonds"] == 12
