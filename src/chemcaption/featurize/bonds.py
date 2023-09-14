@@ -43,7 +43,7 @@ _MAP_BOND_TYPE_TO_CLEAN_NAME = {
     "num_hydrogen_bonds": "hydrogen",
     "num_threecenter_bonds": "three-center",
     "num_dativeone_bonds": "dative one-electron",
-    "num_dative_bonds": "dative  two-electron",
+    "num_dative_bonds": "dative two-electron",
     "num_other_bonds": "other",
     "num_zero_bonds": "zero-order",
     "num_bonds": "total number of bonds",
@@ -182,7 +182,10 @@ class BondTypeCountFeaturizer(AbstractFeaturizer):
             "Question: {PROPERTY_NAME} in the molecule with {REPR_SYSTEM} {REPR_STRING}?"
         )
 
-        self.constraint = "Constraint: Return a list of comma separated integers."
+        if self.count:
+            self.constraint = "Constraint: Return a list of comma separated integers."
+        else:
+            self.constraint = "Constraint: Return a list of comma separated integer boolean indicators (0 for absence, 1 for presence)."
         self.bond_type = (
             [bond_type.upper()] if isinstance(bond_type, str) else [b.upper() for b in bond_type]
         )
@@ -211,8 +214,7 @@ class BondTypeCountFeaturizer(AbstractFeaturizer):
 
         if self.count:
             num_bonds.append(len(all_bonds))
-
-        if not self.count:
+        else:
             num_bonds = [min(1, count) for count in num_bonds]
 
         return num_bonds
@@ -248,7 +250,7 @@ class BondTypeCountFeaturizer(AbstractFeaturizer):
         if self.count:
             name = "What is the number of "
         else:
-            name = "Does the molecule have "
+            name = "Are there "
 
         return [{"noun": name + join_list_elements(mapped_names) + " bonds"}]
 
@@ -344,8 +346,7 @@ class BondTypeProportionFeaturizer(BondTypeCountFeaturizer):
                 If `all`, enumerates all bonds irrespective of type. Default (ALL).
         """
         super().__init__(count=False, bond_type=bond_type)
-
-        print(self.bond_type)
+        self.constraint = "Constraint: Return a list of comma separated floats."
 
     def feature_labels(self) -> List[str]:
         """
@@ -369,7 +370,9 @@ class BondTypeProportionFeaturizer(BondTypeCountFeaturizer):
         mapped_names = [
             _MAP_BOND_TYPE_TO_CLEAN_NAME[bond_type] for bond_type in self.feature_labels()
         ]
-        return [{"noun": join_list_elements(mapped_names)}]
+        return [
+            {"noun": "What is the proportion of " + join_list_elements(mapped_names) + " bonds"}
+        ]
 
     def _get_bond_distribution(self, molecule: Molecule) -> List[float]:
         """Return a frequency distribution for the bonds present in a molecule.
