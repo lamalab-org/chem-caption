@@ -25,10 +25,10 @@ def test_bond_type_featurizer():
     assert results_dict["num_single_bonds"] == 6
     text = bt.text_featurize(molecule)
     assert isinstance(text, Prompt)
-
+    print(text.to_dict()["filled_prompt"])
     assert (
         text.to_dict()["filled_prompt"]
-        == """Question: What is the number of unspecified bonds, number of single bonds, number of double bonds, number of triple bonds, number of quadruple bonds, number of quintuble bonds, number of hextuple bonds, number of one-and-a-half bonds, number of two-and-a-half bonds, number of three-and-a-half bonds, number of four-and-a-half bonds, number of five-and-a-half bonds, number of aromatic bonds, number of ionic bonds, number of hydrogen bonds, number of three-center bonds, number of dative one-electron bonds, number of two-electron dative bonds, number of other bonds, number of zero-order bonds, and total number of bonds in the molecule with SMILES c1ccccc1?
+        == """Question: What is the number of unspecified, single, double, triple, quadruple, quintuple, hextuple, one-and-a-half, two-and-a-half, three-and-a-half, four-and-a-half, five-and-a-half, aromatic, ionic, hydrogen, three-center, dative one-electron, dative  two-electron, other, and zero-order bonds in the molecule with SMILES c1ccccc1?
 Constraint: Return a list of comma separated integers."""
     )
 

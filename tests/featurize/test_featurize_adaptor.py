@@ -1,7 +1,4 @@
-from chemcaption.featurize.adaptor import (
-    ValenceElectronCountAdaptor,
-    StrictRotableBondDistributionAdaptor,
-)
+from chemcaption.featurize.adaptor import ValenceElectronCountAdaptor
 
 from chemcaption.molecules import SMILESMolecule
 import numpy as np

@@ -31,7 +31,7 @@ _MAP_BOND_TYPE_TO_CLEAN_NAME = {
     "num_double_bonds": "double",
     "num_triple_bonds": "triple",
     "num_quadruple_bonds": "quadruple",
-    "num_quintuple_bonds": "quintuble",
+    "num_quintuple_bonds": "quintuple",
     "num_hextuple_bonds": "hextuple",
     "num_oneandahalf_bonds": "one-and-a-half",
     "num_twoandahalf_bonds": "two-and-a-half",
@@ -240,12 +240,17 @@ class BondTypeCountFeaturizer(AbstractFeaturizer):
 
     def get_names(self) -> List[str]:
         mapped_names = [
-            _MAP_BOND_TYPE_TO_CLEAN_NAME[bond_type] for bond_type in self.feature_labels()
+            _MAP_BOND_TYPE_TO_CLEAN_NAME[bond_type]
+            for bond_type in self.feature_labels()
+            if "num_bonds" != bond_type
         ]
+        name = None
+        if self.count:
+            name = "What is the number of "
+        else:
+            name = "Does the molecule have "
 
-        # if we have the
-
-        return [{"noun": join_list_elements(mapped_names)}]
+        return [{"noun": name + join_list_elements(mapped_names) + " bonds"}]
 
     def _get_bonds(
         self,
