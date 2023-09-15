@@ -1,4 +1,4 @@
-from chemcaption.featurize.text import Prompt, PromptContainer
+from chemcaption.featurize.text import Prompt, PromptCollection
 
 
 def test_promptcontainer():
@@ -26,7 +26,7 @@ def test_promptcontainer():
         constraint="Constraint: Return a list of comma separated floats.",
     )
 
-    prompt_container = PromptContainer([prompt_1, prompt_2])
+    prompt_container = PromptCollection([prompt_1, prompt_2])
 
     elements = prompt_container.to_list()
     assert len(elements) == 2

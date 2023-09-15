@@ -38,6 +38,8 @@ import time
 from functools import partial
 from tqdm import tqdm
 
+from dask.distributed import Client
+
 
 def get_smarts_featurizers():
     featurizers = []
@@ -77,36 +79,31 @@ def featurize_smiles(smiles: str):
         return FEATURIZER.text_featurize(SMILESMolecule(smiles)).to_list()
     except Exception as e:
         print(e)
-        return None
+        return []
 
 
-def featurize_dataframe(
-    df: dd.DataFrame, outname: Optional[str] = None, smiles_column: str = "SMILES"
-):
-    all_smiles = df[smiles_column].dropna().unique()
-    print(f"Featurizing {len(all_smiles)} smiles")
+# @delayed
+def featurize_all_smiles(all_smiles):
     # create a jsonl file with the featurization output
+
     results = []
     for smiles in all_smiles:
-        results.extend(delayed(featurize_smiles)(smiles).compute())
+        results.extend(featurize_smiles(smiles))
 
-    if outname is None:
-        outname = f"featurization_{time.strftime('%Y%m%d-%H%M%S')}.jsonl"
-    with open(outname, "w") as outfile:
+    with open(f"outname_{all_smiles[0]}.jsonl", "w") as outfile:
         with jsonlines.Writer(outfile) as writer:
             writer.write_all(results)
 
-    return results
 
+def chunked_feat_large_df(filepath: Union[str, Path], chunksize: Union[int, str] = ".01MB"):
+    # read the csv file, get the SMILES column and in parallel featurize the SMILES
 
-def chunked_feat_large_df(filepath: Union[str, Path], chunksize: int = 100):
     df = dd.read_csv(filepath, blocksize=chunksize)
-    chunks = df.to_delayed()
+    smiles_array = df["SMILES"].to_dask_array(lengths=True)
 
-    for i, chunk in tqdm(enumerate(chunks)):
-        curried_featurize = partial(featurize_dataframe, outname=f"featurization_{i}.jsonl")
-        delayed(curried_featurize)(chunk).compute()
+    smiles_array.map_blocks(featurize_all_smiles).compute()
 
 
 if __name__ == "__main__":
+    client = Client(n_workers=3, processes=True)
     fire.Fire(chunked_feat_large_df)
