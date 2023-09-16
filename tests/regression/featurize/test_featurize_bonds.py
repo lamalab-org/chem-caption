@@ -6,20 +6,23 @@ import numpy as np
 import pytest
 
 from chemcaption.featurize.bonds import (
+    _MAP_BOND_TYPE_TO_CLEAN_NAME,
     BondTypeCountFeaturizer,
     RotableBondCountFeaturizer,
     RotableBondProportionFeaturizer,
 )
-from chemcaption.molecules import SMILESMolecule
 from tests.conftests import DISPATCH_MAP, PROPERTY_BANK, extract_molecule_properties
 
 KIND = "selfies"
 MOLECULE = DISPATCH_MAP[KIND]
 
+BOND_TYPES = list(_MAP_BOND_TYPE_TO_CLEAN_NAME.keys())
+
 # Implemented tests for bond-related featurizers.
 
 __all__ = [
     "test_rotable_bond_count_featurizer",
+    "test_rotable_bond_proportion_featurizer",
     "test_rotable_bond_proportion_featurizer",
     "test_bond_type_count_featurizer",
 ]
@@ -65,12 +68,18 @@ def test_rotable_bond_proportion_featurizer(test_input, expected):
     assert np.isclose(results, expected).all()
 
 
-def test_bond_type_count_featurizer():
-    bt = BondTypeCountFeaturizer()
-    molecule = SMILESMolecule("C1=CC=CC=C1")
-    results = bt.featurize(molecule)
-    assert len(results.flatten().tolist()) == len(bt.feature_labels())
-    results_dict = dict(zip(bt.feature_labels(), results.flatten().tolist()))
-    assert results_dict["num_bonds"] == 12
-    assert results_dict["num_aromatic_bonds"] == 6
-    assert results_dict["num_single_bonds"] == 6
+@pytest.mark.parametrize(
+    "test_input, expected",
+    extract_molecule_properties(
+        property_bank=PROPERTY_BANK, representation_name=KIND, property=BOND_TYPES
+    ),
+)
+def test_bond_type_count_featurizer(test_input, expected):
+    """Test for BondTypeCountFeaturizer."""
+    bond_type = list(map(lambda x: x.split("_")[1] if len(x.split("_")) == 3 else x, BOND_TYPES))
+    featurizer = BondTypeCountFeaturizer(bond_type=bond_type[:-1])
+    molecule = MOLECULE(test_input)
+
+    results = featurizer.featurize(molecule)
+
+    assert np.equal(results, expected.astype(int)).all()

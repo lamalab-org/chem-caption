@@ -5,16 +5,25 @@
 import numpy as np
 
 from chemcaption.featurize.bonds import (
-    RotableBondProportionFeaturizer,
     BondTypeCountFeaturizer,
     BondTypeProportionFeaturizer,
     RotableBondCountFeaturizer,
+    RotableBondProportionFeaturizer,
 )
 from chemcaption.featurize.text import Prompt
 from chemcaption.molecules import SMILESMolecule
 
+# Implemented tests for bond-related featurizers.
 
-def test_bond_type_featurizer():
+__all__ = [
+    "test_rotable_bond_count_featurizer",
+    "test_rotable_bond_proportion_featurizer",
+    "test_rotable_bond_proportion_featurizer",
+    "test_bond_type_count_featurizer",
+]
+
+
+def test_bond_type_count_featurizer():
     bt = BondTypeCountFeaturizer()
     molecule = SMILESMolecule("C1=CC=CC=C1")
     results = bt.featurize(molecule)
@@ -48,8 +57,8 @@ Constraint: Return a list of comma separated integer boolean indicators (0 for a
     )
 
 
-def test_bondrotability_featurizer():
-    brf = BondRotabilityFeaturizer()
+def test_rotable_bond_proportion_featurizer():
+    brf = RotableBondProportionFeaturizer()
     molecule = SMILESMolecule("C1=CC=CC=C1")
     results = brf.featurize(molecule)
     assert len(results) == 1
