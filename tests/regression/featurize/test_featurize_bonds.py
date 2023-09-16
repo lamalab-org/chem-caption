@@ -6,9 +6,9 @@ import numpy as np
 import pytest
 
 from chemcaption.featurize.bonds import (
-    RotableBondProportionFeaturizer,
     BondTypeCountFeaturizer,
     RotableBondCountFeaturizer,
+    RotableBondProportionFeaturizer,
 )
 from chemcaption.molecules import SMILESMolecule
 from tests.conftests import DISPATCH_MAP, PROPERTY_BANK, extract_molecule_properties
