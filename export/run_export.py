@@ -27,7 +27,7 @@ from chemcaption.featurize.stereochemistry import NumChiralCentersFeaturizer
 from chemcaption.featurize.substructure import SMARTSFeaturizer
 from chemcaption.presets import ALL_SMARTS
 from chemcaption.featurize.base import MultipleFeaturizer
-from chemcaption.molecules import SMILESMolecule
+from chemcaption.molecules import SMILESMolecule, SELFIESMolecule, InChIMolecule
 import fire
 import dask.dataframe as dd
 from dask import delayed
@@ -39,6 +39,9 @@ from functools import partial
 from tqdm import tqdm
 
 from dask.distributed import Client
+from selfies import encoder
+from rdkit import Chem
+import numpy as np
 
 
 def get_smarts_featurizers():
@@ -74,9 +77,29 @@ FEATURIZER = MultipleFeaturizer(
 )
 
 
+def to_smiles_molecule(smiles: str):
+    return SMILESMolecule(smiles)
+
+
+def to_selfies_molecule(smiles: str):
+    return SELFIESMolecule(encoder(smiles))
+
+
+def to_inchi_molecule(smiles: str):
+    return InChIMolecule(Chem.MolToInchi(Chem.MolFromSmiles(smiles)))
+
+
+def convert_molecules(smiles: str):
+    conversion_functions = [to_smiles_molecule, to_selfies_molecule, to_inchi_molecule]
+
+    random_conv = np.random.choice(conversion_functions)
+
+    return random_conv(smiles)
+
+
 def featurize_smiles(smiles: str):
     try:
-        return FEATURIZER.text_featurize(SMILESMolecule(smiles)).to_list()
+        return FEATURIZER.text_featurize(convert_molecules(smiles)).to_list()
     except Exception as e:
         print(e)
         return []
@@ -105,5 +128,18 @@ def chunked_feat_large_df(filepath: Union[str, Path], chunksize: Union[int, str]
 
 
 if __name__ == "__main__":
-    client = Client(n_workers=3, processes=True)
+    # cluster = SLURMCluster(
+    #     cores=24,
+    #     processes=6,
+    #     memory="16GB",
+    #     account="co_laika",
+    #     queue="savio2_bigmem",
+    #     job_script_prologue=[
+    #         'export LANG="en_US.utf8"',
+    #         'export LANGUAGE="en_US.utf8"',
+    #         'export LC_ALL="en_US.utf8"',
+    #     ],
+    #     job_extra_directives=['--qos="savio_lowprio"'],
+    # )
+    client = Client(n_workers=16, processes=True)
     fire.Fire(chunked_feat_large_df)
