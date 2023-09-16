@@ -2,7 +2,7 @@
 
 """Featurizers for 3D, spatial features."""
 
-from typing import Dict, List, Optional, Union, Any
+from typing import Any, Dict, List, Optional, Union
 
 import numpy as np
 from frozendict import frozendict

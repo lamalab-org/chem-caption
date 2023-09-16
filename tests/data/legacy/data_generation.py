@@ -144,7 +144,9 @@ def generate_info(string: str):
     valence_count = valence_featurizer.featurize(molecule=mol).item()
 
     bond_type_counts = bond_type_count_featurizer.featurize(molecule=mol).flatten().tolist()
-    bond_type_proportions = bond_type_proportion_featurizer.featurize(molecule=mol).flatten().tolist()
+    bond_type_proportions = (
+        bond_type_proportion_featurizer.featurize(molecule=mol).flatten().tolist()
+    )
 
     # shape_features = shape_featurizer.featurize(molecule=mol).tolist()
     # npr_pmi = npr_pmi_featurizer.featurize(molecule=mol).tolist()
