@@ -30,13 +30,9 @@ from chemcaption.featurize.base import MultipleFeaturizer
 from chemcaption.molecules import SMILESMolecule, SELFIESMolecule, InChIMolecule
 import fire
 import dask.dataframe as dd
-from dask import delayed
-from typing import Optional, Union
+from typing import Union
 from pathlib import Path
 import jsonlines
-import time
-from functools import partial
-from tqdm import tqdm
 
 from dask.distributed import Client
 from selfies import encoder
@@ -118,7 +114,7 @@ def featurize_all_smiles(all_smiles):
             writer.write_all(results)
 
 
-def chunked_feat_large_df(filepath: Union[str, Path], chunksize: Union[int, str] = ".01MB"):
+def chunked_feat_large_df(filepath: Union[str, Path], chunksize: Union[int, str] = "12GB"):
     # read the csv file, get the SMILES column and in parallel featurize the SMILES
 
     df = dd.read_csv(filepath, blocksize=chunksize)
@@ -141,5 +137,5 @@ if __name__ == "__main__":
     #     ],
     #     job_extra_directives=['--qos="savio_lowprio"'],
     # )
-    client = Client(n_workers=16, processes=True)
+    client = Client(n_workers=4, processes=True)
     fire.Fire(chunked_feat_large_df)
