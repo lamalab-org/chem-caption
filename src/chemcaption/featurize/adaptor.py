@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""Implementations for adaptor-related for featurizers."""
+"""Implementations for adaptor-related alternatives for featurizers."""
 
 from typing import Any, Callable, Dict, List
 
@@ -39,9 +39,6 @@ class RDKitAdaptor(AbstractFeaturizer):
         self.rdkit_function = rdkit_function
         self._label = labels
         self.rdkit_function_kwargs = rdkit_function_kwargs
-
-    def feature_labels(self) -> List[str]:
-        return self._label
 
     def featurize(
         self,
