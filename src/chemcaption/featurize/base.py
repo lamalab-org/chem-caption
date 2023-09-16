@@ -11,7 +11,7 @@ import pandas as pd
 import rdkit
 from scipy.spatial import distance_matrix
 
-from chemcaption.featurize.text import Prompt
+from chemcaption.featurize.text import Prompt, PromptCollection
 from chemcaption.featurize.utils import join_list_elements
 from chemcaption.molecules import Molecule
 
@@ -253,16 +253,16 @@ class MultipleFeaturizer(AbstractFeaturizer):
     def text_featurize(
         self,
         molecule: Molecule,
-    ) -> List[Prompt]:
+    ) -> PromptCollection:
         """Embed features in Prompt instance.
 
         Args:
             molecule (Molecule): Molecule representation.
 
         Returns:
-            (Prompt): Instance of Prompt containing relevant information extracted from `molecule`.
+            (PromptCollection): Instance of Prompt containing relevant information extracted from `molecule`.
         """
-        return [f.text_featurize(molecule=molecule) for f in self.featurizers]
+        return PromptCollection([f.text_featurize(molecule=molecule) for f in self.featurizers])
 
     def feature_labels(self) -> List[str]:
         """Return feature labels.
