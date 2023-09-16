@@ -1,8 +1,6 @@
 from chemcaption.featurize.base import MultipleFeaturizer
-
 from chemcaption.featurize.electronicity import HydrogenAcceptorCountFeaturizer
 from chemcaption.featurize.stereochemistry import NumChiralCentersFeaturizer
-
 from chemcaption.molecules import SMILESMolecule
 
 
