@@ -11,9 +11,7 @@ from chemcaption.featurize.text_utils import inspect_info
 
 # Implemented text-related classes
 
-__all__ = [
-    "Prompt",
-]
+__all__ = ["Prompt", "PromptCollection"]
 
 
 @dataclass
@@ -118,7 +116,7 @@ class Prompt:
         return ["Benedict Oshomah Emoekabu"]
 
 
-class PromptContainer:
+class PromptCollection:
     def __init__(self, prompts: List[Prompt]):
         self.prompts = prompts
 
