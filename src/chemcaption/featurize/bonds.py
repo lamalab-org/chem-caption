@@ -64,6 +64,14 @@ class RotableBondCountFeaturizer(AbstractFeaturizer):
         ]
 
     def feature_labels(self) -> List[str]:
+        """Return feature label(s).
+
+        Args:
+            None.
+
+        Returns:
+            (List[str]): List of labels of extracted features.
+        """
         return ["num_rotable_bonds"]
 
     def featurize(self, molecule: Molecule) -> np.array:
@@ -253,9 +261,24 @@ class BondTypeCountFeaturizer(AbstractFeaturizer):
             if self.count:
                 bond_types.append("num_bonds")
         else:
-            bond_types = self.bond_type
+            bond_types = self._parse_bond_names(self.bond_type)
 
         return bond_types
+
+    def _parse_bond_names(self, bond_names: Union[str, List[str]]) -> List[str]:
+        """Parse bond names for use in counting.
+
+        Args:
+            bond_names (Union[str, List[str]]): Bond names.
+
+        Returns:
+            (List[str]): Parsed bond names.
+        """
+        if isinstance(bond_names, str):
+            bond_names = [self.prefix + bond_names + self.suffix]
+        else:
+            bond_names = [self.prefix + name + self.suffix for name in bond_names]
+        return bond_names
 
     def get_names(self) -> List[Dict[str, str]]:
         """Return feature names.
@@ -271,7 +294,7 @@ class BondTypeCountFeaturizer(AbstractFeaturizer):
             for bond_type in self._get_bond_types()
             if "num_bonds" != bond_type
         ]
-        name = None
+
         if self.count:
             name = "What is the number of "
         else:

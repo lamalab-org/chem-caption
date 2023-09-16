@@ -2,7 +2,7 @@
 
 """Featurizers for 3D, spatial features."""
 
-from typing import Dict, List, Union
+from typing import Dict, List, Optional, Union
 
 import numpy as np
 from frozendict import frozendict
@@ -31,7 +31,12 @@ __all__ = [
 class ThreeDimensionalFeaturizer(AbstractFeaturizer):
     """Abstract class for 3-D featurizers."""
 
-    def __init__(self, use_masses: bool = True, force=True, conformer_generation_kwargs=None):
+    def __init__(
+        self,
+        use_masses: bool = True,
+        force: bool = True,
+        conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
+    ):
         """Instantiate initialization scheme to be inherited.
 
         Args:
@@ -278,8 +283,8 @@ class NPRFeaturizer(ThreeDimensionalFeaturizer):
         """Initialize class object.
 
         Args:
-            variant (int): Variant of normalized principal moments ratio (NPR) to calculate.
-                May take either value of `1` or `2`. Defaults to `1`.
+            variant (Union[int, str]): Variant of normalized principal moments ratio (NPR) to calculate.
+                May take either value of `1`, `2`, or `all`. Defaults to `all`.
             use_masses (bool): Utilize elemental masses in calculating the NPR. Defaults to `True`.
             force (bool): Utilize force field calculations for energy minimization.
             conformer_generation_kwargs (dict): Keyword arguments for conformer generation.
@@ -303,6 +308,14 @@ class NPRFeaturizer(ThreeDimensionalFeaturizer):
         }
 
     def get_names(self) -> List[Dict[str, str]]:
+        """Return feature names.
+
+        Args:
+            None.
+
+        Returns:
+            (List[Dict[str, str]]): List of names for extracted features according to parts-of-speech.
+        """
         names = []
         for label in self._parse_labels():
             if "1" in label:
@@ -330,6 +343,14 @@ class NPRFeaturizer(ThreeDimensionalFeaturizer):
         return [f"npr{self.variant}_value"]
 
     def feature_labels(self) -> List[str]:
+        """Return feature label(s).
+
+        Args:
+            None.
+
+        Returns:
+            (List[str]): List of labels of extracted features.
+        """
         return self._parse_labels()
 
     def featurize(self, molecule: Molecule) -> np.array:
@@ -376,8 +397,8 @@ class PMIFeaturizer(ThreeDimensionalFeaturizer):
         """Initialize class object.
 
         Args:
-           variant(int): Variant of principal moments of inertia (PMI) to calculate.
-                May take either value of `1`, `2`, or `3`. Defaults to `1`.
+           variant (Union[int, str]): Variant of principal moments of inertia (PMI) to calculate.
+                May take either value of `1`, `2`, `3`, or `all`. Defaults to `all`.
             use_masses (bool): Utilize elemental masses in calculating the PMI. Defaults to `True`.
             force (bool): Utilize force field calculations for energy minimization.
             conformer_generation_kwargs (dict): Keyword arguments for conformer generation.
@@ -398,7 +419,7 @@ class PMIFeaturizer(ThreeDimensionalFeaturizer):
 
         self.FUNCTION_MAP = {1: Descriptors3D.PMI1, 2: Descriptors3D.PMI2, 3: Descriptors3D.PMI3}
 
-    def _parse_labels(self) -> None:
+    def _parse_labels(self) -> List[str]:
         """
         Parse featurizer labels.
 
@@ -413,9 +434,25 @@ class PMIFeaturizer(ThreeDimensionalFeaturizer):
         return [f"pmi{self.variant}_value"]
 
     def feature_labels(self) -> List[str]:
+        """Return feature label(s).
+
+        Args:
+            None.
+
+        Returns:
+            (List[str]): List of names of extracted features.
+        """
         return self._parse_labels()
 
     def get_names(self) -> List[Dict[str, str]]:
+        """Return feature names.
+
+        Args:
+            None.
+
+        Returns:
+            (List[Dict[str, str]]): List of names for extracted features according to parts-of-speech.
+        """
         names = []
         for label in self._parse_labels():
             if "1" in label:
