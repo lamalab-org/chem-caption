@@ -127,13 +127,13 @@ class SMARTSFeaturizer(AbstractFeaturizer):
         return np.array(results).reshape((1, -1))
 
     def feature_labels(self) -> List[str]:
-        """Return feature labels.
+        """Return feature label(s).
 
         Args:
             None.
 
         Returns:
-            (List[str]): List of names of extracted features.
+            (List[str]): List of labels of extracted features.
         """
         suffix = "_count" if self.count else "_presence"
         return [name + suffix for name in self.smart_names]

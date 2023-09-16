@@ -75,7 +75,7 @@ class RDKitAdaptor(AbstractFeaturizer):
             None.
 
         Returns:
-            (List[str]): List of names of extracted features.
+            (List[str]): List of labels of extracted features.
         """
         return self._label
 

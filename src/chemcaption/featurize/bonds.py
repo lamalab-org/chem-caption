@@ -111,6 +111,14 @@ class RotableBondProportionFeaturizer(AbstractFeaturizer):
         ]
 
     def feature_labels(self) -> List[str]:
+        """Return feature label(s).
+
+        Args:
+            None.
+
+        Returns:
+            (List[str]): List of labels of extracted features.
+        """
         return ["rotable_proportion", "non_rotable_proportion"]
 
     def _get_bond_types(self, molecule: Molecule) -> List[float]:
@@ -218,14 +226,13 @@ class BondTypeCountFeaturizer(AbstractFeaturizer):
         return num_bonds
 
     def feature_labels(self) -> List[str]:
-        """
-        Parse featurizer labels.
+        """Return feature label(s).
 
         Args:
             None.
 
         Returns:
-            (List[str]): List of strings of bond types.
+            (List[str]): List of labels of extracted features.
         """
         return self._get_bond_types()
 
@@ -417,14 +424,13 @@ class BondTypeProportionFeaturizer(BondTypeCountFeaturizer):
         return np.array(self._get_bond_distribution(molecule=molecule)).reshape(1, -1)
 
     def feature_labels(self) -> List[str]:
-        """
-        Parse featurizer labels.
+        """Return feature label(s).
 
         Args:
             None.
 
         Returns:
-            (List[str]): List of strings of bond types.
+            (List[str]): List of labels of extracted features.
         """
         labels = super().feature_labels()
         labels = ["_".join(x.split("_")[:-1] + [self.suffix]).replace("num_", "") for x in labels]
