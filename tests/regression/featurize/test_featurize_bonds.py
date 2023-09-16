@@ -6,7 +6,7 @@ import numpy as np
 import pytest
 
 from chemcaption.featurize.bonds import (
-    BondRotabilityFeaturizer,
+    RotableBondProportionFeaturizer,
     BondTypeCountFeaturizer,
     RotableBondCountFeaturizer,
 )
@@ -20,7 +20,7 @@ MOLECULE = DISPATCH_MAP[KIND]
 
 __all__ = [
     "test_rotable_bond_count_featurizer",
-    "test_bond_distribution_featurizer",
+    "test_rotable_bond_proportion_featurizer",
     "test_bond_type_count_featurizer",
 ]
 
@@ -55,9 +55,9 @@ def test_rotable_bond_count_featurizer(test_input, expected):
         property=["rotable_proportion", "non_rotable_proportion"],
     ),
 )
-def test_bond_distribution_featurizer(test_input, expected):
-    """Test BondRotabilityFeaturizer."""
-    featurizer = BondRotabilityFeaturizer()
+def test_rotable_bond_proportion_featurizer(test_input, expected):
+    """Test RotableBondProportionFeaturizer."""
+    featurizer = RotableBondProportionFeaturizer()
     molecule = MOLECULE(test_input)
 
     results = featurizer.featurize(molecule)

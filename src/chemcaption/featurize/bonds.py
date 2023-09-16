@@ -15,7 +15,7 @@ from chemcaption.molecules import Molecule
 
 __all__ = [
     "RotableBondCountFeaturizer",
-    "BondRotabilityFeaturizer",
+    "RotableBondProportionFeaturizer",
     "BondTypeCountFeaturizer",
     "BondTypeProportionFeaturizer",
 ]
@@ -97,7 +97,7 @@ class RotableBondCountFeaturizer(AbstractFeaturizer):
 """Featurizer for calculating distribution of molecule bonds between rotatable and non-rotatable bonds."""
 
 
-class BondRotabilityFeaturizer(AbstractFeaturizer):
+class RotableBondProportionFeaturizer(AbstractFeaturizer):
     """Obtain distribution between rotable and non-rotable bonds in a molecule."""
 
     def __init__(self):
@@ -251,6 +251,14 @@ class BondTypeCountFeaturizer(AbstractFeaturizer):
         return bond_types
 
     def get_names(self) -> List[Dict[str, str]]:
+        """Return feature names.
+
+        Args:
+            None.
+
+        Returns:
+            (List[Dict[str, str]]): List of names for extracted features according to parts-of-speech.
+        """
         mapped_names = [
             _MAP_BOND_TYPE_TO_CLEAN_NAME[bond_type]
             for bond_type in self._get_bond_types()
@@ -361,6 +369,14 @@ class BondTypeProportionFeaturizer(BondTypeCountFeaturizer):
         self.suffix = "bond_proportion"
 
     def get_names(self) -> List[Dict[str, str]]:
+        """Return feature names.
+
+        Args:
+            None.
+
+        Returns:
+            (List[Dict[str, str]]): List of names for extracted features according to parts-of-speech.
+        """
         mapped_names = [
             _MAP_BOND_TYPE_TO_CLEAN_NAME[bond_type] for bond_type in self.feature_labels()
         ]
@@ -426,19 +442,3 @@ class BondTypeProportionFeaturizer(BondTypeCountFeaturizer):
             List[str]: List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]
-
-
-if __name__ == "__main__":
-    from chemcaption.featurize.base import MultipleFeaturizer
-    from chemcaption.molecules import SMILESMolecule
-
-    feat = MultipleFeaturizer([BondTypeProportionFeaturizer(bond_type="all")])
-    mols = [
-        SMILESMolecule("C1(Br)=CC=CC=C1Br"),
-        SMILESMolecule("CC(C)(C)OC(=O)CCCc1ccc(N(CCCl)CCCl)cc1"),
-    ]
-
-    print(feat.feature_labels())
-    print(feat.featurize_many(mols))
-    print(feat.feature_labels())
-    # print(feat.bond_type)
