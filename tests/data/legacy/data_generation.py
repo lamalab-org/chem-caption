@@ -8,7 +8,7 @@ import pandas as pd
 from rdkit.Chem import Lipinski, rdMolDescriptors
 
 from chemcaption.featurize.base import MultipleFeaturizer
-from chemcaption.featurize.bonds import BondTypeCountFeaturizer
+from chemcaption.featurize.bonds import BondTypeCountFeaturizer, BondTypeProportionFeaturizer
 from chemcaption.featurize.composition import (
     AtomCountFeaturizer,
     ElementCountFeaturizer,
@@ -71,6 +71,7 @@ def generate_info(string: str):
 
     atom_count_featurizer = AtomCountFeaturizer()
     bond_type_count_featurizer = BondTypeCountFeaturizer()
+    bond_type_proportion_featurizer = BondTypeProportionFeaturizer()
 
     # shape_featurizer = MultipleFeaturizer(
     #     featurizers=[
@@ -111,6 +112,7 @@ def generate_info(string: str):
     keys = ["smiles", "weisfeiler_lehman_hash", "num_atoms"]
 
     keys += bond_type_count_featurizer.feature_labels()
+    keys += bond_type_proportion_featurizer.feature_labels()
 
     keys += [
         "num_rotable_bonds",
@@ -142,6 +144,7 @@ def generate_info(string: str):
     valence_count = valence_featurizer.featurize(molecule=mol).item()
 
     bond_type_counts = bond_type_count_featurizer.featurize(molecule=mol).flatten().tolist()
+    bond_type_proportions = bond_type_proportion_featurizer.featurize(molecule=mol).flatten().tolist()
 
     # shape_features = shape_featurizer.featurize(molecule=mol).tolist()
     # npr_pmi = npr_pmi_featurizer.featurize(molecule=mol).tolist()
@@ -153,6 +156,8 @@ def generate_info(string: str):
     ]
 
     values += bond_type_counts
+    values += bond_type_proportions
+
     values += [
         rotable_non_strict,
         non_rotable_non_strict,

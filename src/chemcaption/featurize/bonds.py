@@ -218,17 +218,17 @@ class BondTypeCountFeaturizer(AbstractFeaturizer):
         """
         all_bonds = self._get_bonds(molecule)
 
-        bond_types = self._get_bond_types()
+        bond_types, index = self._get_bond_types(), 0 if not bool(self.prefix) else 1
 
         num_bonds = [
-            all_bonds.count(bond_type.split("_")[1].upper())
+            all_bonds.count(bond_type.split("_")[index].upper())
             for bond_type in bond_types
             if bond_type != "num_bonds"
         ]
 
-        if self.count:
+        if self.count and ("ALL" in self.bond_type):
             num_bonds.append(len(all_bonds))
-        else:
+        elif not self.count:
             num_bonds = [min(1, count) for count in num_bonds]
 
         return num_bonds
@@ -275,9 +275,9 @@ class BondTypeCountFeaturizer(AbstractFeaturizer):
             (List[str]): Parsed bond names.
         """
         if isinstance(bond_names, str):
-            bond_names = [self.prefix + bond_names + self.suffix]
+            bond_names = [self.prefix + bond_names.lower() + self.suffix]
         else:
-            bond_names = [self.prefix + name + self.suffix for name in bond_names]
+            bond_names = [self.prefix + name.lower() + self.suffix for name in bond_names]
         return bond_names
 
     def get_names(self) -> List[Dict[str, str]]:
@@ -396,7 +396,7 @@ class BondTypeProportionFeaturizer(BondTypeCountFeaturizer):
         super().__init__(count=True, bond_type=bond_type)
         self.constraint = "Constraint: Return a list of comma separated floats."
         self.prefix = ""
-        self.suffix = "bond_proportion"
+        self.suffix = "_bond_proportion"
 
     def get_names(self) -> List[Dict[str, str]]:
         """Return feature names.
@@ -408,7 +408,7 @@ class BondTypeProportionFeaturizer(BondTypeCountFeaturizer):
             (List[Dict[str, str]]): List of names for extracted features according to parts-of-speech.
         """
         mapped_names = [
-            _MAP_BOND_TYPE_TO_CLEAN_NAME[bond_type] for bond_type in self.feature_labels()
+            _MAP_BOND_TYPE_TO_CLEAN_NAME[bond_type] for bond_type in super().feature_labels()
         ]
         return [
             {"noun": "What is the proportion of " + join_list_elements(mapped_names) + " bonds"}
@@ -429,6 +429,7 @@ class BondTypeProportionFeaturizer(BondTypeCountFeaturizer):
             if "ALL" in self.bond_type
             else len(self._get_bonds(molecule=molecule))
         )
+        print(num_bonds)
 
         bond_proportion = [count / total_bond_count for count in num_bonds]
 
@@ -455,8 +456,8 @@ class BondTypeProportionFeaturizer(BondTypeCountFeaturizer):
         Returns:
             (List[str]): List of labels of extracted features.
         """
-        labels = super().feature_labels()
-        labels = ["_".join(x.split("_")[:-1] + [self.suffix]).replace("num_", "") for x in labels]
+        labels = [label for label in super().feature_labels() if label != "num_bonds"]
+        labels = self._parse_bond_names([x.split("_")[1] for x in labels])
 
         return labels
 

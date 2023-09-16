@@ -95,6 +95,7 @@ def generate_featurizer(preset: Optional[List[str]] = None) -> MultipleFeaturize
 
     # second_set = [
     #     BondTypeCountFeaturizer(bond_type="all"),
+    #     BondTypeProportionFeaturizer(bond_type="all"),
     #     RotableBondCountAdaptor(),
     #     NonRotableBondCountAdaptor(),
     #     StrictRotableBondCountAdaptor(),
