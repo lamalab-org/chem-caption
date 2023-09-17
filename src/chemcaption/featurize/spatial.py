@@ -2,18 +2,18 @@
 
 """Featurizers for chemical bond-related information."""
 
+from functools import lru_cache
 from typing import Dict, List, Union
 
 import numpy as np
+from frozendict import frozendict
 from givemeconformer.api import _get_conformer
 from rdkit import Chem
 from rdkit.Chem import Descriptors3D
 
 from chemcaption.featurize.base import AbstractFeaturizer
-from chemcaption.molecules import Molecule
-from functools import lru_cache
 from chemcaption.featurize.utils import join_list_elements
-from frozendict import frozendict
+from chemcaption.molecules import Molecule
 
 # Implemented bond-related featurizers
 

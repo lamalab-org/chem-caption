@@ -1,13 +1,13 @@
+import numpy as np
+
 from chemcaption.featurize.spatial import (
-    PMIFeaturizer,
     AsphericityFeaturizer,
     EccentricityFeaturizer,
     InertialShapeFactorFeaturizer,
     NPRFeaturizer,
+    PMIFeaturizer,
 )
-
 from chemcaption.molecules import SMILESMolecule
-import numpy as np
 
 
 def test_pmi_featurizer():
