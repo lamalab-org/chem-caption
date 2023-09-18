@@ -13,6 +13,7 @@ from chemcaption.molecules import Molecule
 
 __all__ = [
     "SolventAccessibleSurfaceAreaFeaturizer",
+    "SolventAccessibleVolumeFeaturizer",
     "SolventAccessibleAtomAreaFeaturizer",
 ]
 
@@ -68,6 +69,71 @@ class SolventAccessibleSurfaceAreaFeaturizer(MorfeusFeaturizer):
             (List[str]): List of names of extracted features.
         """
         return ["solvent_accessible_solvent_area"]
+
+    def implementors(self) -> List[str]:
+        """
+        Return list of functionality implementors.
+
+        Args:
+            None.
+
+        Returns:
+            (List[str]): List of implementors.
+        """
+        return ["Benedict Oshomah Emoekabu"]
+
+
+class SolventAccessibleVolumeFeaturizer(MorfeusFeaturizer):
+    """Return the solvent accessible volume value for a molecule."""
+
+    def __init__(
+        self,
+        file_name: Optional[str] = None,
+        conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
+        morfeus_kwargs: Optional[Dict[str, Any]] = None,
+    ):
+        """Instantiate class.
+
+        Args:
+            file_name (Optional[str]): Name for temporary XYZ file.
+            conformer_generation_kwargs (Optional[Dict[str, Any]]): Configuration for conformer generation.
+            morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
+        """
+        super().__init__(
+            file_name=file_name,
+            conformer_generation_kwargs=conformer_generation_kwargs,
+            morfeus_kwargs=morfeus_kwargs,
+        )
+
+        self._names = [
+            {
+                "noun": "solvent accessible volume",
+            },
+        ]
+
+    def featurize(self, molecule: Molecule) -> np.array:
+        """
+        Featurize single molecule instance.
+
+        Args:
+            molecule (Molecule): Molecule representation.
+
+        Returns:
+            (np.array): Array containing solvent accessible volume for molecule instance.
+        """
+        morfeus_instance = self._get_morfeus_instance(molecule=molecule, morpheus_instance="xtb")
+        return np.array([morfeus_instance.volume]).reshape(1, -1)
+
+    def feature_labels(self) -> List[str]:
+        """Return feature label(s).
+
+        Args:
+            None.
+
+        Returns:
+            (List[str]): List of names of extracted features.
+        """
+        return ["solvent_accessible_volume"]
 
     def implementors(self) -> List[str]:
         """
