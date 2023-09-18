@@ -2,12 +2,9 @@
 
 """Featurizers for solubility- and reaction-based features."""
 
-import os
 from typing import Any, Dict, List, Optional, Union
 
 import numpy as np
-from colorama import Fore
-from morfeus import SASA, read_xyz
 
 from chemcaption.featurize.base import MorfeusFeaturizer
 from chemcaption.molecules import Molecule
@@ -86,7 +83,7 @@ class SolventAccessibleSurfaceAreaFeaturizer(MorfeusFeaturizer):
 
 
 class SolventAccessibleAtomAreaFeaturizer(SolventAccessibleSurfaceAreaFeaturizer):
-    """Return the solvent accessible atom area value."""
+    """Return the solvent accessible atom area value for a molecule."""
 
     def __init__(
         self,

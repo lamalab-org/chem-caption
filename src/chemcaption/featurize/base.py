@@ -195,13 +195,27 @@ class MorfeusFeaturizer(AbstractFeaturizer):
         self.morfeus_kwargs = frozendict(morfeus_kwargs) if morfeus_kwargs else frozendict({})
 
         if file_name is None:
-            num = np.random.randint(low=1, high=100)
-            numbers = np.random.randint(low=65, high=82, size=(num,)).flatten().tolist()
-            letters = list(map(lambda x: chr(x), numbers))
-
-            file_name = "".join(letters) + ".xyz"
+            file_name = self._get_random_file_name()
 
         self.random_file_name = file_name if file_name.endswith(".xyz") else file_name + ".xyz"
+
+    @staticmethod
+    def _get_random_file_name() -> str:
+        """Generate a random file name.
+
+        Args:
+            None.
+
+        Returns:
+            (str): Randomly generated filename.
+        """
+        num = np.random.randint(low=1, high=100)
+        numbers = np.random.randint(low=65, high=82, size=(num,)).flatten().tolist()
+        letters = list(map(lambda x: chr(x), numbers))
+
+        file_name = "".join(letters) + ".xyz"
+
+        return file_name
 
     def _get_conformer(self, mol: Chem.Mol) -> Chem.Mol:
         """Return conformer for molecule.
