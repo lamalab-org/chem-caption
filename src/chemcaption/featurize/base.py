@@ -5,7 +5,7 @@
 import os
 from abc import ABC, abstractmethod
 from concurrent.futures import ProcessPoolExecutor
-from typing import Any, Dict, List, Optional, Callable
+from typing import Any, Callable, Dict, List, Optional
 
 import numpy as np
 import pandas as pd
@@ -176,7 +176,7 @@ class MorfeusFeaturizer(AbstractFeaturizer):
         self,
         file_name: Optional[str] = None,
         conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
-        morfeus_kwargs: Optional[Dict[str, Any]] = None
+        morfeus_kwargs: Optional[Dict[str, Any]] = None,
     ):
         """Instantiate class.
 
@@ -191,11 +191,7 @@ class MorfeusFeaturizer(AbstractFeaturizer):
             if conformer_generation_kwargs
             else frozendict({})
         )
-        self.morfeus_kwargs = (
-            frozendict(morfeus_kwargs)
-            if morfeus_kwargs
-            else frozendict({})
-        )
+        self.morfeus_kwargs = frozendict(morfeus_kwargs) if morfeus_kwargs else frozendict({})
 
         if file_name is None:
             num = np.random.randint(low=1, high=100)

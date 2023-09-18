@@ -167,10 +167,10 @@ class ElectronAffinityFeaturizer(MorfeusFeaturizer):
     """Featurize molecule and return electron affinity."""
 
     def __init__(
-            self,
-            file_name: Optional[str] = None,
-            conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
-            morfeus_kwargs: Optional[Dict[str, Any]] = None
+        self,
+        file_name: Optional[str] = None,
+        conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
+        morfeus_kwargs: Optional[Dict[str, Any]] = None,
     ):
         """Instantiate class.
 
@@ -180,7 +180,9 @@ class ElectronAffinityFeaturizer(MorfeusFeaturizer):
             morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
         """
         super().__init__(
-            file_name=file_name, conformer_generation_kwargs=conformer_generation_kwargs, morfeus_kwargs=morfeus_kwargs
+            file_name=file_name,
+            conformer_generation_kwargs=conformer_generation_kwargs,
+            morfeus_kwargs=morfeus_kwargs,
         )
 
         self._names = [
@@ -233,7 +235,7 @@ class IonizationPotentialFeaturizer(MorfeusFeaturizer):
         self,
         file_name: Optional[str] = None,
         conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
-        morfeus_kwargs: Optional[Dict[str, Any]] = None
+        morfeus_kwargs: Optional[Dict[str, Any]] = None,
     ):
         """Instantiate class.
 
@@ -243,7 +245,9 @@ class IonizationPotentialFeaturizer(MorfeusFeaturizer):
             morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
         """
         super().__init__(
-            file_name=file_name, conformer_generation_kwargs=conformer_generation_kwargs, morfeus_kwargs=morfeus_kwargs
+            file_name=file_name,
+            conformer_generation_kwargs=conformer_generation_kwargs,
+            morfeus_kwargs=morfeus_kwargs,
         )
 
         self._names = [
@@ -296,7 +300,7 @@ class HOMOEnergyFeaturizer(MorfeusFeaturizer):
         self,
         file_name: Optional[str] = None,
         conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
-        morfeus_kwargs: Optional[Dict[str, Any]] = None
+        morfeus_kwargs: Optional[Dict[str, Any]] = None,
     ):
         """Instantiate class.
 
@@ -306,7 +310,9 @@ class HOMOEnergyFeaturizer(MorfeusFeaturizer):
             morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
         """
         super().__init__(
-            file_name=file_name, conformer_generation_kwargs=conformer_generation_kwargs, morfeus_kwargs=morfeus_kwargs
+            file_name=file_name,
+            conformer_generation_kwargs=conformer_generation_kwargs,
+            morfeus_kwargs=morfeus_kwargs,
         )
 
         self._names = [
@@ -359,7 +365,7 @@ class LUMOEnergyFeaturizer(MorfeusFeaturizer):
         self,
         file_name: Optional[str] = None,
         conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
-        morfeus_kwargs: Optional[Dict[str, Any]] = None
+        morfeus_kwargs: Optional[Dict[str, Any]] = None,
     ):
         """Instantiate class.
 
@@ -369,7 +375,9 @@ class LUMOEnergyFeaturizer(MorfeusFeaturizer):
             morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
         """
         super().__init__(
-            file_name=file_name, conformer_generation_kwargs=conformer_generation_kwargs, morfeus_kwargs=morfeus_kwargs
+            file_name=file_name,
+            conformer_generation_kwargs=conformer_generation_kwargs,
+            morfeus_kwargs=morfeus_kwargs,
         )
 
         self._names = [

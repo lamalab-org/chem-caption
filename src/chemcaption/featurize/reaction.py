@@ -3,7 +3,7 @@
 """Featurizers for solubility- and reaction-based features."""
 
 import os
-from typing import Any, Dict, List, Optional, Union, Tuple
+from typing import Any, Dict, List, Optional, Union
 
 import numpy as np
 from morfeus import SASA, read_xyz
@@ -14,19 +14,19 @@ from chemcaption.molecules import Molecule
 # Implemented reaction- or solubility-based featurizers
 
 __all__ = [
-    "SurfaceAccessibleSurfaceAreaFeaturizer",
-    "SurfaceAccessibleAtomAreaFeaturizer",
+    "SolventAccessibleSurfaceAreaFeaturizer",
+    "SolventAccessibleAtomAreaFeaturizer",
 ]
 
 
-class SurfaceAccessibleSurfaceAreaFeaturizer(MorfeusFeaturizer):
+class SolventAccessibleSurfaceAreaFeaturizer(MorfeusFeaturizer):
     """Return the solvent accessible surface area (SASA) value."""
 
     def __init__(
-            self,
-            file_name: Optional[str] = None,
-            conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
-            morfeus_kwargs: Optional[Dict[str, Any]] = None
+        self,
+        file_name: Optional[str] = None,
+        conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
+        morfeus_kwargs: Optional[Dict[str, Any]] = None,
     ):
         """Instantiate class.
 
@@ -36,7 +36,9 @@ class SurfaceAccessibleSurfaceAreaFeaturizer(MorfeusFeaturizer):
             morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
         """
         super().__init__(
-            file_name=file_name, conformer_generation_kwargs=conformer_generation_kwargs, morfeus_kwargs=morfeus_kwargs
+            file_name=file_name,
+            conformer_generation_kwargs=conformer_generation_kwargs,
+            morfeus_kwargs=morfeus_kwargs,
         )
 
         self._names = [
@@ -72,7 +74,7 @@ class SurfaceAccessibleSurfaceAreaFeaturizer(MorfeusFeaturizer):
             (np.array): Array containing solvent accessible surface area (SASA) for molecule instance.
         """
         morfeus_instance = self._get_morfeus_instance(molecule=molecule)
-        return morfeus_instance.area.reshape(1, -1)
+        return np.array([morfeus_instance.area]).reshape(1, -1)
 
     def feature_labels(self) -> List[str]:
         """Return feature label(s).
@@ -98,15 +100,16 @@ class SurfaceAccessibleSurfaceAreaFeaturizer(MorfeusFeaturizer):
         return ["Benedict Oshomah Emoekabu"]
 
 
-class SurfaceAccessibleAtomAreaFeaturizer(SurfaceAccessibleSurfaceAreaFeaturizer):
+class SolventAccessibleAtomAreaFeaturizer(SolventAccessibleSurfaceAreaFeaturizer):
     """Return the solvent accessible atom area value."""
 
     def __init__(
-            self,
-            file_name: Optional[str] = None,
-            conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
-            morfeus_kwargs: Optional[Dict[str, Any]] = None,
-            atom_index_range: Union[int, Tuple[int, int]] = 100,
+        self,
+        file_name: Optional[str] = None,
+        conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
+        morfeus_kwargs: Optional[Dict[str, Any]] = None,
+        atom_indices: Union[int, List[int]] = 100,
+        as_range: bool = False,
     ):
         """Instantiate class.
 
@@ -114,11 +117,16 @@ class SurfaceAccessibleAtomAreaFeaturizer(SurfaceAccessibleSurfaceAreaFeaturizer
             file_name (Optional[str]): Name for temporary XYZ file.
             conformer_generation_kwargs (Optional[Dict[str, Any]]): Configuration for conformer generation.
             morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
-            atom_index_range (Union[int, List[int, int]]): Range of atoms to calculate areas for.
-                Either an integer, or a two-tuple of integers representing lower index and upper index.
+            atom_indices (Union[int, List[int]]): Range of atoms to calculate areas for. Either:
+                - an integer,
+                - a list of integers, or
+                - a two-tuple of integers representing lower index and upper index.
+            as_range (bool): Use `atom_index_range` parameter as a range of indices or not. Defaults to `False`
         """
         super().__init__(
-            file_name=file_name, conformer_generation_kwargs=conformer_generation_kwargs, morfeus_kwargs=morfeus_kwargs
+            file_name=file_name,
+            conformer_generation_kwargs=conformer_generation_kwargs,
+            morfeus_kwargs=morfeus_kwargs,
         )
 
         self._names = [
@@ -126,24 +134,20 @@ class SurfaceAccessibleAtomAreaFeaturizer(SurfaceAccessibleSurfaceAreaFeaturizer
                 "noun": "solvent accessible atom area",
             },
         ]
+        self.as_range = as_range
 
-        self.range = atom_index_range if isinstance(atom_index_range, int) else range(atom_index_range[0], atom_index_range[1])
+        if as_range:
+            if (len(atom_indices) != 2) or (atom_indices[0] > atom_indices[1]):
+                raise IndexError(
+                    "`atom_indices` parameter should contain two integers as (lower, upper) i.e., [10, 20]"
+                )
 
-    def _get_morfeus_instance(self, molecule: Molecule) -> SASA:
-        """Return solvent accessible atom area instance for feature generation.
+            atom_indices = range(atom_indices[0], atom_indices[1])
+        else:
+            if isinstance(atom_indices, int):
+                atom_indices = [atom_indices]
 
-        Args:
-            molecule (Molecule): Molecular instance.
-
-        Returns:
-            (SASA): SASA instance.
-        """
-        self._mol_to_xyz_file(molecule)  # Persist molecule in XYZ file
-        elements, coordinates = read_xyz(self.random_file_name)  # Read file
-
-        os.remove(self.random_file_name)  # Eliminate file
-
-        return SASA(elements, coordinates, **self.morfeus_kwargs)
+        self.atom_indices = atom_indices
 
     def featurize(self, molecule: Molecule) -> np.array:
         """
@@ -153,12 +157,12 @@ class SurfaceAccessibleAtomAreaFeaturizer(SurfaceAccessibleSurfaceAreaFeaturizer
             molecule (Molecule): Molecule representation.
 
         Returns:
-            (np.array): Array containing solvent accessible atom area for molecule instance.
+            (np.array): Array containing solvent accessible atom area for atoms in molecule instance.
         """
         morfeus_instance = self._get_morfeus_instance(molecule=molecule)
         atom_areas = morfeus_instance.atom_areas
         num_atoms = len(atom_areas)
-        atom_areas = [(atom_areas[i] if i <= num_atoms else 0) for i in self.range]
+        atom_areas = [(atom_areas[i] if i <= num_atoms else 0) for i in self.atom_indices]
         return np.array(atom_areas).reshape(1, -1)
 
     def feature_labels(self) -> List[str]:
@@ -170,7 +174,7 @@ class SurfaceAccessibleAtomAreaFeaturizer(SurfaceAccessibleSurfaceAreaFeaturizer
         Returns:
             (List[str]): List of names of extracted features.
         """
-        return [f"solvent_accessible_atom_area_{i}" for i in self.range]
+        return [f"solvent_accessible_atom_area_{i}" for i in self.atom_indices]
 
     def implementors(self) -> List[str]:
         """
