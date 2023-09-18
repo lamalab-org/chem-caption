@@ -69,7 +69,9 @@ class ThreeDimensionalFeaturizer(AbstractFeaturizer):
         keys.sort()
         return keys
 
-    def _measure_all(self, *x: Chem.Mol, **y: Dict[str, Union[int, str]]) -> List[Union[int, float]]:
+    def _measure_all(
+        self, *x: Chem.Mol, **y: Dict[str, Union[int, str]]
+    ) -> List[Union[int, float]]:
         """Return results for all possible variants of 3D featurizer.
 
         Args:

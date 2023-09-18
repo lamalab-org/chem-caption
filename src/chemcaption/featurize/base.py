@@ -296,7 +296,9 @@ class MorfeusFeaturizer(AbstractFeaturizer):
 
         return atom_indices, as_range
 
-    def _get_element_coordinates(self, molecule: Molecule) -> Tuple[List[Union[int, str]], np.array]:
+    def _get_element_coordinates(
+        self, molecule: Molecule
+    ) -> Tuple[List[Union[int, str]], np.array]:
         """Return appropriate morfeus instance for feature generation.
 
         Args:
