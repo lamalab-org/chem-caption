@@ -5,7 +5,6 @@
 from typing import Any, Dict, List, Optional, Union
 
 import numpy as np
-from colorama import Fore
 from rdkit.Chem import Descriptors, rdMolDescriptors
 
 from chemcaption.featurize.base import AbstractFeaturizer, MorfeusFeaturizer
@@ -334,7 +333,7 @@ class HOMOEnergyFeaturizer(MorfeusFeaturizer):
             (np.array): Array containing energy of highest occupied molecular orbital for molecule instance.
         """
         xtb = self._get_morfeus_instance(molecule=molecule)
-        return np.array([xtb.get_homo(**self.morfeus_kwargs)]).reshape(1, -1)
+        return np.array([xtb.get_homo()]).reshape(1, -1)
 
     def feature_labels(self) -> List[str]:
         """Return feature label(s).
@@ -399,7 +398,7 @@ class LUMOEnergyFeaturizer(MorfeusFeaturizer):
             (np.array): Array containing energy of lowest unoccupied molecular orbital for molecule instance.
         """
         xtb = self._get_morfeus_instance(molecule=molecule)
-        return np.array([xtb.get_lumo(**self.morfeus_kwargs)]).reshape(1, -1)
+        return np.array([xtb.get_lumo()]).reshape(1, -1)
 
     def feature_labels(self) -> List[str]:
         """Return feature label(s).
