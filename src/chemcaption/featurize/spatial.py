@@ -69,12 +69,15 @@ class ThreeDimensionalFeaturizer(AbstractFeaturizer):
         keys.sort()
         return keys
 
-    def _measure_all(self, *x: Chem.Mol, **y: Dict[str, Union[int, str]]):
+    def _measure_all(self, *x: Chem.Mol, **y: Dict[str, Union[int, str]]) -> List[Union[int, float]]:
         """Return results for all possible variants of 3D featurizer.
 
         Args:
             *x (Chem.Mol): rdkit Molecule object.
             **y (Union[str, int]): Keyword arguments.
+
+        Returns:
+            (List[Union[int, float]]): List of computed results for different variants of interest.
         """
         keys = self._base_rdkit_utility_keys()
         results = [self.FUNCTION_MAP[idx](*x, **y) for idx in keys]
@@ -100,7 +103,7 @@ class ThreeDimensionalFeaturizer(AbstractFeaturizer):
             None.
 
         Returns:
-            List[str]: List of implementors.
+            (List[str]): List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]
 
@@ -153,7 +156,7 @@ class EccentricityFeaturizer(ThreeDimensionalFeaturizer):
             None.
 
         Returns:
-            List[str]: List of implementors.
+            (List[str]): List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]
 
@@ -207,7 +210,7 @@ class AsphericityFeaturizer(ThreeDimensionalFeaturizer):
             None.
 
         Returns:
-            List[str]: List of implementors.
+            (List[str]): List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]
 
@@ -261,7 +264,7 @@ class InertialShapeFactorFeaturizer(ThreeDimensionalFeaturizer):
             None.
 
         Returns:
-            List[str]: List of implementors.
+            (List[str]): List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]
 
@@ -359,7 +362,7 @@ class NPRFeaturizer(ThreeDimensionalFeaturizer):
             None.
 
         Returns:
-            List[str]: List of implementors.
+            (List[str]): List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]
 
@@ -459,7 +462,7 @@ class PMIFeaturizer(ThreeDimensionalFeaturizer):
             None.
 
         Returns:
-            List[str]: List of implementors.
+            (List[str]): List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]
 
@@ -538,6 +541,6 @@ class AtomVolumeFeaturizer(MorfeusFeaturizer):
             None.
 
         Returns:
-            List[str]: List of implementors.
+            (List[str]): List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]

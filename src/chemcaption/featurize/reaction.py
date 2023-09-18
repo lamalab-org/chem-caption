@@ -77,7 +77,7 @@ class SolventAccessibleSurfaceAreaFeaturizer(MorfeusFeaturizer):
             None.
 
         Returns:
-            List[str]: List of implementors.
+            (List[str]): List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]
 
@@ -157,6 +157,6 @@ class SolventAccessibleAtomAreaFeaturizer(SolventAccessibleSurfaceAreaFeaturizer
             None.
 
         Returns:
-            List[str]: List of implementors.
+            (List[str]): List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]

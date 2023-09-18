@@ -33,13 +33,13 @@ class SMARTSFeaturizer(AbstractFeaturizer):
 
         Args:
             smarts (Optional[List[str]]): SMARTS strings that are matched with the molecules.
-                Defaults to None.
+                Defaults to `None`.
             names (Optional[List[str]]): Names of the SMARTS strings.
                 If None, the SMARTS strings are used as names.
-                Defaults to None.
-            count (bool): If set to True, count pattern frequency.
+                Defaults to `None`.
+            count (bool): If set to `True`, count pattern frequency.
                 Otherwise, only encode presence.
-                Defaults to True.
+                Defaults to `True`.
         """
         super().__init__()
 
@@ -146,7 +146,7 @@ class SMARTSFeaturizer(AbstractFeaturizer):
             None.
 
         Returns:
-            List[str]: List of implementors.
+            (List[str]): List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]
 
@@ -193,7 +193,7 @@ class IsomorphismFeaturizer(AbstractFeaturizer):
             None.
 
         Returns:
-            List[str]: List of implementors.
+            (List[str]): List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]
 
@@ -291,6 +291,6 @@ class TopologyCountFeaturizer(AbstractFeaturizer):
             None.
 
         Returns:
-            List[str]: List of implementors.
+            (List[str]): List of implementors.
         """
         return ["Benedict Oshomah Emoekabu", "Kevin Maik Jablonka"]

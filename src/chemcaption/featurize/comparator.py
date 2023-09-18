@@ -40,7 +40,7 @@ class ValenceElectronCountComparator(Comparator):
             None.
 
         Returns:
-            List[str]: List of implementors.
+            (List[str]): List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]
 
@@ -60,7 +60,7 @@ class LipinskiViolationCountComparator(Comparator):
             None.
 
         Returns:
-            List[str]: List of implementors.
+            (List[str]): List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]
 
@@ -80,7 +80,7 @@ class AtomCountComparator(Comparator):
             None.
 
         Returns:
-            List[str]: List of implementors.
+            (List[str]): List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]
 
@@ -124,7 +124,7 @@ class IsomerismComparator(Comparator):
             None.
 
         Returns:
-            List[str]: List of implementors.
+            (List[str]): List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]
 
@@ -164,7 +164,7 @@ class IsomorphismComparator(Comparator):
             None.
 
         Returns:
-            List[str]: List of implementors.
+            (List[str]): List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]
 
@@ -209,6 +209,6 @@ class IsoelectronicComparator(MultipleComparator):
             None.
 
         Returns:
-            List[str]: List of implementors.
+            (List[str]): List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]

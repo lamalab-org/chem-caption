@@ -76,7 +76,7 @@ class RDKitAdaptor(AbstractFeaturizer):
             None.
 
         Returns:
-            List[str]: List of implementors.
+            (List[str]): List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]
 
@@ -88,7 +88,7 @@ class ValenceElectronCountAdaptor(RDKitAdaptor):
         """Initialize class.
 
         Args:
-            None
+            None.
         """
         super().__init__(
             rdkit_function=Descriptors.NumValenceElectrons,
@@ -127,6 +127,6 @@ class ValenceElectronCountAdaptor(RDKitAdaptor):
             None.
 
         Returns:
-            List[str]: List of implementors.
+            (List[str]): List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]

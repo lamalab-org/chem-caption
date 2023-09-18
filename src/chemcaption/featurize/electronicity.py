@@ -65,10 +65,10 @@ class HydrogenAcceptorCountFeaturizer(AbstractFeaturizer):
         Return list of functionality implementors.
 
         Args:
-            None
+            None.
 
         Returns:
-            List[str]: List of implementors.
+            (List[str]): List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]
 
@@ -100,7 +100,7 @@ class HydrogenDonorCountFeaturizer(AbstractFeaturizer):
             molecule (Molecule): Molecular representation.
 
         Returns:
-            np.array: Number of Hydrogen bond donors present in `molecule`.
+            (np.array): Number of Hydrogen bond donors present in `molecule`.
         """
         return np.array([rdMolDescriptors.CalcNumHBD(molecule.reveal_hydrogens())]).reshape((1, -1))
 
@@ -109,10 +109,10 @@ class HydrogenDonorCountFeaturizer(AbstractFeaturizer):
         Return list of functionality implementors.
 
         Args:
-            None
+            None.
 
         Returns:
-            List[str]: List of implementors.
+            (List[str]): List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]
 
@@ -127,7 +127,7 @@ class ValenceElectronCountFeaturizer(AbstractFeaturizer):
         """Initialize class.
 
         Args:
-            None
+            None.
         """
         super().__init__()
 
@@ -165,7 +165,7 @@ class ValenceElectronCountFeaturizer(AbstractFeaturizer):
             None.
 
         Returns:
-            List[str]: List of implementors.
+            (List[str]): List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]
 
@@ -230,7 +230,7 @@ class ElectronAffinityFeaturizer(MorfeusFeaturizer):
             None.
 
         Returns:
-            List[str]: List of implementors.
+            (List[str]): List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]
 
@@ -295,7 +295,7 @@ class IonizationPotentialFeaturizer(MorfeusFeaturizer):
             None.
 
         Returns:
-            List[str]: List of implementors.
+            (List[str]): List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]
 
@@ -360,7 +360,7 @@ class HOMOEnergyFeaturizer(MorfeusFeaturizer):
             None.
 
         Returns:
-            List[str]: List of implementors.
+            (List[str]): List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]
 
@@ -425,7 +425,7 @@ class LUMOEnergyFeaturizer(MorfeusFeaturizer):
             None.
 
         Returns:
-            List[str]: List of implementors.
+            (List[str]): List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]
 
@@ -505,7 +505,7 @@ class AtomChargeFeaturizer(MorfeusFeaturizer):
             None.
 
         Returns:
-            List[str]: List of implementors.
+            (List[str]): List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]
 
@@ -594,7 +594,7 @@ class AtomNucleophilicityFeaturizer(MorfeusFeaturizer):
             None.
 
         Returns:
-            List[str]: List of implementors.
+            (List[str]): List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]
 
@@ -683,7 +683,7 @@ class AtomElectrophilicityFeaturizer(MorfeusFeaturizer):
             None.
 
         Returns:
-            List[str]: List of implementors.
+            (List[str]): List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]
 
@@ -752,7 +752,7 @@ class MoleculeNucleophilicityFeaturizer(MorfeusFeaturizer):
             None.
 
         Returns:
-            List[str]: List of implementors.
+            (List[str]): List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]
 
@@ -821,7 +821,7 @@ class MoleculeElectrophilicityFeaturizer(MorfeusFeaturizer):
             None.
 
         Returns:
-            List[str]: List of implementors.
+            (List[str]): List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]
 
@@ -890,7 +890,7 @@ class MoleculeNucleofugalityFeaturizer(MorfeusFeaturizer):
             None.
 
         Returns:
-            List[str]: List of implementors.
+            (List[str]): List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]
 
@@ -959,6 +959,6 @@ class MoleculeElectrofugalityFeaturizer(MorfeusFeaturizer):
             None.
 
         Returns:
-            List[str]: List of implementors.
+            (List[str]): List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]

@@ -73,7 +73,7 @@ class AbstractFeaturizer(ABC):
                 A sequence of molecule representations.
 
         Returns:
-            np.array: An array of features for each molecule instance.
+            (np.array): An array of features for each molecule instance.
         """
         with ProcessPoolExecutor() as executor:
             results = list(executor.map(self.featurize, molecules))
@@ -139,7 +139,7 @@ class AbstractFeaturizer(ABC):
             None.
 
         Returns:
-            List[str]: List of implementors.
+            (List[str]): List of implementors.
         """
         raise NotImplementedError
 
@@ -296,14 +296,16 @@ class MorfeusFeaturizer(AbstractFeaturizer):
 
         return atom_indices, as_range
 
-    def _get_element_coordinates(self, molecule: Molecule) -> Tuple[Any, Any]:
+    def _get_element_coordinates(self, molecule: Molecule) -> Tuple[List[Union[int, str]], np.array]:
         """Return appropriate morfeus instance for feature generation.
 
         Args:
             molecule (Molecule): Molecular instance.
 
         Returns:
-            elements, coordinates (Tuple[Any, Any]): Elements in molecule, and their coordinates.
+            (Tuple[List[Union[int, str]], np.array]): Tuple containing
+                - elements in molecule and
+                - their corresponding coordinates.
         """
         self._mol_to_xyz_file(molecule)  # Persist molecule in XYZ file
         elements, coordinates = read_xyz(self.random_file_name)  # Read file
@@ -369,7 +371,7 @@ class MorfeusFeaturizer(AbstractFeaturizer):
             None.
 
         Returns:
-            List[str]: List of implementors.
+            (List[str]): List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]
 
@@ -401,7 +403,7 @@ class AbstractComparator(ABC):
             None.
 
         Returns:
-            List[str]: List of implementors.
+            (List[str]): List of implementors.
         """
         raise NotImplementedError
 
@@ -521,7 +523,7 @@ class MultipleFeaturizer(AbstractFeaturizer):
             None.
 
         Returns:
-            List[str]: List of implementors.
+            (List[str]): List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]
 
@@ -632,7 +634,7 @@ class Comparator(AbstractComparator):
             None.
 
         Returns:
-            List[str]: List of labels for all features extracted by all featurizers.
+            (List[str]): List of labels for all features extracted by all featurizers.
         """
         labels = []
         for featurizer in self.featurizers:
@@ -668,7 +670,7 @@ class Comparator(AbstractComparator):
             None.
 
         Returns:
-            List[str]: List of implementors.
+            (List[str]): List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]
 
@@ -695,7 +697,7 @@ class MultipleComparator(Comparator):
             comparators (Optional[List[Comparator]]): List of lower-level comparators. Defaults to `None`.
 
         Returns:
-            self : Instance of self with state updated.
+            (self) : Instance of self with state updated.
         """
         if comparators is None:
             self.comparators = comparators
@@ -747,7 +749,7 @@ class MultipleComparator(Comparator):
             None.
 
         Returns:
-            List[str]: List of labels for all features extracted by all comparators.
+            (List[str]): List of labels for all features extracted by all comparators.
         """
         labels = []
         for comparator in self.comparators:
@@ -763,6 +765,6 @@ class MultipleComparator(Comparator):
             None.
 
         Returns:
-            List[str]: List of implementors.
+            (List[str]): List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]

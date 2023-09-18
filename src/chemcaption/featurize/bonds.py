@@ -91,7 +91,7 @@ class RotableBondCountFeaturizer(AbstractFeaturizer):
             None.
 
         Returns:
-            List[str]: List of implementors.
+            (List[str]): List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]
 
@@ -142,7 +142,7 @@ class BondRotabilityFeaturizer(AbstractFeaturizer):
             molecule (Molecule): Molecular representation.
 
         Returns:
-            np.array: Array containing distribution of the bonds based on rotability.
+            (np.array): Array containing distribution of the bonds based on rotability.
         """
         return np.array(self._get_bond_types(molecule=molecule)).reshape((1, -1))
 
@@ -154,7 +154,7 @@ class BondRotabilityFeaturizer(AbstractFeaturizer):
             None.
 
         Returns:
-            List[str]: List of implementors.
+            (List[str]): List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]
 
@@ -242,7 +242,7 @@ class BondTypeCountFeaturizer(AbstractFeaturizer):
 
         return bond_types
 
-    def get_names(self) -> List[str]:
+    def get_names(self) -> List[Dict[str, str]]:
         mapped_names = [
             _MAP_BOND_TYPE_TO_CLEAN_NAME[bond_type]
             for bond_type in self.feature_labels()
@@ -328,7 +328,7 @@ class BondTypeCountFeaturizer(AbstractFeaturizer):
             None.
 
         Returns:
-            List[str]: List of implementors.
+            (List[str]): List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]
 
@@ -368,7 +368,7 @@ class BondTypeProportionFeaturizer(BondTypeCountFeaturizer):
 
         return bond_types
 
-    def get_names(self) -> List[str]:
+    def get_names(self) -> List[Dict[str, str]]:
         mapped_names = [
             _MAP_BOND_TYPE_TO_CLEAN_NAME[bond_type] for bond_type in self.feature_labels()
         ]
@@ -496,7 +496,7 @@ class DipoleMomentsFeaturizer(MorfeusFeaturizer):
             None.
 
         Returns:
-            List[str]: List of implementors.
+            (List[str]): List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]
 
@@ -576,6 +576,6 @@ class BondOrderFeaturizer(MorfeusFeaturizer):
             None.
 
         Returns:
-            List[str]: List of implementors.
+            (List[str]): List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]
