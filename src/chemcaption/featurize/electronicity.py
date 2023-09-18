@@ -459,32 +459,8 @@ class AtomChargeFeaturizer(MorfeusFeaturizer):
                 "noun": "atom charges",
             },
         ]
-        self.as_range = as_range
 
-        if as_range:
-            if isinstance(atom_indices, int):
-                atom_indices = range(1, atom_indices + 1)
-
-            elif len(atom_indices) == 2:
-                if atom_indices[0] > atom_indices[1]:
-                    raise IndexError(
-                        "`atom_indices` parameter should contain two integers as (lower, upper) i.e., [10, 20]"
-                    )
-                atom_indices = range(atom_indices[0], atom_indices[1] + 1)
-
-            else:
-                self.as_range = False
-                print(
-                    Fore.RED
-                    + "UserWarning: List of integers passed to `atom_indices` parameter. `as_range` parameter will be refactored to False."
-                    + Fore.RESET
-                )
-
-        else:
-            if isinstance(atom_indices, int):
-                atom_indices = [atom_indices]
-
-        self.atom_indices = atom_indices
+        self.atom_indices, self.as_range = self._parse_indices(atom_indices, as_range)
 
     def featurize(self, molecule: Molecule) -> np.array:
         """
@@ -496,7 +472,7 @@ class AtomChargeFeaturizer(MorfeusFeaturizer):
         Returns:
             (np.array): Array containing charges for atoms in molecule instance.
         """
-        morfeus_instance = self._get_morfeus_instance(molecule=molecule)
+        morfeus_instance = self._get_morfeus_instance(molecule=molecule, morpheus_instance="xtb")
 
         atom_charges = morfeus_instance.get_charges()
         num_atoms = len(atom_charges)

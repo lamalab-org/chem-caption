@@ -48,22 +48,6 @@ class SolventAccessibleSurfaceAreaFeaturizer(MorfeusFeaturizer):
             },
         ]
 
-    def _get_morfeus_instance(self, molecule: Molecule) -> SASA:
-        """Return solvent accessible surface area (SASA) instance for feature generation.
-
-        Args:
-            molecule (Molecule): Molecular instance.
-
-        Returns:
-            (SASA): SASA instance.
-        """
-        self._mol_to_xyz_file(molecule)  # Persist molecule in XYZ file
-        elements, coordinates = read_xyz(self.random_file_name)  # Read file
-
-        os.remove(self.random_file_name)  # Eliminate file
-
-        return SASA(elements, coordinates, **self.morfeus_kwargs)
-
     def featurize(self, molecule: Molecule) -> np.array:
         """
         Featurize single molecule instance.
@@ -74,7 +58,7 @@ class SolventAccessibleSurfaceAreaFeaturizer(MorfeusFeaturizer):
         Returns:
             (np.array): Array containing solvent accessible surface area (SASA) for molecule instance.
         """
-        morfeus_instance = self._get_morfeus_instance(molecule=molecule)
+        morfeus_instance = self._get_morfeus_instance(molecule=molecule, morpheus_instance="xtb")
         return np.array([morfeus_instance.area]).reshape(1, -1)
 
     def feature_labels(self) -> List[str]:
@@ -122,7 +106,7 @@ class SolventAccessibleAtomAreaFeaturizer(SolventAccessibleSurfaceAreaFeaturizer
                 - an integer,
                 - a list of integers, or
                 - a two-tuple of integers representing lower index and upper index.
-            as_range (bool): Use `atom_index_range` parameter as a range of indices or not. Defaults to `False`
+            as_range (bool): Use `atom_indices` parameter as a range of indices or not. Defaults to `False`
         """
         super().__init__(
             file_name=file_name,
@@ -135,32 +119,8 @@ class SolventAccessibleAtomAreaFeaturizer(SolventAccessibleSurfaceAreaFeaturizer
                 "noun": "solvent accessible atom area",
             },
         ]
-        self.as_range = as_range
 
-        if as_range:
-            if isinstance(atom_indices, int):
-                atom_indices = range(1, atom_indices + 1)
-
-            elif len(atom_indices) == 2:
-                if atom_indices[0] > atom_indices[1]:
-                    raise IndexError(
-                        "`atom_indices` parameter should contain two integers as (lower, upper) i.e., [10, 20]"
-                    )
-                atom_indices = range(atom_indices[0], atom_indices[1] + 1)
-
-            else:
-                self.as_range = False
-                print(
-                    Fore.RED
-                    + "UserWarning: List of integers passed to `atom_indices` parameter. `as_range` parameter will be refactored to False."
-                    + Fore.RESET
-                )
-
-        else:
-            if isinstance(atom_indices, int):
-                atom_indices = [atom_indices]
-
-        self.atom_indices = atom_indices
+        self.atom_indices, self.as_range = self._parse_indices(atom_indices, as_range)
 
     def featurize(self, molecule: Molecule) -> np.array:
         """
@@ -172,7 +132,7 @@ class SolventAccessibleAtomAreaFeaturizer(SolventAccessibleSurfaceAreaFeaturizer
         Returns:
             (np.array): Array containing solvent accessible atom area for atoms in molecule instance.
         """
-        morfeus_instance = self._get_morfeus_instance(molecule=molecule)
+        morfeus_instance = self._get_morfeus_instance(molecule=molecule, morpheus_instance="sasa")
 
         atom_areas = morfeus_instance.atom_areas
         num_atoms = len(atom_areas)

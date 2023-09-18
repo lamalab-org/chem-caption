@@ -4,14 +4,17 @@
 
 import os
 from abc import ABC, abstractmethod
+
 from concurrent.futures import ProcessPoolExecutor
-from typing import Any, Callable, Dict, List, Optional
+
+from colorama import Fore
+from typing import Any, Union, Dict, List, Optional, Tuple, Sequence
 
 import numpy as np
 import pandas as pd
 import rdkit
 from frozendict import frozendict
-from morfeus import XTB, read_xyz
+from morfeus import XTB, SASA, read_xyz
 from rdkit import Chem
 from scipy.spatial import distance_matrix
 
@@ -243,21 +246,94 @@ class MorfeusFeaturizer(AbstractFeaturizer):
 
         return SMILESMolecule(smiles)
 
-    def _get_morfeus_instance(self, molecule: Molecule) -> Callable:
+    @staticmethod
+    def _parse_indices(atom_indices: Union[int, List[int]], as_range: bool = False) -> Tuple[Sequence, bool]:
+        """Preprocess indices.
+
+        Args:
+            atom_indices (Union[int, List[int]]): Range of atoms to calculate areas for. Either:
+                - an integer,
+                - a list of integers, or
+                - a two-tuple of integers representing lower index and upper index.
+            as_range (bool): Use `atom_indices` parameter as a range of indices or not. Defaults to `False`
+        """
+        if as_range:
+            if isinstance(atom_indices, int):
+                atom_indices = range(1, atom_indices + 1)
+
+            elif len(atom_indices) == 2:
+                if atom_indices[0] > atom_indices[1]:
+                    raise IndexError(
+                        "`atom_indices` parameter should contain two integers as (lower, upper) i.e., [10, 20]"
+                    )
+                atom_indices = range(atom_indices[0], atom_indices[1] + 1)
+
+            else:
+                as_range = False
+                print(
+                    Fore.RED
+                    + "UserWarning: List of integers passed to `atom_indices` parameter. `as_range` parameter will be refactored to False."
+                    + Fore.RESET
+                )
+
+        else:
+            if isinstance(atom_indices, int):
+                atom_indices = [atom_indices]
+
+        return atom_indices, as_range
+
+    def _get_element_coordinates(self, molecule: Molecule) -> Tuple[Any, Any]:
         """Return appropriate morfeus instance for feature generation.
 
         Args:
             molecule (Molecule): Molecular instance.
 
         Returns:
-            (morfeus.Callable): XTB instance.
+            elements, coordinates (Tuple[Any, Any]): Elements in molecule, and their coordinates.
         """
         self._mol_to_xyz_file(molecule)  # Persist molecule in XYZ file
         elements, coordinates = read_xyz(self.random_file_name)  # Read file
 
         os.remove(self.random_file_name)  # Eliminate file
 
+        return elements, coordinates
+
+    def _get_morfeus_instance(self, molecule: Molecule, morpheus_instance: str = "xtb") -> Union[SASA, XTB]:
+        """Return appropriate morfeus instance for feature generation.
+
+        Args:
+            molecule (Molecule): Molecular instance.
+
+        Returns:
+            (Union[SASA, XTB]): Appropriate morfeus instance.
+        """
+        return self._get_sasa_instance(molecule) if morpheus_instance.lower() == "sasa" else self._get_xtb_instance(molecule)
+
+    def _get_xtb_instance(self, molecule: Molecule) -> XTB:
+        """Return appropriate morfeus instance for feature generation.
+
+        Args:
+            molecule (Molecule): Molecular instance.
+
+        Returns:
+            (XTB): Appropriate morfeus XTB instance.
+        """
+        elements, coordinates = self._get_element_coordinates(molecule)
+
         return XTB(elements, coordinates, "1")
+
+    def _get_sasa_instance(self, molecule: Molecule) -> SASA:
+        """Return appropriate morfeus instance for feature generation.
+
+        Args:
+            molecule (Molecule): Molecular instance.
+
+        Returns:
+            (SASA): Appropriate morfeus SASA instance.
+        """
+        elements, coordinates = self._get_element_coordinates(molecule)
+
+        return SASA(elements, coordinates, **self.morfeus_kwargs)
 
     def implementors(self) -> List[str]:
         """
