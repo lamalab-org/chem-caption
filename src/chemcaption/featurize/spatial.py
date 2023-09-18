@@ -465,7 +465,7 @@ class PMIFeaturizer(ThreeDimensionalFeaturizer):
 
 
 class AtomVolumeFeaturizer(MorfeusFeaturizer):
-    """Return the solvent accessible atom volume."""
+    """Return the solvent accessible volume per atom in molecule."""
 
     def __init__(
         self,

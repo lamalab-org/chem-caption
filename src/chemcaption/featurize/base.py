@@ -319,10 +319,16 @@ class MorfeusFeaturizer(AbstractFeaturizer):
 
         Args:
             molecule (Molecule): Molecular instance.
+            morpheus_instance (str): Type of morfeus instance. Can take on either `xtb` or `sasa`. Defaults to `xtb`.
 
         Returns:
             (Union[SASA, XTB]): Appropriate morfeus instance.
         """
+        if morpheus_instance.lower() not in ["xtb", "sasa"]:
+            raise Exception(
+                "`morpheus_instance` parameter must take on either `xtb` or `sasa` as value."
+            )
+
         return (
             self._get_sasa_instance(molecule)
             if morpheus_instance.lower() == "sasa"
