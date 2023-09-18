@@ -4,17 +4,15 @@
 
 import os
 from abc import ABC, abstractmethod
-
 from concurrent.futures import ProcessPoolExecutor
-
-from colorama import Fore
-from typing import Any, Union, Dict, List, Optional, Tuple, Sequence
+from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
 import pandas as pd
 import rdkit
+from colorama import Fore
 from frozendict import frozendict
-from morfeus import XTB, SASA, read_xyz
+from morfeus import SASA, XTB, read_xyz
 from rdkit import Chem
 from scipy.spatial import distance_matrix
 
@@ -247,7 +245,9 @@ class MorfeusFeaturizer(AbstractFeaturizer):
         return SMILESMolecule(smiles)
 
     @staticmethod
-    def _parse_indices(atom_indices: Union[int, List[int]], as_range: bool = False) -> Tuple[Sequence, bool]:
+    def _parse_indices(
+        atom_indices: Union[int, List[int]], as_range: bool = False
+    ) -> Tuple[Sequence, bool]:
         """Preprocess indices.
 
         Args:
@@ -298,7 +298,9 @@ class MorfeusFeaturizer(AbstractFeaturizer):
 
         return elements, coordinates
 
-    def _get_morfeus_instance(self, molecule: Molecule, morpheus_instance: str = "xtb") -> Union[SASA, XTB]:
+    def _get_morfeus_instance(
+        self, molecule: Molecule, morpheus_instance: str = "xtb"
+    ) -> Union[SASA, XTB]:
         """Return appropriate morfeus instance for feature generation.
 
         Args:
@@ -307,7 +309,11 @@ class MorfeusFeaturizer(AbstractFeaturizer):
         Returns:
             (Union[SASA, XTB]): Appropriate morfeus instance.
         """
-        return self._get_sasa_instance(molecule) if morpheus_instance.lower() == "sasa" else self._get_xtb_instance(molecule)
+        return (
+            self._get_sasa_instance(molecule)
+            if morpheus_instance.lower() == "sasa"
+            else self._get_xtb_instance(molecule)
+        )
 
     def _get_xtb_instance(self, molecule: Molecule) -> XTB:
         """Return appropriate morfeus instance for feature generation.

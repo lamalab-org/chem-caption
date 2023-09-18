@@ -2,7 +2,7 @@
 
 """Featurizers for chemical bond-related information."""
 
-from typing import Dict, List, Union, Optional, Any
+from typing import Any, Dict, List, Optional, Union
 
 import numpy as np
 from frozendict import frozendict

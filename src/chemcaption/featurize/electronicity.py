@@ -559,7 +559,9 @@ class AtomNucleophilicityFeaturizer(MorfeusFeaturizer):
         nucleophilicity = morfeus_instance.get_fukui("nucleophilicity")
         num_atoms = len(nucleophilicity)
 
-        atom_nucleophilicities = [(nucleophilicity[i] if i <= num_atoms else 0) for i in self.atom_indices]
+        atom_nucleophilicities = [
+            (nucleophilicity[i] if i <= num_atoms else 0) for i in self.atom_indices
+        ]
 
         return np.array(atom_nucleophilicities).reshape(1, -1)
 
@@ -638,7 +640,9 @@ class AtomElectrophilicityFeaturizer(MorfeusFeaturizer):
         electrophilicity = morfeus_instance.get_fukui("electrophilicity")
         num_atoms = len(electrophilicity)
 
-        atom_electrophilicities = [(electrophilicity[i] if i <= num_atoms else 0) for i in self.atom_indices]
+        atom_electrophilicities = [
+            (electrophilicity[i] if i <= num_atoms else 0) for i in self.atom_indices
+        ]
 
         return np.array(atom_electrophilicities).reshape(1, -1)
 
@@ -664,7 +668,6 @@ class AtomElectrophilicityFeaturizer(MorfeusFeaturizer):
             List[str]: List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]
-
 
 
 class MoleculeNucleophilicityFeaturizer(MorfeusFeaturizer):
@@ -706,7 +709,9 @@ class MoleculeNucleophilicityFeaturizer(MorfeusFeaturizer):
         """
         morfeus_instance = self._get_morfeus_instance(molecule=molecule, morpheus_instance="xtb")
 
-        nucleophilicity = morfeus_instance.get_global_descriptor("nucleophilicity", **self.morfeus_kwargs)
+        nucleophilicity = morfeus_instance.get_global_descriptor(
+            "nucleophilicity", **self.morfeus_kwargs
+        )
 
         return np.array([nucleophilicity]).reshape(1, -1)
 
@@ -773,7 +778,9 @@ class MoleculeElectrophilicityFeaturizer(MorfeusFeaturizer):
         """
         morfeus_instance = self._get_morfeus_instance(molecule=molecule, morpheus_instance="xtb")
 
-        electrophilicity = morfeus_instance.get_global_descriptor("electrophilicity", **self.morfeus_kwargs)
+        electrophilicity = morfeus_instance.get_global_descriptor(
+            "electrophilicity", **self.morfeus_kwargs
+        )
 
         return np.array([electrophilicity]).reshape(1, -1)
 
