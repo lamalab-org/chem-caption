@@ -2,9 +2,10 @@
 
 """Featurizers for proton- and electron-related information."""
 
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Union
 
 import numpy as np
+from colorama import Fore
 from rdkit.Chem import Descriptors, rdMolDescriptors
 
 from chemcaption.featurize.base import AbstractFeaturizer, MorfeusFeaturizer
@@ -19,6 +20,7 @@ __all__ = [
     "ElectronAffinityFeaturizer",
     "HOMOEnergyFeaturizer",
     "LUMOEnergyFeaturizer",
+    "AtomChargeFeaturizer",
 ]
 
 
@@ -409,6 +411,110 @@ class LUMOEnergyFeaturizer(MorfeusFeaturizer):
             (List[str]): List of names of extracted features.
         """
         return ["lumo_energy"]
+
+    def implementors(self) -> List[str]:
+        """
+        Return list of functionality implementors.
+
+        Args:
+            None.
+
+        Returns:
+            List[str]: List of implementors.
+        """
+        return ["Benedict Oshomah Emoekabu"]
+
+
+class AtomChargeFeaturizer(MorfeusFeaturizer):
+    """Return the charges for atoms in molecules."""
+
+    def __init__(
+        self,
+        file_name: Optional[str] = None,
+        conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
+        morfeus_kwargs: Optional[Dict[str, Any]] = None,
+        atom_indices: Union[int, List[int]] = 100,
+        as_range: bool = False,
+    ):
+        """Instantiate class.
+
+        Args:
+            file_name (Optional[str]): Name for temporary XYZ file.
+            conformer_generation_kwargs (Optional[Dict[str, Any]]): Configuration for conformer generation.
+            morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
+            atom_indices (Union[int, List[int]]): Range of atoms to calculate areas for. Either:
+                - an integer,
+                - a list of integers, or
+                - a two-tuple of integers representing lower index and upper index.
+            as_range (bool): Use `atom_index_range` parameter as a range of indices or not. Defaults to `False`
+        """
+        super().__init__(
+            file_name=file_name,
+            conformer_generation_kwargs=conformer_generation_kwargs,
+            morfeus_kwargs=morfeus_kwargs,
+        )
+
+        self._names = [
+            {
+                "noun": "atom charges",
+            },
+        ]
+        self.as_range = as_range
+
+        if as_range:
+            if isinstance(atom_indices, int):
+                atom_indices = range(1, atom_indices + 1)
+
+            elif len(atom_indices) == 2:
+                if atom_indices[0] > atom_indices[1]:
+                    raise IndexError(
+                        "`atom_indices` parameter should contain two integers as (lower, upper) i.e., [10, 20]"
+                    )
+                atom_indices = range(atom_indices[0], atom_indices[1] + 1)
+
+            else:
+                self.as_range = False
+                print(
+                    Fore.RED
+                    + "UserWarning: List of integers passed to `atom_indices` parameter. `as_range` parameter will be refactored to False."
+                    + Fore.RESET
+                )
+
+        else:
+            if isinstance(atom_indices, int):
+                atom_indices = [atom_indices]
+
+        self.atom_indices = atom_indices
+
+    def featurize(self, molecule: Molecule) -> np.array:
+        """
+        Featurize single molecule instance.
+
+        Args:
+            molecule (Molecule): Molecule representation.
+
+        Returns:
+            (np.array): Array containing charges for atoms in molecule instance.
+        """
+        morfeus_instance = self._get_morfeus_instance(molecule=molecule)
+
+        atom_charges = morfeus_instance.get_charges()
+        num_atoms = len(atom_charges)
+
+        atom_areas = [(atom_charges[i] if i <= num_atoms else 0) for i in self.atom_indices]
+
+        return np.array(atom_areas).reshape(1, -1)
+
+    def feature_labels(self) -> List[str]:
+        """Return feature label(s).
+
+        Args:
+            None.
+
+        Returns:
+            (List[str]): List of names of extracted features.
+        """
+        return [f"atom_charge_{i}" for i in self.atom_indices]
 
     def implementors(self) -> List[str]:
         """

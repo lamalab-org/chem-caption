@@ -6,6 +6,7 @@ import os
 from typing import Any, Dict, List, Optional, Union
 
 import numpy as np
+from colorama import Fore
 from morfeus import SASA, read_xyz
 
 from chemcaption.featurize.base import MorfeusFeaturizer
@@ -137,12 +138,24 @@ class SolventAccessibleAtomAreaFeaturizer(SolventAccessibleSurfaceAreaFeaturizer
         self.as_range = as_range
 
         if as_range:
-            if (len(atom_indices) != 2) or (atom_indices[0] > atom_indices[1]):
-                raise IndexError(
-                    "`atom_indices` parameter should contain two integers as (lower, upper) i.e., [10, 20]"
+            if isinstance(atom_indices, int):
+                atom_indices = range(1, atom_indices + 1)
+
+            elif len(atom_indices) == 2:
+                if atom_indices[0] > atom_indices[1]:
+                    raise IndexError(
+                        "`atom_indices` parameter should contain two integers as (lower, upper) i.e., [10, 20]"
+                    )
+                atom_indices = range(atom_indices[0], atom_indices[1] + 1)
+
+            else:
+                self.as_range = False
+                print(
+                    Fore.RED
+                    + "UserWarning: List of integers passed to `atom_indices` parameter. `as_range` parameter will be refactored to False."
+                    + Fore.RESET
                 )
 
-            atom_indices = range(atom_indices[0], atom_indices[1])
         else:
             if isinstance(atom_indices, int):
                 atom_indices = [atom_indices]
@@ -160,9 +173,12 @@ class SolventAccessibleAtomAreaFeaturizer(SolventAccessibleSurfaceAreaFeaturizer
             (np.array): Array containing solvent accessible atom area for atoms in molecule instance.
         """
         morfeus_instance = self._get_morfeus_instance(molecule=molecule)
+
         atom_areas = morfeus_instance.atom_areas
         num_atoms = len(atom_areas)
+
         atom_areas = [(atom_areas[i] if i <= num_atoms else 0) for i in self.atom_indices]
+
         return np.array(atom_areas).reshape(1, -1)
 
     def feature_labels(self) -> List[str]:
