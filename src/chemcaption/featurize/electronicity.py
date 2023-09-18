@@ -22,6 +22,8 @@ __all__ = [
     "AtomChargeFeaturizer",
     "AtomNucleophilicityFeaturizer",
     "AtomElectrophilicityFeaturizer",
+    "MoleculeNucleophilicityFeaturizer",
+    "MoleculeElectrophilicityFeaturizer",
 ]
 
 
@@ -650,6 +652,141 @@ class AtomElectrophilicityFeaturizer(MorfeusFeaturizer):
             (List[str]): List of names of extracted features.
         """
         return [f"atom_{i}_electrophilicity" for i in self.atom_indices]
+
+    def implementors(self) -> List[str]:
+        """
+        Return list of functionality implementors.
+
+        Args:
+            None.
+
+        Returns:
+            List[str]: List of implementors.
+        """
+        return ["Benedict Oshomah Emoekabu"]
+
+
+
+class MoleculeNucleophilicityFeaturizer(MorfeusFeaturizer):
+    """Return the global nucleophilicity value for a molecule."""
+
+    def __init__(
+        self,
+        file_name: Optional[str] = None,
+        conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
+        morfeus_kwargs: Optional[Dict[str, Any]] = None,
+    ):
+        """Instantiate class.
+
+        Args:
+            file_name (Optional[str]): Name for temporary XYZ file.
+            conformer_generation_kwargs (Optional[Dict[str, Any]]): Configuration for conformer generation.
+            morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
+        """
+        super().__init__(
+            file_name=file_name,
+            conformer_generation_kwargs=conformer_generation_kwargs,
+            morfeus_kwargs=morfeus_kwargs,
+        )
+
+        self._names = [
+            {
+                "noun": "global nucleophilicity",
+            },
+        ]
+
+    def featurize(self, molecule: Molecule) -> np.array:
+        """Featurize single molecule instance.
+
+        Args:
+            molecule (Molecule): Molecule representation.
+
+        Returns:
+            (np.array): Array containing global nucleophilicity value for the molecule instance.
+        """
+        morfeus_instance = self._get_morfeus_instance(molecule=molecule, morpheus_instance="xtb")
+
+        nucleophilicity = morfeus_instance.get_global_descriptor("nucleophilicity", **self.morfeus_kwargs)
+
+        return np.array([nucleophilicity]).reshape(1, -1)
+
+    def feature_labels(self) -> List[str]:
+        """Return feature label(s).
+
+        Args:
+            None.
+
+        Returns:
+            (List[str]): List of names of extracted features.
+        """
+        return ["molecular_nucleophilicity"]
+
+    def implementors(self) -> List[str]:
+        """
+        Return list of functionality implementors.
+
+        Args:
+            None.
+
+        Returns:
+            List[str]: List of implementors.
+        """
+        return ["Benedict Oshomah Emoekabu"]
+
+
+class MoleculeElectrophilicityFeaturizer(MorfeusFeaturizer):
+    """Return global electrophilicity value for a molecule."""
+
+    def __init__(
+        self,
+        file_name: Optional[str] = None,
+        conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
+        morfeus_kwargs: Optional[Dict[str, Any]] = None,
+    ):
+        """Instantiate class.
+
+        Args:
+            file_name (Optional[str]): Name for temporary XYZ file.
+            conformer_generation_kwargs (Optional[Dict[str, Any]]): Configuration for conformer generation.
+            morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
+        """
+        super().__init__(
+            file_name=file_name,
+            conformer_generation_kwargs=conformer_generation_kwargs,
+            morfeus_kwargs=morfeus_kwargs,
+        )
+
+        self._names = [
+            {
+                "noun": "global electrophilicity",
+            },
+        ]
+
+    def featurize(self, molecule: Molecule) -> np.array:
+        """Featurize single molecule instance.
+
+        Args:
+            molecule (Molecule): Molecule representation.
+
+        Returns:
+            (np.array): Array containing global electrophilicity value for the molecule instance.
+        """
+        morfeus_instance = self._get_morfeus_instance(molecule=molecule, morpheus_instance="xtb")
+
+        electrophilicity = morfeus_instance.get_global_descriptor("electrophilicity", **self.morfeus_kwargs)
+
+        return np.array([electrophilicity]).reshape(1, -1)
+
+    def feature_labels(self) -> List[str]:
+        """Return feature label(s).
+
+        Args:
+            None.
+
+        Returns:
+            (List[str]): List of names of extracted features.
+        """
+        return ["molecular_electrophilicity"]
 
     def implementors(self) -> List[str]:
         """
