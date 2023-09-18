@@ -153,7 +153,7 @@ class ValenceElectronCountFeaturizer(AbstractFeaturizer):
         Return list of functionality implementors.
 
         Args:
-            None
+            None.
 
         Returns:
             List[str]: List of implementors.
@@ -165,18 +165,20 @@ class ElectronAffinityFeaturizer(MorfeusFeaturizer):
     """Featurize molecule and return electron affinity."""
 
     def __init__(
-        self,
-        file_name: Optional[str] = None,
-        conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
+            self,
+            file_name: Optional[str] = None,
+            conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
+            morfeus_kwargs: Optional[Dict[str, Any]] = None
     ):
         """Instantiate class.
 
         Args:
             file_name (Optional[str]): Name for temporary XYZ file.
             conformer_generation_kwargs (Optional[Dict[str, Any]]): Configuration for conformer generation.
+            morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
         """
         super().__init__(
-            file_name=file_name, conformer_generation_kwargs=conformer_generation_kwargs
+            file_name=file_name, conformer_generation_kwargs=conformer_generation_kwargs, morfeus_kwargs=morfeus_kwargs
         )
 
         self._names = [
@@ -196,7 +198,7 @@ class ElectronAffinityFeaturizer(MorfeusFeaturizer):
             (np.array): Array containing electron affinity for molecule instance.
         """
         xtb = self._get_morfeus_instance(molecule=molecule)
-        return np.array([xtb.get_ea()]).reshape(1, -1)
+        return np.array([xtb.get_ea(**self.morfeus_kwargs)]).reshape(1, -1)
 
     def feature_labels(self) -> List[str]:
         """Return feature label(s).
@@ -210,15 +212,52 @@ class ElectronAffinityFeaturizer(MorfeusFeaturizer):
         return ["electron_affinity"]
 
 
-if __name__ == "__main__":
-    from chemcaption.molecules import SMILESMolecule
+class IonizationPotentialFeaturizer(MorfeusFeaturizer):
+    """Featurize molecule and return ionization potential."""
 
-    feat = ElectronAffinityFeaturizer()
-    mols = [
-        SMILESMolecule("C1(Br)=CC=CC=C1Br"),
-        SMILESMolecule("CC(C)(C)OC(=O)CCCc1ccc(N(CCCl)CCCl)cc1"),
-    ]
+    def __init__(
+        self,
+        file_name: Optional[str] = None,
+        conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
+        morfeus_kwargs: Optional[Dict[str, Any]] = None
+    ):
+        """Instantiate class.
 
-    print(feat.feature_labels())
-    print(feat.featurize_many(mols))
-    print(feat.feature_labels())
+        Args:
+            file_name (Optional[str]): Name for temporary XYZ file.
+            conformer_generation_kwargs (Optional[Dict[str, Any]]): Configuration for conformer generation.
+            morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
+        """
+        super().__init__(
+            file_name=file_name, conformer_generation_kwargs=conformer_generation_kwargs, morfeus_kwargs=morfeus_kwargs
+        )
+
+        self._names = [
+            {
+                "noun": "ionization potential",
+            },
+        ]
+
+    def featurize(self, molecule: Molecule) -> np.array:
+        """
+        Featurize single molecule instance.
+
+        Args:
+            molecule (Molecule): Molecule representation.
+
+        Returns:
+            (np.array): Array containing ionization potential for molecule instance.
+        """
+        xtb = self._get_morfeus_instance(molecule=molecule)
+        return np.array([xtb.get_ip(**self.morfeus_kwargs)]).reshape(1, -1)
+
+    def feature_labels(self) -> List[str]:
+        """Return feature label(s).
+
+        Args:
+            None.
+
+        Returns:
+            (List[str]): List of names of extracted features.
+        """
+        return ["ionization_potential"]

@@ -176,17 +176,24 @@ class MorfeusFeaturizer(AbstractFeaturizer):
         self,
         file_name: Optional[str] = None,
         conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
+        morfeus_kwargs: Optional[Dict[str, Any]] = None
     ):
         """Instantiate class.
 
         Args:
             file_name (Optional[str]): Name for temporary XYZ file.
             conformer_generation_kwargs (Optional[Dict[str, Any]]): Configuration for conformer generation.
+            morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
         """
         super().__init__()
         self._conf_gen_kwargs = (
             frozendict(conformer_generation_kwargs)
             if conformer_generation_kwargs
+            else frozendict({})
+        )
+        self.morfeus_kwargs = (
+            frozendict(morfeus_kwargs)
+            if morfeus_kwargs
             else frozendict({})
         )
 
