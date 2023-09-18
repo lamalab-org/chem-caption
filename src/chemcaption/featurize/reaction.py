@@ -22,18 +22,20 @@ class SASAFeaturizer(MorfeusFeaturizer):
     """Return the solvent accessible surface area (SASA) value."""
 
     def __init__(
-        self,
-        file_name: Optional[str] = None,
-        conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
+            self,
+            file_name: Optional[str] = None,
+            conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
+            morfeus_kwargs: Optional[Dict[str, Any]] = None
     ):
         """Instantiate class.
 
         Args:
             file_name (Optional[str]): Name for temporary XYZ file.
             conformer_generation_kwargs (Optional[Dict[str, Any]]): Configuration for conformer generation.
+            morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
         """
         super().__init__(
-            file_name=file_name, conformer_generation_kwargs=conformer_generation_kwargs
+            file_name=file_name, conformer_generation_kwargs=conformer_generation_kwargs, morfeus_kwargs=morfeus_kwargs
         )
 
         self._names = [
@@ -56,7 +58,7 @@ class SASAFeaturizer(MorfeusFeaturizer):
 
         os.remove(self.random_file_name)  # Eliminate file
 
-        return SASA(elements, coordinates)
+        return SASA(elements, coordinates, **self.morfeus_kwargs)
 
     def featurize(self, molecule: Molecule) -> np.array:
         """
