@@ -5,14 +5,14 @@
 from typing import Dict, List, Union
 
 import numpy as np
-from givemeconformer.api import _get_conformer
+
 from rdkit import Chem
 from rdkit.Chem import Descriptors3D
 
 from chemcaption.featurize.base import AbstractFeaturizer
 from chemcaption.molecules import Molecule
 from functools import lru_cache
-from chemcaption.featurize.utils import join_list_elements
+from chemcaption.featurize.utils import join_list_elements, cached_conformer
 from frozendict import frozendict
 
 # Implemented bond-related featurizers
@@ -28,14 +28,6 @@ __all__ = [
 
 
 """Abstract Featurizer for extracting 3D features from molecule."""
-
-
-@lru_cache(maxsize=None)
-def cached_conformer(smiles, kwargs):
-    mol, conformers = _get_conformer(smiles=smiles, **kwargs)
-    for conf in conformers.keys():
-        mol.AddConformer(mol.GetConformer(conf))
-    return mol
 
 
 class ThreeDimensionalFeaturizer(AbstractFeaturizer):
