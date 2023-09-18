@@ -1,7 +1,7 @@
-from chemcaption.featurize.adaptor import ValenceElectronCountAdaptor
-
-from chemcaption.molecules import SMILESMolecule
 import numpy as np
+
+from chemcaption.featurize.adaptor import ValenceElectronCountAdaptor
+from chemcaption.molecules import SMILESMolecule
 
 
 def test_valence_electron_count():

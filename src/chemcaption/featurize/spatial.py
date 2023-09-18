@@ -5,15 +5,13 @@
 from typing import Dict, List, Union
 
 import numpy as np
-
+from frozendict import frozendict
 from rdkit import Chem
 from rdkit.Chem import Descriptors3D
 
 from chemcaption.featurize.base import AbstractFeaturizer
+from chemcaption.featurize.utils import cached_conformer, join_list_elements
 from chemcaption.molecules import Molecule
-from functools import lru_cache
-from chemcaption.featurize.utils import join_list_elements, cached_conformer
-from frozendict import frozendict
 
 # Implemented bond-related featurizers
 

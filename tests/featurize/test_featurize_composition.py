@@ -1,3 +1,5 @@
+import numpy as np
+
 from chemcaption.featurize.composition import (
     AtomCountFeaturizer,
     DegreeOfUnsaturationFeaturizer,
@@ -10,7 +12,6 @@ from chemcaption.featurize.composition import (
     MonoisotopicMolecularMassFeaturizer,
 )
 from chemcaption.molecules import SMILESMolecule
-import numpy as np
 
 
 def test_molecular_formula_featurizer():

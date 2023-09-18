@@ -1,11 +1,11 @@
+import numpy as np
+
 from chemcaption.featurize.electronicity import (
     HydrogenAcceptorCountFeaturizer,
     HydrogenDonorCountFeaturizer,
     ValenceElectronCountFeaturizer,
 )
-
 from chemcaption.molecules import SMILESMolecule
-import numpy as np
 
 
 def test_hydrogen_acceptor_count_featurizer():

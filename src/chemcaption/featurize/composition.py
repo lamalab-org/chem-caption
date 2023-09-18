@@ -9,8 +9,8 @@ import numpy as np
 from rdkit.Chem import Descriptors
 
 from chemcaption.featurize.base import PERIODIC_TABLE, AbstractFeaturizer
-from chemcaption.molecules import Molecule
 from chemcaption.featurize.utils import join_list_elements
+from chemcaption.molecules import Molecule
 
 # Implemented composition-related featurizers
 

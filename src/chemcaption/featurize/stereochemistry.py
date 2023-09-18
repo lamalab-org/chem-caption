@@ -11,7 +11,6 @@ from rdkit.Chem import AllChem
 from chemcaption.featurize.base import AbstractFeaturizer
 from chemcaption.molecules import Molecule
 
-
 __all__ = [
     "NumChiralCentersFeaturizer",
 ]

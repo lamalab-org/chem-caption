@@ -8,10 +8,9 @@ import numpy as np
 import rdkit
 from rdkit.Chem import GetPeriodicTable, PeriodicTable
 
-
 from chemcaption.featurize.base import AbstractFeaturizer
-from chemcaption.molecules import Molecule
 from chemcaption.featurize.utils import join_list_elements
+from chemcaption.molecules import Molecule
 from chemcaption.presets import SMARTS_MAP
 
 __all__ = ["SMARTSFeaturizer", "IsomorphismFeaturizer", "TopologyCountFeaturizer"]

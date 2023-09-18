@@ -2,23 +2,28 @@
 
 """Abstract base class and wrappers for featurizers."""
 
+import os
 from abc import ABC, abstractmethod
 from concurrent.futures import ProcessPoolExecutor
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 import numpy as np
 import pandas as pd
 import rdkit
+from frozendict import frozendict
+from morfeus import XTB, read_xyz
+from rdkit import Chem
 from scipy.spatial import distance_matrix
 
 from chemcaption.featurize.text import Prompt, PromptCollection
-from chemcaption.featurize.utils import join_list_elements
-from chemcaption.molecules import Molecule
+from chemcaption.featurize.utils import cached_conformer, join_list_elements
+from chemcaption.molecules import Molecule, SMILESMolecule
 
 # Implemented abstract and high-level classes
 
 __all__ = [
     "AbstractFeaturizer",  # Featurizer base class.
+    "MorfeusFeaturizer",
     "AbstractComparator",
     "MultipleFeaturizer",  # Combines multiple featurizers.
     "Comparator",  # Class for comparing featurizer results amongst molecules.
@@ -162,6 +167,106 @@ class AbstractFeaturizer(ABC):
     def citations(self):
         """Return citation for this project."""
         raise NotImplementedError
+
+
+class MorfeusFeaturizer(AbstractFeaturizer):
+    """Abstract featurizer for morfeus-generated features."""
+
+    def __init__(
+        self,
+        file_name: Optional[str] = None,
+        conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
+    ):
+        """Instantiate class.
+
+        Args:
+            file_name (Optional[str]): Name for temporary XYZ file.
+            conformer_generation_kwargs (Optional[Dict[str, Any]]): Configuration for conformer generation.
+        """
+        super().__init__()
+        self._conf_gen_kwargs = (
+            frozendict(conformer_generation_kwargs)
+            if conformer_generation_kwargs
+            else frozendict({})
+        )
+
+        if file_name is None:
+            num = np.random.randint(low=1, high=100)
+            numbers = np.random.randint(low=65, high=82, size=(num,)).flatten().tolist()
+            letters = list(map(lambda x: chr(x), numbers))
+
+            file_name = "".join(letters) + ".xyz"
+
+        self.random_file_name = file_name if file_name.endswith(".xyz") else file_name + ".xyz"
+
+    def _get_conformer(self, mol: Chem.Mol) -> Chem.Mol:
+        """Return conformer for molecule.
+
+        Args:
+            mol (Chem.Mol): rdkit Molecule.
+
+        Returns:
+            (Chem.Mol): Molecule instance embedded with conformers.
+        """
+        smiles = Chem.MolToSmiles(mol)
+        return cached_conformer(smiles, self._conf_gen_kwargs)
+
+    def _mol_to_xyz_file(self, molecule: Molecule) -> None:
+        """Generate XYZ block from molecule instance.
+
+        Args:
+            molecule (Molecule): Molecular instance.
+
+        Returns:
+            None.
+        """
+        mol = molecule.rdkit_mol
+        mol = self._get_conformer(mol)
+
+        Chem.rdmolfiles.MolToXYZFile(mol, self.random_file_name)
+        return
+
+    def _xyz_file_to_mol(self) -> SMILESMolecule:
+        """Generate XYZ block from molecule instance.
+
+        Args:
+            None.
+
+        Returns:
+            (SMILESMolecule): SMILES molecule instance.
+        """
+        mol = Chem.rdmolfiles.MolFromXYZFile(self.random_file_name)
+        smiles = Chem.MolToSmiles(mol)
+
+        return SMILESMolecule(smiles)
+
+    def _get_morfeus_instance(self, molecule: Molecule) -> XTB:
+        """Return XTB instance for feature generation.
+
+        Args:
+            molecule (Molecule): Molecular instance.
+
+        Returns:
+            (XTB): XTB instance.
+        """
+        self._mol_to_xyz_file(molecule)  # Persist molecule in XYZ file
+        elements, coordinates = read_xyz(self.random_file_name)  # Read file
+
+        os.remove(self.random_file_name)  # Eliminate file
+
+        return XTB(elements, coordinates, "1")
+
+    def implementors(self) -> List[str]:
+        """
+        Return list of functionality implementors.
+
+        Args:
+            None.
+
+        Returns:
+            List[str]: List of implementors.
+        """
+        return ["Benedict Oshomah Emoekabu"]
 
 
 class AbstractComparator(ABC):

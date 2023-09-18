@@ -1,4 +1,16 @@
+from pathlib import Path
+from typing import Union
+
+import dask.dataframe as dd
+import fire
+import jsonlines
+import numpy as np
+from dask.distributed import Client
+from rdkit import Chem
+from selfies import encoder
+
 from chemcaption.featurize.adaptor import ValenceElectronCountAdaptor
+from chemcaption.featurize.base import MultipleFeaturizer
 from chemcaption.featurize.bonds import (
     BondRotabilityFeaturizer,
     BondTypeCountFeaturizer,
@@ -17,27 +29,16 @@ from chemcaption.featurize.electronicity import (
 )
 from chemcaption.featurize.rules import LipinskiViolationCountFeaturizer
 from chemcaption.featurize.spatial import (
-    InertialShapeFactorFeaturizer,
-    EccentricityFeaturizer,
     AsphericityFeaturizer,
+    EccentricityFeaturizer,
+    InertialShapeFactorFeaturizer,
     NPRFeaturizer,
     PMIFeaturizer,
 )
 from chemcaption.featurize.stereochemistry import NumChiralCentersFeaturizer
 from chemcaption.featurize.substructure import SMARTSFeaturizer
+from chemcaption.molecules import InChIMolecule, SELFIESMolecule, SMILESMolecule
 from chemcaption.presets import ALL_SMARTS
-from chemcaption.featurize.base import MultipleFeaturizer
-from chemcaption.molecules import SMILESMolecule, SELFIESMolecule, InChIMolecule
-import fire
-import dask.dataframe as dd
-from typing import Union
-from pathlib import Path
-import jsonlines
-
-from dask.distributed import Client
-from selfies import encoder
-from rdkit import Chem
-import numpy as np
 
 
 def get_smarts_featurizers():

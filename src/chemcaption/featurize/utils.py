@@ -5,7 +5,7 @@
 from functools import lru_cache
 
 import numpy as np
-from givemeconformer.api import get_conformer, _get_conformer
+from givemeconformer.api import _get_conformer, get_conformer
 from pymatgen.core import IMolecule  # use immutable for caching
 from pymatgen.symmetry.analyzer import PointGroupAnalyzer
 from rdkit import Chem
@@ -17,6 +17,7 @@ __all__ = [
     "_pmg_mol_to_pointgroup_analyzer",  # Helper function
     "get_atom_symbols_and_positions",  # Helper function
     "apply_featurizer",  # Helper function
+    "cached_conformer",
 ]
 
 

@@ -7,11 +7,11 @@ import numpy as np
 from chemcaption.featurize.bonds import (
     BondRotabilityFeaturizer,
     BondTypeCountFeaturizer,
-    RotableBondCountFeaturizer,
     BondTypeProportionFeaturizer,
+    RotableBondCountFeaturizer,
 )
-from chemcaption.molecules import SMILESMolecule
 from chemcaption.featurize.text import Prompt
+from chemcaption.molecules import SMILESMolecule
 
 
 def test_bond_type_featurizer():
