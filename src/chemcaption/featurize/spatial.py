@@ -515,9 +515,9 @@ class AtomVolumeFeaturizer(MorfeusFeaturizer):
         atom_volumes = morfeus_instance.atom_volumes
         num_atoms = len(atom_volumes)
 
-        atom_areas = [(atom_volumes[i] if i <= num_atoms else 0) for i in self.atom_indices]
+        atom_volumes = [(atom_volumes[i] if i <= num_atoms else 0) for i in self.atom_indices]
 
-        return np.array(atom_areas).reshape(1, -1)
+        return np.array(atom_volumes).reshape(1, -1)
 
     def feature_labels(self) -> List[str]:
         """Return feature label(s).

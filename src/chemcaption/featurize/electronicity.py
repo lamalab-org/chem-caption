@@ -20,6 +20,8 @@ __all__ = [
     "HOMOEnergyFeaturizer",
     "LUMOEnergyFeaturizer",
     "AtomChargeFeaturizer",
+    "AtomNucleophilicityFeaturizer",
+    "AtomElectrophilicityFeaturizer",
 ]
 
 
@@ -490,6 +492,164 @@ class AtomChargeFeaturizer(MorfeusFeaturizer):
             (List[str]): List of names of extracted features.
         """
         return [f"atom_charge_{i}" for i in self.atom_indices]
+
+    def implementors(self) -> List[str]:
+        """
+        Return list of functionality implementors.
+
+        Args:
+            None.
+
+        Returns:
+            List[str]: List of implementors.
+        """
+        return ["Benedict Oshomah Emoekabu"]
+
+
+class AtomNucleophilicityFeaturizer(MorfeusFeaturizer):
+    """Return the nucleophilicity value for each atom in a molecule."""
+
+    def __init__(
+        self,
+        file_name: Optional[str] = None,
+        conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
+        morfeus_kwargs: Optional[Dict[str, Any]] = None,
+        atom_indices: Union[int, List[int]] = 100,
+        as_range: bool = False,
+    ):
+        """Instantiate class.
+
+        Args:
+            file_name (Optional[str]): Name for temporary XYZ file.
+            conformer_generation_kwargs (Optional[Dict[str, Any]]): Configuration for conformer generation.
+            morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
+            atom_indices (Union[int, List[int]]): Range of atoms to calculate areas for. Either:
+                - an integer,
+                - a list of integers, or
+                - a two-tuple of integers representing lower index and upper index.
+            as_range (bool): Use `atom_indices` parameter as a range of indices or not. Defaults to `False`
+        """
+        super().__init__(
+            file_name=file_name,
+            conformer_generation_kwargs=conformer_generation_kwargs,
+            morfeus_kwargs=morfeus_kwargs,
+        )
+
+        self._names = [
+            {
+                "noun": "nucleophilicity",
+            },
+        ]
+
+        self.atom_indices, self.as_range = self._parse_indices(atom_indices, as_range)
+
+    def featurize(self, molecule: Molecule) -> np.array:
+        """Featurize single molecule instance.
+
+        Args:
+            molecule (Molecule): Molecule representation.
+
+        Returns:
+            (np.array): Array containing nucleophilicity value for each atom in a molecule instance.
+        """
+        morfeus_instance = self._get_morfeus_instance(molecule=molecule, morpheus_instance="xtb")
+
+        nucleophilicity = morfeus_instance.get_fukui("nucleophilicity")
+        num_atoms = len(nucleophilicity)
+
+        atom_nucleophilicities = [(nucleophilicity[i] if i <= num_atoms else 0) for i in self.atom_indices]
+
+        return np.array(atom_nucleophilicities).reshape(1, -1)
+
+    def feature_labels(self) -> List[str]:
+        """Return feature label(s).
+
+        Args:
+            None.
+
+        Returns:
+            (List[str]): List of names of extracted features.
+        """
+        return [f"atom_{i}_nucleophilicity" for i in self.atom_indices]
+
+    def implementors(self) -> List[str]:
+        """
+        Return list of functionality implementors.
+
+        Args:
+            None.
+
+        Returns:
+            List[str]: List of implementors.
+        """
+        return ["Benedict Oshomah Emoekabu"]
+
+
+class AtomElectrophilicityFeaturizer(MorfeusFeaturizer):
+    """Return electrophilicity values for each atom in a molecule."""
+
+    def __init__(
+        self,
+        file_name: Optional[str] = None,
+        conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
+        morfeus_kwargs: Optional[Dict[str, Any]] = None,
+        atom_indices: Union[int, List[int]] = 100,
+        as_range: bool = False,
+    ):
+        """Instantiate class.
+
+        Args:
+            file_name (Optional[str]): Name for temporary XYZ file.
+            conformer_generation_kwargs (Optional[Dict[str, Any]]): Configuration for conformer generation.
+            morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
+            atom_indices (Union[int, List[int]]): Range of atoms to calculate areas for. Either:
+                - an integer,
+                - a list of integers, or
+                - a two-tuple of integers representing lower index and upper index.
+            as_range (bool): Use `atom_indices` parameter as a range of indices or not. Defaults to `False`
+        """
+        super().__init__(
+            file_name=file_name,
+            conformer_generation_kwargs=conformer_generation_kwargs,
+            morfeus_kwargs=morfeus_kwargs,
+        )
+
+        self._names = [
+            {
+                "noun": "electrophilicity",
+            },
+        ]
+
+        self.atom_indices, self.as_range = self._parse_indices(atom_indices, as_range)
+
+    def featurize(self, molecule: Molecule) -> np.array:
+        """Featurize single molecule instance.
+
+        Args:
+            molecule (Molecule): Molecule representation.
+
+        Returns:
+            (np.array): Array containing electrophilicity value for each atom in a molecule instance.
+        """
+        morfeus_instance = self._get_morfeus_instance(molecule=molecule, morpheus_instance="xtb")
+
+        electrophilicity = morfeus_instance.get_fukui("electrophilicity")
+        num_atoms = len(electrophilicity)
+
+        atom_electrophilicities = [(electrophilicity[i] if i <= num_atoms else 0) for i in self.atom_indices]
+
+        return np.array(atom_electrophilicities).reshape(1, -1)
+
+    def feature_labels(self) -> List[str]:
+        """Return feature label(s).
+
+        Args:
+            None.
+
+        Returns:
+            (List[str]): List of names of extracted features.
+        """
+        return [f"atom_{i}_electrophilicity" for i in self.atom_indices]
 
     def implementors(self) -> List[str]:
         """
