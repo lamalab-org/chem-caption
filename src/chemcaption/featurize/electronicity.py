@@ -17,6 +17,8 @@ __all__ = [
     "HydrogenDonorCountFeaturizer",
     "ValenceElectronCountFeaturizer",
     "ElectronAffinityFeaturizer",
+    "HOMOEnergyFeaturizer",
+    "LUMOEnergyFeaturizer",
 ]
 
 
@@ -211,6 +213,18 @@ class ElectronAffinityFeaturizer(MorfeusFeaturizer):
         """
         return ["electron_affinity"]
 
+    def implementors(self) -> List[str]:
+        """
+        Return list of functionality implementors.
+
+        Args:
+            None.
+
+        Returns:
+            List[str]: List of implementors.
+        """
+        return ["Benedict Oshomah Emoekabu"]
+
 
 class IonizationPotentialFeaturizer(MorfeusFeaturizer):
     """Featurize molecule and return ionization potential."""
@@ -261,3 +275,141 @@ class IonizationPotentialFeaturizer(MorfeusFeaturizer):
             (List[str]): List of names of extracted features.
         """
         return ["ionization_potential"]
+
+    def implementors(self) -> List[str]:
+        """
+        Return list of functionality implementors.
+
+        Args:
+            None.
+
+        Returns:
+            List[str]: List of implementors.
+        """
+        return ["Benedict Oshomah Emoekabu"]
+
+
+class HOMOEnergyFeaturizer(MorfeusFeaturizer):
+    """Featurize molecule and return energy of highest occupied molecular orbital."""
+
+    def __init__(
+        self,
+        file_name: Optional[str] = None,
+        conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
+        morfeus_kwargs: Optional[Dict[str, Any]] = None
+    ):
+        """Instantiate class.
+
+        Args:
+            file_name (Optional[str]): Name for temporary XYZ file.
+            conformer_generation_kwargs (Optional[Dict[str, Any]]): Configuration for conformer generation.
+            morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
+        """
+        super().__init__(
+            file_name=file_name, conformer_generation_kwargs=conformer_generation_kwargs, morfeus_kwargs=morfeus_kwargs
+        )
+
+        self._names = [
+            {
+                "noun": "energy of highest occupied molecular orbital",
+            },
+        ]
+
+    def featurize(self, molecule: Molecule) -> np.array:
+        """
+        Featurize single molecule instance.
+
+        Args:
+            molecule (Molecule): Molecule representation.
+
+        Returns:
+            (np.array): Array containing energy of highest occupied molecular orbital for molecule instance.
+        """
+        xtb = self._get_morfeus_instance(molecule=molecule)
+        return np.array([xtb.get_homo(**self.morfeus_kwargs)]).reshape(1, -1)
+
+    def feature_labels(self) -> List[str]:
+        """Return feature label(s).
+
+        Args:
+            None.
+
+        Returns:
+            (List[str]): List of names of extracted features.
+        """
+        return ["homo_energy"]
+
+    def implementors(self) -> List[str]:
+        """
+        Return list of functionality implementors.
+
+        Args:
+            None.
+
+        Returns:
+            List[str]: List of implementors.
+        """
+        return ["Benedict Oshomah Emoekabu"]
+
+
+class LUMOEnergyFeaturizer(MorfeusFeaturizer):
+    """Featurize molecule and return energy of lowest unoccupied molecular orbital."""
+
+    def __init__(
+        self,
+        file_name: Optional[str] = None,
+        conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
+        morfeus_kwargs: Optional[Dict[str, Any]] = None
+    ):
+        """Instantiate class.
+
+        Args:
+            file_name (Optional[str]): Name for temporary XYZ file.
+            conformer_generation_kwargs (Optional[Dict[str, Any]]): Configuration for conformer generation.
+            morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
+        """
+        super().__init__(
+            file_name=file_name, conformer_generation_kwargs=conformer_generation_kwargs, morfeus_kwargs=morfeus_kwargs
+        )
+
+        self._names = [
+            {
+                "noun": "energy of lowest unoccupied molecular orbital",
+            },
+        ]
+
+    def featurize(self, molecule: Molecule) -> np.array:
+        """
+        Featurize single molecule instance.
+
+        Args:
+            molecule (Molecule): Molecule representation.
+
+        Returns:
+            (np.array): Array containing energy of lowest unoccupied molecular orbital for molecule instance.
+        """
+        xtb = self._get_morfeus_instance(molecule=molecule)
+        return np.array([xtb.get_lumo(**self.morfeus_kwargs)]).reshape(1, -1)
+
+    def feature_labels(self) -> List[str]:
+        """Return feature label(s).
+
+        Args:
+            None.
+
+        Returns:
+            (List[str]): List of names of extracted features.
+        """
+        return ["lumo_energy"]
+
+    def implementors(self) -> List[str]:
+        """
+        Return list of functionality implementors.
+
+        Args:
+            None.
+
+        Returns:
+            List[str]: List of implementors.
+        """
+        return ["Benedict Oshomah Emoekabu"]

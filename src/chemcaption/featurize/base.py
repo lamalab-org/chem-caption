@@ -5,7 +5,7 @@
 import os
 from abc import ABC, abstractmethod
 from concurrent.futures import ProcessPoolExecutor
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Callable
 
 import numpy as np
 import pandas as pd
@@ -247,14 +247,14 @@ class MorfeusFeaturizer(AbstractFeaturizer):
 
         return SMILESMolecule(smiles)
 
-    def _get_morfeus_instance(self, molecule: Molecule) -> XTB:
-        """Return XTB instance for feature generation.
+    def _get_morfeus_instance(self, molecule: Molecule) -> Callable:
+        """Return appropriate morfeus instance for feature generation.
 
         Args:
             molecule (Molecule): Molecular instance.
 
         Returns:
-            (XTB): XTB instance.
+            (morfeus.Callable): XTB instance.
         """
         self._mol_to_xyz_file(molecule)  # Persist molecule in XYZ file
         elements, coordinates = read_xyz(self.random_file_name)  # Read file
