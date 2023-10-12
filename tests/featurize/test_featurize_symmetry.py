@@ -5,8 +5,8 @@
 import numpy as np
 
 from chemcaption.featurize.symmetry import PointGroupFeaturizer, RotationalSymmetryNumber
-from chemcaption.molecules import SMILESMolecule
 from chemcaption.featurize.text import Prompt
+from chemcaption.molecules import SMILESMolecule
 
 
 def test_rotational_symmetry_number():

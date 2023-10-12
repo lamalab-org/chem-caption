@@ -1,7 +1,8 @@
-from chemcaption.featurize.substructure import TopologyCountFeaturizer, SMARTSFeaturizer
-from chemcaption.molecules import SMILESMolecule
-from chemcaption.featurize.text import Prompt
 import numpy as np
+
+from chemcaption.featurize.substructure import SMARTSFeaturizer, TopologyCountFeaturizer
+from chemcaption.featurize.text import Prompt
+from chemcaption.molecules import SMILESMolecule
 
 
 def test_topology_count_featurizer():

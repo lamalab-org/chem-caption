@@ -8,8 +8,8 @@ import numpy as np
 from rdkit.Chem import rdMolDescriptors
 
 from chemcaption.featurize.base import AbstractFeaturizer
-from chemcaption.molecules import Molecule
 from chemcaption.featurize.utils import join_list_elements
+from chemcaption.molecules import Molecule
 
 # Implemented bond-related featurizers
 
