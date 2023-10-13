@@ -113,6 +113,14 @@ class BondRotabilityFeaturizer(AbstractFeaturizer):
         ]
 
     def feature_labels(self) -> List[str]:
+        """Return feature label(s).
+
+        Args:
+            None.
+
+        Returns:
+            (List[str]): List of names of extracted features.
+        """
         return ["rotable_proportion", "non_rotable_proportion"]
 
     def _get_bond_types(self, molecule: Molecule) -> List[float]:
@@ -204,8 +212,6 @@ class BondTypeCountFeaturizer(AbstractFeaturizer):
         """
         all_bonds = self._get_bonds(molecule)
 
-        num_bonds = []
-
         bond_types = self.feature_labels()
 
         num_bonds = [
@@ -222,16 +228,14 @@ class BondTypeCountFeaturizer(AbstractFeaturizer):
         return num_bonds
 
     def feature_labels(self) -> List[str]:
-        """
-        Parse featurizer labels.
+        """Return feature label(s).
 
         Args:
             None.
 
         Returns:
-            bond_types (List[str]): List of strings of bond types.
+            (List[str]): List of names of extracted features.
         """
-
         if "ALL" in self.bond_type:
             bond_types = self._rdkit_bond_types()
 
@@ -243,12 +247,19 @@ class BondTypeCountFeaturizer(AbstractFeaturizer):
         return bond_types
 
     def get_names(self) -> List[Dict[str, str]]:
+        """Return feature names.
+
+        Args:
+            None.
+
+        Returns:
+            (List[Dict[str, str]]): List of names for extracted features according to parts-of-speech.
+        """
         mapped_names = [
             _MAP_BOND_TYPE_TO_CLEAN_NAME[bond_type]
             for bond_type in self.feature_labels()
             if "num_bonds" != bond_type
         ]
-        name = None
         if self.count:
             name = "What is the number of "
         else:
@@ -369,6 +380,14 @@ class BondTypeProportionFeaturizer(BondTypeCountFeaturizer):
         return bond_types
 
     def get_names(self) -> List[Dict[str, str]]:
+        """Return feature names.
+
+        Args:
+            None.
+
+        Returns:
+            (List[Dict[str, str]]): List of names for extracted features according to parts-of-speech.
+        """
         mapped_names = [
             _MAP_BOND_TYPE_TO_CLEAN_NAME[bond_type] for bond_type in self.feature_labels()
         ]

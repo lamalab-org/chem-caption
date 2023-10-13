@@ -217,6 +217,14 @@ class TopologyCountFeaturizer(AbstractFeaturizer):
         ]
 
     def get_names(self) -> List[Dict[str, str]]:
+        """Return feature names.
+
+        Args:
+            None.
+
+        Returns:
+            (List[Dict[str, str]]): List of names for extracted features according to parts-of-speech.
+        """
         # map the numbers to names
         periodic_table = GetPeriodicTable()
         names = [
