@@ -175,14 +175,12 @@ class MorfeusFeaturizer(AbstractFeaturizer):
 
     def __init__(
         self,
-        file_name: Optional[str] = None,
         conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
         morfeus_kwargs: Optional[Dict[str, Any]] = None,
     ):
         """Instantiate class.
 
         Args:
-            file_name (Optional[str]): Name for temporary XYZ file.
             conformer_generation_kwargs (Optional[Dict[str, Any]]): Configuration for conformer generation.
             morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
         """
@@ -193,29 +191,6 @@ class MorfeusFeaturizer(AbstractFeaturizer):
             else frozendict({})
         )
         self.morfeus_kwargs = frozendict(morfeus_kwargs) if morfeus_kwargs else frozendict({})
-
-        if file_name is None:
-            file_name = self._get_random_file_name()
-
-        self.random_file_name = file_name if file_name.endswith(".xyz") else file_name + ".xyz"
-
-    @staticmethod
-    def _get_random_file_name() -> str:
-        """Generate a random file name.
-
-        Args:
-            None.
-
-        Returns:
-            (str): Randomly generated filename.
-        """
-        num = np.random.randint(low=1, high=100)
-        numbers = np.random.randint(low=65, high=82, size=(num,)).flatten().tolist()
-        letters = list(map(lambda x: chr(x), numbers))
-
-        file_name = "".join(letters) + ".xyz"
-
-        return file_name
 
     def _get_conformer(self, mol: Chem.Mol) -> Chem.Mol:
         """Return conformer for molecule.
@@ -228,35 +203,6 @@ class MorfeusFeaturizer(AbstractFeaturizer):
         """
         smiles = Chem.MolToSmiles(mol)
         return cached_conformer(smiles, self._conf_gen_kwargs)
-
-    def _mol_to_xyz_file(self, molecule: Molecule) -> None:
-        """Generate XYZ block from molecule instance.
-
-        Args:
-            molecule (Molecule): Molecular instance.
-
-        Returns:
-            None.
-        """
-        mol = molecule.rdkit_mol
-        mol = self._get_conformer(mol)
-
-        Chem.rdmolfiles.MolToXYZFile(mol, self.random_file_name)
-        return
-
-    def _xyz_file_to_mol(self) -> SMILESMolecule:
-        """Generate XYZ block from molecule instance.
-
-        Args:
-            None.
-
-        Returns:
-            (SMILESMolecule): SMILES molecule instance.
-        """
-        mol = Chem.rdmolfiles.MolFromXYZFile(self.random_file_name)
-        smiles = Chem.MolToSmiles(mol)
-
-        return SMILESMolecule(smiles)
 
     @staticmethod
     def _parse_indices(
@@ -298,21 +244,21 @@ class MorfeusFeaturizer(AbstractFeaturizer):
 
     def _get_element_coordinates(
         self, molecule: Molecule
-    ) -> Tuple[List[Union[int, str]], np.array]:
+    ) -> Tuple[np.array, np.array]:
         """Return appropriate morfeus instance for feature generation.
 
         Args:
             molecule (Molecule): Molecular instance.
 
         Returns:
-            (Tuple[List[Union[int, str]], np.array]): Tuple containing
+            (Tuple[np.array, np.array]): Tuple containing
                 - elements in molecule and
                 - their corresponding coordinates.
         """
-        self._mol_to_xyz_file(molecule)  # Persist molecule in XYZ file
-        elements, coordinates = read_xyz(self.random_file_name)  # Read file
+        molecule = self._get_conformer(molecule.reveal_hydrogens())
 
-        os.remove(self.random_file_name)  # Eliminate file
+        elements = np.array([PERIODIC_TABLE.GetElementSymbol(atom.GetAtomicNum()) for atom in molecule.GetAtoms()])
+        coordinates = molecule.GetConformer().GetPositions()
 
         return elements, coordinates
 
