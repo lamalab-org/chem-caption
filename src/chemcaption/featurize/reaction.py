@@ -66,7 +66,7 @@ class SolventAccessibleSurfaceAreaFeaturizer(MorfeusFeaturizer):
             None.
 
         Returns:
-            (List[str]): List of names of extracted features.
+            (List[str]): List of labels of extracted features.
         """
         return ["solvent_accessible_solvent_area"]
 
@@ -131,7 +131,7 @@ class SolventAccessibleVolumeFeaturizer(MorfeusFeaturizer):
             None.
 
         Returns:
-            (List[str]): List of names of extracted features.
+            (List[str]): List of labels of extracted features.
         """
         return ["solvent_accessible_volume"]
 
@@ -211,7 +211,7 @@ class SolventAccessibleAtomAreaFeaturizer(MorfeusFeaturizer):
             None.
 
         Returns:
-            (List[str]): List of names of extracted features.
+            (List[str]): List of labels of extracted features.
         """
         return [f"solvent_accessible_atom_area_{i}" for i in self.atom_indices]
 

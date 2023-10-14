@@ -40,7 +40,7 @@ class LipinskiViolationCountFeaturizer(AbstractFeaturizer):
             None.
 
         Returns:
-            (List[str]): List of names of extracted features.
+            (List[str]): List of labels of extracted features.
         """
         return ["num_lipinski_violations"]
 
@@ -171,7 +171,7 @@ class GhoseFilterFeaturizer(AbstractFeaturizer):
             None.
 
         Returns:
-            (List[str]): List of names of extracted features.
+            (List[str]): List of labels of extracted features.
         """
         return ["num_ghose_violations"]
 
@@ -309,7 +309,7 @@ class LeadLikenessFilterFeaturizer(AbstractFeaturizer):
             None.
 
         Returns:
-            (List[str]): List of names of extracted features.
+            (List[str]): List of labels of extracted features.
         """
         return ["num_leadlike_violations"]
 

@@ -41,6 +41,14 @@ class MolecularFormulaFeaturizer(AbstractFeaturizer):
         ]
 
     def feature_labels(self) -> List[str]:
+        """Return feature label(s).
+
+        Args:
+            None.
+
+        Returns:
+            (List[str]): List of labels for extracted features.
+        """
         return ["molecular_formula"]
 
     def featurize(self, molecule: Molecule) -> np.array:
@@ -85,6 +93,14 @@ class MolecularMassFeaturizer(AbstractFeaturizer):
         ]
 
     def feature_labels(self) -> List[str]:
+        """Return feature label(s).
+
+        Args:
+            None.
+
+        Returns:
+            (List[str]): List of labels for extracted features.
+        """
         return ["molecular_mass"]
 
     def featurize(
@@ -133,6 +149,14 @@ class MonoisotopicMolecularMassFeaturizer(AbstractFeaturizer):
         ]
 
     def feature_labels(self) -> List[str]:
+        """Return feature label(s).
+
+        Args:
+            None.
+
+        Returns:
+            (List[str]): List of labels for extracted features.
+        """
         return ["monoisotopic_molecular_mass"]
 
     def featurize(
@@ -196,6 +220,14 @@ class ElementMassFeaturizer(AbstractFeaturizer):
         return [{"noun": "total mass of " + join_list_elements(self.preset)}]
 
     def feature_labels(self) -> List[str]:
+        """Return feature label(s).
+
+        Args:
+            None.
+
+        Returns:
+            (List[str]): List of labels for extracted features.
+        """
         return [element.lower() + "_mass" for element in self.preset]
 
     @property
@@ -381,6 +413,14 @@ class ElementCountFeaturizer(ElementMassFeaturizer):
         super().__init__(preset=preset)
 
     def feature_labels(self) -> List[str]:
+        """Return feature label(s).
+
+        Args:
+            None.
+
+        Returns:
+            (List[str]): List of labels for extracted features.
+        """
         return ["num_" + element.lower() + "_atoms" for element in self.preset]
 
     def get_names(self):
@@ -481,6 +521,14 @@ class ElementCountProportionFeaturizer(ElementCountFeaturizer):
         return [{"noun": "relative atom count of " + join_list_elements(self.preset)}]
 
     def feature_labels(self) -> List[str]:
+        """Return feature label(s).
+
+        Args:
+            None.
+
+        Returns:
+            (List[str]): List of labels for extracted features.
+        """
         return [element.lower() + "_atom_ratio" for element in self.preset]
 
     def featurize(self, molecule: Molecule) -> np.array:
@@ -533,6 +581,14 @@ class AtomCountFeaturizer(ElementCountFeaturizer):
         return [{"noun": "total number of atoms"}]
 
     def feature_labels(self) -> List[str]:
+        """Return feature label(s).
+
+        Args:
+            None.
+
+        Returns:
+            (List[str]): List of labels for extracted features.
+        """
         return ["num_atoms"]
 
     def featurize(self, molecule: Molecule) -> np.array:
@@ -578,6 +634,14 @@ class DegreeOfUnsaturationFeaturizer(AbstractFeaturizer):
         ]
 
     def feature_labels(self) -> List[str]:
+        """Return feature label(s).
+
+        Args:
+            None.
+
+        Returns:
+            (List[str]): List of labels for extracted features.
+        """
         return ["degree_of_unsaturation"]
 
     def _get_degree_of_unsaturation_for_mol(self, molecule: Molecule):

@@ -127,13 +127,13 @@ class SMARTSFeaturizer(AbstractFeaturizer):
         return np.array(results).reshape((1, -1))
 
     def feature_labels(self) -> List[str]:
-        """Return feature labels.
+        """Return feature label(s).
 
         Args:
             None.
 
         Returns:
-            (List[str]): List of names of extracted features.
+            (List[str]): List of labels for extracted features.
         """
         suffix = "_count" if self.count else "_presence"
         return [name + suffix for name in self.smart_names]
@@ -211,6 +211,14 @@ class TopologyCountFeaturizer(AbstractFeaturizer):
         self.reference_atomic_numbers = reference_atomic_numbers
 
     def feature_labels(self) -> List[str]:
+        """Return feature label(s).
+
+        Args:
+            None.
+
+        Returns:
+            (List[str]): List of labels for extracted features.
+        """
         return [
             "topology_count_" + str(atomic_number)
             for atomic_number in self.reference_atomic_numbers

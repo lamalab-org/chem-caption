@@ -150,7 +150,7 @@ class AbstractFeaturizer(ABC):
             None.
 
         Returns:
-            (List[str]): List of names of extracted features.
+            (List[str]): List of labels for extracted features.
         """
         raise NotImplementedError
 
@@ -411,13 +411,13 @@ class AbstractComparator(ABC):
 
     @abstractmethod
     def feature_labels(self) -> List[str]:
-        """Return feature label.
+        """Return feature label(s).
 
         Args:
             None.
 
         Returns:
-            (List[str]): List of names of extracted features.
+            (List[str]): List of labels for extracted features.
         """
         raise NotImplementedError
 
@@ -478,7 +478,7 @@ class MultipleFeaturizer(AbstractFeaturizer):
         return PromptCollection([f.text_featurize(molecule=molecule) for f in self.featurizers])
 
     def feature_labels(self) -> List[str]:
-        """Return feature labels.
+        """Return feature label(s).
 
         Args:
             None.
@@ -630,7 +630,7 @@ class Comparator(AbstractComparator):
     def feature_labels(
         self,
     ) -> List[str]:
-        """Return feature labels.
+        """Return feature label(s).
 
         Args:
             None.
@@ -745,7 +745,7 @@ class MultipleComparator(Comparator):
     def feature_labels(
         self,
     ) -> List[str]:
-        """Return feature labels.
+        """Return feature label(s).
 
         Args:
             None.

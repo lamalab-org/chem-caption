@@ -46,6 +46,14 @@ class HydrogenAcceptorCountFeaturizer(AbstractFeaturizer):
         ]
 
     def feature_labels(self) -> List[str]:
+        """Return feature label(s).
+
+        Args:
+            None.
+
+        Returns:
+            (List[str]): List of labels for extracted features.
+        """
         return ["num_hydrogen_bond_acceptors"]
 
     def featurize(self, molecule: Molecule) -> np.array:
@@ -90,6 +98,14 @@ class HydrogenDonorCountFeaturizer(AbstractFeaturizer):
         ]
 
     def feature_labels(self) -> List[str]:
+        """Return feature label(s).
+
+        Args:
+            None.
+
+        Returns:
+            (List[str]): List of labels for extracted features.
+        """
         return ["num_hydrogen_bond_donors"]
 
     def featurize(self, molecule: Molecule) -> np.array:
@@ -141,6 +157,14 @@ class ValenceElectronCountFeaturizer(AbstractFeaturizer):
         ]
 
     def feature_labels(self) -> List[str]:
+        """Return feature label(s).
+
+        Args:
+            None.
+
+        Returns:
+            (List[str]): List of labels for extracted features.
+        """
         return ["num_valence_electrons"]
 
     def featurize(self, molecule: Molecule) -> np.array:
@@ -218,7 +242,7 @@ class ElectronAffinityFeaturizer(MorfeusFeaturizer):
             None.
 
         Returns:
-            (List[str]): List of names of extracted features.
+            (List[str]): List of labels of extracted features.
         """
         return ["electron_affinity"]
 
@@ -283,7 +307,7 @@ class IonizationPotentialFeaturizer(MorfeusFeaturizer):
             None.
 
         Returns:
-            (List[str]): List of names of extracted features.
+            (List[str]): List of labels of extracted features.
         """
         return ["ionization_potential"]
 
@@ -348,7 +372,7 @@ class HOMOEnergyFeaturizer(MorfeusFeaturizer):
             None.
 
         Returns:
-            (List[str]): List of names of extracted features.
+            (List[str]): List of labels of extracted features.
         """
         return ["homo_energy"]
 
@@ -413,7 +437,7 @@ class LUMOEnergyFeaturizer(MorfeusFeaturizer):
             None.
 
         Returns:
-            (List[str]): List of names of extracted features.
+            (List[str]): List of labels of extracted features.
         """
         return ["lumo_energy"]
 
@@ -493,7 +517,7 @@ class AtomChargeFeaturizer(MorfeusFeaturizer):
             None.
 
         Returns:
-            (List[str]): List of names of extracted features.
+            (List[str]): List of labels of extracted features.
         """
         return [f"atom_charge_{i}" for i in self.atom_indices]
 
@@ -579,7 +603,7 @@ class AtomNucleophilicityFeaturizer(MorfeusFeaturizer):
             None.
 
         Returns:
-            (List[str]): List of names of extracted features.
+            (List[str]): List of labels of extracted features.
         """
         return [
             (f"atom_{i}_local_nucleophilicity" if self.local else f"atom_{i}_nucleophilicity")
@@ -668,7 +692,7 @@ class AtomElectrophilicityFeaturizer(MorfeusFeaturizer):
             None.
 
         Returns:
-            (List[str]): List of names of extracted features.
+            (List[str]): List of labels of extracted features.
         """
         return [
             (f"atom_{i}_local_electrophilicity" if self.local else f"atom_{i}_electrophilicity")
@@ -740,7 +764,7 @@ class MoleculeNucleophilicityFeaturizer(MorfeusFeaturizer):
             None.
 
         Returns:
-            (List[str]): List of names of extracted features.
+            (List[str]): List of labels of extracted features.
         """
         return ["molecular_nucleophilicity"]
 
@@ -809,7 +833,7 @@ class MoleculeElectrophilicityFeaturizer(MorfeusFeaturizer):
             None.
 
         Returns:
-            (List[str]): List of names of extracted features.
+            (List[str]): List of labels of extracted features.
         """
         return ["molecular_electrophilicity"]
 
@@ -878,7 +902,7 @@ class MoleculeNucleofugalityFeaturizer(MorfeusFeaturizer):
             None.
 
         Returns:
-            (List[str]): List of names of extracted features.
+            (List[str]): List of labels of extracted features.
         """
         return ["molecular_nucleofugality"]
 
@@ -947,7 +971,7 @@ class MoleculeElectrofugalityFeaturizer(MorfeusFeaturizer):
             None.
 
         Returns:
-            (List[str]): List of names of extracted features.
+            (List[str]): List of labels of extracted features.
         """
         return ["molecular_electrofugality"]
 

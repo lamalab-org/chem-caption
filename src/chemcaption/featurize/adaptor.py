@@ -41,6 +41,14 @@ class RDKitAdaptor(AbstractFeaturizer):
         self.rdkit_function_kwargs = rdkit_function_kwargs
 
     def feature_labels(self) -> List[str]:
+        """Return feature label(s).
+
+        Args:
+            None.
+
+        Returns:
+            (List[str]): List of labels for extracted features.
+        """
         return self._label
 
     def featurize(

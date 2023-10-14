@@ -158,7 +158,7 @@ class EccentricityFeaturizer(ThreeDimensionalFeaturizer):
             None.
 
         Returns:
-            (List[str]): List of names of extracted features.
+            (List[str]): List of labels of extracted features.
         """
         return ["eccentricity"]
 
@@ -225,7 +225,7 @@ class AsphericityFeaturizer(ThreeDimensionalFeaturizer):
             None.
 
         Returns:
-            (List[str]): List of names of extracted features.
+            (List[str]): List of labels of extracted features.
         """
         return ["asphericity"]
 
@@ -293,7 +293,7 @@ class InertialShapeFactorFeaturizer(ThreeDimensionalFeaturizer):
             None.
 
         Returns:
-            (List[str]): List of names of extracted features.
+            (List[str]): List of labels of extracted features.
         """
         return ["inertial_shape_factor"]
 
@@ -409,7 +409,7 @@ class NPRFeaturizer(ThreeDimensionalFeaturizer):
             None.
 
         Returns:
-            (List[str]): List of names of extracted features.
+            (List[str]): List of labels of extracted features.
         """
         return self._parse_labels()
 
@@ -501,7 +501,7 @@ class PMIFeaturizer(ThreeDimensionalFeaturizer):
             None.
 
         Returns:
-            (List[str]): List of names of extracted features.
+            (List[str]): List of labels of extracted features.
         """
         return self._parse_labels()
 
@@ -623,7 +623,7 @@ class AtomVolumeFeaturizer(MorfeusFeaturizer):
             None.
 
         Returns:
-            (List[str]): List of names of extracted features.
+            (List[str]): List of labels of extracted features.
         """
         return [f"solvent_accessible_atom_volume_{i}" for i in self.atom_indices]
 
@@ -666,7 +666,7 @@ class SpherocityIndexFeaturizer(ThreeDimensionalFeaturizer):
             None.
 
         Returns:
-            (List[str]): List of names of extracted features.
+            (List[str]): List of labels of extracted features.
         """
         return ["spherocity_index"]
 
@@ -728,7 +728,7 @@ class RadiusOfGyrationFeaturizer(ThreeDimensionalFeaturizer):
             None.
 
         Returns:
-            (List[str]): List of names of extracted features.
+            (List[str]): List of labels of extracted features.
         """
         return ["radius_of_gyration"]
 

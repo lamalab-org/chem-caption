@@ -66,6 +66,14 @@ class RotableBondCountFeaturizer(AbstractFeaturizer):
         ]
 
     def feature_labels(self) -> List[str]:
+        """Return feature label(s).
+
+        Args:
+            None.
+
+        Returns:
+            (List[str]): List of labels for extracted features.
+        """
         return ["num_rotable_bonds"]
 
     def featurize(self, molecule: Molecule) -> np.array:
@@ -119,7 +127,7 @@ class BondRotabilityFeaturizer(AbstractFeaturizer):
             None.
 
         Returns:
-            (List[str]): List of names of extracted features.
+            (List[str]): List of labels of extracted features.
         """
         return ["rotable_proportion", "non_rotable_proportion"]
 
@@ -234,7 +242,7 @@ class BondTypeCountFeaturizer(AbstractFeaturizer):
             None.
 
         Returns:
-            (List[str]): List of names of extracted features.
+            (List[str]): List of labels of extracted features.
         """
         if "ALL" in self.bond_type:
             bond_types = self._rdkit_bond_types()
@@ -362,14 +370,13 @@ class BondTypeProportionFeaturizer(BondTypeCountFeaturizer):
         self.constraint = "Constraint: Return a list of comma separated floats."
 
     def feature_labels(self) -> List[str]:
-        """
-        Parse featurizer labels.
+        """Return feature label(s).
 
         Args:
             None.
 
         Returns:
-            bond_types (List[str]): List of strings of bond types.
+            (List[str]): List of labels for extracted features.
         """
         if "ALL" in self.bond_type:
             bond_types = self._rdkit_bond_types()
@@ -503,7 +510,7 @@ class DipoleMomentsFeaturizer(MorfeusFeaturizer):
             None.
 
         Returns:
-            (List[str]): List of names of extracted features.
+            (List[str]): List of labels of extracted features.
         """
         return [f"dipole_{i}" for i in self.atom_indices]
 
@@ -583,7 +590,7 @@ class BondOrderFeaturizer(MorfeusFeaturizer):
             None.
 
         Returns:
-            (List[str]): List of names of extracted features.
+            (List[str]): List of labels of extracted features.
         """
         return [f"bond_order_{i}" for i in self.atom_indices]
 
