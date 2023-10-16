@@ -2,7 +2,6 @@
 
 """Abstract base class and wrappers for featurizers."""
 
-import os
 from abc import ABC, abstractmethod
 from concurrent.futures import ProcessPoolExecutor
 from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
@@ -12,13 +11,13 @@ import pandas as pd
 import rdkit
 from colorama import Fore
 from frozendict import frozendict
-from morfeus import SASA, XTB, read_xyz
+from morfeus import SASA, XTB
 from rdkit import Chem
 from scipy.spatial import distance_matrix
 
 from chemcaption.featurize.text import Prompt, PromptCollection
 from chemcaption.featurize.utils import cached_conformer, join_list_elements
-from chemcaption.molecules import Molecule, SMILESMolecule
+from chemcaption.molecules import Molecule
 
 # Implemented abstract and high-level classes
 
@@ -208,7 +207,7 @@ class MorfeusFeaturizer(AbstractFeaturizer):
     def _parse_indices(
         atom_indices: Union[int, List[int]], as_range: bool = False
     ) -> Tuple[Sequence, bool]:
-        """Preprocess indices.
+        """Preprocess atom indices.
 
         Args:
             atom_indices (Union[int, List[int]]): Range of atoms to calculate areas for. Either:
@@ -242,22 +241,20 @@ class MorfeusFeaturizer(AbstractFeaturizer):
 
         return atom_indices, as_range
 
-    def _get_element_coordinates(
-        self, molecule: Molecule
-    ) -> Tuple[np.array, np.array]:
+    def _get_element_coordinates(self, molecule: Molecule) -> Tuple[np.array, np.array]:
         """Return appropriate morfeus instance for feature generation.
 
         Args:
             molecule (Molecule): Molecular instance.
 
         Returns:
-            (Tuple[np.array, np.array]): Tuple containing
-                - elements in molecule and
-                - their corresponding coordinates.
+            (Tuple[np.array, np.array]): Tuple containing (a). atoms and (b). corresponding coordinates in molecule.
         """
         molecule = self._get_conformer(molecule.reveal_hydrogens())
 
-        elements = np.array([PERIODIC_TABLE.GetElementSymbol(atom.GetAtomicNum()) for atom in molecule.GetAtoms()])
+        elements = np.array(
+            [PERIODIC_TABLE.GetElementSymbol(atom.GetAtomicNum()) for atom in molecule.GetAtoms()]
+        )
         coordinates = molecule.GetConformer().GetPositions()
 
         return elements, coordinates
@@ -382,8 +379,7 @@ class MultipleFeaturizer(AbstractFeaturizer):
         """Initialize class instance.
 
         Args:
-            featurizers (Optional[List[AbstractFeaturizer]]):
-                A list of featurizer objects. Defaults to `None`.
+            featurizers (Optional[List[AbstractFeaturizer]]): A list of featurizer objects. Defaults to `None`.
 
         """
         super().__init__()
@@ -392,16 +388,15 @@ class MultipleFeaturizer(AbstractFeaturizer):
 
     def featurize(self, molecule: Molecule) -> np.array:
         """
-        Featurize a molecule instance.
-        Returns results from multiple lower-level featurizers.
+        Featurize a molecule instance. Returns results from multiple lower-level featurizers.
 
         Args:
             molecule (Molecule): Molecule representation.
 
         Returns:
-            features (np.array), array shape [1, num_featurizers]:
+            features (np.array), array shape [1, N]:
                 Array containing features extracted from molecule.
-                `num_featurizers` is the number of featurizers passed to MultipleFeaturizer.
+                `N` >= the number of featurizers passed to MultipleFeaturizer.
         """
         features = [
             feature for f in self.featurizers for feature in f.featurize(molecule).flatten()

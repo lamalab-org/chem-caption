@@ -205,7 +205,7 @@ class TopologyCountFeaturizer(AbstractFeaturizer):
         """Initialize class object.
 
         Args:
-            reference_atomic_numbers (List[int]): Atomic number for element of interest.
+            reference_atomic_numbers (List[int]): Atomic number(s) for element(s) of interest.
         """
         super().__init__()
         self.reference_atomic_numbers = reference_atomic_numbers
@@ -245,6 +245,14 @@ class TopologyCountFeaturizer(AbstractFeaturizer):
 
     @classmethod
     def from_preset(cls, preset: str):
+        """Generate class instance with atomic numbers of interest based on predefined presets.
+
+        Args:
+            preset (str): Preset of interest.
+
+        Returns:
+            self: Instance of self.
+        """
         if preset == "organic":
             # Use C, H, N, O, P, S, F, Cl, Br, I
             return cls(reference_atomic_numbers=[6, 1, 7, 8, 15, 16, 9, 17, 35, 53])
@@ -272,9 +280,8 @@ class TopologyCountFeaturizer(AbstractFeaturizer):
             ]
         ).reshape((1, -1))
 
-    def _get_number_of_topologically_distinct_atoms(
-        self, molecule: Molecule, atomic_number: int = 12
-    ):
+    @staticmethod
+    def _get_number_of_topologically_distinct_atoms(molecule: Molecule, atomic_number: int = 12):
         """Return the number of unique `element` environments based on environmental topology.
 
         Args:
