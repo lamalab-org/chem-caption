@@ -28,7 +28,7 @@ __all__ = [
     "PMIFeaturizer",
     "SpherocityIndexFeaturizer",
     "RadiusOfGyrationFeaturizer",
-    "SVGFeaturizer"
+    "SVGFeaturizer",
 ]
 
 
@@ -611,14 +611,14 @@ class SVGFeaturizer(AbstractFeaturizer):
         self.include_hydrogens = include_hydrogens
         self.highlight_smarts = highlight_smarts
 
-    def _mol_to_svg(self, molecule: Molecule) -> List[str]:
+    def _mol_to_svg(self, molecule: Molecule) -> str:
         """Return inline SVG representation for molecule instance.
 
         Args:
             molecule (Molecule): Molecule instance.
 
         Return:
-            List[str]: List of SVG strings.
+            str: SVG string.
         """
         mol = molecule.rdkit_mol if not self.include_hydrogens else molecule.reveal_hydrogens()
 
@@ -636,7 +636,7 @@ class SVGFeaturizer(AbstractFeaturizer):
 
         molecule_drawer.FinishDrawing()
 
-        return [molecule_drawer.GetDrawingText()]
+        return molecule_drawer.GetDrawingText()
 
     def display_molecule(self, molecule: Molecule) -> SVG:
         """Return SVG image for molecule instance.
@@ -647,7 +647,7 @@ class SVGFeaturizer(AbstractFeaturizer):
         Return:
             SVG: SVG image.
         """
-        svg_string = self._mol_to_svg(molecule=molecule)
+        svg_string = self._mol_to_svg(molecule=molecule).replace("svg:", "")
         return SVG(svg_string)
 
     def featurize(self, molecule: Molecule) -> np.array:
@@ -660,7 +660,7 @@ class SVGFeaturizer(AbstractFeaturizer):
         Returns:
             np.array: Array containing SVG representation in string form.
         """
-        return np.array(self._mol_to_svg(molecule=molecule)).reshape(1, 1)
+        return np.array([self._mol_to_svg(molecule=molecule)]).reshape(1, 1)
 
     def implementors(self) -> List[str]:
         """
