@@ -11,12 +11,12 @@ from rdkit.Chem import AllChem
 from chemcaption.featurize.base import AbstractFeaturizer
 from chemcaption.molecules import Molecule
 
-
 __all__ = [
     "ChiralCenterCountFeaturizer",
 ]
 
 # Implemented stereochemistry-related featurizers
+
 
 class ChiralCenterCountFeaturizer(AbstractFeaturizer):
     """Return the number of chiral centers."""
