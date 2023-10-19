@@ -112,7 +112,5 @@ def test_bond_type_proportion_featurizer(test_input, expected):
     molecule = MOLECULE(test_input)
 
     results = featurizer.featurize(molecule)
-    print(results)
-    print(expected)
 
     assert np.isclose(results, expected.astype(float)).all()
