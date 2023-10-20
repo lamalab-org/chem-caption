@@ -199,19 +199,16 @@ class ElectronAffinityFeaturizer(MorfeusFeaturizer):
 
     def __init__(
         self,
-        file_name: Optional[str] = None,
         conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
         morfeus_kwargs: Optional[Dict[str, Any]] = None,
     ):
         """Instantiate class.
 
         Args:
-            file_name (Optional[str]): Name for temporary XYZ file.
             conformer_generation_kwargs (Optional[Dict[str, Any]]): Configuration for conformer generation.
             morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
         """
         super().__init__(
-            file_name=file_name,
             conformer_generation_kwargs=conformer_generation_kwargs,
             morfeus_kwargs=morfeus_kwargs,
         )
@@ -264,19 +261,16 @@ class IonizationPotentialFeaturizer(MorfeusFeaturizer):
 
     def __init__(
         self,
-        file_name: Optional[str] = None,
         conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
         morfeus_kwargs: Optional[Dict[str, Any]] = None,
     ):
         """Instantiate class.
 
         Args:
-            file_name (Optional[str]): Name for temporary XYZ file.
             conformer_generation_kwargs (Optional[Dict[str, Any]]): Configuration for conformer generation.
             morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
         """
         super().__init__(
-            file_name=file_name,
             conformer_generation_kwargs=conformer_generation_kwargs,
             morfeus_kwargs=morfeus_kwargs,
         )
@@ -329,19 +323,16 @@ class HOMOEnergyFeaturizer(MorfeusFeaturizer):
 
     def __init__(
         self,
-        file_name: Optional[str] = None,
         conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
         morfeus_kwargs: Optional[Dict[str, Any]] = None,
     ):
         """Instantiate class.
 
         Args:
-            file_name (Optional[str]): Name for temporary XYZ file.
             conformer_generation_kwargs (Optional[Dict[str, Any]]): Configuration for conformer generation.
             morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
         """
         super().__init__(
-            file_name=file_name,
             conformer_generation_kwargs=conformer_generation_kwargs,
             morfeus_kwargs=morfeus_kwargs,
         )
@@ -394,19 +385,16 @@ class LUMOEnergyFeaturizer(MorfeusFeaturizer):
 
     def __init__(
         self,
-        file_name: Optional[str] = None,
         conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
         morfeus_kwargs: Optional[Dict[str, Any]] = None,
     ):
         """Instantiate class.
 
         Args:
-            file_name (Optional[str]): Name for temporary XYZ file.
             conformer_generation_kwargs (Optional[Dict[str, Any]]): Configuration for conformer generation.
             morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
         """
         super().__init__(
-            file_name=file_name,
             conformer_generation_kwargs=conformer_generation_kwargs,
             morfeus_kwargs=morfeus_kwargs,
         )
@@ -459,7 +447,6 @@ class AtomChargeFeaturizer(MorfeusFeaturizer):
 
     def __init__(
         self,
-        file_name: Optional[str] = None,
         conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
         morfeus_kwargs: Optional[Dict[str, Any]] = None,
         atom_indices: Union[int, List[int]] = 100,
@@ -468,7 +455,6 @@ class AtomChargeFeaturizer(MorfeusFeaturizer):
         """Instantiate class.
 
         Args:
-            file_name (Optional[str]): Name for temporary XYZ file.
             conformer_generation_kwargs (Optional[Dict[str, Any]]): Configuration for conformer generation.
             morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
             atom_indices (Union[int, List[int]]): Range of atoms to calculate areas for. Either:
@@ -478,7 +464,6 @@ class AtomChargeFeaturizer(MorfeusFeaturizer):
             as_range (bool): Use `atom_index_range` parameter as a range of indices or not. Defaults to `False`
         """
         super().__init__(
-            file_name=file_name,
             conformer_generation_kwargs=conformer_generation_kwargs,
             morfeus_kwargs=morfeus_kwargs,
         )
@@ -539,28 +524,25 @@ class AtomNucleophilicityFeaturizer(MorfeusFeaturizer):
 
     def __init__(
         self,
-        file_name: Optional[str] = None,
-        local: bool = False,
         conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
         morfeus_kwargs: Optional[Dict[str, Any]] = None,
         atom_indices: Union[int, List[int]] = 100,
         as_range: bool = False,
+        local: bool = False,
     ):
         """Instantiate class.
 
         Args:
-            file_name (Optional[str]): Name for temporary XYZ file.
-            local (bool): Calculate local descriptor or not. Defaults to `Falsse`.
             conformer_generation_kwargs (Optional[Dict[str, Any]]): Configuration for conformer generation.
             morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
             atom_indices (Union[int, List[int]]): Range of atoms to calculate areas for. Either:
                 - an integer,
                 - a list of integers, or
                 - a two-tuple of integers representing lower index and upper index.
-            as_range (bool): Use `atom_indices` parameter as a range of indices or not. Defaults to `False`
+            as_range (bool): Use `atom_indices` parameter as a range of indices or not. Defaults to `False`.
+            local (bool): Calculate local descriptor or not. Defaults to `False`.
         """
         super().__init__(
-            file_name=file_name,
             conformer_generation_kwargs=conformer_generation_kwargs,
             morfeus_kwargs=morfeus_kwargs,
         )
@@ -628,28 +610,25 @@ class AtomElectrophilicityFeaturizer(MorfeusFeaturizer):
 
     def __init__(
         self,
-        file_name: Optional[str] = None,
-        local: bool = False,
         conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
         morfeus_kwargs: Optional[Dict[str, Any]] = None,
         atom_indices: Union[int, List[int]] = 100,
         as_range: bool = False,
+        local: bool = False,
     ):
         """Instantiate class.
 
         Args:
-            file_name (Optional[str]): Name for temporary XYZ file.
-            local (bool): Calculate local descriptor or not. Defaults to `Falsse`.
             conformer_generation_kwargs (Optional[Dict[str, Any]]): Configuration for conformer generation.
             morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
             atom_indices (Union[int, List[int]]): Range of atoms to calculate areas for. Either:
                 - an integer,
                 - a list of integers, or
                 - a two-tuple of integers representing lower index and upper index.
-            as_range (bool): Use `atom_indices` parameter as a range of indices or not. Defaults to `False`
+            as_range (bool): Use `atom_indices` parameter as a range of indices or not. Defaults to `False`.
+            local (bool): Calculate local descriptor or not. Defaults to `False`.
         """
         super().__init__(
-            file_name=file_name,
             conformer_generation_kwargs=conformer_generation_kwargs,
             morfeus_kwargs=morfeus_kwargs,
         )
@@ -717,19 +696,16 @@ class MoleculeNucleophilicityFeaturizer(MorfeusFeaturizer):
 
     def __init__(
         self,
-        file_name: Optional[str] = None,
         conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
         morfeus_kwargs: Optional[Dict[str, Any]] = None,
     ):
         """Instantiate class.
 
         Args:
-            file_name (Optional[str]): Name for temporary XYZ file.
             conformer_generation_kwargs (Optional[Dict[str, Any]]): Configuration for conformer generation.
             morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
         """
         super().__init__(
-            file_name=file_name,
             conformer_generation_kwargs=conformer_generation_kwargs,
             morfeus_kwargs=morfeus_kwargs,
         )
@@ -786,19 +762,16 @@ class MoleculeElectrophilicityFeaturizer(MorfeusFeaturizer):
 
     def __init__(
         self,
-        file_name: Optional[str] = None,
         conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
         morfeus_kwargs: Optional[Dict[str, Any]] = None,
     ):
         """Instantiate class.
 
         Args:
-            file_name (Optional[str]): Name for temporary XYZ file.
             conformer_generation_kwargs (Optional[Dict[str, Any]]): Configuration for conformer generation.
             morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
         """
         super().__init__(
-            file_name=file_name,
             conformer_generation_kwargs=conformer_generation_kwargs,
             morfeus_kwargs=morfeus_kwargs,
         )
@@ -855,19 +828,16 @@ class MoleculeNucleofugalityFeaturizer(MorfeusFeaturizer):
 
     def __init__(
         self,
-        file_name: Optional[str] = None,
         conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
         morfeus_kwargs: Optional[Dict[str, Any]] = None,
     ):
         """Instantiate class.
 
         Args:
-            file_name (Optional[str]): Name for temporary XYZ file.
             conformer_generation_kwargs (Optional[Dict[str, Any]]): Configuration for conformer generation.
             morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
         """
         super().__init__(
-            file_name=file_name,
             conformer_generation_kwargs=conformer_generation_kwargs,
             morfeus_kwargs=morfeus_kwargs,
         )
@@ -924,19 +894,16 @@ class MoleculeElectrofugalityFeaturizer(MorfeusFeaturizer):
 
     def __init__(
         self,
-        file_name: Optional[str] = None,
         conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
         morfeus_kwargs: Optional[Dict[str, Any]] = None,
     ):
         """Instantiate class.
 
         Args:
-            file_name (Optional[str]): Name for temporary XYZ file.
             conformer_generation_kwargs (Optional[Dict[str, Any]]): Configuration for conformer generation.
             morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
         """
         super().__init__(
-            file_name=file_name,
             conformer_generation_kwargs=conformer_generation_kwargs,
             morfeus_kwargs=morfeus_kwargs,
         )
