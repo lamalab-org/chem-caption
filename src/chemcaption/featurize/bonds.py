@@ -350,21 +350,18 @@ class BondTypeProportionFeaturizer(BondTypeCountFeaturizer):
 
     def feature_labels(self) -> List[str]:
         """
-        Parse featurizer labels.
+        Return list of feature labels.
 
         Args:
             None.
 
         Returns:
-            bond_types (List[str]): List of strings of bond types.
+            List[str]: List of feature labels.
         """
-        if "ALL" in self.bond_type:
-            bond_types = self._rdkit_bond_types()
+        labels = super().feature_labels()
+        labels = ["_".join(x.split("_")[:-1] + ["proportion"]) for x in labels]
 
-        else:
-            bond_types = self.bond_type
-
-        return bond_types
+        return labels
 
     def get_names(self) -> List[str]:
         mapped_names = [
