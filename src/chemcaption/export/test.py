@@ -21,7 +21,9 @@ def get_repetitive_labels(
         featurizer (MultipleFeaturizer): MultipleFeaturizer instance.
 
     Returns:
-        Tuple[Dict[str, Dict[str, Union[str, List[str]]]]]: Repeated labels and all labels.
+        Tuple[Dict[str, Dict[str, Union[int, List[str]]]], List[str]]: Tuple containing:
+            - Dictionary of information for repeated labels and
+            - List of all labels.
     """
     all_labels = featurizer.feature_labels()
     repetitive_labels = {}
