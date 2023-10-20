@@ -4,7 +4,7 @@
 
 from abc import ABC, abstractmethod
 from concurrent.futures import ProcessPoolExecutor
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -76,11 +76,14 @@ class AbstractFeaturizer(ABC):
 
     def text_featurize(
         self,
+        pos_key: str,
         molecule: Molecule,
     ) -> Prompt:
         """Embed features in Prompt instance.
 
         Args:
+            pos_key (str): Part of speech. If exists as key in POS dictionary, return value.
+                Else return value for noun POS.
             molecule (Molecule): Molecule representation.
 
         Returns:
@@ -94,7 +97,10 @@ class AbstractFeaturizer(ABC):
 
         completion_labels = self.feature_labels()
 
-        completion_name = self.get_names()[0]["noun"]
+        try:
+            completion_name = self.get_names()[0][pos_key]
+        except KeyError:
+            completion_name = self.get_names()[0]["noun"]
 
         return Prompt(
             completion=join_list_elements(completion),
@@ -110,11 +116,14 @@ class AbstractFeaturizer(ABC):
 
     def text_featurize_many(
         self,
+        pos_keys: Union[str, List[str]],
         molecules: List[Molecule],
     ) -> List[Prompt]:
         """Embed features in Prompt instance for multiple molecules.
 
         Args:
+            pos_keys (Union[str, List[str]]): Parts of speech. If exists as key in POS dictionary, return value.
+                Else return value for noun POS.
             molecules (Sequence[Molecule]):
                 A sequence of molecule representations.
 
@@ -122,7 +131,18 @@ class AbstractFeaturizer(ABC):
             (List[Prompt]): List of Prompt instances containing relevant information extracted from each
                 molecule in `molecules`.
         """
-        return [self.text_featurize(molecule=molecule) for molecule in molecules]
+        if isinstance(pos_keys, str):
+            pos_keys = [pos_keys] * len(molecules)
+        else:
+            if len(pos_keys) != len(molecules):
+                raise Exception(
+                    "`pos_keys` must either be a single element of typoe `str`, "
+                    "or an iterable of equal length to the collection of molecules."
+                )
+        return [
+            self.text_featurize(pos_key=pos_key, molecule=molecule)
+            for pos_key, molecule in zip(pos_keys, molecules)
+        ]
 
     @abstractmethod
     def implementors(self) -> List[str]:
