@@ -15,13 +15,19 @@ from chemcaption.featurize.bonds import (
     BondRotabilityFeaturizer,
     BondTypeCountFeaturizer,
     BondTypeProportionFeaturizer,
+    BondOrderFeaturizer,
+    DipoleMomentsFeaturizer,
+    RotableBondCountFeaturizer,
 )
 from chemcaption.featurize.composition import (
     ElementCountFeaturizer,
+    ElementCountProportionFeaturizer,
     ElementMassFeaturizer,
     ElementMassProportionFeaturizer,
     MolecularFormulaFeaturizer,
     MonoisotopicMolecularMassFeaturizer,
+    AtomCountFeaturizer,
+    DegreeOfUnsaturationFeaturizer,
 )
 from chemcaption.featurize.electronicity import (
     HydrogenAcceptorCountFeaturizer,
@@ -51,6 +57,7 @@ def get_smarts_featurizers():
 FEATURIZER = MultipleFeaturizer(
     get_smarts_featurizers()
     + [
+        AtomCountFeaturizer(),
         ValenceElectronCountAdaptor(),
         BondRotabilityFeaturizer(),
         BondTypeCountFeaturizer(),
@@ -60,9 +67,14 @@ FEATURIZER = MultipleFeaturizer(
         ElementMassFeaturizer(),
         ElementCountFeaturizer(),
         ElementMassProportionFeaturizer(),
+        ElementCountProportionFeaturizer(),
+        DegreeOfUnsaturationFeaturizer(),
         HydrogenAcceptorCountFeaturizer(),
         HydrogenDonorCountFeaturizer(),
         LipinskiViolationCountFeaturizer(),
+        BondOrderFeaturizer(),
+        RotableBondCountFeaturizer(),
+        DipoleMomentsFeaturizer(),
         InertialShapeFactorFeaturizer(),
         EccentricityFeaturizer(),
         AsphericityFeaturizer(),
