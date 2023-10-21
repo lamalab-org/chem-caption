@@ -32,7 +32,6 @@ from chemcaption.featurize.composition import (
 from chemcaption.featurize.electronicity import (
     HydrogenAcceptorCountFeaturizer,
     HydrogenDonorCountFeaturizer,
-    ValenceElectronCountFeaturizer,
     HOMOEnergyFeaturizer,
     LUMOEnergyFeaturizer,
     AtomChargeFeaturizer,
