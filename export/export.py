@@ -30,19 +30,23 @@ from chemcaption.featurize.composition import (
     MonoisotopicMolecularMassFeaturizer,
 )
 from chemcaption.featurize.electronicity import (
+    AtomChargeFeaturizer,
+    AtomElectrophilicityFeaturizer,
+    AtomNucleophilicityFeaturizer,
+    HOMOEnergyFeaturizer,
     HydrogenAcceptorCountFeaturizer,
     HydrogenDonorCountFeaturizer,
-    HOMOEnergyFeaturizer,
     LUMOEnergyFeaturizer,
-    AtomChargeFeaturizer,
-    AtomNucleophilicityFeaturizer,
-    AtomElectrophilicityFeaturizer,
-    MoleculeNucleophilicityFeaturizer,
+    MoleculeElectrofugalityFeaturizer,
     MoleculeElectrophilicityFeaturizer,
     MoleculeNucleofugalityFeaturizer,
-    MoleculeElectrofugalityFeaturizer,
+    MoleculeNucleophilicityFeaturizer,
 )
-from chemcaption.featurize.rules import LipinskiViolationCountFeaturizer, GhoseFilterFeaturizer, LeadLikenessFilterFeaturizer
+from chemcaption.featurize.rules import (
+    GhoseFilterFeaturizer,
+    LeadLikenessFilterFeaturizer,
+    LipinskiViolationCountFeaturizer,
+)
 from chemcaption.featurize.spatial import (
     AsphericityFeaturizer,
     EccentricityFeaturizer,
