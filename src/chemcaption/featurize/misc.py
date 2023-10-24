@@ -35,7 +35,7 @@ class SVGFeaturizer(AbstractFeaturizer):
             canvas_width (int): Width of canvas on which to draw molecule. Given in pixels. Defaults to `300`.
             canvas_height (int): Height of canvas on which to draw molecule. Given in pixels. Defaults to `300`.
             include_hydrogens (bool): Include hydrogen atoms in SVG rendering. Defaults to `False`.
-            highlight_smarts (Optional[str]): SMARTS pattern for atoms to highlight in SVG rendering. Defaults to `None`.
+            highlight_smarts (Optional[str]): SMARTS pattern for atoms to highlight in SVG rendering. Optional.
         """
         super().__init__()
 
@@ -44,9 +44,7 @@ class SVGFeaturizer(AbstractFeaturizer):
         self.include_hydrogens = include_hydrogens
         self.highlight_smarts = highlight_smarts
 
-        self._names = [
-            {"noun": "SVG representation"}
-        ]
+        self._names = [{"noun": "SVG representation"}]
 
     def _mol_to_svg(self, molecule: Molecule) -> str:
         """Return inline SVG representation for molecule instance.
