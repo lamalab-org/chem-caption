@@ -246,8 +246,6 @@ class ElementMassFeaturizer(AbstractFeaturizer):
             None.
         """
         self._preset = new_preset
-        if new_preset is not None:
-            self.label = [self.prefix + element.lower() + self.suffix for element in self.preset]
         return
 
     def fit(
@@ -366,7 +364,6 @@ class ElementMassProportionFeaturizer(ElementMassFeaturizer):
         super().__init__(preset=preset)
         self.prefix = ""
         self.suffix = "_mass_ratio"
-        self.label = [self.prefix + element.lower() + self.suffix for element in self.preset]
 
     def get_names(self) -> List[Dict[str, str]]:
         """Return feature names.
@@ -378,6 +375,9 @@ class ElementMassProportionFeaturizer(ElementMassFeaturizer):
             (List[Dict[str, str]]): List of names for extracted features according to parts-of-speech.
         """
         return [{"noun": "mass proportion of " + join_list_elements(self.preset)}]
+
+    def feature_labels(self) -> List[str]:
+        return [self.prefix + element.lower() + self.suffix for element in self.preset]
 
     def featurize(self, molecule: Molecule) -> np.array:
         """

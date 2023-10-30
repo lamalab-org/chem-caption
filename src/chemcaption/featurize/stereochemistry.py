@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""Featurizers for stereochemistry."""
+"""Featurizers for stereochemistry-related features."""
 
 from typing import Any, List, Tuple, Union
 
@@ -12,11 +12,13 @@ from chemcaption.featurize.base import AbstractFeaturizer
 from chemcaption.molecules import Molecule
 
 __all__ = [
-    "NumChiralCentersFeaturizer",
+    "ChiralCenterCountFeaturizer",
 ]
 
+# Implemented stereochemistry-related featurizers
 
-class NumChiralCentersFeaturizer(AbstractFeaturizer):
+
+class ChiralCenterCountFeaturizer(AbstractFeaturizer):
     """Return the number of chiral centers."""
 
     def __init__(self):

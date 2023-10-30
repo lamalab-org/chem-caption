@@ -431,6 +431,36 @@ class MultipleFeaturizer(AbstractFeaturizer):
 
         return labels
 
+    def fit_on_featurizers(self, featurizers: Optional[List[AbstractFeaturizer]] = None):
+        """Fit MultipleFeaturizer instance on lower-level featurizers.
+
+        Args:
+            featurizers (Optional[List[AbstractFeaturizer]]): List of lower-level featurizers. Defaults to `None`.
+
+        Returns:
+            self : Instance of self with state updated.
+        """
+        # Type check for AbstractFeaturizer instances
+        for ix, featurizer in enumerate(featurizers):
+            # Each featurizer must be specifically of type AbstractFeaturizer
+
+            if not isinstance(featurizer, AbstractFeaturizer):
+                raise ValueError(
+                    f"`{featurizer.__class__.__name__}` instance at index {ix} is not of type `AbstractFeaturizer`."
+                )
+
+        self.featurizers = featurizers
+
+        print(f"`{self.__class__.__name__}` instance fitted with {len(featurizers)} featurizers!\n")
+        self.label = self.feature_labels()
+
+        self.prompt_template = [featurizer.prompt_template for featurizer in featurizers]
+        self.completion_template = [featurizer.completion_template for featurizer in featurizers]
+
+        self._names = [featurizer._names for featurizer in featurizers]
+
+        return self
+
     def generate_data(self, molecules: List[Molecule], metadata: bool = False) -> pd.DataFrame:
         """Convert generated feature array to DataFrame.
 

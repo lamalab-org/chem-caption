@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""Implementations for adaptor-related for featurizers."""
+"""Implementations for adaptor-related alternatives for featurizers."""
 
 from typing import Any, Callable, Dict, List
 
@@ -40,17 +40,6 @@ class RDKitAdaptor(AbstractFeaturizer):
         self._label = labels
         self.rdkit_function_kwargs = rdkit_function_kwargs
 
-    def feature_labels(self) -> List[str]:
-        """Return feature label(s).
-
-        Args:
-            None.
-
-        Returns:
-            (List[str]): List of labels for extracted features.
-        """
-        return self._label
-
     def featurize(
         self,
         molecule: Molecule,
@@ -75,6 +64,17 @@ class RDKitAdaptor(AbstractFeaturizer):
             else feature
         )
         return np.array(feature).reshape((1, -1))
+
+    def feature_labels(self) -> List[str]:
+        """Return feature label(s).
+
+        Args:
+            None.
+
+        Returns:
+            (List[str]): List of labels of extracted features.
+        """
+        return self._label
 
     def implementors(self) -> List[str]:
         """

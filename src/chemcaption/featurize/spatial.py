@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""Featurizers for 3D (i.e., spatial) information."""
+"""Featurizers for 3D (i.e., spatial) features."""
 
 from typing import Any, Dict, List, Optional, Union
 
@@ -13,7 +13,7 @@ from chemcaption.featurize.base import AbstractFeaturizer, MorfeusFeaturizer
 from chemcaption.featurize.utils import cached_conformer, join_list_elements
 from chemcaption.molecules import Molecule
 
-# Implemented bond-related featurizers
+# Implemented spatial featurizers
 
 __all__ = [
     "ThreeDimensionalFeaturizer",
@@ -190,7 +190,7 @@ class EccentricityFeaturizer(ThreeDimensionalFeaturizer):
         Returns:
             (List[str]): List of implementors.
         """
-        return ["Benedict Oshomah Emoekabu"]
+        return ["Benedict Oshomah Emoekabu", "Kevin Maik Jablonka"]
 
 
 class AsphericityFeaturizer(ThreeDimensionalFeaturizer):
@@ -258,7 +258,7 @@ class AsphericityFeaturizer(ThreeDimensionalFeaturizer):
         Returns:
             (List[str]): List of implementors.
         """
-        return ["Benedict Oshomah Emoekabu"]
+        return ["Benedict Oshomah Emoekabu", "Kevin Maik Jablonka"]
 
 
 class InertialShapeFactorFeaturizer(ThreeDimensionalFeaturizer):
@@ -326,7 +326,7 @@ class InertialShapeFactorFeaturizer(ThreeDimensionalFeaturizer):
         Returns:
             (List[str]): List of implementors.
         """
-        return ["Benedict Oshomah Emoekabu"]
+        return ["Benedict Oshomah Emoekabu", "Kevin Maik Jablonka"]
 
 
 class NPRFeaturizer(ThreeDimensionalFeaturizer):
@@ -342,7 +342,7 @@ class NPRFeaturizer(ThreeDimensionalFeaturizer):
         """Initialize class object.
 
         Args:
-            variant (int): Variant of normalized principal moments ratio (NPR) to calculate.
+            variant (Union[int, str]): Variant of normalized principal moments ratio (NPR) to calculate.
                 May take either value of `1`, `2`, or `all`. Defaults to `all`.
             use_masses (bool): Utilize elemental masses in calculating the NPR. Defaults to `True`.
             force (bool): Utilize force field calculations for energy minimization. Defaults to `True`.
@@ -441,7 +441,7 @@ class NPRFeaturizer(ThreeDimensionalFeaturizer):
         Returns:
             (List[str]): List of implementors.
         """
-        return ["Benedict Oshomah Emoekabu"]
+        return ["Benedict Oshomah Emoekabu", "Kevin Maik Jablonka"]
 
 
 class PMIFeaturizer(ThreeDimensionalFeaturizer):
@@ -457,7 +457,7 @@ class PMIFeaturizer(ThreeDimensionalFeaturizer):
         """Initialize class object.
 
         Args:
-           variant (int): Variant of principal moments of inertia (PMI) to calculate.
+           variant (Union[int, str]): Variant of principal moments of inertia (PMI) to calculate.
                 May take either value of `1`, `2`, `3`, or `all`. Defaults to `all`.
             use_masses (bool): Utilize elemental masses in calculating the PMI. Defaults to `True`.
             force (bool): Utilize force field calculations for energy minimization. Defaults to `True`.
