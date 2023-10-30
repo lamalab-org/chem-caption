@@ -2,7 +2,7 @@
 
 """Featurizers for chemical bond-related information."""
 
-from typing import List, Union
+from typing import Dict, List, Union
 
 import numpy as np
 from rdkit.Chem import rdMolDescriptors
@@ -15,7 +15,7 @@ from chemcaption.molecules import Molecule
 
 __all__ = [
     "RotableBondCountFeaturizer",
-    "BondRotabilityFeaturizer",
+    "RotableBondProportionFeaturizer",
     "BondTypeCountFeaturizer",
     "BondTypeProportionFeaturizer",
 ]
@@ -64,6 +64,14 @@ class RotableBondCountFeaturizer(AbstractFeaturizer):
         ]
 
     def feature_labels(self) -> List[str]:
+        """Return feature label(s).
+
+        Args:
+            None.
+
+        Returns:
+            (List[str]): List of labels of extracted features.
+        """
         return ["num_rotable_bonds"]
 
     def featurize(self, molecule: Molecule) -> np.array:
@@ -97,7 +105,7 @@ class RotableBondCountFeaturizer(AbstractFeaturizer):
 """Featurizer for calculating distribution of molecule bonds between rotatable and non-rotatable bonds."""
 
 
-class BondRotabilityFeaturizer(AbstractFeaturizer):
+class RotableBondProportionFeaturizer(AbstractFeaturizer):
     """Obtain distribution between rotable and non-rotable bonds in a molecule."""
 
     def __init__(self):
@@ -111,6 +119,14 @@ class BondRotabilityFeaturizer(AbstractFeaturizer):
         ]
 
     def feature_labels(self) -> List[str]:
+        """Return feature label(s).
+
+        Args:
+            None.
+
+        Returns:
+            (List[str]): List of labels of extracted features.
+        """
         return ["rotable_proportion", "non_rotable_proportion"]
 
     def _get_bond_types(self, molecule: Molecule) -> List[float]:
@@ -202,51 +218,82 @@ class BondTypeCountFeaturizer(AbstractFeaturizer):
         """
         all_bonds = self._get_bonds(molecule)
 
-        num_bonds = []
-
-        bond_types = self.feature_labels()
+        bond_types, index = self._get_bond_types(), 1 if self.count else 0
 
         num_bonds = [
-            all_bonds.count(bond_type.split("_")[1].upper())
+            all_bonds.count(bond_type.split("_")[index].upper())
             for bond_type in bond_types
             if bond_type != "num_bonds"
         ]
 
-        if self.count:
+        if self.count and ("ALL" in self.bond_type):
             num_bonds.append(len(all_bonds))
-        else:
+        elif not self.count:
             num_bonds = [min(1, count) for count in num_bonds]
 
         return num_bonds
 
     def feature_labels(self) -> List[str]:
-        """
-        Parse featurizer labels.
+        """Return feature label(s).
 
         Args:
             None.
 
         Returns:
-            bond_types (List[str]): List of strings of bond types.
+            (List[str]): List of labels of extracted features.
         """
+        return self._get_bond_types()
 
+    def _get_bond_types(self) -> List[str]:
+        """
+        Return bond types.
+
+        Args:
+            None.
+
+        Returns:
+            (List[str]): List of labels of extracted features.
+        """
         if "ALL" in self.bond_type:
             bond_types = self._rdkit_bond_types()
 
             if self.count:
                 bond_types.append("num_bonds")
         else:
-            bond_types = self.bond_type
+            bond_types = self._parse_bond_names(self.bond_type)
 
         return bond_types
 
-    def get_names(self) -> List[str]:
+    def _parse_bond_names(self, bond_names: Union[str, List[str]]) -> List[str]:
+        """Parse bond names for use in counting.
+
+        Args:
+            bond_names (Union[str, List[str]]): Bond names.
+
+        Returns:
+            (List[str]): Parsed bond names.
+        """
+        if isinstance(bond_names, str):
+            bond_names = [self.prefix + bond_names.lower() + self.suffix]
+        else:
+            bond_names = [self.prefix + name.lower() + self.suffix for name in bond_names]
+        return bond_names
+
+    def get_names(self) -> List[Dict[str, str]]:
+        """Return feature names.
+
+        Args:
+            None.
+
+        Returns:
+            (List[Dict[str, str]]): List of names for extracted features according to parts-of-speech.
+        """
         mapped_names = [
             _MAP_BOND_TYPE_TO_CLEAN_NAME[bond_type]
-            for bond_type in self.feature_labels()
+            for bond_type in self._get_bond_types()
             if "num_bonds" != bond_type
         ]
-        name = None
+
         if self.count:
             name = "What is the number of "
         else:
@@ -326,7 +373,7 @@ class BondTypeCountFeaturizer(AbstractFeaturizer):
             None.
 
         Returns:
-            List[str]: List of implementors.
+            (List[str]): List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]
 
@@ -345,27 +392,22 @@ class BondTypeProportionFeaturizer(BondTypeCountFeaturizer):
             bond_type (Union[str, List[str]]): Type of bond to enumerate.
                 If `all`, enumerates all bonds irrespective of type. Default (ALL).
         """
-        super().__init__(count=False, bond_type=bond_type)
+        super().__init__(count=True, bond_type=bond_type)
         self.constraint = "Constraint: Return a list of comma separated floats."
+        self.prefix = ""
+        self.suffix = "_bond_proportion"
 
-    def feature_labels(self) -> List[str]:
-        """
-        Return list of feature labels.
+    def get_names(self) -> List[Dict[str, str]]:
+        """Return feature names.
 
         Args:
             None.
 
         Returns:
-            List[str]: List of feature labels.
+            (List[Dict[str, str]]): List of names for extracted features according to parts-of-speech.
         """
-        labels = super().feature_labels()
-        labels = ["_".join(x.split("_")[:-1] + ["proportion"]) for x in labels]
-
-        return labels
-
-    def get_names(self) -> List[str]:
         mapped_names = [
-            _MAP_BOND_TYPE_TO_CLEAN_NAME[bond_type] for bond_type in self.feature_labels()
+            _MAP_BOND_TYPE_TO_CLEAN_NAME[bond_type] for bond_type in super().feature_labels()
         ]
         return [
             {"noun": "What is the proportion of " + join_list_elements(mapped_names) + " bonds"}
@@ -379,29 +421,17 @@ class BondTypeProportionFeaturizer(BondTypeCountFeaturizer):
         Returns:
             bond_distribution (List[float]): List of bond type proportions.
         """
-        num_bonds = self._count_bonds(molecule=molecule)
+        num_bonds = super()._count_bonds(molecule=molecule)
 
         total_bond_count = (
-            sum(num_bonds) if "ALL" in self.bond_type else len(self._get_bonds(molecule=molecule))
+            num_bonds.pop(-1)
+            if "ALL" in self.bond_type
+            else len(self._get_bonds(molecule=molecule))
         )
 
         bond_proportion = [count / total_bond_count for count in num_bonds]
 
         return bond_proportion
-
-    def _count_bonds(self, molecule: Molecule) -> List[int]:
-        """
-        Count the frequency of appearance for bond_type in a molecule.
-
-        Args:
-            molecule (Molecule): Molecule representation.
-
-        Returns:
-            num_bonds (List[int]): Number of occurrences of `bond_type` in molecule.
-        """
-        num_bonds = super()._count_bonds(molecule=molecule)
-
-        return num_bonds
 
     def featurize(self, molecule: Molecule) -> np.array:
         """
@@ -414,3 +444,29 @@ class BondTypeProportionFeaturizer(BondTypeCountFeaturizer):
             (np.array): Array containing bond type proportion(s).
         """
         return np.array(self._get_bond_distribution(molecule=molecule)).reshape(1, -1)
+
+    def feature_labels(self) -> List[str]:
+        """Return feature label(s).
+
+        Args:
+            None.
+
+        Returns:
+            (List[str]): List of labels of extracted features.
+        """
+        labels = [label for label in super().feature_labels() if label != "num_bonds"]
+        labels = self._parse_bond_names([x.split("_")[1] for x in labels])
+
+        return labels
+
+    def implementors(self) -> List[str]:
+        """
+        Return list of functionality implementors.
+
+        Args:
+            None.
+
+        Returns:
+            List[str]: List of implementors.
+        """
+        return ["Benedict Oshomah Emoekabu"]

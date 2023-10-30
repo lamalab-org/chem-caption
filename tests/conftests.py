@@ -29,8 +29,8 @@ __all__ = [
 
 """Test data."""
 
-BASE_DIR = os.getcwd().split("featurize")[0]
-BASE_DIR = BASE_DIR if "tests" in os.getcwd() else os.path.join(os.getcwd(), "tests")
+BASE_DIR = os.getcwd().split("tests")[0]
+BASE_DIR = BASE_DIR if "tests" in BASE_DIR else os.path.join(BASE_DIR, "tests")
 
 # Sources of truth
 PROPERTY_BANK = pd.read_csv(

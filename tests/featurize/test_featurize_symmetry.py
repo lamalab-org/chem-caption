@@ -4,14 +4,14 @@
 
 import numpy as np
 
-from chemcaption.featurize.symmetry import PointGroupFeaturizer, RotationalSymmetryNumber
+from chemcaption.featurize.symmetry import PointGroupFeaturizer, RotationalSymmetryNumberFeaturizer
 from chemcaption.featurize.text import Prompt
 from chemcaption.molecules import SMILESMolecule
 
 
 def test_rotational_symmetry_number():
     """Test rotational symmetry number featurizer."""
-    featurizer = RotationalSymmetryNumber()
+    featurizer = RotationalSymmetryNumberFeaturizer()
     molecule = SMILESMolecule(representation_string="CC")
     results = featurizer.featurize(molecule)
     assert results == np.array([6.0])
