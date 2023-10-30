@@ -7,7 +7,7 @@ from typing import List
 import numpy as np
 
 from chemcaption.featurize.base import AbstractFeaturizer, Comparator, MultipleComparator
-from chemcaption.featurize.composition import AtomCountFeaturizer, MolecularFormularFeaturizer
+from chemcaption.featurize.composition import AtomCountFeaturizer, MolecularFormulaFeaturizer
 from chemcaption.featurize.electronicity import ValenceElectronCountFeaturizer
 from chemcaption.featurize.rules import LipinskiViolationCountFeaturizer
 from chemcaption.featurize.substructure import IsomorphismFeaturizer
@@ -92,7 +92,7 @@ class IsomerismComparator(Comparator):
         """Initialize instance."""
         super().__init__(
             featurizers=[
-                MolecularFormularFeaturizer(),
+                MolecularFormulaFeaturizer(),
             ]
         )
 

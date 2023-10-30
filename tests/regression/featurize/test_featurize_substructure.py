@@ -45,7 +45,7 @@ __all__ = [
 )
 def test_smarts_count_featurizer(test_input, expected):
     """Test SMARTSFeaturizer for SMARTS occurrence count."""
-    featurizer = SMARTSFeaturizer(count=True, names=SMARTS_PRESET)
+    featurizer = SMARTSFeaturizer.from_preset(count=True, preset=SMARTS_PRESET)
     molecule = MOLECULE(test_input)
 
     results = featurizer.featurize(molecule)
@@ -74,7 +74,7 @@ def test_smarts_count_featurizer(test_input, expected):
 )
 def test_smarts_presence_featurizer(test_input, expected):
     """Test SMARTSFeaturizer for SMARTS presence detection."""
-    featurizer = SMARTSFeaturizer(count=False, names=SMARTS_PRESET)
+    featurizer = SMARTSFeaturizer.from_preset(count=False, preset=SMARTS_PRESET)
     molecule = MOLECULE(test_input)
 
     results = featurizer.featurize(molecule)

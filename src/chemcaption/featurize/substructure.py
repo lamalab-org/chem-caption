@@ -127,13 +127,13 @@ class SMARTSFeaturizer(AbstractFeaturizer):
         return np.array(results).reshape((1, -1))
 
     def feature_labels(self) -> List[str]:
-        """Return feature labels.
+        """Return feature label(s).
 
         Args:
             None.
 
         Returns:
-            (List[str]): List of names of extracted features.
+            (List[str]): List of labels of extracted features.
         """
         suffix = "_count" if self.count else "_presence"
         return [name + suffix for name in self.smart_names]
@@ -170,6 +170,9 @@ class IsomorphismFeaturizer(AbstractFeaturizer):
 
         self.label = ["weisfeiler_lehman_hash"]
 
+    def feature_labels(self) -> List[str]:
+        return ["weisfeiler_lehman_hash"]
+
     def featurize(self, molecule: Molecule) -> np.array:
         """
         Featurize single molecule instance. Extract and return features from molecular object.
@@ -205,7 +208,7 @@ class TopologyCountFeaturizer(AbstractFeaturizer):
         """Initialize class object.
 
         Args:
-            reference_atomic_numbers (List[int]): Atomic number for element of interest.
+            reference_atomic_numbers (List[int]): Atomic numbers for elements of interest.
         """
         super().__init__()
         self.reference_atomic_numbers = reference_atomic_numbers

@@ -12,7 +12,7 @@ from chemcaption.featurize.composition import (
     ElementCountProportionFeaturizer,
     ElementMassFeaturizer,
     ElementMassProportionFeaturizer,
-    MolecularFormularFeaturizer,
+    MolecularFormulaFeaturizer,
     MolecularMassFeaturizer,
     MonoisotopicMolecularMassFeaturizer,
 )
@@ -28,7 +28,7 @@ PRESET = ["carbon", "hydrogen", "oxygen", "nitrogen", "phosphorus"]
 # Implemented tests for composition-related featurizers.
 
 __all__ = [
-    "test_molecular_formular_featurizer",
+    "test_molecular_formula_featurizer",
     "test_molar_mass_featurizer",
     "test_element_mass_featurizer",
     "test_element_mass_proportion_featurizer",
@@ -52,9 +52,9 @@ __all__ = [
         property="molecular_formular",
     ),
 )
-def test_molecular_formular_featurizer(test_input, expected):
+def test_molecular_formula_featurizer(test_input, expected):
     """Test MolecularFormularFeaturizer."""
-    featurizer = MolecularFormularFeaturizer()
+    featurizer = MolecularFormulaFeaturizer()
     molecule = MOLECULE(test_input)
 
     results = featurizer.featurize(molecule)
