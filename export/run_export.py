@@ -12,7 +12,8 @@ from selfies import encoder
 from chemcaption.featurize.adaptor import ValenceElectronCountAdaptor
 from chemcaption.featurize.base import MultipleFeaturizer
 from chemcaption.featurize.bonds import (
-    BondRotabilityFeaturizer,
+    RotableBondCountFeaturizer,
+    RotableBondProportionFeaturizer,
     BondTypeCountFeaturizer,
     BondTypeProportionFeaturizer,
 )
@@ -35,7 +36,7 @@ from chemcaption.featurize.spatial import (
     NPRFeaturizer,
     PMIFeaturizer,
 )
-from chemcaption.featurize.stereochemistry import NumChiralCentersFeaturizer
+from chemcaption.featurize.stereochemistry import ChiralCenterCountFeaturizer
 from chemcaption.featurize.substructure import SMARTSFeaturizer
 from chemcaption.molecules import InChIMolecule, SELFIESMolecule, SMILESMolecule
 from chemcaption.presets import ALL_SMARTS
@@ -52,7 +53,8 @@ FEATURIZER = MultipleFeaturizer(
     get_smarts_featurizers()
     + [
         ValenceElectronCountAdaptor(),
-        BondRotabilityFeaturizer(),
+        RotableBondCountFeaturizer(),
+        RotableBondProportionFeaturizer(),
         BondTypeCountFeaturizer(),
         BondTypeProportionFeaturizer(),
         MolecularFormulaFeaturizer(),
@@ -69,7 +71,7 @@ FEATURIZER = MultipleFeaturizer(
         InertialShapeFactorFeaturizer(),
         NPRFeaturizer(),
         PMIFeaturizer(),
-        NumChiralCentersFeaturizer(),
+        ChiralCenterCountFeaturizer(),
     ]
 )
 
