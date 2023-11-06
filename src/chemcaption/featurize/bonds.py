@@ -478,22 +478,17 @@ class DipoleMomentsFeaturizer(MorfeusFeaturizer):
     """Return the dipole moments for a molecule."""
 
     def __init__(
-        self,
-        conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
-        morfeus_kwargs: Optional[Dict[str, Any]] = None,
-        atom_indices: Union[int, List[int]] = 100,
-        as_range: bool = False,
+            self,
+            conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
+            morfeus_kwargs: Optional[Dict[str, Any]] = None,
+            max_index: Union[int, List[int]] = 2,
     ):
         """Instantiate class.
 
         Args:
             conformer_generation_kwargs (Optional[Dict[str, Any]]): Configuration for conformer generation.
             morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
-            atom_indices (Union[int, List[int]]): Range of atoms to calculate areas for. Either:
-                - an integer,
-                - a list of integers, or
-                - a two-tuple of integers representing lower index and upper index.
-            as_range (bool): Use `atom_indices` parameter as a range of indices or not. Defaults to `False`
+            max_index (Union[int, List[int]]): Maximum number of atoms/bonds to consider for feature generation.
         """
         super().__init__(
             conformer_generation_kwargs=conformer_generation_kwargs,
@@ -506,7 +501,7 @@ class DipoleMomentsFeaturizer(MorfeusFeaturizer):
             },
         ]
 
-        self.atom_indices, self.as_range = self._parse_indices(atom_indices, as_range)
+        self.max_index = max_index
 
     def featurize(self, molecule: Molecule) -> np.array:
         """
@@ -523,9 +518,23 @@ class DipoleMomentsFeaturizer(MorfeusFeaturizer):
         dipoles = morfeus_instance.get_dipole(**self.morfeus_kwargs).flatten().tolist()
         num_dipoles = len(dipoles)
 
-        dipoles = [(dipoles[i - 1] if i <= num_dipoles else 0) for i in self.atom_indices]
+        dipoles = [(dipoles[i - 1] if i <= num_dipoles else 0) for i in range(self.max_index)]
 
         return np.array(dipoles).reshape(1, -1)
+
+    def featurize_many(self, molecules: List[Molecule]) -> np.array:
+        """
+        Featurize a sequence of Molecule objects.
+
+        Args:
+            molecules (List[Molecule]): A sequence of molecule representations.
+
+        Returns:
+            (np.array): An array of features for each molecule instance.
+        """
+        self.max_index = self.fit_on_bond_counts(molecules=molecules)
+
+        return super().featurize_many(molecules=molecules)
 
     def feature_labels(self) -> List[str]:
         """Return feature label(s).
@@ -536,7 +545,7 @@ class DipoleMomentsFeaturizer(MorfeusFeaturizer):
         Returns:
             (List[str]): List of labels of extracted features.
         """
-        return [f"dipole_{i}" for i in self.atom_indices]
+        return [f"dipole_{i}_{i+1}" for i in range(self.max_index)]
 
     def implementors(self) -> List[str]:
         """
@@ -558,19 +567,14 @@ class BondOrderFeaturizer(MorfeusFeaturizer):
         self,
         conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
         morfeus_kwargs: Optional[Dict[str, Any]] = None,
-        atom_indices: Union[int, List[int]] = 100,
-        as_range: bool = False,
+        max_index: Union[int, List[int]] = 2,
     ):
         """Instantiate class.
 
         Args:
             conformer_generation_kwargs (Optional[Dict[str, Any]]): Configuration for conformer generation.
             morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
-            atom_indices (Union[int, List[int]]): Range of atoms to calculate areas for. Either:
-                - an integer,
-                - a list of integers, or
-                - a two-tuple of integers representing lower index and upper index.
-            as_range (bool): Use `atom_indices` parameter as a range of indices or not. Defaults to `False`
+            max_index (Union[int, List[int]]): Maximum number of atoms/bonds to consider for feature generation.
         """
         super().__init__(
             conformer_generation_kwargs=conformer_generation_kwargs,
@@ -583,7 +587,7 @@ class BondOrderFeaturizer(MorfeusFeaturizer):
             },
         ]
 
-        self.atom_indices, self.as_range = self._parse_indices(atom_indices, as_range)
+        self.max_index = max_index
 
     def featurize(self, molecule: Molecule) -> np.array:
         """
@@ -598,11 +602,24 @@ class BondOrderFeaturizer(MorfeusFeaturizer):
         morfeus_instance = self._get_morfeus_instance(molecule=molecule, morpheus_instance="xtb")
 
         bond_orders = morfeus_instance.get_bond_orders(**self.morfeus_kwargs).flatten().tolist()
-        num_bonds = len(bond_orders)
 
-        bond_orders = [(bond_orders[i - 1] if i <= num_bonds else 0) for i in self.atom_indices]
+        bond_orders = [(bond_orders[i - 1] if i <= self.max_index else 0) for i in range(self.max_index)]
 
         return np.array(bond_orders).reshape(1, -1)
+
+    def featurize_many(self, molecules: List[Molecule]) -> np.array:
+        """
+        Featurize a sequence of Molecule objects.
+
+        Args:
+            molecules (List[Molecule]): A sequence of molecule representations.
+
+        Returns:
+            (np.array): An array of features for each molecule instance.
+        """
+        self.max_index = self.fit_on_bond_counts(molecules=molecules)
+
+        return super().featurize_many(molecules=molecules)
 
     def feature_labels(self) -> List[str]:
         """Return feature label(s).
@@ -613,7 +630,7 @@ class BondOrderFeaturizer(MorfeusFeaturizer):
         Returns:
             (List[str]): List of labels of extracted features.
         """
-        return [f"bond_order_{i}" for i in self.atom_indices]
+        return [f"bond_order_{i}_{i+1}" for i in range(self.max_index)]
 
     def implementors(self) -> List[str]:
         """

@@ -149,19 +149,14 @@ class SolventAccessibleAtomAreaFeaturizer(MorfeusFeaturizer):
         self,
         conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
         morfeus_kwargs: Optional[Dict[str, Any]] = None,
-        atom_indices: Union[int, List[int]] = 100,
-        as_range: bool = False,
+        max_index: Union[int, List[int]] = 2,
     ):
         """Instantiate class.
 
         Args:
             conformer_generation_kwargs (Optional[Dict[str, Any]]): Configuration for conformer generation.
             morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
-            atom_indices (Union[int, List[int]]): Range of atoms to calculate areas for. Either:
-                - an integer,
-                - a list of integers, or
-                - a two-tuple of integers representing lower index and upper index.
-            as_range (bool): Use `atom_indices` parameter as a range of indices or not. Defaults to `False`
+            max_index (Union[int, List[int]]): Maximum number of atoms/bonds to consider for feature generation.
         """
         super().__init__(
             conformer_generation_kwargs=conformer_generation_kwargs,
@@ -174,7 +169,7 @@ class SolventAccessibleAtomAreaFeaturizer(MorfeusFeaturizer):
             },
         ]
 
-        self.atom_indices, self.as_range = self._parse_indices(atom_indices, as_range)
+        self.max_index = max_index
 
     def featurize(self, molecule: Molecule) -> np.array:
         """
@@ -191,9 +186,23 @@ class SolventAccessibleAtomAreaFeaturizer(MorfeusFeaturizer):
         atom_areas = morfeus_instance.atom_areas
         num_atoms = len(atom_areas)
 
-        atom_areas = [(atom_areas[i] if i <= num_atoms else 0) for i in self.atom_indices]
+        atom_areas = [(atom_areas[i] if i <= num_atoms else 0) for i in range(1, self.max_index + 1)]
 
         return np.array(atom_areas).reshape(1, -1)
+
+    def featurize_many(self, molecules: List[Molecule]) -> np.array:
+        """
+        Featurize a sequence of Molecule objects.
+
+        Args:
+            molecules (List[Molecule]): A sequence of molecule representations.
+
+        Returns:
+            (np.array): An array of features for each molecule instance.
+        """
+        self.max_index = self.fit_on_atom_counts(molecules=molecules)
+
+        return super().featurize_many(molecules=molecules)
 
     def feature_labels(self) -> List[str]:
         """Return feature label(s).
@@ -204,7 +213,7 @@ class SolventAccessibleAtomAreaFeaturizer(MorfeusFeaturizer):
         Returns:
             (List[str]): List of labels of extracted features.
         """
-        return [f"solvent_accessible_atom_area_{i}" for i in self.atom_indices]
+        return [f"solvent_accessible_atom_area_{i}" for i in range(self.max_index)]
 
     def implementors(self) -> List[str]:
         """

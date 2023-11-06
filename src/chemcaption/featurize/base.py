@@ -241,6 +241,46 @@ class MorfeusFeaturizer(AbstractFeaturizer):
 
         return atom_indices, as_range
 
+    def fit_on_bond_counts(self, molecules: Union[List[Molecule], Tuple[Molecule], Molecule]) -> int:
+        """Fit instance on molecule collection.
+
+        Args:
+            molecules (Union[List[Molecule], Tuple[Molecule], Molecule]): List of molecular instances.
+
+        Returns:
+            int: Maximum number of bonds in any molecule passed in to featurizer.
+        """
+        molecules = [molecules] if not isinstance(molecules, list) else molecules
+        bond_counts = [self._count_bonds(molecule=molecule) for molecule in molecules]
+        return max(bond_counts)
+
+    @staticmethod
+    def fit_on_atom_counts(molecules: Union[List[Molecule], Tuple[Molecule], Molecule]) -> int:
+        """Fit instance on molecule collection.
+
+        Args:
+            molecules (Union[List[Molecule], Tuple[Molecule], Molecule]): List of molecular instances.
+
+        Returns:
+            int: Maximum number of atoms in any molecule passed in to featurizer.
+        """
+        molecules = [molecules] if not isinstance(molecules, list) else molecules
+        atom_counts = [molecule.reveal_hydrogens().GetNumAtoms() for molecule in molecules]
+        return max(atom_counts)
+
+    @staticmethod
+    def _count_bonds(molecule: Molecule) -> int:
+        """Helper function to count the number of bonds in a molecule.
+
+        Args:
+            molecule (Molecule): Molecular instance.
+
+        Returns:
+            int: Integer representing the number of bonds in a molecule.
+        """
+        bonds = list(molecule.reveal_hydrogens().GetBonds())
+        return len(bonds)
+
     def _get_element_coordinates(self, molecule: Molecule) -> Tuple[np.array, np.array]:
         """Return appropriate morfeus instance for feature generation.
 

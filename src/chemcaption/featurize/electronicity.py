@@ -449,19 +449,14 @@ class AtomChargeFeaturizer(MorfeusFeaturizer):
         self,
         conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
         morfeus_kwargs: Optional[Dict[str, Any]] = None,
-        atom_indices: Union[int, List[int]] = 100,
-        as_range: bool = False,
+        max_index: Union[int, List[int]] = 2,
     ):
         """Instantiate class.
 
         Args:
             conformer_generation_kwargs (Optional[Dict[str, Any]]): Configuration for conformer generation.
             morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
-            atom_indices (Union[int, List[int]]): Range of atoms to calculate areas for. Either:
-                - an integer,
-                - a list of integers, or
-                - a two-tuple of integers representing lower index and upper index.
-            as_range (bool): Use `atom_index_range` parameter as a range of indices or not. Defaults to `False`
+            max_index (Union[int, List[int]]): Maximum number of atoms/bonds to consider for feature generation.
         """
         super().__init__(
             conformer_generation_kwargs=conformer_generation_kwargs,
@@ -474,7 +469,7 @@ class AtomChargeFeaturizer(MorfeusFeaturizer):
             },
         ]
 
-        self.atom_indices, self.as_range = self._parse_indices(atom_indices, as_range)
+        self.max_index = max_index
 
     def featurize(self, molecule: Molecule) -> np.array:
         """
@@ -491,9 +486,23 @@ class AtomChargeFeaturizer(MorfeusFeaturizer):
         atom_charges = morfeus_instance.get_charges()
         num_atoms = len(atom_charges)
 
-        atom_areas = [(atom_charges[i] if i <= num_atoms else 0) for i in self.atom_indices]
+        atom_areas = [(atom_charges[i] if i <= num_atoms else 0) for i in range(1, self.max_index + 1)]
 
         return np.array(atom_areas).reshape(1, -1)
+
+    def featurize_many(self, molecules: List[Molecule]) -> np.array:
+        """
+        Featurize a sequence of Molecule objects.
+
+        Args:
+            molecules (List[Molecule]): A sequence of molecule representations.
+
+        Returns:
+            (np.array): An array of features for each molecule instance.
+        """
+        self.max_index = self.fit_on_atom_counts(molecules=molecules)
+
+        return super().featurize_many(molecules=molecules)
 
     def feature_labels(self) -> List[str]:
         """Return feature label(s).
@@ -504,7 +513,7 @@ class AtomChargeFeaturizer(MorfeusFeaturizer):
         Returns:
             (List[str]): List of labels of extracted features.
         """
-        return [f"atom_charge_{i}" for i in self.atom_indices]
+        return [f"atom_charge_{i}" for i in range(self.max_index)]
 
     def implementors(self) -> List[str]:
         """
@@ -526,8 +535,7 @@ class AtomNucleophilicityFeaturizer(MorfeusFeaturizer):
         self,
         conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
         morfeus_kwargs: Optional[Dict[str, Any]] = None,
-        atom_indices: Union[int, List[int]] = 100,
-        as_range: bool = False,
+        max_index: Union[int, List[int]] = 2,
         local: bool = False,
     ):
         """Instantiate class.
@@ -535,11 +543,7 @@ class AtomNucleophilicityFeaturizer(MorfeusFeaturizer):
         Args:
             conformer_generation_kwargs (Optional[Dict[str, Any]]): Configuration for conformer generation.
             morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
-            atom_indices (Union[int, List[int]]): Range of atoms to calculate areas for. Either:
-                - an integer,
-                - a list of integers, or
-                - a two-tuple of integers representing lower index and upper index.
-            as_range (bool): Use `atom_indices` parameter as a range of indices or not. Defaults to `False`.
+            max_index (Union[int, List[int]]): Maximum number of atoms/bonds to consider for feature generation.
             local (bool): Calculate local descriptor or not. Defaults to `False`.
         """
         super().__init__(
@@ -555,7 +559,7 @@ class AtomNucleophilicityFeaturizer(MorfeusFeaturizer):
 
         self.local = local
 
-        self.atom_indices, self.as_range = self._parse_indices(atom_indices, as_range)
+        self.max_index = max_index
 
     def featurize(self, molecule: Molecule) -> np.array:
         """Featurize single molecule instance.
@@ -573,10 +577,24 @@ class AtomNucleophilicityFeaturizer(MorfeusFeaturizer):
         num_atoms = len(nucleophilicity)
 
         atom_nucleophilicities = [
-            (nucleophilicity[i] if i <= num_atoms else 0) for i in self.atom_indices
+            (nucleophilicity[i] if i <= num_atoms else 0) for i in range(1, self.max_index+1)
         ]
 
         return np.array(atom_nucleophilicities).reshape(1, -1)
+
+    def featurize_many(self, molecules: List[Molecule]) -> np.array:
+        """
+        Featurize a sequence of Molecule objects.
+
+        Args:
+            molecules (List[Molecule]): A sequence of molecule representations.
+
+        Returns:
+            (np.array): An array of features for each molecule instance.
+        """
+        self.max_index = self.fit_on_atom_counts(molecules=molecules)
+
+        return super().featurize_many(molecules=molecules)
 
     def feature_labels(self) -> List[str]:
         """Return feature label(s).
@@ -589,7 +607,7 @@ class AtomNucleophilicityFeaturizer(MorfeusFeaturizer):
         """
         return [
             (f"atom_{i}_local_nucleophilicity" if self.local else f"atom_{i}_nucleophilicity")
-            for i in self.atom_indices
+            for i in range(self.max_index)
         ]
 
     def implementors(self) -> List[str]:
@@ -612,8 +630,7 @@ class AtomElectrophilicityFeaturizer(MorfeusFeaturizer):
         self,
         conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
         morfeus_kwargs: Optional[Dict[str, Any]] = None,
-        atom_indices: Union[int, List[int]] = 100,
-        as_range: bool = False,
+        max_index: Union[int, List[int]] = 2,
         local: bool = False,
     ):
         """Instantiate class.
@@ -621,11 +638,7 @@ class AtomElectrophilicityFeaturizer(MorfeusFeaturizer):
         Args:
             conformer_generation_kwargs (Optional[Dict[str, Any]]): Configuration for conformer generation.
             morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
-            atom_indices (Union[int, List[int]]): Range of atoms to calculate areas for. Either:
-                - an integer,
-                - a list of integers, or
-                - a two-tuple of integers representing lower index and upper index.
-            as_range (bool): Use `atom_indices` parameter as a range of indices or not. Defaults to `False`.
+            max_index (Union[int, List[int]]): Maximum number of atoms/bonds to consider for feature generation.
             local (bool): Calculate local descriptor or not. Defaults to `False`.
         """
         super().__init__(
@@ -641,7 +654,7 @@ class AtomElectrophilicityFeaturizer(MorfeusFeaturizer):
 
         self.local = local
 
-        self.atom_indices, self.as_range = self._parse_indices(atom_indices, as_range)
+        self.max_index = max_index
 
     def featurize(self, molecule: Molecule) -> np.array:
         """Featurize single molecule instance.
@@ -659,10 +672,24 @@ class AtomElectrophilicityFeaturizer(MorfeusFeaturizer):
         num_atoms = len(electrophilicity)
 
         atom_electrophilicities = [
-            (electrophilicity[i] if i <= num_atoms else 0) for i in self.atom_indices
+            (electrophilicity[i] if i <= num_atoms else 0) for i in range(1, self.max_index+1)
         ]
 
         return np.array(atom_electrophilicities).reshape(1, -1)
+
+    def featurize_many(self, molecules: List[Molecule]) -> np.array:
+        """
+        Featurize a sequence of Molecule objects.
+
+        Args:
+            molecules (List[Molecule]): A sequence of molecule representations.
+
+        Returns:
+            (np.array): An array of features for each molecule instance.
+        """
+        self.max_index = self.fit_on_bond_counts(molecules=molecules)
+
+        return super().featurize_many(molecules=molecules)
 
     def feature_labels(self) -> List[str]:
         """Return feature label(s).
@@ -675,7 +702,7 @@ class AtomElectrophilicityFeaturizer(MorfeusFeaturizer):
         """
         return [
             (f"atom_{i}_local_electrophilicity" if self.local else f"atom_{i}_electrophilicity")
-            for i in self.atom_indices
+            for i in range(self.max_index)
         ]
 
     def implementors(self) -> List[str]:
