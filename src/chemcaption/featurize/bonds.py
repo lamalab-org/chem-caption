@@ -610,7 +610,7 @@ class BondOrderFeaturizer(MorfeusFeaturizer):
         """
         if self.qc_optimize:
             molecule = self._generate_conformer(molecule=molecule)
-        
+
         morfeus_instance = self._get_morfeus_instance(molecule=molecule, morpheus_instance="xtb")
 
         bond_orders = morfeus_instance.get_bond_orders(**self.morfeus_kwargs).flatten().tolist()

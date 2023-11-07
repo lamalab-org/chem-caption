@@ -582,7 +582,7 @@ class AtomVolumeFeaturizer(MorfeusFeaturizer):
         super().__init__(
             conformer_generation_kwargs=conformer_generation_kwargs,
             morfeus_kwargs=morfeus_kwargs,
-            qc_optimize=qc_optimize
+            qc_optimize=qc_optimize,
         )
 
         self._names = [
@@ -604,12 +604,13 @@ class AtomVolumeFeaturizer(MorfeusFeaturizer):
         """
         if self.qc_optimize:
             molecule = self._generate_conformer(molecule=molecule)
+
         morfeus_instance = self._get_morfeus_instance(molecule=molecule, morpheus_instance="sasa")
 
         atom_volumes = morfeus_instance.atom_volumes
         num_atoms = len(atom_volumes)
 
-        atom_volumes = [(atom_volumes[i] if i <= num_atoms else 0) for i in range(self.max_index)]
+        atom_volumes = [(atom_volumes[i] if i <= num_atoms else 0) for i in range(1, self.max_index + 1)]
 
         return np.array(atom_volumes).reshape(1, -1)
 

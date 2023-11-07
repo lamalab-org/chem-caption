@@ -13,11 +13,11 @@ from chemcaption.featurize.adaptor import ValenceElectronCountAdaptor
 from chemcaption.featurize.base import MultipleFeaturizer
 from chemcaption.featurize.bonds import (
     BondOrderFeaturizer,
-    RotableBondCountFeaturizer,
-    RotableBondProportionFeaturizer,
     BondTypeCountFeaturizer,
     BondTypeProportionFeaturizer,
     DipoleMomentsFeaturizer,
+    RotableBondCountFeaturizer,
+    RotableBondProportionFeaturizer,
 )
 from chemcaption.featurize.composition import (
     AtomCountFeaturizer,

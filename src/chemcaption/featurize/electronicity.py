@@ -213,7 +213,7 @@ class ElectronAffinityFeaturizer(MorfeusFeaturizer):
         super().__init__(
             conformer_generation_kwargs=conformer_generation_kwargs,
             morfeus_kwargs=morfeus_kwargs,
-            qc_optimize=qc_optimize
+            qc_optimize=qc_optimize,
         )
 
         self._names = [

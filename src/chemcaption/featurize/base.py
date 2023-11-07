@@ -364,7 +364,7 @@ class MorfeusFeaturizer(AbstractFeaturizer):
 
         Args:
             molecule (Molecule): Molecular instance.
-            optimization_method (str): Method to be applied for geometric optimization. Defaults to `rdkit`.
+            optimization_method (str): Method to be applied for geometric optimization. Defaults to `GFN2-xTB`.
             procedure (str): QC engine optimization procedure. Defaults to `geometric`.
 
         Returns:
@@ -389,7 +389,7 @@ class MorfeusFeaturizer(AbstractFeaturizer):
 
         Args:
             molecule (Molecule): Molecular instance.
-            optimization_method (str): Method to be applied for geometric optimization. Defaults to `rdkit`.
+            optimization_method (str): Method to be applied for geometric optimization. Defaults to `GFN2-xTB`.
             procedure (str): QC engine optimization procedure. Defaults to `geometric`.
 
         Returns:
@@ -404,13 +404,13 @@ class MorfeusFeaturizer(AbstractFeaturizer):
         return conformer_ensemble
 
     def _optimize_geometry(
-        self, molecule: Molecule, optimization_method: str = "rdkit"
+        self, molecule: Molecule, optimization_method: str = "GFN2-xTB"
     ) -> ConformerEnsemble:
         """Generate conformers and optimize them in 3D space.
 
         Args:
             molecule (Molecule): Molecular instance.
-            optimization_method (str): Method to be applied for geometric optimization. Defaults to `rdkit`.
+            optimization_method (str): Method to be applied for geometric optimization. Defaults to `GFN2-xTB`.
 
         Returns:
             (ConformerEnsemble): An ensemble of generated conformers.
@@ -449,7 +449,7 @@ class MorfeusFeaturizer(AbstractFeaturizer):
 
         Args:
             molecule (Molecule): Molecular instance.
-            optimization_method (str): Method to be applied for geometric optimization. Defaults to `rdkit`.
+            optimization_method (str): Method to be applied for geometric optimization. Defaults to `GFN2-xTB`.
 
         Returns:
             (Molecule): Molecular instance.
