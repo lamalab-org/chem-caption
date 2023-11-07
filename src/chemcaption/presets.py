@@ -10,6 +10,9 @@ __all__ = [
     "WARHEADS",
     "ORGANIC",
     "SMARTS_MAP",
+    "ALLSMART_NAMES",
+    "ALLSMART_SMARTS",
+    "ALL_SMARTS",
 ]
 
 """Preset class."""
