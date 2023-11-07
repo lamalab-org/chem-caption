@@ -486,7 +486,9 @@ class AtomChargeFeaturizer(MorfeusFeaturizer):
         atom_charges = morfeus_instance.get_charges()
         num_atoms = len(atom_charges)
 
-        atom_areas = [(atom_charges[i] if i <= num_atoms else 0) for i in range(1, self.max_index + 1)]
+        atom_areas = [
+            (atom_charges[i] if i <= num_atoms else 0) for i in range(1, self.max_index + 1)
+        ]
 
         return np.array(atom_areas).reshape(1, -1)
 
@@ -577,7 +579,7 @@ class AtomNucleophilicityFeaturizer(MorfeusFeaturizer):
         num_atoms = len(nucleophilicity)
 
         atom_nucleophilicities = [
-            (nucleophilicity[i] if i <= num_atoms else 0) for i in range(1, self.max_index+1)
+            (nucleophilicity[i] if i <= num_atoms else 0) for i in range(1, self.max_index + 1)
         ]
 
         return np.array(atom_nucleophilicities).reshape(1, -1)
@@ -672,7 +674,7 @@ class AtomElectrophilicityFeaturizer(MorfeusFeaturizer):
         num_atoms = len(electrophilicity)
 
         atom_electrophilicities = [
-            (electrophilicity[i] if i <= num_atoms else 0) for i in range(1, self.max_index+1)
+            (electrophilicity[i] if i <= num_atoms else 0) for i in range(1, self.max_index + 1)
         ]
 
         return np.array(atom_electrophilicities).reshape(1, -1)

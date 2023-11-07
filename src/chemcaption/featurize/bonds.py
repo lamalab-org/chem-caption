@@ -478,10 +478,10 @@ class DipoleMomentsFeaturizer(MorfeusFeaturizer):
     """Return the dipole moments for a molecule."""
 
     def __init__(
-            self,
-            conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
-            morfeus_kwargs: Optional[Dict[str, Any]] = None,
-            max_index: Union[int, List[int]] = 2,
+        self,
+        conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
+        morfeus_kwargs: Optional[Dict[str, Any]] = None,
+        max_index: Union[int, List[int]] = 2,
     ):
         """Instantiate class.
 
@@ -603,7 +603,9 @@ class BondOrderFeaturizer(MorfeusFeaturizer):
 
         bond_orders = morfeus_instance.get_bond_orders(**self.morfeus_kwargs).flatten().tolist()
 
-        bond_orders = [(bond_orders[i - 1] if i <= self.max_index else 0) for i in range(self.max_index)]
+        bond_orders = [
+            (bond_orders[i - 1] if i <= self.max_index else 0) for i in range(self.max_index)
+        ]
 
         return np.array(bond_orders).reshape(1, -1)
 

@@ -186,7 +186,9 @@ class SolventAccessibleAtomAreaFeaturizer(MorfeusFeaturizer):
         atom_areas = morfeus_instance.atom_areas
         num_atoms = len(atom_areas)
 
-        atom_areas = [(atom_areas[i] if i <= num_atoms else 0) for i in range(1, self.max_index + 1)]
+        atom_areas = [
+            (atom_areas[i] if i <= num_atoms else 0) for i in range(1, self.max_index + 1)
+        ]
 
         return np.array(atom_areas).reshape(1, -1)
 

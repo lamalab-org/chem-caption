@@ -599,6 +599,8 @@ class AtomVolumeFeaturizer(MorfeusFeaturizer):
         Returns:
             (np.array): Array containing solvent accessible volumes for atoms in molecule instance.
         """
+        # molecule = self._generate_conformer(molecule=molecule)
+        molecule.rdkit_mol = self._get_conformer(molecule.reveal_hydrogens())
         morfeus_instance = self._get_morfeus_instance(molecule=molecule, morpheus_instance="sasa")
 
         atom_volumes = morfeus_instance.atom_volumes

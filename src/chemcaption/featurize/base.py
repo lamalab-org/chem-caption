@@ -12,6 +12,7 @@ import rdkit
 from colorama import Fore
 from frozendict import frozendict
 from morfeus import SASA, XTB
+from morfeus.conformer import ConformerEnsemble
 from rdkit import Chem
 from scipy.spatial import distance_matrix
 
@@ -241,7 +242,9 @@ class MorfeusFeaturizer(AbstractFeaturizer):
 
         return atom_indices, as_range
 
-    def fit_on_bond_counts(self, molecules: Union[List[Molecule], Tuple[Molecule], Molecule]) -> int:
+    def fit_on_bond_counts(
+        self, molecules: Union[List[Molecule], Tuple[Molecule], Molecule]
+    ) -> int:
         """Fit instance on molecule collection.
 
         Args:
@@ -347,6 +350,86 @@ class MorfeusFeaturizer(AbstractFeaturizer):
         elements, coordinates = self._get_element_coordinates(molecule)
 
         return SASA(elements, coordinates, **self.morfeus_kwargs)
+
+    def _optimize_molecule_geometry(
+        self,
+        molecule: Molecule,
+        optimization_method: str = "GFN2-xTB",
+        procedure: str = "geometric",
+    ) -> ConformerEnsemble:
+        """Generate conformers and optimize them in 3D space.
+
+        Args:
+            molecule (Molecule): Molecular instance.
+            optimization_method (str): Method to be applied for geometric optimization. Defaults to `rdkit`.
+            procedure (str): QC engine optimization procedure. Defaults to `geometric`.
+
+        Returns:
+            (ConformerEnsemble): An ensemble of generated conformers.
+        """
+        # Extract atoms and their corresponding coordinates
+        elements, coordinates = self._get_element_coordinates(molecule=molecule)
+        # Generate and optimize an ensemble of conformers
+        conformer_ensemble = ConformerEnsemble(elements=elements)
+        conformer_ensemble.optimize_qc_engine(
+            program="xtb", model={"method": optimization_method}, procedure=procedure
+        )
+        return conformer_ensemble
+
+    def _optimize_geometry(
+        self, molecule: Molecule, optimization_method: str = "rdkit"
+    ) -> ConformerEnsemble:
+        """Generate conformers and optimize them in 3D space.
+
+        Args:
+            molecule (Molecule): Molecular instance.
+            optimization_method (str): Method to be applied for geometric optimization. Defaults to `rdkit`.
+
+        Returns:
+            (ConformerEnsemble): An ensemble of generated conformers.
+        """
+        elements, coordinates = self._get_element_coordinates(molecule=molecule)
+        conformer_ensemble = ConformerEnsemble(elements=elements).prune_rmsd(
+            method=optimization_method
+        )
+        conformer_ensemble.sort()
+        return conformer_ensemble
+
+    def _generate_conformers(
+        self, molecule: Molecule, num_conformers: int = 1, optimization_method: str = "GFN2-xTB"
+    ) -> List[Chem.Mol]:
+        """Generate conformers and optimize them in 3D space.
+
+        Args:
+            molecule (Molecule): Molecular instance.
+            optimization_method (str): Method to be applied for geometric optimization. Defaults to `GFN2-xTB`.
+
+        Returns:
+            (List[Chem.Mol]): A list of generated conformers.
+        """
+        conformer_ensemble = self._optimize_molecule_geometry(
+            molecule=molecule, optimization_method=optimization_method
+        )
+        print("There are", len(conformer_ensemble.conformers), "conformers")
+        return conformer_ensemble.conformers[:num_conformers]
+
+    def _generate_conformer(
+        self, molecule: Molecule, optimization_method: str = "GFN2-xTB"
+    ) -> Molecule:
+        """Generate a single conformer.
+
+        Args:
+            molecule (Molecule): Molecular instance.
+            optimization_method (str): Method to be applied for geometric optimization. Defaults to `rdkit`.
+
+        Returns:
+            (Molecule): Molecular instance.
+        """
+        top_conformer = self._generate_conformers(
+            molecule=molecule, num_conformers=1, optimization_method=optimization_method
+        )
+        molecule.rdkit_mol = top_conformer[0]
+        return molecule
 
     def implementors(self) -> List[str]:
         """
