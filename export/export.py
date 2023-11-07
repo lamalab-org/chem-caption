@@ -13,11 +13,11 @@ from chemcaption.featurize.adaptor import ValenceElectronCountAdaptor
 from chemcaption.featurize.base import MultipleFeaturizer
 from chemcaption.featurize.bonds import (
     BondOrderFeaturizer,
-    BondRotabilityFeaturizer,
+    RotableBondCountFeaturizer,
+    RotableBondProportionFeaturizer,
     BondTypeCountFeaturizer,
     BondTypeProportionFeaturizer,
     DipoleMomentsFeaturizer,
-    RotableBondCountFeaturizer,
 )
 from chemcaption.featurize.composition import (
     AtomCountFeaturizer,
@@ -54,7 +54,7 @@ from chemcaption.featurize.spatial import (
     NPRFeaturizer,
     PMIFeaturizer,
 )
-from chemcaption.featurize.stereochemistry import NumChiralCentersFeaturizer
+from chemcaption.featurize.stereochemistry import ChiralCenterCountFeaturizer
 from chemcaption.featurize.substructure import SMARTSFeaturizer
 from chemcaption.molecules import InChIMolecule, SELFIESMolecule, SMILESMolecule
 from chemcaption.presets import ALL_SMARTS
@@ -72,7 +72,8 @@ FEATURIZER = MultipleFeaturizer(
     + [
         AtomCountFeaturizer(),
         ValenceElectronCountAdaptor(),
-        BondRotabilityFeaturizer(),
+        RotableBondCountFeaturizer(),
+        RotableBondProportionFeaturizer(),
         BondTypeCountFeaturizer(),
         BondTypeProportionFeaturizer(),
         BondOrderFeaturizer(),
@@ -104,7 +105,7 @@ FEATURIZER = MultipleFeaturizer(
         InertialShapeFactorFeaturizer(),
         NPRFeaturizer(),
         PMIFeaturizer(),
-        NumChiralCentersFeaturizer(),
+        ChiralCenterCountFeaturizer(),
     ]
 )
 
