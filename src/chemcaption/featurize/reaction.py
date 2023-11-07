@@ -53,7 +53,7 @@ class SolventAccessibleSurfaceAreaFeaturizer(MorfeusFeaturizer):
         Returns:
             (np.array): Array containing solvent accessible surface area (SASA) for molecule instance.
         """
-        morfeus_instance = self._get_morfeus_instance(molecule=molecule, morpheus_instance="xtb")
+        morfeus_instance = self._get_morfeus_instance(molecule=molecule, morpheus_instance="sasa")
         return np.array([morfeus_instance.area]).reshape(1, -1)
 
     def feature_labels(self) -> List[str]:
@@ -115,7 +115,7 @@ class SolventAccessibleVolumeFeaturizer(MorfeusFeaturizer):
         Returns:
             (np.array): Array containing solvent accessible volume for molecule instance.
         """
-        morfeus_instance = self._get_morfeus_instance(molecule=molecule, morpheus_instance="xtb")
+        morfeus_instance = self._get_morfeus_instance(molecule=molecule, morpheus_instance="sasa")
         return np.array([morfeus_instance.volume]).reshape(1, -1)
 
     def feature_labels(self) -> List[str]:
