@@ -177,12 +177,14 @@ class MorfeusFeaturizer(AbstractFeaturizer):
         self,
         conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
         morfeus_kwargs: Optional[Dict[str, Any]] = None,
+        qc_optimize: bool = False,
     ):
         """Instantiate class.
 
         Args:
             conformer_generation_kwargs (Optional[Dict[str, Any]]): Configuration for conformer generation.
             morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
+            qc_optimize (bool): Run QCEngine optimization harness. Defaults to `False`.
         """
         super().__init__()
         self._conf_gen_kwargs = (
@@ -191,6 +193,7 @@ class MorfeusFeaturizer(AbstractFeaturizer):
             else frozendict({})
         )
         self.morfeus_kwargs = frozendict(morfeus_kwargs) if morfeus_kwargs else frozendict({})
+        self.qc_optimize = qc_optimize
 
     def _get_conformer(self, mol: Chem.Mol) -> Chem.Mol:
         """Return conformer for molecule.
@@ -376,6 +379,30 @@ class MorfeusFeaturizer(AbstractFeaturizer):
         )
         return conformer_ensemble
 
+    def _optimize(
+        self,
+        molecule: Molecule,
+        optimization_method: str = "GFN2-xTB",
+        procedure: str = "geometric",
+    ) -> ConformerEnsemble:
+        """Generate conformers and optimize them in 3D space.
+
+        Args:
+            molecule (Molecule): Molecular instance.
+            optimization_method (str): Method to be applied for geometric optimization. Defaults to `rdkit`.
+            procedure (str): QC engine optimization procedure. Defaults to `geometric`.
+
+        Returns:
+            (ConformerEnsemble): An ensemble of generated conformers.
+        """
+        string = Chem.MolToSmiles(molecule.rdkit_mol)
+        # Generate and optimize an ensemble of conformers
+        conformer_ensemble = ConformerEnsemble.from_rdkit(string)
+        conformer_ensemble.optimize_qc_engine(
+            program="xtb", model={"method": optimization_method}, procedure=procedure
+        )
+        return conformer_ensemble
+
     def _optimize_geometry(
         self, molecule: Molecule, optimization_method: str = "rdkit"
     ) -> ConformerEnsemble:
@@ -402,14 +429,16 @@ class MorfeusFeaturizer(AbstractFeaturizer):
 
         Args:
             molecule (Molecule): Molecular instance.
+            num_conformers (int): Number of conformers to return after optimization.
             optimization_method (str): Method to be applied for geometric optimization. Defaults to `GFN2-xTB`.
 
         Returns:
             (List[Chem.Mol]): A list of generated conformers.
         """
-        conformer_ensemble = self._optimize_molecule_geometry(
+        conformer_ensemble = self._optimize(
             molecule=molecule, optimization_method=optimization_method
         )
+        conformer_ensemble.sort()  # Sort conformers based on energy levels
         print("There are", len(conformer_ensemble.conformers), "conformers")
         return conformer_ensemble.conformers[:num_conformers]
 

@@ -201,16 +201,19 @@ class ElectronAffinityFeaturizer(MorfeusFeaturizer):
         self,
         conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
         morfeus_kwargs: Optional[Dict[str, Any]] = None,
+        qc_optimize: bool = False,
     ):
         """Instantiate class.
 
         Args:
             conformer_generation_kwargs (Optional[Dict[str, Any]]): Configuration for conformer generation.
             morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
+            qc_optimize (bool): Run QCEngine optimization harness. Defaults to `False`.
         """
         super().__init__(
             conformer_generation_kwargs=conformer_generation_kwargs,
             morfeus_kwargs=morfeus_kwargs,
+            qc_optimize=qc_optimize
         )
 
         self._names = [
@@ -229,6 +232,8 @@ class ElectronAffinityFeaturizer(MorfeusFeaturizer):
         Returns:
             (np.array): Array containing electron affinity for molecule instance.
         """
+        if self.qc_optimize:
+            molecule = self._generate_conformer(molecule=molecule)
         xtb = self._get_morfeus_instance(molecule=molecule)
         return np.array([xtb.get_ea(**self.morfeus_kwargs)]).reshape(1, -1)
 
@@ -263,16 +268,19 @@ class IonizationPotentialFeaturizer(MorfeusFeaturizer):
         self,
         conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
         morfeus_kwargs: Optional[Dict[str, Any]] = None,
+        qc_optimize: bool = False,
     ):
         """Instantiate class.
 
         Args:
             conformer_generation_kwargs (Optional[Dict[str, Any]]): Configuration for conformer generation.
             morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
+            qc_optimize (bool): Run QCEngine optimization harness. Defaults to `False`.
         """
         super().__init__(
             conformer_generation_kwargs=conformer_generation_kwargs,
             morfeus_kwargs=morfeus_kwargs,
+            qc_optimize=qc_optimize,
         )
 
         self._names = [
@@ -291,6 +299,8 @@ class IonizationPotentialFeaturizer(MorfeusFeaturizer):
         Returns:
             (np.array): Array containing ionization potential for molecule instance.
         """
+        if self.qc_optimize:
+            molecule = self._generate_conformer(molecule=molecule)
         xtb = self._get_morfeus_instance(molecule=molecule)
         return np.array([xtb.get_ip(**self.morfeus_kwargs)]).reshape(1, -1)
 
@@ -325,16 +335,19 @@ class HOMOEnergyFeaturizer(MorfeusFeaturizer):
         self,
         conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
         morfeus_kwargs: Optional[Dict[str, Any]] = None,
+        qc_optimize: bool = False,
     ):
         """Instantiate class.
 
         Args:
             conformer_generation_kwargs (Optional[Dict[str, Any]]): Configuration for conformer generation.
             morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
+            qc_optimize (bool): Run QCEngine optimization harness. Defaults to `False`.
         """
         super().__init__(
             conformer_generation_kwargs=conformer_generation_kwargs,
             morfeus_kwargs=morfeus_kwargs,
+            qc_optimize=qc_optimize,
         )
 
         self._names = [
@@ -353,6 +366,9 @@ class HOMOEnergyFeaturizer(MorfeusFeaturizer):
         Returns:
             (np.array): Array containing energy of highest occupied molecular orbital for molecule instance.
         """
+        if self.qc_optimize:
+            molecule = self._generate_conformer(molecule=molecule)
+
         xtb = self._get_morfeus_instance(molecule=molecule)
         return np.array([xtb.get_homo()]).reshape(1, -1)
 
@@ -387,16 +403,19 @@ class LUMOEnergyFeaturizer(MorfeusFeaturizer):
         self,
         conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
         morfeus_kwargs: Optional[Dict[str, Any]] = None,
+        qc_optimize: bool = False,
     ):
         """Instantiate class.
 
         Args:
             conformer_generation_kwargs (Optional[Dict[str, Any]]): Configuration for conformer generation.
             morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
+            qc_optimize (bool): Run QCEngine optimization harness. Defaults to `False`.
         """
         super().__init__(
             conformer_generation_kwargs=conformer_generation_kwargs,
             morfeus_kwargs=morfeus_kwargs,
+            qc_optimize=qc_optimize,
         )
 
         self._names = [
@@ -415,6 +434,8 @@ class LUMOEnergyFeaturizer(MorfeusFeaturizer):
         Returns:
             (np.array): Array containing energy of lowest unoccupied molecular orbital for molecule instance.
         """
+        if self.qc_optimize:
+            molecule = self._generate_conformer(molecule=molecule)
         xtb = self._get_morfeus_instance(molecule=molecule)
         return np.array([xtb.get_lumo()]).reshape(1, -1)
 
@@ -449,6 +470,7 @@ class AtomChargeFeaturizer(MorfeusFeaturizer):
         self,
         conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
         morfeus_kwargs: Optional[Dict[str, Any]] = None,
+        qc_optimize: bool = False,
         max_index: Union[int, List[int]] = 2,
     ):
         """Instantiate class.
@@ -456,11 +478,13 @@ class AtomChargeFeaturizer(MorfeusFeaturizer):
         Args:
             conformer_generation_kwargs (Optional[Dict[str, Any]]): Configuration for conformer generation.
             morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
+            qc_optimize (bool): Run QCEngine optimization harness. Defaults to `False`.
             max_index (Union[int, List[int]]): Maximum number of atoms/bonds to consider for feature generation.
         """
         super().__init__(
             conformer_generation_kwargs=conformer_generation_kwargs,
             morfeus_kwargs=morfeus_kwargs,
+            qc_optimize=qc_optimize,
         )
 
         self._names = [
@@ -481,6 +505,9 @@ class AtomChargeFeaturizer(MorfeusFeaturizer):
         Returns:
             (np.array): Array containing charges for atoms in molecule instance.
         """
+        if self.qc_optimize:
+            molecule = self._generate_conformer(molecule=molecule)
+
         morfeus_instance = self._get_morfeus_instance(molecule=molecule, morpheus_instance="xtb")
 
         atom_charges = morfeus_instance.get_charges()
@@ -537,6 +564,7 @@ class AtomNucleophilicityFeaturizer(MorfeusFeaturizer):
         self,
         conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
         morfeus_kwargs: Optional[Dict[str, Any]] = None,
+        qc_optimize: bool = False,
         max_index: Union[int, List[int]] = 2,
         local: bool = False,
     ):
@@ -545,12 +573,14 @@ class AtomNucleophilicityFeaturizer(MorfeusFeaturizer):
         Args:
             conformer_generation_kwargs (Optional[Dict[str, Any]]): Configuration for conformer generation.
             morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
+            qc_optimize (bool): Run QCEngine optimization harness. Defaults to `False`.
             max_index (Union[int, List[int]]): Maximum number of atoms/bonds to consider for feature generation.
             local (bool): Calculate local descriptor or not. Defaults to `False`.
         """
         super().__init__(
             conformer_generation_kwargs=conformer_generation_kwargs,
             morfeus_kwargs=morfeus_kwargs,
+            qc_optimize=qc_optimize,
         )
 
         self._names = [
@@ -572,6 +602,9 @@ class AtomNucleophilicityFeaturizer(MorfeusFeaturizer):
         Returns:
             (np.array): Array containing nucleophilicity value for each atom in a molecule instance.
         """
+        if self.qc_optimize:
+            molecule = self._generate_conformer(molecule=molecule)
+
         morfeus_instance = self._get_morfeus_instance(molecule=molecule, morpheus_instance="xtb")
         descriptor = "local_nucleophilicity" if self.local else "nucleophilicity"
 
@@ -632,6 +665,7 @@ class AtomElectrophilicityFeaturizer(MorfeusFeaturizer):
         self,
         conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
         morfeus_kwargs: Optional[Dict[str, Any]] = None,
+        qc_optimize: bool = False,
         max_index: Union[int, List[int]] = 2,
         local: bool = False,
     ):
@@ -640,12 +674,14 @@ class AtomElectrophilicityFeaturizer(MorfeusFeaturizer):
         Args:
             conformer_generation_kwargs (Optional[Dict[str, Any]]): Configuration for conformer generation.
             morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
+            qc_optimize (bool): Run QCEngine optimization harness. Defaults to `False`.
             max_index (Union[int, List[int]]): Maximum number of atoms/bonds to consider for feature generation.
             local (bool): Calculate local descriptor or not. Defaults to `False`.
         """
         super().__init__(
             conformer_generation_kwargs=conformer_generation_kwargs,
             morfeus_kwargs=morfeus_kwargs,
+            qc_optimize=qc_optimize,
         )
 
         self._names = [
@@ -667,6 +703,9 @@ class AtomElectrophilicityFeaturizer(MorfeusFeaturizer):
         Returns:
             (np.array): Array containing electrophilicity value for each atom in a molecule instance.
         """
+        if self.qc_optimize:
+            molecule = self._generate_conformer(molecule=molecule)
+
         morfeus_instance = self._get_morfeus_instance(molecule=molecule, morpheus_instance="xtb")
         descriptor = "local_electrophilicity" if self.local else "electrophilicity"
 
@@ -727,16 +766,19 @@ class MoleculeNucleophilicityFeaturizer(MorfeusFeaturizer):
         self,
         conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
         morfeus_kwargs: Optional[Dict[str, Any]] = None,
+        qc_optimize: bool = False,
     ):
         """Instantiate class.
 
         Args:
             conformer_generation_kwargs (Optional[Dict[str, Any]]): Configuration for conformer generation.
             morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
+            qc_optimize (bool): Run QCEngine optimization harness. Defaults to `False`.
         """
         super().__init__(
             conformer_generation_kwargs=conformer_generation_kwargs,
             morfeus_kwargs=morfeus_kwargs,
+            qc_optimize=qc_optimize,
         )
 
         self._names = [
@@ -754,6 +796,9 @@ class MoleculeNucleophilicityFeaturizer(MorfeusFeaturizer):
         Returns:
             (np.array): Array containing global nucleophilicity value for the molecule instance.
         """
+        if self.qc_optimize:
+            molecule = self._generate_conformer(molecule=molecule)
+
         morfeus_instance = self._get_morfeus_instance(molecule=molecule, morpheus_instance="xtb")
 
         nucleophilicity = morfeus_instance.get_global_descriptor(
@@ -793,16 +838,19 @@ class MoleculeElectrophilicityFeaturizer(MorfeusFeaturizer):
         self,
         conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
         morfeus_kwargs: Optional[Dict[str, Any]] = None,
+        qc_optimize: bool = False,
     ):
         """Instantiate class.
 
         Args:
             conformer_generation_kwargs (Optional[Dict[str, Any]]): Configuration for conformer generation.
             morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
+            qc_optimize (bool): Run QCEngine optimization harness. Defaults to `False`.
         """
         super().__init__(
             conformer_generation_kwargs=conformer_generation_kwargs,
             morfeus_kwargs=morfeus_kwargs,
+            qc_optimize=qc_optimize,
         )
 
         self._names = [
@@ -820,6 +868,9 @@ class MoleculeElectrophilicityFeaturizer(MorfeusFeaturizer):
         Returns:
             (np.array): Array containing global electrophilicity value for the molecule instance.
         """
+        if self.qc_optimize:
+            molecule = self._generate_conformer(molecule=molecule)
+
         morfeus_instance = self._get_morfeus_instance(molecule=molecule, morpheus_instance="xtb")
 
         electrophilicity = morfeus_instance.get_global_descriptor(
@@ -859,16 +910,19 @@ class MoleculeNucleofugalityFeaturizer(MorfeusFeaturizer):
         self,
         conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
         morfeus_kwargs: Optional[Dict[str, Any]] = None,
+        qc_optimize: bool = False,
     ):
         """Instantiate class.
 
         Args:
             conformer_generation_kwargs (Optional[Dict[str, Any]]): Configuration for conformer generation.
             morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
+            qc_optimize (bool): Run QCEngine optimization harness. Defaults to `False`.
         """
         super().__init__(
             conformer_generation_kwargs=conformer_generation_kwargs,
             morfeus_kwargs=morfeus_kwargs,
+            qc_optimize=qc_optimize,
         )
 
         self._names = [
@@ -886,6 +940,9 @@ class MoleculeNucleofugalityFeaturizer(MorfeusFeaturizer):
         Returns:
             (np.array): Array containing global nucleofugality value for the molecule instance.
         """
+        if self.qc_optimize:
+            molecule = self._generate_conformer(molecule=molecule)
+
         morfeus_instance = self._get_morfeus_instance(molecule=molecule, morpheus_instance="xtb")
 
         nucleofugality = morfeus_instance.get_global_descriptor(
@@ -925,16 +982,19 @@ class MoleculeElectrofugalityFeaturizer(MorfeusFeaturizer):
         self,
         conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
         morfeus_kwargs: Optional[Dict[str, Any]] = None,
+        qc_optimize: bool = False,
     ):
         """Instantiate class.
 
         Args:
             conformer_generation_kwargs (Optional[Dict[str, Any]]): Configuration for conformer generation.
             morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
+            qc_optimize (bool): Run QCEngine optimization harness. Defaults to `False`.
         """
         super().__init__(
             conformer_generation_kwargs=conformer_generation_kwargs,
             morfeus_kwargs=morfeus_kwargs,
+            qc_optimize=qc_optimize,
         )
 
         self._names = [
@@ -952,6 +1012,9 @@ class MoleculeElectrofugalityFeaturizer(MorfeusFeaturizer):
         Returns:
             (np.array): Array containing global electrofugality value for the molecule instance.
         """
+        if self.qc_optimize:
+            molecule = self._generate_conformer(molecule=molecule)
+
         morfeus_instance = self._get_morfeus_instance(molecule=molecule, morpheus_instance="xtb")
 
         electrofugality = morfeus_instance.get_global_descriptor(

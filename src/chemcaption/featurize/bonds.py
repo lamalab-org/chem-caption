@@ -481,6 +481,7 @@ class DipoleMomentsFeaturizer(MorfeusFeaturizer):
         self,
         conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
         morfeus_kwargs: Optional[Dict[str, Any]] = None,
+        qc_optimize: bool = False,
         max_index: Union[int, List[int]] = 2,
     ):
         """Instantiate class.
@@ -488,11 +489,13 @@ class DipoleMomentsFeaturizer(MorfeusFeaturizer):
         Args:
             conformer_generation_kwargs (Optional[Dict[str, Any]]): Configuration for conformer generation.
             morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
+            qc_optimize (bool): Run QCEngine optimization harness. Defaults to `False`.
             max_index (Union[int, List[int]]): Maximum number of atoms/bonds to consider for feature generation.
         """
         super().__init__(
             conformer_generation_kwargs=conformer_generation_kwargs,
             morfeus_kwargs=morfeus_kwargs,
+            qc_optimize=qc_optimize,
         )
 
         self._names = [
@@ -513,6 +516,9 @@ class DipoleMomentsFeaturizer(MorfeusFeaturizer):
         Returns:
             (np.array): Array containing dipole moments for bonds in molecule instance.
         """
+        if self.qc_optimize:
+            molecule = self._generate_conformer(molecule=molecule)
+
         morfeus_instance = self._get_morfeus_instance(molecule=molecule, morpheus_instance="xtb")
 
         dipoles = morfeus_instance.get_dipole(**self.morfeus_kwargs).flatten().tolist()
@@ -567,6 +573,7 @@ class BondOrderFeaturizer(MorfeusFeaturizer):
         self,
         conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
         morfeus_kwargs: Optional[Dict[str, Any]] = None,
+        qc_optimize: bool = False,
         max_index: Union[int, List[int]] = 2,
     ):
         """Instantiate class.
@@ -574,11 +581,13 @@ class BondOrderFeaturizer(MorfeusFeaturizer):
         Args:
             conformer_generation_kwargs (Optional[Dict[str, Any]]): Configuration for conformer generation.
             morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
+            qc_optimize (bool): Run QCEngine optimization harness. Defaults to `False`.
             max_index (Union[int, List[int]]): Maximum number of atoms/bonds to consider for feature generation.
         """
         super().__init__(
             conformer_generation_kwargs=conformer_generation_kwargs,
             morfeus_kwargs=morfeus_kwargs,
+            qc_optimize=qc_optimize,
         )
 
         self._names = [
@@ -599,6 +608,9 @@ class BondOrderFeaturizer(MorfeusFeaturizer):
         Returns:
             (np.array): Array containing bond orders for bonds in molecule instance.
         """
+        if self.qc_optimize:
+            molecule = self._generate_conformer(molecule=molecule)
+        
         morfeus_instance = self._get_morfeus_instance(molecule=molecule, morpheus_instance="xtb")
 
         bond_orders = morfeus_instance.get_bond_orders(**self.morfeus_kwargs).flatten().tolist()

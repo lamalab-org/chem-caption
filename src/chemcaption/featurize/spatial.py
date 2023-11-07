@@ -568,6 +568,7 @@ class AtomVolumeFeaturizer(MorfeusFeaturizer):
         self,
         conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
         morfeus_kwargs: Optional[Dict[str, Any]] = None,
+        qc_optimize: bool = False,
         max_index: Union[int, List[int]] = 2,
     ):
         """Instantiate class.
@@ -575,11 +576,13 @@ class AtomVolumeFeaturizer(MorfeusFeaturizer):
         Args:
             conformer_generation_kwargs (Optional[Dict[str, Any]]): Configuration for conformer generation.
             morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
+            qc_optimize (bool): Run QCEngine optimization harness. Defaults to `False`.
             max_index (Union[int, List[int]]): Maximum number of atoms/bonds to consider for feature generation.
         """
         super().__init__(
             conformer_generation_kwargs=conformer_generation_kwargs,
             morfeus_kwargs=morfeus_kwargs,
+            qc_optimize=qc_optimize
         )
 
         self._names = [
@@ -599,8 +602,8 @@ class AtomVolumeFeaturizer(MorfeusFeaturizer):
         Returns:
             (np.array): Array containing solvent accessible volumes for atoms in molecule instance.
         """
-        # molecule = self._generate_conformer(molecule=molecule)
-        molecule.rdkit_mol = self._get_conformer(molecule.reveal_hydrogens())
+        if self.qc_optimize:
+            molecule = self._generate_conformer(molecule=molecule)
         morfeus_instance = self._get_morfeus_instance(molecule=molecule, morpheus_instance="sasa")
 
         atom_volumes = morfeus_instance.atom_volumes
