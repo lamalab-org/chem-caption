@@ -25,16 +25,19 @@ class SolventAccessibleSurfaceAreaFeaturizer(MorfeusFeaturizer):
         self,
         conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
         morfeus_kwargs: Optional[Dict[str, Any]] = None,
+        qc_optimize: bool = False,
     ):
         """Instantiate class.
 
         Args:
             conformer_generation_kwargs (Optional[Dict[str, Any]]): Configuration for conformer generation.
             morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
+            qc_optimize (bool): Run QCEngine optimization harness. Defaults to `False`.
         """
         super().__init__(
             conformer_generation_kwargs=conformer_generation_kwargs,
             morfeus_kwargs=morfeus_kwargs,
+            qc_optimize=qc_optimize,
         )
 
         self._names = [
@@ -53,6 +56,8 @@ class SolventAccessibleSurfaceAreaFeaturizer(MorfeusFeaturizer):
         Returns:
             (np.array): Array containing solvent accessible surface area (SASA) for molecule instance.
         """
+        if self.qc_optimize:
+            molecule = self._generate_conformer(molecule=molecule)
         morfeus_instance = self._get_morfeus_instance(molecule=molecule, morpheus_instance="sasa")
         return np.array([morfeus_instance.area]).reshape(1, -1)
 
@@ -87,16 +92,19 @@ class SolventAccessibleVolumeFeaturizer(MorfeusFeaturizer):
         self,
         conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
         morfeus_kwargs: Optional[Dict[str, Any]] = None,
+        qc_optimize: bool = False,
     ):
         """Instantiate class.
 
         Args:
             conformer_generation_kwargs (Optional[Dict[str, Any]]): Configuration for conformer generation.
             morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
+            qc_optimize (bool): Run QCEngine optimization harness. Defaults to `False`.
         """
         super().__init__(
             conformer_generation_kwargs=conformer_generation_kwargs,
             morfeus_kwargs=morfeus_kwargs,
+            qc_optimize=qc_optimize,
         )
 
         self._names = [
@@ -115,6 +123,8 @@ class SolventAccessibleVolumeFeaturizer(MorfeusFeaturizer):
         Returns:
             (np.array): Array containing solvent accessible volume for molecule instance.
         """
+        if self.qc_optimize:
+            molecule = self._generate_conformer(molecule=molecule)
         morfeus_instance = self._get_morfeus_instance(molecule=molecule, morpheus_instance="sasa")
         return np.array([morfeus_instance.volume]).reshape(1, -1)
 
@@ -149,6 +159,7 @@ class SolventAccessibleAtomAreaFeaturizer(MorfeusFeaturizer):
         self,
         conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
         morfeus_kwargs: Optional[Dict[str, Any]] = None,
+        qc_optimize: bool = False,
         max_index: Union[int, List[int]] = 2,
     ):
         """Instantiate class.
@@ -156,11 +167,13 @@ class SolventAccessibleAtomAreaFeaturizer(MorfeusFeaturizer):
         Args:
             conformer_generation_kwargs (Optional[Dict[str, Any]]): Configuration for conformer generation.
             morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
+            qc_optimize (bool): Run QCEngine optimization harness. Defaults to `False`.
             max_index (Union[int, List[int]]): Maximum number of atoms/bonds to consider for feature generation.
         """
         super().__init__(
             conformer_generation_kwargs=conformer_generation_kwargs,
             morfeus_kwargs=morfeus_kwargs,
+            qc_optimize=qc_optimize,
         )
 
         self._names = [
@@ -181,6 +194,9 @@ class SolventAccessibleAtomAreaFeaturizer(MorfeusFeaturizer):
         Returns:
             (np.array): Array containing solvent accessible atom area for atoms in molecule instance.
         """
+        if self.qc_optimize:
+            molecule = self._generate_conformer(molecule=molecule)
+
         morfeus_instance = self._get_morfeus_instance(molecule=molecule, morpheus_instance="sasa")
 
         atom_areas = morfeus_instance.atom_areas
