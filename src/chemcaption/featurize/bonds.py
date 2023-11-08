@@ -482,7 +482,7 @@ class DipoleMomentsFeaturizer(MorfeusFeaturizer):
         conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
         morfeus_kwargs: Optional[Dict[str, Any]] = None,
         qc_optimize: bool = False,
-        max_index: Union[int, List[int]] = 2,
+        max_index: Optional[int] = None,
     ):
         """Instantiate class.
 
@@ -490,7 +490,7 @@ class DipoleMomentsFeaturizer(MorfeusFeaturizer):
             conformer_generation_kwargs (Optional[Dict[str, Any]]): Configuration for conformer generation.
             morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
             qc_optimize (bool): Run QCEngine optimization harness. Defaults to `False`.
-            max_index (Union[int, List[int]]): Maximum number of atoms/bonds to consider for feature generation.
+            max_index (Optional[int]): Maximum number of atoms/bonds to consider for feature generation.
         """
         super().__init__(
             conformer_generation_kwargs=conformer_generation_kwargs,
@@ -574,7 +574,7 @@ class BondOrderFeaturizer(MorfeusFeaturizer):
         conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
         morfeus_kwargs: Optional[Dict[str, Any]] = None,
         qc_optimize: bool = False,
-        max_index: Union[int, List[int]] = 2,
+        max_index: Optional[int] = None,
     ):
         """Instantiate class.
 
@@ -582,7 +582,7 @@ class BondOrderFeaturizer(MorfeusFeaturizer):
             conformer_generation_kwargs (Optional[Dict[str, Any]]): Configuration for conformer generation.
             morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
             qc_optimize (bool): Run QCEngine optimization harness. Defaults to `False`.
-            max_index (Union[int, List[int]]): Maximum number of atoms/bonds to consider for feature generation.
+            max_index (Optional[int]): Maximum number of atoms/bonds to consider for feature generation.
         """
         super().__init__(
             conformer_generation_kwargs=conformer_generation_kwargs,

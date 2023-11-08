@@ -471,7 +471,7 @@ class AtomChargeFeaturizer(MorfeusFeaturizer):
         conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
         morfeus_kwargs: Optional[Dict[str, Any]] = None,
         qc_optimize: bool = False,
-        max_index: Union[int, List[int]] = 2,
+        max_index: Optional[int] = None,
     ):
         """Instantiate class.
 
@@ -479,7 +479,7 @@ class AtomChargeFeaturizer(MorfeusFeaturizer):
             conformer_generation_kwargs (Optional[Dict[str, Any]]): Configuration for conformer generation.
             morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
             qc_optimize (bool): Run QCEngine optimization harness. Defaults to `False`.
-            max_index (Union[int, List[int]]): Maximum number of atoms/bonds to consider for feature generation.
+            max_index (Optional[int]): Maximum number of atoms/bonds to consider for feature generation.
         """
         super().__init__(
             conformer_generation_kwargs=conformer_generation_kwargs,
@@ -512,6 +512,9 @@ class AtomChargeFeaturizer(MorfeusFeaturizer):
 
         atom_charges = morfeus_instance.get_charges()
         num_atoms = len(atom_charges)
+
+        if self.max_index is None:
+            self.max_index = self.fit_on_atom_counts(molecules=molecule)
 
         atom_areas = [
             (atom_charges[i] if i <= num_atoms else 0) for i in range(1, self.max_index + 1)
@@ -565,7 +568,7 @@ class AtomNucleophilicityFeaturizer(MorfeusFeaturizer):
         conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
         morfeus_kwargs: Optional[Dict[str, Any]] = None,
         qc_optimize: bool = False,
-        max_index: Union[int, List[int]] = 2,
+        max_index: Optional[int] = None,
         local: bool = False,
     ):
         """Instantiate class.
@@ -574,7 +577,7 @@ class AtomNucleophilicityFeaturizer(MorfeusFeaturizer):
             conformer_generation_kwargs (Optional[Dict[str, Any]]): Configuration for conformer generation.
             morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
             qc_optimize (bool): Run QCEngine optimization harness. Defaults to `False`.
-            max_index (Union[int, List[int]]): Maximum number of atoms/bonds to consider for feature generation.
+            max_index (Optional[int]): Maximum number of atoms/bonds to consider for feature generation.
             local (bool): Calculate local descriptor or not. Defaults to `False`.
         """
         super().__init__(
@@ -610,6 +613,9 @@ class AtomNucleophilicityFeaturizer(MorfeusFeaturizer):
 
         nucleophilicity = morfeus_instance.get_fukui(descriptor)
         num_atoms = len(nucleophilicity)
+
+        if self.max_index is None:
+            self.max_index = self.fit_on_atom_counts(molecules=molecule)
 
         atom_nucleophilicities = [
             (nucleophilicity[i] if i <= num_atoms else 0) for i in range(1, self.max_index + 1)
@@ -666,7 +672,7 @@ class AtomElectrophilicityFeaturizer(MorfeusFeaturizer):
         conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
         morfeus_kwargs: Optional[Dict[str, Any]] = None,
         qc_optimize: bool = False,
-        max_index: Union[int, List[int]] = 2,
+        max_index: Optional[int] = None,
         local: bool = False,
     ):
         """Instantiate class.
@@ -675,7 +681,7 @@ class AtomElectrophilicityFeaturizer(MorfeusFeaturizer):
             conformer_generation_kwargs (Optional[Dict[str, Any]]): Configuration for conformer generation.
             morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
             qc_optimize (bool): Run QCEngine optimization harness. Defaults to `False`.
-            max_index (Union[int, List[int]]): Maximum number of atoms/bonds to consider for feature generation.
+            max_index (Optional[int]): Maximum number of atoms/bonds to consider for feature generation.
             local (bool): Calculate local descriptor or not. Defaults to `False`.
         """
         super().__init__(
@@ -708,6 +714,9 @@ class AtomElectrophilicityFeaturizer(MorfeusFeaturizer):
 
         morfeus_instance = self._get_morfeus_instance(molecule=molecule, morpheus_instance="xtb")
         descriptor = "local_electrophilicity" if self.local else "electrophilicity"
+
+        if self.max_index is None:
+            self.max_index = self.fit_on_atom_counts(molecules=molecule)
 
         electrophilicity = morfeus_instance.get_fukui(descriptor)
         num_atoms = len(electrophilicity)

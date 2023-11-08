@@ -160,7 +160,7 @@ class SolventAccessibleAtomAreaFeaturizer(MorfeusFeaturizer):
         conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
         morfeus_kwargs: Optional[Dict[str, Any]] = None,
         qc_optimize: bool = False,
-        max_index: Union[int, List[int]] = 2,
+        max_index: Optional[int] = None,
     ):
         """Instantiate class.
 
@@ -168,7 +168,7 @@ class SolventAccessibleAtomAreaFeaturizer(MorfeusFeaturizer):
             conformer_generation_kwargs (Optional[Dict[str, Any]]): Configuration for conformer generation.
             morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
             qc_optimize (bool): Run QCEngine optimization harness. Defaults to `False`.
-            max_index (Union[int, List[int]]): Maximum number of atoms/bonds to consider for feature generation.
+            max_index (Optional[int]): Maximum number of atoms/bonds to consider for feature generation.
         """
         super().__init__(
             conformer_generation_kwargs=conformer_generation_kwargs,
@@ -201,6 +201,9 @@ class SolventAccessibleAtomAreaFeaturizer(MorfeusFeaturizer):
 
         atom_areas = morfeus_instance.atom_areas
         num_atoms = len(atom_areas)
+
+        if self.max_index is None:
+            self.max_index = self.fit_on_atom_counts(molecules=molecule)
 
         atom_areas = [
             (atom_areas[i] if i <= num_atoms else 0) for i in range(1, self.max_index + 1)

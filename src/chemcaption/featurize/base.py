@@ -12,7 +12,7 @@ import rdkit
 from colorama import Fore
 from frozendict import frozendict
 from morfeus import SASA, XTB
-from morfeus.conformer import ConformerEnsemble
+from morfeus.conformer import Conformer, ConformerEnsemble
 from rdkit import Chem
 from scipy.spatial import distance_matrix
 
@@ -121,8 +121,7 @@ class AbstractFeaturizer(ABC):
         """Embed features in Prompt instance for multiple molecules.
 
         Args:
-            molecules (Sequence[Molecule]):
-                A sequence of molecule representations.
+            molecules (List[Molecule]): A list of molecule representations.
 
         Returns:
             (List[Prompt]): List of Prompt instances containing relevant information extracted from each
@@ -359,6 +358,7 @@ class MorfeusFeaturizer(AbstractFeaturizer):
         molecule: Molecule,
         optimization_method: str = "GFN2-xTB",
         procedure: str = "geometric",
+        rmsd_method: str = "spyrmsd",
     ) -> ConformerEnsemble:
         """Generate conformers and optimize them in 3D space.
 
@@ -366,31 +366,7 @@ class MorfeusFeaturizer(AbstractFeaturizer):
             molecule (Molecule): Molecular instance.
             optimization_method (str): Method to be applied for geometric optimization. Defaults to `GFN2-xTB`.
             procedure (str): QC engine optimization procedure. Defaults to `geometric`.
-
-        Returns:
-            (ConformerEnsemble): An ensemble of generated conformers.
-        """
-        # Extract atoms and their corresponding coordinates
-        elements, coordinates = self._get_element_coordinates(molecule=molecule)
-        # Generate and optimize an ensemble of conformers
-        conformer_ensemble = ConformerEnsemble(elements=elements)
-        conformer_ensemble.optimize_qc_engine(
-            program="xtb", model={"method": optimization_method}, procedure=procedure
-        )
-        return conformer_ensemble
-
-    def _optimize(
-        self,
-        molecule: Molecule,
-        optimization_method: str = "GFN2-xTB",
-        procedure: str = "geometric",
-    ) -> ConformerEnsemble:
-        """Generate conformers and optimize them in 3D space.
-
-        Args:
-            molecule (Molecule): Molecular instance.
-            optimization_method (str): Method to be applied for geometric optimization. Defaults to `GFN2-xTB`.
-            procedure (str): QC engine optimization procedure. Defaults to `geometric`.
+            rmsd_method (str): Base method for conformer pruning w.r.t RMSD property.
 
         Returns:
             (ConformerEnsemble): An ensemble of generated conformers.
@@ -401,63 +377,90 @@ class MorfeusFeaturizer(AbstractFeaturizer):
         conformer_ensemble.optimize_qc_engine(
             program="xtb", model={"method": optimization_method}, procedure=procedure
         )
-        return conformer_ensemble
-
-    def _optimize_geometry(
-        self, molecule: Molecule, optimization_method: str = "GFN2-xTB"
-    ) -> ConformerEnsemble:
-        """Generate conformers and optimize them in 3D space.
-
-        Args:
-            molecule (Molecule): Molecular instance.
-            optimization_method (str): Method to be applied for geometric optimization. Defaults to `GFN2-xTB`.
-
-        Returns:
-            (ConformerEnsemble): An ensemble of generated conformers.
-        """
-        elements, coordinates = self._get_element_coordinates(molecule=molecule)
-        conformer_ensemble = ConformerEnsemble(elements=elements).prune_rmsd(
-            method=optimization_method
-        )
+        conformer_ensemble = conformer_ensemble.prune_rmsd(method=rmsd_method)
         conformer_ensemble.sort()
-        return conformer_ensemble
+        return conformer_ensemble.update_mol()
 
     def _generate_conformers(
-        self, molecule: Molecule, num_conformers: int = 1, optimization_method: str = "GFN2-xTB"
-    ) -> List[Chem.Mol]:
+        self,
+        molecule: Molecule,
+        num_conformers: int = 1,
+        optimization_method: str = "GFN2-xTB",
+        procedure: str = "geometric",
+        rmsd_method: str = "spyrmsd",
+    ) -> List[Conformer]:
         """Generate conformers and optimize them in 3D space.
 
         Args:
             molecule (Molecule): Molecular instance.
             num_conformers (int): Number of conformers to return after optimization.
             optimization_method (str): Method to be applied for geometric optimization. Defaults to `GFN2-xTB`.
+            procedure (str): QC engine optimization procedure. Defaults to `geometric`.
+            rmsd_method (str): Base method for conformer pruning w.r.t RMSD property.
 
         Returns:
             (List[Chem.Mol]): A list of generated conformers.
         """
-        conformer_ensemble = self._optimize(
-            molecule=molecule, optimization_method=optimization_method
+        conformer_ensemble = self._optimize_molecule_geometry(
+            molecule=molecule,
+            optimization_method=optimization_method,
+            procedure=procedure,
+            rmsd_method=rmsd_method,
         )
         conformer_ensemble.sort()  # Sort conformers based on energy levels
         print("There are", len(conformer_ensemble.conformers), "conformers")
         return conformer_ensemble.conformers[:num_conformers]
 
     def _generate_conformer(
-        self, molecule: Molecule, optimization_method: str = "GFN2-xTB"
+        self,
+        molecule: Molecule,
+        optimization_method: str = "GFN2-xTB",
+        procedure: str = "geometric",
+        rmsd_method: str = "spyrmsd",
     ) -> Molecule:
         """Generate a single conformer.
 
         Args:
             molecule (Molecule): Molecular instance.
             optimization_method (str): Method to be applied for geometric optimization. Defaults to `GFN2-xTB`.
+            procedure (str): QC engine optimization procedure. Defaults to `geometric`.
+            rmsd_method (str): Base method for conformer pruning w.r.t RMSD property.
 
         Returns:
             (Molecule): Molecular instance.
         """
-        top_conformer = self._generate_conformers(
-            molecule=molecule, num_conformers=1, optimization_method=optimization_method
+        conformer_ensemble = self._optimize_molecule_geometry(
+            molecule=molecule,
+            optimization_method=optimization_method,
+            procedure=procedure,
+            rmsd_method=rmsd_method,
         )
-        molecule.rdkit_mol = top_conformer[0]
+
+        print(f"{len(conformer_ensemble.conformers)} conformer(s) generated!")
+
+        try:
+            molecule.rdkit_mol = conformer_ensemble.mol
+        except:
+            print(
+                Fore.RED
+                + "Wholescale conformer embedding failed. Embedding conformers individually...\n"
+                + Fore.RESET
+            )
+            molecule.rdkit_mol = molecule.reveal_hydrogens()
+
+            num_embedded = 0
+            conformers = list(conformer_ensemble.mol.GetConformers())
+
+            for conf in conformers:
+                try:
+                    molecule.rdkit_mol.AddConformer(conf)
+                    num_embedded += 1
+                except:
+                    pass
+
+            message = f"{num_embedded}/{len(conformers)} conformers embedded successfully!\n"
+            print(message + "=" * 70 + "\n")
+
         return molecule
 
     def implementors(self) -> List[str]:
