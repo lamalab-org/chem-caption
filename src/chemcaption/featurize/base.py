@@ -86,8 +86,12 @@ class AbstractFeaturizer(ABC):
         Returns:
             Prompt: Instance of Prompt containing relevant information extracted from `molecule`.
         """
-        completion = self.featurize(molecule=molecule).flatten().tolist()
-        if set(completion) == {0, 1}:
+        completion = self.featurize(molecule=molecule)
+        dtype = completion.dtype
+
+        completion = completion.flatten().tolist()
+
+        if set(completion) == {0, 1} and dtype == "int":
             mapper = {
                 0: False,
                 1: True,

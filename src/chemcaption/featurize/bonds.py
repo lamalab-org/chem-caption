@@ -240,7 +240,7 @@ class BondTypeCountFeaturizer(AbstractFeaturizer):
         """
         all_bonds = self._get_bonds(molecule)
 
-        bond_types, index = self._get_bond_types(), 0 if not bool(self.prefix) else 1
+        bond_types, index = self._get_bond_types(), 1 if self.count else 0
 
         num_bonds = [
             all_bonds.count(bond_type.split("_")[index].upper())
@@ -523,7 +523,6 @@ class BondTypeProportionFeaturizer(BondTypeCountFeaturizer):
             if "ALL" in self.bond_type
             else len(self._get_bonds(molecule=molecule))
         )
-        print(num_bonds)
 
         bond_proportion = [count / total_bond_count for count in num_bonds]
 
