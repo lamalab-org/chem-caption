@@ -329,6 +329,15 @@ class ElementMassProportionFeaturizer(ElementMassFeaturizer):
         return [{"noun": "mass proportion of " + join_list_elements(self.preset)}]
 
     def feature_labels(self) -> List[str]:
+        """
+        Return list of feature labels.
+
+        Args:
+            None.
+
+        Returns:
+            List[str]: List of feature labels.
+        """
         return [self.prefix + element.lower() + self.suffix for element in self.preset]
 
     def featurize(self, molecule: Molecule) -> np.array:
@@ -343,18 +352,6 @@ class ElementMassProportionFeaturizer(ElementMassFeaturizer):
         """
         molar_mass = Descriptors.MolWt(molecule.rdkit_mol)
         return np.array(self._get_profile(molecule=molecule)).reshape((1, -1)) / molar_mass
-
-    def feature_labels(self) -> List[str]:
-        """
-        Return list of feature labels.
-
-        Args:
-            None.
-
-        Returns:
-            List[str]: List of feature labels.
-        """
-        return self.label
 
     def implementors(self) -> List[str]:
         """

@@ -39,19 +39,26 @@ def get_repetitive_labels(
                     repetitive_labels[label]["count"] += 1
                     repetitive_labels[label]["appearance"].append(f.__class__.__name__)
 
-    return {k: v for k, v in repetitive_labels.items() if v["count"] > 1}, all_labels
+    return {key: value for key, value in repetitive_labels.items() if value["count"] > 1}, all_labels
 
 
 if __name__ == "__main__":
     repetitive_labels, all_labels = get_repetitive_labels(FEATURIZER)
 
     print("Diagnostics:")
-    print("=" * 20)
+    print("=" * 50)
+    print("Number of featurizers implemented:", len(FEATURIZER.featurizers))
+    print("=" * 50)
     print("Number of labels:", len(all_labels))
     print("Number of repeated labels:", len(repetitive_labels))
     print("Number of unique labels:", len(set(all_labels)))
 
     if len(repetitive_labels) == 0:
+        print("=" * 50)
+        print("All detected labels:\n")
+
+        for i, label in enumerate(all_labels, 1):
+            print(f"{i:.3g}.", label)
         exit()
 
     for k, v in repetitive_labels.items():

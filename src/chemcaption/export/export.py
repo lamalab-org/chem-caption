@@ -1,3 +1,8 @@
+# -*- coding: utf-8 -*-
+
+"""Export script."""
+
+# Utility import
 from pathlib import Path
 from typing import Union
 
@@ -12,32 +17,48 @@ from selfies import encoder
 from chemcaption.featurize.adaptor import ValenceElectronCountAdaptor
 from chemcaption.featurize.base import MultipleFeaturizer
 from chemcaption.featurize.bonds import (
-    RotableBondCountFeaturizer,
-    RotableBondProportionFeaturizer,
     BondTypeCountFeaturizer,
     BondTypeProportionFeaturizer,
+    RotableBondCountFeaturizer,
+    RotableBondProportionFeaturizer,
 )
 from chemcaption.featurize.composition import (
+    AtomCountFeaturizer,
+    DegreeOfUnsaturationFeaturizer,
     ElementCountFeaturizer,
+    ElementCountProportionFeaturizer,
     ElementMassFeaturizer,
     ElementMassProportionFeaturizer,
     MolecularFormulaFeaturizer,
+    MolecularMassFeaturizer,
     MonoisotopicMolecularMassFeaturizer,
 )
 from chemcaption.featurize.electronicity import (
     HydrogenAcceptorCountFeaturizer,
     HydrogenDonorCountFeaturizer,
 )
-from chemcaption.featurize.rules import LipinskiViolationCountFeaturizer
+from chemcaption.featurize.misc import SVGFeaturizer
+from chemcaption.featurize.rules import (
+    GhoseFilterFeaturizer,
+    LeadLikenessFilterFeaturizer,
+    LipinskiViolationCountFeaturizer,
+)
 from chemcaption.featurize.spatial import (
     AsphericityFeaturizer,
     EccentricityFeaturizer,
     InertialShapeFactorFeaturizer,
     NPRFeaturizer,
     PMIFeaturizer,
+    RadiusOfGyrationFeaturizer,
+    SpherocityIndexFeaturizer,
 )
 from chemcaption.featurize.stereochemistry import ChiralCenterCountFeaturizer
-from chemcaption.featurize.substructure import SMARTSFeaturizer
+from chemcaption.featurize.substructure import (
+    IsomorphismFeaturizer,
+    SMARTSFeaturizer,
+    TopologyCountFeaturizer,
+)
+from chemcaption.featurize.symmetry import PointGroupFeaturizer, RotationalSymmetryNumberFeaturizer
 from chemcaption.molecules import InChIMolecule, SELFIESMolecule, SMILESMolecule
 from chemcaption.presets import ALL_SMARTS
 
@@ -57,20 +78,33 @@ FEATURIZER = MultipleFeaturizer(
         RotableBondProportionFeaturizer(),
         BondTypeCountFeaturizer(),
         BondTypeProportionFeaturizer(),
+        DegreeOfUnsaturationFeaturizer(),
         MolecularFormulaFeaturizer(),
         MonoisotopicMolecularMassFeaturizer(),
+        AtomCountFeaturizer(),
+        MolecularMassFeaturizer(),
         ElementMassFeaturizer(),
         ElementCountFeaturizer(),
         ElementMassProportionFeaturizer(),
+        ElementCountProportionFeaturizer(),
         HydrogenAcceptorCountFeaturizer(),
         HydrogenDonorCountFeaturizer(),
         LipinskiViolationCountFeaturizer(),
+        GhoseFilterFeaturizer(),
+        LeadLikenessFilterFeaturizer(),
         EccentricityFeaturizer(),
         AsphericityFeaturizer(),
         InertialShapeFactorFeaturizer(),
         NPRFeaturizer(),
         PMIFeaturizer(),
+        SpherocityIndexFeaturizer(),
+        RadiusOfGyrationFeaturizer(),
         ChiralCenterCountFeaturizer(),
+        TopologyCountFeaturizer(reference_atomic_numbers=[6, 8]),
+        IsomorphismFeaturizer(),
+        PointGroupFeaturizer(),
+        RotationalSymmetryNumberFeaturizer(),
+        SVGFeaturizer(),
     ]
 )
 

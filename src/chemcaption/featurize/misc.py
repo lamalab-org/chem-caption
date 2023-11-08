@@ -97,6 +97,18 @@ class SVGFeaturizer(AbstractFeaturizer):
         """
         return np.array([self._mol_to_svg(molecule=molecule)]).reshape(1, 1)
 
+    def feature_labels(self) -> List[str]:
+        """
+        Return list of feature labels.
+
+        Args:
+            None.
+
+        Returns:
+            List[str]: List of feature labels.
+        """
+        return ["svg_string"]
+
     def implementors(self) -> List[str]:
         """
         Return list of functionality implementors.
