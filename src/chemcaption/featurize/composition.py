@@ -98,7 +98,7 @@ class MolecularMassFeaturizer(AbstractFeaturizer):
             molecule (Molecule): Molecular representation.
 
         Returns:
-            molar_mass (float): Molecular mass of `molecule`.
+            float: Molecular mass of `molecule`.
         """
         molar_mass = Descriptors.MolWt(molecule.rdkit_mol)
         return np.array([molar_mass]).reshape((1, -1))
@@ -146,7 +146,7 @@ class MonoisotopicMolecularMassFeaturizer(AbstractFeaturizer):
             molecule (Molecule): Molecular representation.
 
         Returns:
-            molar_mass (float): Monoisotopic molecular mass of `molecule`.
+            float: Monoisotopic molecular mass of `molecule`.
         """
         monoisotopic_molar_mass = Descriptors.ExactMolWt(molecule.rdkit_mol)
         return np.array([monoisotopic_molar_mass]).reshape((1, -1))
@@ -221,7 +221,7 @@ class ElementMassFeaturizer(AbstractFeaturizer):
             molecules (Union[Molecule, List[Molecule]]): Sequence of molecular instances.
 
         Returns:
-            self (ElementMassFeaturizer): Instance of self with updated state.
+            ElementMassFeaturizer: Instance of self with updated state.
         """
         if isinstance(molecules, list):
             unique_elements = set()
@@ -244,7 +244,7 @@ class ElementMassFeaturizer(AbstractFeaturizer):
             molecule (Molecule): Molecular representation.
 
         Returns:
-            element_mass (float): Total mass accounted for by `element`` in `molecule`.
+            float: Total mass accounted for by `element` in `molecule`.
         """
         if len(element) > 2:
             element_mass = [
@@ -267,7 +267,7 @@ class ElementMassFeaturizer(AbstractFeaturizer):
             molecule (Molecule): Molecular representation instance.
 
         Returns:
-            element_masses (List[float]): List of elemental masses.
+            List[float]: List of elemental masses.
         """
         element_masses = [
             self._get_element_mass(element=element, molecule=molecule) for element in self.preset
@@ -283,7 +283,7 @@ class ElementMassFeaturizer(AbstractFeaturizer):
             molecule (Molecule): Molecular representation.
 
         Returns:
-            unique_elements (List[str]): Unique list of element_names or element_symbols in `molecule`.
+            List[str]: Unique list of element_names or element_symbols in `molecule`.
         """
         unique_elements = [
             PERIODIC_TABLE.GetElementName(atom.GetAtomicNum()).capitalize()
@@ -379,7 +379,7 @@ class ElementCountFeaturizer(ElementMassFeaturizer):
             molecule (Molecule): Molecular representation instance.
 
         Returns:
-            atom_count (int): Number of atoms of element in molecule.
+            int: Number of atoms of element in molecule.
         """
         atom_count = len(
             [
@@ -400,7 +400,7 @@ class ElementCountFeaturizer(ElementMassFeaturizer):
             molecule (Molecule): Molecular representation instance.
 
         Returns:
-            atom_counts (List[int]): List of elemental atom counts.
+            List[int]: List of elemental atom counts.
         """
         atom_counts = [
             self._get_atom_count(element=element, molecule=molecule) for element in self.preset

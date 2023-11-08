@@ -144,7 +144,7 @@ def generate_template(template_type: str = "qa", key: str = "single") -> str:
         key (str): Cardinality of template. Can be `single` or `multiple`. Defaults to `single`.
 
     Returns:
-        template (str): Selected template.
+        str: Selected template.
     """
     templates = QA_TEMPLATES[key] if template_type == "qa" else TEXT_TEMPLATES[key]
 
@@ -159,7 +159,7 @@ def inspect_info(info: dict) -> Dict[str, Union[str, List[int], List[float]]]:
         info (dict): Dictionary of molecular information.
 
     Returns:
-        new_info (Dict[str, Union[str, List[int], List[float]]]): Updated dictionary of molecular information.
+        Dict[str, Union[str, List[int], List[float]]]: Updated dictionary of molecular information.
 
     """
     new_info = info.copy()
@@ -208,7 +208,7 @@ def inspect_template(template: str, template_cardinality: str = "single") -> str
         template_cardinality (str): Type of template. May be `multiple` or `single`. Defaults to `single`.
 
     Returns:
-        template (str): Updated template.
+        str: Updated template.
     """
     prob = np.random.randn()
 
@@ -260,7 +260,7 @@ def generate_info(info_cardinality: str = "single") -> Dict[str, Union[str, floa
         info_cardinality (str): Cardinality of template. Can be `single` or `multiple`. Defaults to `single`.
 
     Returns:
-        info (Dict[str, Union[str, float, int]]): Dictionary of molecular information.
+        Dict[str, Union[str, float, int]]: Dictionary of molecular information.
 
     """
     if info_cardinality == "single":

@@ -119,13 +119,18 @@ class SpatialFeaturizer(AbstractFeaturizer):
 class EccentricityFeaturizer(SpatialFeaturizer):
     """Featurizer to return eccentricity value of a molecule."""
 
-    def __init__(self, use_masses: bool = True, force=True, conformer_generation_kwargs=None):
+    def __init__(
+        self,
+        use_masses: bool = True,
+        force: bool = True,
+        conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
+    ):
         """Initialize class object.
 
         Args:
             use_masses (bool): Utilize elemental masses in eccentricity calculation. Defaults to `True`.
             force (bool): Utilize force field calculations for energy minimization.
-            conformer_generation_kwargs (dict): Keyword arguments for conformer generation.
+            conformer_generation_kwargs (Optional[Dict[str, Any]]): Keyword arguments for conformer generation.
         """
         super().__init__(
             use_masses=use_masses,
@@ -136,6 +141,14 @@ class EccentricityFeaturizer(SpatialFeaturizer):
         self._names = [{"noun": "eccentricity"}]
 
     def feature_labels(self) -> List[str]:
+        """Return feature label(s).
+
+        Args:
+            None.
+
+        Returns:
+            List[str]: List of labels of extracted features.
+        """
         return ["eccentricity"]
 
     def featurize(self, molecule: Molecule) -> np.array:
@@ -172,13 +185,18 @@ class EccentricityFeaturizer(SpatialFeaturizer):
 class AsphericityFeaturizer(SpatialFeaturizer):
     """Featurizer to return number of asphericity value of a molecule."""
 
-    def __init__(self, use_masses: bool = True, force=True, conformer_generation_kwargs=None):
+    def __init__(
+        self,
+        use_masses: bool = True,
+        force: bool = True,
+        conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
+    ):
         """Initialize class object.
 
         Args:
             use_masses (bool): Utilize elemental masses in asphericity calculation. Defaults to `True`.
             force (bool): Utilize force field calculations for energy minimization.
-            conformer_generation_kwargs (dict): Keyword arguments for conformer generation.
+            conformer_generation_kwargs (Optional[Dict[str, Any]]): Keyword arguments for conformer generation.
         """
         super().__init__(
             use_masses=use_masses,
@@ -189,6 +207,14 @@ class AsphericityFeaturizer(SpatialFeaturizer):
         self._names = [{"noun": "asphericity"}]
 
     def feature_labels(self) -> List[str]:
+        """Return feature label(s).
+
+        Args:
+            None.
+
+        Returns:
+            List[str]: List of labels of extracted features.
+        """
         return ["asphericity"]
 
     def featurize(self, molecule: Molecule) -> np.array:
@@ -226,13 +252,18 @@ class AsphericityFeaturizer(SpatialFeaturizer):
 class InertialShapeFactorFeaturizer(SpatialFeaturizer):
     """Featurizer to return inertial shape factor of a molecule."""
 
-    def __init__(self, use_masses: bool = True, force=True, conformer_generation_kwargs=None):
+    def __init__(
+        self,
+        use_masses: bool = True,
+        force: bool = True,
+        conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
+    ):
         """Initialize class object.
 
         Args:
             use_masses (bool): Utilize elemental masses in eccentricity calculation. Defaults to `True`.
             force (bool): Utilize force field calculations for energy minimization.
-            conformer_generation_kwargs (dict): Keyword arguments for conformer generation.
+            conformer_generation_kwargs (Optional[Dict[str, Any]]): Keyword arguments for conformer generation.
         """
         super().__init__(
             use_masses=use_masses,
@@ -243,6 +274,14 @@ class InertialShapeFactorFeaturizer(SpatialFeaturizer):
         self._names = [{"noun": "inertial shape factor"}]
 
     def feature_labels(self) -> List[str]:
+        """Return feature label(s).
+
+        Args:
+            None.
+
+        Returns:
+            List[str]: List of labels of extracted features.
+        """
         return ["inertial_shape_factor"]
 
     def featurize(self, molecule: Molecule) -> np.array:
@@ -284,8 +323,8 @@ class NPRFeaturizer(SpatialFeaturizer):
         self,
         variant: Union[int, str] = "all",  # today make iterable
         use_masses: bool = True,
-        force=True,
-        conformer_generation_kwargs=None,
+        force: bool = True,
+        conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
     ):
         """Initialize class object.
 
@@ -294,7 +333,7 @@ class NPRFeaturizer(SpatialFeaturizer):
                 May take either value of `1`, `2`, or `all`. Defaults to `all`.
             use_masses (bool): Utilize elemental masses in calculating the NPR. Defaults to `True`.
             force (bool): Utilize force field calculations for energy minimization.
-            conformer_generation_kwargs (dict): Keyword arguments for conformer generation.
+            conformer_generation_kwargs (Optional[Dict[str, Any]]): Keyword arguments for conformer generation.
         """
         variant = variant if isinstance(variant, int) else variant.lower()
 
@@ -368,7 +407,7 @@ class NPRFeaturizer(SpatialFeaturizer):
             molecule (Molecule): Molecule representation.
 
         Returns:
-            np.array: Array containing value for NPR.
+            np.array: Array containing value(s) for NPR.
         """
         mol = molecule.rdkit_mol
 
@@ -398,17 +437,17 @@ class PMIFeaturizer(SpatialFeaturizer):
         self,
         variant: Union[int, str] = "all",
         use_masses: bool = True,
-        force=True,
-        conformer_generation_kwargs=None,
+        force: bool = True,
+        conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
     ):
         """Initialize class object.
 
         Args:
-           variant (Union[int, str]): Variant of principal moments of inertia (PMI) to calculate.
+            variant (Union[int, str]): Variant of principal moments of inertia (PMI) to calculate.
                 May take either value of `1`, `2`, `3`, or `all`. Defaults to `all`.
             use_masses (bool): Utilize elemental masses in calculating the PMI. Defaults to `True`.
             force (bool): Utilize force field calculations for energy minimization.
-            conformer_generation_kwargs (dict): Keyword arguments for conformer generation.
+            conformer_generation_kwargs (Optional[Dict[str, Any]]): Keyword arguments for conformer generation.
         """
 
         super().__init__(
@@ -483,7 +522,7 @@ class PMIFeaturizer(SpatialFeaturizer):
             molecule (Molecule): Molecule representation.
 
         Returns:
-            np.array: Array containing value for PMI.
+            np.array: Array containing value(s) for PMI.
         """
         mol = molecule.rdkit_mol
 
@@ -510,13 +549,18 @@ class PMIFeaturizer(SpatialFeaturizer):
 class SpherocityIndexFeaturizer(SpatialFeaturizer):
     """Featurizer to return the spherocity index of a molecule."""
 
-    def __init__(self, use_masses: bool = True, force=True, conformer_generation_kwargs=None):
+    def __init__(
+        self,
+        use_masses: bool = True,
+        force: bool = True,
+        conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
+    ):
         """Initialize class object.
 
         Args:
             use_masses (bool): Utilize elemental masses in eccentricity calculation. Defaults to `True`.
             force (bool): Utilize force field calculations for energy minimization.
-            conformer_generation_kwargs (dict): Keyword arguments for conformer generation.
+            conformer_generation_kwargs (Optional[Dict[str, Any]]): Keyword arguments for conformer generation.
         """
         super().__init__(
             use_masses=use_masses,
@@ -527,6 +571,14 @@ class SpherocityIndexFeaturizer(SpatialFeaturizer):
         self._names = [{"noun": "spherocity index"}]
 
     def feature_labels(self) -> List[str]:
+        """Return feature label(s).
+
+        Args:
+            None.
+
+        Returns:
+            List[str]: List of labels of extracted features.
+        """
         return ["spherocity_index"]
 
     def featurize(self, molecule: Molecule) -> np.array:
@@ -564,13 +616,18 @@ class SpherocityIndexFeaturizer(SpatialFeaturizer):
 class RadiusOfGyrationFeaturizer(SpatialFeaturizer):
     """Featurizer to return the radius of gyration of a molecule."""
 
-    def __init__(self, use_masses: bool = True, force=True, conformer_generation_kwargs=None):
+    def __init__(
+        self,
+        use_masses: bool = True,
+        force: bool = True,
+        conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
+    ):
         """Initialize class object.
 
         Args:
             use_masses (bool): Utilize elemental masses in eccentricity calculation. Defaults to `True`.
             force (bool): Utilize force field calculations for energy minimization.
-            conformer_generation_kwargs (dict): Keyword arguments for conformer generation.
+            conformer_generation_kwargs (Optional[Dict[str, Any]]): Keyword arguments for conformer generation.
         """
         super().__init__(
             use_masses=use_masses,
@@ -581,6 +638,14 @@ class RadiusOfGyrationFeaturizer(SpatialFeaturizer):
         self._names = [{"noun": "radius of gyration"}]
 
     def feature_labels(self) -> List[str]:
+        """Return feature label(s).
+
+        Args:
+            None.
+
+        Returns:
+            List[str]: List of labels of extracted features.
+        """
         return ["radius_of_gyration"]
 
     def featurize(self, molecule: Molecule) -> np.array:
@@ -591,7 +656,7 @@ class RadiusOfGyrationFeaturizer(SpatialFeaturizer):
             molecule (Molecule): Molecule representation.
 
         Returns:
-            np.array: Array containing radius of gyration.
+            np.array: Array containing the value for the radius of gyration.
         """
         mol = molecule.rdkit_mol
 

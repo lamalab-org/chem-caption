@@ -14,6 +14,7 @@ from chemcaption.molecules import Molecule
 # Implemented bond-related featurizers
 
 __all__ = [
+    "_MAP_BOND_TYPE_TO_CLEAN_NAME",
     "RotableBondCountFeaturizer",
     "RotableBondProportionFeaturizer",
     "BondTypeCountFeaturizer",
@@ -82,7 +83,7 @@ class RotableBondCountFeaturizer(AbstractFeaturizer):
             molecule (Molecule): Molecule representation.
 
         Returns:
-            num_rotable (np.array): Number of rotable bonds in molecule.
+            np.array: Number of rotable bonds in molecule.
         """
         num_rotable = rdMolDescriptors.CalcNumRotatableBonds(
             molecule.reveal_hydrogens(), strict=True
@@ -127,12 +128,7 @@ class RotableBondProportionFeaturizer(AbstractFeaturizer):
         Returns:
             List[Dict[str, str]]: List of names for extracted features according to parts-of-speech.
         """
-        beginning = [
-            "proportions of ",
-            "proportions of the ",
-            "ratios of ",
-            "ratios of the "
-        ]
+        beginning = ["proportions of ", "proportions of the ", "ratios of ", "ratios of the "]
         end = [
             " bonds",
             " bond types",
@@ -141,10 +137,7 @@ class RotableBondProportionFeaturizer(AbstractFeaturizer):
         beginning = np.random.choice(beginning, 1).item()
         end = np.random.choice(end, 1).item()
 
-        return [
-            {"noun": beginning + d["noun"] + end}
-            for d in self._names
-        ]
+        return [{"noun": beginning + d["noun"] + end} for d in self._names]
 
     def feature_labels(self) -> List[str]:
         """Return feature label(s).
@@ -164,7 +157,7 @@ class RotableBondProportionFeaturizer(AbstractFeaturizer):
             molecule (Molecule): Molecular representation.
 
         Returns:
-            bond_distribution (List[float]): Distribution of bonds based on rotability.
+            List[float]: Distribution of bonds based on rotability.
         """
         num_bonds = len(molecule.reveal_hydrogens().GetBonds())
         num_rotable = rdMolDescriptors.CalcNumRotatableBonds(
@@ -212,10 +205,9 @@ class BondTypeCountFeaturizer(AbstractFeaturizer):
         Initialize class.
 
         Args:
-            count (bool): If set to True, count pattern frequency.
-                Otherwise, only encode presence. Defaults to True.
+            count (bool): If set to True, count pattern frequency. Otherwise, only encode presence. Defaults to `True`.
             bond_type (Union[str, List[str]]): Type of bond to enumerate.
-                If `all`, enumerates all bonds irrespective of type. Default (ALL).
+                If `all`, enumerates all bonds irrespective of type. Defaults to `all`.
         """
         super().__init__()
 
@@ -244,7 +236,7 @@ class BondTypeCountFeaturizer(AbstractFeaturizer):
             molecule (Molecule): Molecule representation.
 
         Returns:
-            num_bonds (List[int]): Number of occurrences of `bond_type` in molecule.
+            List[int]: Number of occurrences of `bond_type` in molecule.
         """
         all_bonds = self._get_bonds(molecule)
 
@@ -282,7 +274,7 @@ class BondTypeCountFeaturizer(AbstractFeaturizer):
             None.
 
         Returns:
-            bond_types (List[str]): List of strings of bond types.
+            List[str]: List of strings of bond types.
         """
 
         if "ALL" in self.bond_type:
@@ -333,25 +325,15 @@ class BondTypeCountFeaturizer(AbstractFeaturizer):
                     "counts for ",
                     "numbers of the ",
                     "counts of the ",
-                    "counts for the "
+                    "counts for the ",
                 ]
             else:
-                beginning = [
-                    "number of ",
-                    "count of ",
-                    "count for "
-                ]
+                beginning = ["number of ", "count of ", "count for "]
         else:  # Recording bond prescence
             if len(mapped_names) > 1:
-                beginning = [
-                    "Are there any ",
-                    "Are any of the "
-                ]
+                beginning = ["Are there any ", "Are any of the "]
             else:
-                beginning = [
-                    "Is there any ",
-                    "Are there any "
-                ]
+                beginning = ["Is there any ", "Are there any "]
         end = [
             " bonds",
             " bond types",
@@ -362,8 +344,8 @@ class BondTypeCountFeaturizer(AbstractFeaturizer):
 
         return [{"noun": beginning + join_list_elements(mapped_names) + end}]
 
+    @staticmethod
     def _get_bonds(
-        self,
         molecule: Molecule,
     ) -> List[str]:
         """
@@ -373,7 +355,7 @@ class BondTypeCountFeaturizer(AbstractFeaturizer):
             molecule (Molecule): Molecular representation.
 
         Returns:
-            bonds (List[str]): List of all bonds present in molecule.
+            List[str]: List of all bonds present in molecule.
         """
         bonds = [
             str(bond.GetBondType()).split(".")[-1]
@@ -382,7 +364,8 @@ class BondTypeCountFeaturizer(AbstractFeaturizer):
 
         return bonds
 
-    def _rdkit_bond_types(self) -> List[str]:
+    @staticmethod
+    def _rdkit_bond_types() -> List[str]:
         """
         Returns a list of bonds supported by rdkit.
 
@@ -402,7 +385,7 @@ class BondTypeCountFeaturizer(AbstractFeaturizer):
             molecule (Molecule): Molecular representation.
 
         Returns:
-            unique_bonds (List[str]): Set of unique bonds present in `molecule`.
+            List[str]: Set of unique bonds present in `molecule`.
         """
         bonds = self._get_bonds(molecule)
         unique_bonds = list(set(bonds))
@@ -468,22 +451,16 @@ class BondTypeProportionFeaturizer(BondTypeCountFeaturizer):
             List[Dict[str, str]]: List of names for extracted features according to parts-of-speech.
         """
         bond_types = [label for label in super().feature_labels() if label != "num_bonds"]
-        bond_types = [l.replace("_bond_proportion", "") for l in bond_types]
-        bond_types = ["_".join(["num", l, "bonds"]) for l in bond_types]
-        mapped_names = [
-            _MAP_BOND_TYPE_TO_CLEAN_NAME[bond_type] for bond_type in bond_types
-        ]
+
+        # bond_types = [l.replace("_bond_proportion", "") for l in bond_types]
+        # bond_types = ["_".join(["num", l, "bonds"]) for l in bond_types]
+
+        mapped_names = [_MAP_BOND_TYPE_TO_CLEAN_NAME[bond_type] for bond_type in bond_types]
 
         if len(mapped_names) > 1:
-            beginning = [
-                "proportions of the ",
-                "proportions of "
-            ]
+            beginning = ["proportions of the ", "proportions of "]
         else:
-            beginning = [
-                "proportion of ",
-                "proportion of the "
-            ]
+            beginning = ["proportion of ", "proportion of the "]
         end = [
             " bonds",
             " bond types",
@@ -492,17 +469,16 @@ class BondTypeProportionFeaturizer(BondTypeCountFeaturizer):
         beginning = np.random.choice(beginning, 1).item()
         end = np.random.choice(end, 1).item()
 
-        return [
-            {"noun": beginning+ join_list_elements(mapped_names) + end}
-        ]
+        return [{"noun": beginning + join_list_elements(mapped_names) + end}]
 
     def _get_bond_distribution(self, molecule: Molecule) -> List[float]:
         """Return a frequency distribution for the bonds present in a molecule.
+
         Args:
             molecule (Molecule): Molecular representation.
 
         Returns:
-            bond_distribution (List[float]): List of bond type proportions.
+            List[float]: List of bond type proportions.
         """
         num_bonds = super()._count_bonds(molecule=molecule)
 

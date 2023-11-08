@@ -66,10 +66,11 @@ class Prompt:
             "filled_completion": self.fill_template(self.completion_template),
         }
 
-    def fill_template(self, template, precision_type: str = "decimal") -> str:
+    def fill_template(self, template: str, precision_type: str = "decimal") -> str:
         """Fill up the prompt template with appropriate values.
 
         Args:
+            template (str): Template format as string.
             precision_type (str): Level of precision for approximation purposes. Can be `decimal` or `significant`.
                 Defaults to `decimal`.
 

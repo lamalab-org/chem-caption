@@ -50,7 +50,7 @@ class ChiralCenterCountFeaturizer(AbstractFeaturizer):
             molecule (Molecule): Molecular instance.
 
         Returns:
-            chiral_cc (List[Tuple[Any, Union[Any, str]]]): Indices for chiral centers.
+            List[Tuple[Any, Union[Any, str]]]: Indices for chiral centers.
         """
         mol = molecule.reveal_hydrogens()
         AllChem.EmbedMolecule(mol)

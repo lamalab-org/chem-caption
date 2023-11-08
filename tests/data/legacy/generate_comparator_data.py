@@ -27,7 +27,7 @@ def generate_dataframe(smiles: List[str], comparator: Comparator):
         comparator (Comparator): Comparator instance.
 
     Returns:
-        (pd.DataFrame): DataFrame containing comparison features. Shape [`N` × `N`]:
+        pd.DataFrame: DataFrame containing comparison features. Shape `(N × N)`:
             where `N` = Number of strings in `smiles`.
     """
     df = [

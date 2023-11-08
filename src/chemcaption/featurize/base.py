@@ -115,11 +115,10 @@ class AbstractFeaturizer(ABC):
         """Embed features in Prompt instance for multiple molecules.
 
         Args:
-            molecules (Sequence[Molecule]):
-                A sequence of molecule representations.
+            molecules (List[Molecule]): A sequence of molecule representations.
 
         Returns:
-            (List[Prompt]): List of Prompt instances containing relevant information extracted from each
+            List[Prompt]: List of Prompt instances containing relevant information extracted from each
                 molecule in `molecules`.
         """
         return [self.text_featurize(molecule=molecule) for molecule in molecules]
@@ -239,8 +238,7 @@ class MultipleFeaturizer(AbstractFeaturizer):
             molecule (Molecule): Molecule representation.
 
         Returns:
-            features (np.array), array shape [1, num_featurizers]:
-                Array containing features extracted from molecule.
+            np.array: Array containing features extracted from molecule, with shape `(1, num_featurizers)`, where
                 `num_featurizers` is the number of featurizers passed to MultipleFeaturizer
                 i.e., `num_featurizers` = len(self.featurizers).
         """
@@ -368,7 +366,7 @@ class Comparator(AbstractComparator):
             featurizers (Optional[List[AbstractFeaturizer]]): List of lower-level featurizers. Defaults to `None`.
 
         Returns:
-            self : Instance of self with state updated.
+            Comparator : Instance of self with state updated.
         """
         if featurizers is None:
             self.featurizers = featurizers
@@ -386,7 +384,7 @@ class Comparator(AbstractComparator):
 
         return self
 
-    def __str__(self):
+    def __str__(self) -> str:
         """Return string representation.
 
         Args:
@@ -407,12 +405,11 @@ class Comparator(AbstractComparator):
 
         Args:
             featurizer (AbstractFeaturizer): Featurizer to compare on.
-            molecules (List[Molecule]):
-                List containing a pair of molecule instances.
-            epsilon (float): Small float. Precision bound for numerical inconsistencies. Defaults to 0.0.
+            molecules (List[Molecule]): List containing a pair of molecule instances.
+            epsilon (float): Small float. Precision bound for numerical inconsistencies. Defaults to `0.0`.
 
         Returns:
-            np.array: Comparison results. 1 if all extracted features are equal, else 0.
+            np.array: Comparison results. `1` if all extracted features are equal, else `0`.
         """
         batch_results = featurizer.featurize_many(molecules=molecules)
 
@@ -435,7 +432,7 @@ class Comparator(AbstractComparator):
             epsilon (float): Small float. Precision bound for numerical inconsistencies. Defaults to 0.0.
 
         Returns:
-            (np.array): Array containing extracted features with shape `(1, N)`,
+            np.array: Array containing extracted features with shape `(1, N)`,
                 where `N` is the number of featurizers provided at initialization time.
         """
         results = [
@@ -476,7 +473,7 @@ class Comparator(AbstractComparator):
             epsilon (float): Small float. Precision bound for numerical inconsistencies. Defaults to 0.0.
 
         Returns:
-            (np.array): Array containing comparison results with shape `(1, N)`,
+            np.array: Array containing comparison results with shape `(1, N)`,
                 where `N` is the number of featurizers provided at initialization time.
         """
         return self.featurize(molecules=molecules, epsilon=epsilon)
@@ -549,7 +546,7 @@ class MultipleComparator(Comparator):
             epsilon (float): Small float. Precision bound for numerical inconsistencies. Defaults to 0.0.
 
         Returns:
-            (np.array): Array containing comparison results with shape `(1, N)`,
+            np.array: Array containing comparison results with shape `(1, N)`,
                 where `N` is the number of Comparators provided at initialization time.
         """
         features = [
