@@ -223,7 +223,7 @@ class BondTypeCountFeaturizer(AbstractFeaturizer):
         if self.count:
             self.constraint = "Constraint: Return a list of comma separated integers."
         else:
-            self.constraint = "Constraint: Return a list of comma separated integer boolean indicators (0 for absence, 1 for presence)."
+            self.constraint = "Constraint: Return a list of comma separated integer / boolean indicators i.e., 0 (or False) for absence, 1 (or True) for presence."
         self.bond_type = (
             [bond_type.upper()] if isinstance(bond_type, str) else [b.upper() for b in bond_type]
         )
@@ -250,7 +250,7 @@ class BondTypeCountFeaturizer(AbstractFeaturizer):
 
         if self.count and ("ALL" in self.bond_type):
             num_bonds.append(len(all_bonds))
-        elif not self.count:
+        else:
             num_bonds = [min(1, count) for count in num_bonds]
 
         return num_bonds
@@ -277,11 +277,47 @@ class BondTypeCountFeaturizer(AbstractFeaturizer):
             List[str]: List of strings of bond types.
         """
 
+        if self.count:
+            bond_types = self._get_bond_count_types()
+        else:
+            bond_types = self._get_bond_presence_types()
+
+        return bond_types
+
+    def _get_bond_count_types(self) -> List[str]:
+        """
+        Return bond count types.
+
+        Args:
+            None.
+
+        Returns:
+            List[str]: List of strings of bond types.
+        """
+
         if "ALL" in self.bond_type:
             bond_types = self._rdkit_bond_types()
+            bond_types.append("num_bonds")
+        else:
+            bond_types = self._parse_bond_names(self.bond_type)
 
-            if self.count:
-                bond_types.append("num_bonds")
+        return bond_types
+
+    def _get_bond_presence_types(self) -> List[str]:
+        """
+        Return bond presence types.
+
+        Args:
+            None.
+
+        Returns:
+            List[str]: List of strings of bond types.
+        """
+
+        if "ALL" in self.bond_type:
+            bond_types = self._get_bond_count_types()
+            bond_types = [b.split("_")[1] for b in bond_types]
+            bond_types = self._parse_bond_names(bond_types)
         else:
             bond_types = self._parse_bond_names(self.bond_type)
 
@@ -313,7 +349,7 @@ class BondTypeCountFeaturizer(AbstractFeaturizer):
         """
         mapped_names = [
             _MAP_BOND_TYPE_TO_CLEAN_NAME[bond_type]
-            for bond_type in self._get_bond_types()
+            for bond_type in self._get_bond_count_types()
             if "num_bonds" != bond_type
         ]
 

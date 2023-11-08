@@ -87,6 +87,12 @@ class AbstractFeaturizer(ABC):
             Prompt: Instance of Prompt containing relevant information extracted from `molecule`.
         """
         completion = self.featurize(molecule=molecule).flatten().tolist()
+        if set(completion) == {0, 1}:
+            mapper = {
+                0: False,
+                1: True,
+            }
+            completion = [mapper[i] for i in completion]
 
         completion_type = [type(c) for c in completion]
         representation = molecule.representation_string
