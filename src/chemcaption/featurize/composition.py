@@ -51,7 +51,7 @@ class MolecularFormulaFeaturizer(AbstractFeaturizer):
             molecule (Molecule): Molecular representation.
 
         Returns:
-            (str): Molecular formular of `molecule`.
+            str: Molecular formular of `molecule`.
         """
         return np.array([molecule.get_composition()]).reshape((1, 1))
 
@@ -552,7 +552,7 @@ class DegreeOfUnsaturationFeaturizer(AbstractFeaturizer):
             molecule (Molecule): Molecule instance.
 
         Returns:
-            (int): Degree of unsaturation.
+            int: Degree of unsaturation.
         """
         # add hydrogens
         mol = molecule.reveal_hydrogens()

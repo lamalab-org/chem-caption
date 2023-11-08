@@ -70,7 +70,7 @@ class RotableBondCountFeaturizer(AbstractFeaturizer):
             None.
 
         Returns:
-            (List[str]): List of labels of extracted features.
+            List[str]: List of labels of extracted features.
         """
         return ["num_rotable_bonds"]
 
@@ -125,7 +125,7 @@ class RotableBondProportionFeaturizer(AbstractFeaturizer):
             None.
 
         Returns:
-            (List[str]): List of labels of extracted features.
+            List[str]: List of labels of extracted features.
         """
         return ["rotable_proportion", "non_rotable_proportion"]
 
@@ -240,7 +240,7 @@ class BondTypeCountFeaturizer(AbstractFeaturizer):
             None.
 
         Returns:
-            (List[str]): List of labels of extracted features.
+            List[str]: List of labels of extracted features.
         """
         return self._get_bond_types()
 
@@ -272,7 +272,7 @@ class BondTypeCountFeaturizer(AbstractFeaturizer):
             bond_names (Union[str, List[str]]): Bond names.
 
         Returns:
-            (List[str]): Parsed bond names.
+            List[str]: Parsed bond names.
         """
         if isinstance(bond_names, str):
             bond_names = [self.prefix + bond_names.lower() + self.suffix]
@@ -287,7 +287,7 @@ class BondTypeCountFeaturizer(AbstractFeaturizer):
             None.
 
         Returns:
-            (List[Dict[str, str]]): List of names for extracted features according to parts-of-speech.
+            List[Dict[str, str]]: List of names for extracted features according to parts-of-speech.
         """
         mapped_names = [
             _MAP_BOND_TYPE_TO_CLEAN_NAME[bond_type]
@@ -330,7 +330,7 @@ class BondTypeCountFeaturizer(AbstractFeaturizer):
             None.
 
         Returns:
-            (List[str]): List of all bonds present in rdkit.
+            List[str]: List of all bonds present in rdkit.
         """
         return [k for k in _MAP_BOND_TYPE_TO_CLEAN_NAME.keys() if "num_bonds" != k]
 
@@ -362,7 +362,7 @@ class BondTypeCountFeaturizer(AbstractFeaturizer):
             molecule (Molecule): Molecule representation.
 
         Returns:
-            (np.array): Array containing integer counts/signifier of bond type(s).
+            np.array: Array containing integer counts/signifier of bond type(s).
         """
         return np.array(self._count_bonds(molecule=molecule)).reshape(1, -1)
 
@@ -405,7 +405,7 @@ class BondTypeProportionFeaturizer(BondTypeCountFeaturizer):
             None.
 
         Returns:
-            (List[Dict[str, str]]): List of names for extracted features according to parts-of-speech.
+            List[Dict[str, str]]: List of names for extracted features according to parts-of-speech.
         """
         mapped_names = [
             _MAP_BOND_TYPE_TO_CLEAN_NAME[bond_type] for bond_type in super().feature_labels()
@@ -443,7 +443,7 @@ class BondTypeProportionFeaturizer(BondTypeCountFeaturizer):
             molecule (Molecule): Molecule representation.
 
         Returns:
-            (np.array): Array containing bond type proportion(s).
+            np.array: Array containing bond type proportion(s).
         """
         return np.array(self._get_bond_distribution(molecule=molecule)).reshape(1, -1)
 
@@ -454,7 +454,7 @@ class BondTypeProportionFeaturizer(BondTypeCountFeaturizer):
             None.
 
         Returns:
-            (List[str]): List of labels of extracted features.
+            List[str]: List of labels of extracted features.
         """
         labels = [label for label in super().feature_labels() if label != "num_bonds"]
         labels = self._parse_bond_names([x.split("_")[1] for x in labels])

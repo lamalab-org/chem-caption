@@ -69,23 +69,27 @@ class ThreeDimensionalFeaturizer(AbstractFeaturizer):
             None.
 
         Returns:
-            (List[str]): List of ordered function keys.
+            List[str]: List of ordered function keys.
         """
         keys = list(k for k in self.FUNCTION_MAP.keys())
         keys.sort()
         return keys
 
-    def _measure_all(self, *x: Chem.Mol, **y: Dict[str, Union[int, str]]):
+    def _measure_all(self, *x: Chem.Mol, **y: Dict[str, Union[int, str]]) -> List[Union[int, float]]:
         """Return results for all possible variants of 3D featurizer.
 
         Args:
             *x (Chem.Mol): rdkit Molecule object.
             **y (Union[str, int]): Keyword arguments.
+
+        Returns:
+            List[Union[int, float]]: List of results for all variants of measure of interest.
         """
         keys = self._base_rdkit_utility_keys()
         results = [self.FUNCTION_MAP[idx](*x, **y) for idx in keys]
         return results
 
+    @abstractmethod
     def featurize(self, molecule: Molecule) -> None:
         """
         Featurize single molecule instance. Extract 3D feature value for `molecule`.
@@ -94,7 +98,7 @@ class ThreeDimensionalFeaturizer(AbstractFeaturizer):
             molecule (Molecule): Molecule representation.
 
         Raises:
-            (NotImplementedError): Exception signifying lack of implementation.
+            NotImplementedError: Exception signifying lack of implementation.
         """
         raise NotImplementedError
 
@@ -141,7 +145,7 @@ class EccentricityFeaturizer(ThreeDimensionalFeaturizer):
             molecule (Molecule): Molecule representation.
 
         Returns:
-            (np.array): Array containing eccentricity value.
+            np.array: Array containing eccentricity value.
         """
         mol = molecule.rdkit_mol
         mol = self._get_conformer(mol)
@@ -194,7 +198,7 @@ class AsphericityFeaturizer(ThreeDimensionalFeaturizer):
             molecule (Molecule): Molecule representation.
 
         Returns:
-            (np.array): Array containing asphericity value.
+            np.array: Array containing asphericity value.
         """
         mol = molecule.reveal_hydrogens()
 
@@ -248,7 +252,7 @@ class InertialShapeFactorFeaturizer(ThreeDimensionalFeaturizer):
             molecule (Molecule): Molecule representation.
 
         Returns:
-            (np.array): Array containing inertia shape factor.
+            np.array: Array containing inertia shape factor.
         """
         mol = molecule.rdkit_mol
 
@@ -316,7 +320,7 @@ class NPRFeaturizer(ThreeDimensionalFeaturizer):
             None.
 
         Returns:
-            (List[Dict[str, str]]): List of names for extracted features according to parts-of-speech.
+            List[Dict[str, str]]: List of names for extracted features according to parts-of-speech.
         """
         names = []
         for label in self._parse_labels():
@@ -351,7 +355,7 @@ class NPRFeaturizer(ThreeDimensionalFeaturizer):
             None.
 
         Returns:
-            (List[str]): List of labels of extracted features.
+            List[str]: List of labels of extracted features.
         """
         return self._parse_labels()
 
@@ -363,7 +367,7 @@ class NPRFeaturizer(ThreeDimensionalFeaturizer):
             molecule (Molecule): Molecule representation.
 
         Returns:
-            (np.array): Array containing value for NPR.
+            np.array: Array containing value for NPR.
         """
         mol = molecule.rdkit_mol
 
@@ -442,7 +446,7 @@ class PMIFeaturizer(ThreeDimensionalFeaturizer):
             None.
 
         Returns:
-            (List[str]): List of names of extracted features.
+            List[str]: List of names of extracted features.
         """
         return self._parse_labels()
 
@@ -453,7 +457,7 @@ class PMIFeaturizer(ThreeDimensionalFeaturizer):
             None.
 
         Returns:
-            (List[Dict[str, str]]): List of names for extracted features according to parts-of-speech.
+            List[Dict[str, str]]: List of names for extracted features according to parts-of-speech.
         """
         names = []
         for label in self._parse_labels():
@@ -478,7 +482,7 @@ class PMIFeaturizer(ThreeDimensionalFeaturizer):
             molecule (Molecule): Molecule representation.
 
         Returns:
-            (np.array): Array containing value for PMI.
+            np.array: Array containing value for PMI.
         """
         mol = molecule.rdkit_mol
 
@@ -532,7 +536,7 @@ class SpherocityIndexFeaturizer(ThreeDimensionalFeaturizer):
             molecule (Molecule): Molecule representation.
 
         Returns:
-            (np.array): Array containing spherocity index value.
+            np.array: Array containing spherocity index value.
         """
         mol = molecule.rdkit_mol
 
@@ -586,7 +590,7 @@ class RadiusOfGyrationFeaturizer(ThreeDimensionalFeaturizer):
             molecule (Molecule): Molecule representation.
 
         Returns:
-            (np.array): Array containing radius of gyration.
+            np.array: Array containing radius of gyration.
         """
         mol = molecule.rdkit_mol
 

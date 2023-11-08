@@ -67,7 +67,7 @@ def apply_featurizer(featurize_molecule_pair) -> np.array:
             (Molecule): Molecular instance.
 
     Returns:
-        (np.array): Featurizer outputs.
+        np.array: Featurizer outputs.
     """
     featurizer, molecule = featurize_molecule_pair[0], featurize_molecule_pair[1]
     return (

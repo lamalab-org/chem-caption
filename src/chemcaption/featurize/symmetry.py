@@ -47,7 +47,7 @@ class RotationalSymmetryNumberFeaturizer(AbstractFeaturizer):
             molecule (Molecule): Molecular representation.
 
         Returns:
-            (np.array): Rotational symmetry number.
+            np.array: Rotational symmetry number.
         """
         mol = molecule.rdkit_mol
         m = _rdkit_to_pymatgen(mol)
@@ -101,7 +101,7 @@ class PointGroupFeaturizer(AbstractFeaturizer):
             molecule (Molecule): Molecular representation.
 
         Returns:
-            (np.array): Schoenflies symbol of point group.
+            np.array: Schoenflies symbol of point group.
         """
         mol = molecule.rdkit_mol
         m = _rdkit_to_pymatgen(mol)

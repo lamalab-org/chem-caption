@@ -61,7 +61,7 @@ class SMARTSFeaturizer(AbstractFeaturizer):
             None.
 
         Returns:
-            (List[Dict[str, str]]): List of dictionaries containing feature names.
+            List[Dict[str, str]]: List of dictionaries containing feature names.
         """
         if self.count:
             name = "Question: What is the count of " + join_list_elements(self.smart_names)
@@ -111,7 +111,7 @@ class SMARTSFeaturizer(AbstractFeaturizer):
             molecule (Molecule): Molecule representation.
 
         Returns:
-            (np.array): Array containing integer counts/signifier of pattern presence.
+            np.array: Array containing integer counts/signifier of pattern presence.
         """
         if self.count:
             results = [
@@ -133,7 +133,7 @@ class SMARTSFeaturizer(AbstractFeaturizer):
             None.
 
         Returns:
-            (List[str]): List of labels of extracted features.
+            List[str]: List of labels of extracted features.
         """
         suffix = "_count" if self.count else "_presence"
         return [name + suffix for name in self.smart_names]
@@ -181,7 +181,7 @@ class IsomorphismFeaturizer(AbstractFeaturizer):
             molecule (Molecule): Molecule representation.
 
         Returns:
-            (np.array): Array containing int representation of isoelectronic status between
+            np.array: Array containing int representation of isoelectronic status between
                 `self.reference_molecule` and `molecule`.
         """
         molecule_graph = molecule.to_graph()
@@ -248,7 +248,7 @@ class TopologyCountFeaturizer(AbstractFeaturizer):
             molecule (Molecule): Molecule representation.
 
         Returns:
-            (np.array): Array containing number of unique `element` environments.
+            np.array: Array containing number of unique `element` environments.
         """
         return np.array(
             [
@@ -259,6 +259,7 @@ class TopologyCountFeaturizer(AbstractFeaturizer):
             ]
         ).reshape((1, -1))
 
+    @staticmethod
     def _get_number_of_topologically_distinct_atoms(
         self, molecule: Molecule, atomic_number: int = 12
     ):
@@ -269,9 +270,9 @@ class TopologyCountFeaturizer(AbstractFeaturizer):
             atomic_number (int): Atomic number for `element` of interest.
 
         Returns:
-            (int): Number of unique environments.
+            int: Number of unique environments.
         """
-        mol = rdkit.Chem.AddHs(molecule.rdkit_mol) if atomic_number == 1 else molecule.rdkit_mol
+        mol = molecule.reveal_hydrogens() if atomic_number == 1 else molecule.rdkit_mol
 
         # Get unique canonical atom rankings
         atom_ranks = list(rdkit.Chem.rdmolfiles.CanonicalRankAtoms(mol, breakTies=False))

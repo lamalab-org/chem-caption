@@ -58,7 +58,7 @@ class MoleculeGraph(nx.Graph):
             None.
 
         Returns:
-            (nx.Graph): Molecular graph.
+            nx.Graph: Molecular graph.
         """
         graph = nx.Graph()
 
@@ -97,7 +97,7 @@ class MoleculeGraph(nx.Graph):
             None.
 
         Returns:
-            (str): Weisfeiler-Lehman graph hash.
+            str: Weisfeiler-Lehman graph hash.
         """
         if not self._hash:
             self._hash = nx.weisfeiler_lehman_graph_hash(self.graph)
@@ -140,7 +140,7 @@ class AbstractMolecule(ABC):
             None.
 
         Returns:
-            (str): String representation of molecule.
+            str: String representation of molecule.
         """
         return f"{self.__class__.__name__}(REPRESENTATION = '{self.representation_string}')"
 
@@ -151,7 +151,7 @@ class AbstractMolecule(ABC):
             None.
 
         Returns:
-            (str): Name of representation system.
+            str: Name of representation system.
         """
         return self.__repr__().split("Molecule")[0]
 
@@ -176,7 +176,7 @@ class AbstractMolecule(ABC):
             **kwargs (dict): Keyword arguments.
 
         Returns:
-            (Chem.Mol): RDKit molecular object with explicit hydrogens.
+            Chem.Mol: RDKit molecular object with explicit hydrogens.
         """
         return Chem.rdmolops.AddHs(self.rdkit_mol, **kwargs)
 
@@ -187,7 +187,7 @@ class AbstractMolecule(ABC):
             None.
 
         Returns:
-            (str): Molecular formular.
+            str: Molecular formular.
         """
         return Chem.rdMolDescriptors.CalcMolFormula(self.rdkit_mol)
 
@@ -198,7 +198,7 @@ class AbstractMolecule(ABC):
             None.
 
         Returns:
-            (MoleculeGraph): Molecular graph instance.
+            MoleculeGraph: Molecular graph instance.
         """
         graph = MoleculeGraph(molecule=self.reveal_hydrogens())
         return graph

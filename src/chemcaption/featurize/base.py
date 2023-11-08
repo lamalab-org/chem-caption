@@ -49,7 +49,7 @@ class AbstractFeaturizer(ABC):
             None.
 
         Returns:
-            (List[Dict[str, str]]): List of names for extracted features according to parts-of-speech.
+            List[Dict[str, str]]: List of names for extracted features according to parts-of-speech.
         """
         return self._names
 
@@ -84,7 +84,7 @@ class AbstractFeaturizer(ABC):
             molecule (Molecule): Molecule representation.
 
         Returns:
-            (Prompt): Instance of Prompt containing relevant information extracted from `molecule`.
+            Prompt: Instance of Prompt containing relevant information extracted from `molecule`.
         """
         completion = self.featurize(molecule=molecule).tolist()
 
@@ -144,7 +144,7 @@ class AbstractFeaturizer(ABC):
             None.
 
         Returns:
-            (List[str]): List of labels of extracted features.
+            List[str]: List of labels of extracted features.
         """
         raise NotImplementedError
 
@@ -155,7 +155,7 @@ class AbstractFeaturizer(ABC):
             None.
 
         Returns:
-            (List[Dict[str, str]]): List of names for extracted features according to parts-of-speech.
+            List[Dict[str, str]]: List of names for extracted features according to parts-of-speech.
         """
         return self._names
 
@@ -203,7 +203,7 @@ class AbstractComparator(ABC):
             None.
 
         Returns:
-            (List[str]): List of labels of extracted features.
+            List[str]: List of labels of extracted features.
         """
         raise NotImplementedError
 
@@ -260,7 +260,7 @@ class MultipleFeaturizer(AbstractFeaturizer):
             molecule (Molecule): Molecule representation.
 
         Returns:
-            (PromptCollection): Instance of Prompt containing relevant information extracted from `molecule`.
+            PromptCollection: Instance of Prompt containing relevant information extracted from `molecule`.
         """
         return PromptCollection([f.text_featurize(molecule=molecule) for f in self.featurizers])
 
@@ -316,7 +316,7 @@ class MultipleFeaturizer(AbstractFeaturizer):
                 Defaults to `False`.
 
         Returns:
-            (pd.DataFrame): DataFrame generated from feature array.
+            pd.DataFrame: DataFrame generated from feature array.
         """
         features = self.featurize_many(molecules=molecules)
 
@@ -393,7 +393,7 @@ class Comparator(AbstractComparator):
             None.
 
         Returns:
-            (str): String representation of `self`.
+            str: String representation of `self`.
         """
         return self.__class__.__name__
 
@@ -412,7 +412,7 @@ class Comparator(AbstractComparator):
             epsilon (float): Small float. Precision bound for numerical inconsistencies. Defaults to 0.0.
 
         Returns:
-            (np.array): Comparison results. 1 if all extracted features are equal, else 0.
+            np.array: Comparison results. 1 if all extracted features are equal, else 0.
         """
         batch_results = featurizer.featurize_many(molecules=molecules)
 

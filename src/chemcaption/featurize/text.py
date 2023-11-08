@@ -35,7 +35,7 @@ class Prompt:
             None.
 
         Returns:
-            (dict): Dictionary containing all relevant prompt-related information.
+            Dict[str, Any]: Dictionary containing all relevant prompt-related information.
         """
 
         return self.__dict__()
@@ -47,7 +47,7 @@ class Prompt:
             None.
 
         Returns:
-            (dict): Dictionary containing all relevant prompt-related information.
+            Dict[str, Any]: Dictionary containing all relevant prompt-related information.
         """
 
         return {
@@ -73,7 +73,7 @@ class Prompt:
                 Defaults to `decimal`.
 
         Returns:
-            (str): Appropriately formatted template.
+            str: Appropriately formatted template.
         """
         molecular_info = dict(
             PROPERTY_NAME=self.completion_names,
@@ -95,7 +95,7 @@ class Prompt:
             None.
 
         Returns:
-            (str): Appropriately formatted template.
+            str: Appropriately formatted template.
         """
         return str(self.__dict__())
 

@@ -46,7 +46,7 @@ class HydrogenAcceptorCountFeaturizer(AbstractFeaturizer):
             molecule (Molecule): Molecular representation.
 
         Returns:
-            (np.array): Number of Hydrogen bond acceptors present in `molecule`.
+            np.array: Number of Hydrogen bond acceptors present in `molecule`.
         """
         return np.array([rdMolDescriptors.CalcNumHBA(molecule.reveal_hydrogens())]).reshape((1, -1))
 
@@ -141,7 +141,7 @@ class ValenceElectronCountFeaturizer(AbstractFeaturizer):
             molecule (Molecule): Molecule representation.
 
         Returns:
-            (np.array): Array containing number of valence electrons.
+            np.array: Array containing number of valence electrons.
         """
         num_valence_electrons = Descriptors.NumValenceElectrons(molecule.reveal_hydrogens())
 
