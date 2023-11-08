@@ -114,8 +114,36 @@ class RotableBondProportionFeaturizer(AbstractFeaturizer):
 
         self._names = [
             {
-                "noun": "proportion of rotatable and non-rotatable bonds",
+                "noun": "rotatable and non-rotatable",
             }
+        ]
+
+    def get_names(self) -> List[Dict[str, str]]:
+        """Return feature names.
+
+        Args:
+            None.
+
+        Returns:
+            List[Dict[str, str]]: List of names for extracted features according to parts-of-speech.
+        """
+        beginning = [
+            "proportions of ",
+            "proportions of the ",
+            "ratios of ",
+            "ratios of the "
+        ]
+        end = [
+            " bonds",
+            " bond types",
+        ]
+
+        beginning = np.random.choice(beginning, 1).item()
+        end = np.random.choice(end, 1).item()
+
+        return [
+            {"noun": beginning + d["noun"] + end}
+            for d in self._names
         ]
 
     def feature_labels(self) -> List[str]:
@@ -194,9 +222,11 @@ class BondTypeCountFeaturizer(AbstractFeaturizer):
         self.count = count
         self.prefix = "num_" if self.count else ""
         self.suffix = "_bonds" if self.count else "_bond_presence"
-        self.prompt_template = (
-            "Question: {PROPERTY_NAME} in the molecule with {REPR_SYSTEM} {REPR_STRING}?"
-        )
+
+        if not self.count:
+            self.prompt_template = (
+                "Question: {PROPERTY_NAME} in the molecule with {REPR_SYSTEM} {REPR_STRING}?"
+            )
 
         if self.count:
             self.constraint = "Constraint: Return a list of comma separated integers."
@@ -295,12 +325,42 @@ class BondTypeCountFeaturizer(AbstractFeaturizer):
             if "num_bonds" != bond_type
         ]
 
-        if self.count:
-            name = "What is the number of "
-        else:
-            name = "Are there "
+        if self.count:  # Recording bond counts
+            if len(mapped_names) > 1:
+                beginning = [
+                    "numbers of ",
+                    "counts of ",
+                    "counts for ",
+                    "numbers of the ",
+                    "counts of the ",
+                    "counts for the "
+                ]
+            else:
+                beginning = [
+                    "number of ",
+                    "count of ",
+                    "count for "
+                ]
+        else:  # Recording bond prescence
+            if len(mapped_names) > 1:
+                beginning = [
+                    "Are there any ",
+                    "Are any of the "
+                ]
+            else:
+                beginning = [
+                    "Is there any ",
+                    "Are there any "
+                ]
+        end = [
+            " bonds",
+            " bond types",
+        ]
 
-        return [{"noun": name + join_list_elements(mapped_names) + " bonds"}]
+        beginning = np.random.choice(beginning, 1).item()
+        end = np.random.choice(end, 1).item()
+
+        return [{"noun": beginning + join_list_elements(mapped_names) + end}]
 
     def _get_bonds(
         self,
@@ -407,11 +467,33 @@ class BondTypeProportionFeaturizer(BondTypeCountFeaturizer):
         Returns:
             List[Dict[str, str]]: List of names for extracted features according to parts-of-speech.
         """
+        bond_types = [label for label in super().feature_labels() if label != "num_bonds"]
+        bond_types = [l.replace("_bond_proportion", "") for l in bond_types]
+        bond_types = ["_".join(["num", l, "bonds"]) for l in bond_types]
         mapped_names = [
-            _MAP_BOND_TYPE_TO_CLEAN_NAME[bond_type] for bond_type in super().feature_labels()
+            _MAP_BOND_TYPE_TO_CLEAN_NAME[bond_type] for bond_type in bond_types
         ]
+
+        if len(mapped_names) > 1:
+            beginning = [
+                "proportions of the ",
+                "proportions of "
+            ]
+        else:
+            beginning = [
+                "proportion of ",
+                "proportion of the "
+            ]
+        end = [
+            " bonds",
+            " bond types",
+        ]
+
+        beginning = np.random.choice(beginning, 1).item()
+        end = np.random.choice(end, 1).item()
+
         return [
-            {"noun": "What is the proportion of " + join_list_elements(mapped_names) + " bonds"}
+            {"noun": beginning+ join_list_elements(mapped_names) + end}
         ]
 
     def _get_bond_distribution(self, molecule: Molecule) -> List[float]:
