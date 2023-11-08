@@ -8,6 +8,7 @@ from typing import Any, Dict, List, Optional, Union
 import numpy as np
 
 from chemcaption.featurize.text_utils import inspect_info
+from chemcaption.featurize.utils import join_list_elements
 
 # Implemented text-related classes
 
@@ -79,10 +80,11 @@ class Prompt:
             PROPERTY_NAME=self.completion_names,
             REPR_SYSTEM=self.representation_type,
             REPR_STRING=self.representation,
-            PROPERTY_VALUE=self.completion,
+            PROPERTY_VALUE=join_list_elements(self.completion),
             PRECISION=4,
             PRECISION_TYPE=precision_type,
-            COMPLETION=self.completion,
+            COMPLETION=join_list_elements(self.completion),
+            ARTICLE="are" if len(self.completion) > 1 else "is",
         )
         molecular_info = inspect_info(molecular_info)
 

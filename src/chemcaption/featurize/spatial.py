@@ -16,7 +16,7 @@ from chemcaption.molecules import Molecule
 # Implemented spatial featurizers
 
 __all__ = [
-    "ThreeDimensionalFeaturizer",
+    "SpatialFeaturizer",
     "EccentricityFeaturizer",
     "AsphericityFeaturizer",
     "InertialShapeFactorFeaturizer",
@@ -30,7 +30,7 @@ __all__ = [
 """Abstract Featurizer for extracting 3D features from molecule."""
 
 
-class ThreeDimensionalFeaturizer(AbstractFeaturizer):
+class SpatialFeaturizer(AbstractFeaturizer):
     """Abstract class for 3-D featurizers."""
 
     def __init__(
@@ -75,7 +75,9 @@ class ThreeDimensionalFeaturizer(AbstractFeaturizer):
         keys.sort()
         return keys
 
-    def _measure_all(self, *x: Chem.Mol, **y: Dict[str, Union[int, str]]) -> List[Union[int, float]]:
+    def _measure_all(
+        self, *x: Chem.Mol, **y: Dict[str, Union[int, str]]
+    ) -> List[Union[int, float]]:
         """Return results for all possible variants of 3D featurizer.
 
         Args:
@@ -89,7 +91,6 @@ class ThreeDimensionalFeaturizer(AbstractFeaturizer):
         results = [self.FUNCTION_MAP[idx](*x, **y) for idx in keys]
         return results
 
-    @abstractmethod
     def featurize(self, molecule: Molecule) -> None:
         """
         Featurize single molecule instance. Extract 3D feature value for `molecule`.
@@ -115,7 +116,7 @@ class ThreeDimensionalFeaturizer(AbstractFeaturizer):
         return ["Benedict Oshomah Emoekabu"]
 
 
-class EccentricityFeaturizer(ThreeDimensionalFeaturizer):
+class EccentricityFeaturizer(SpatialFeaturizer):
     """Featurizer to return eccentricity value of a molecule."""
 
     def __init__(self, use_masses: bool = True, force=True, conformer_generation_kwargs=None):
@@ -168,7 +169,7 @@ class EccentricityFeaturizer(ThreeDimensionalFeaturizer):
         return ["Benedict Oshomah Emoekabu", "Kevin Maik Jablonka"]
 
 
-class AsphericityFeaturizer(ThreeDimensionalFeaturizer):
+class AsphericityFeaturizer(SpatialFeaturizer):
     """Featurizer to return number of asphericity value of a molecule."""
 
     def __init__(self, use_masses: bool = True, force=True, conformer_generation_kwargs=None):
@@ -222,7 +223,7 @@ class AsphericityFeaturizer(ThreeDimensionalFeaturizer):
         return ["Benedict Oshomah Emoekabu", "Kevin Maik Jablonka"]
 
 
-class InertialShapeFactorFeaturizer(ThreeDimensionalFeaturizer):
+class InertialShapeFactorFeaturizer(SpatialFeaturizer):
     """Featurizer to return inertial shape factor of a molecule."""
 
     def __init__(self, use_masses: bool = True, force=True, conformer_generation_kwargs=None):
@@ -276,7 +277,7 @@ class InertialShapeFactorFeaturizer(ThreeDimensionalFeaturizer):
         return ["Benedict Oshomah Emoekabu", "Kevin Maik Jablonka"]
 
 
-class NPRFeaturizer(ThreeDimensionalFeaturizer):
+class NPRFeaturizer(SpatialFeaturizer):
     """Featurizer to return the Normalized principal moments ratio (NPR) value of a molecule."""
 
     def __init__(
@@ -390,7 +391,7 @@ class NPRFeaturizer(ThreeDimensionalFeaturizer):
         return ["Benedict Oshomah Emoekabu", "Kevin Maik Jablonka"]
 
 
-class PMIFeaturizer(ThreeDimensionalFeaturizer):
+class PMIFeaturizer(SpatialFeaturizer):
     """Featurizer to return the normalized principal moments ratio (NPR) value of a molecule."""
 
     def __init__(
@@ -506,7 +507,7 @@ class PMIFeaturizer(ThreeDimensionalFeaturizer):
         return ["Benedict Oshomah Emoekabu"]
 
 
-class SpherocityIndexFeaturizer(ThreeDimensionalFeaturizer):
+class SpherocityIndexFeaturizer(SpatialFeaturizer):
     """Featurizer to return the spherocity index of a molecule."""
 
     def __init__(self, use_masses: bool = True, force=True, conformer_generation_kwargs=None):
@@ -560,7 +561,7 @@ class SpherocityIndexFeaturizer(ThreeDimensionalFeaturizer):
         return ["Benedict Oshomah Emoekabu"]
 
 
-class RadiusOfGyrationFeaturizer(ThreeDimensionalFeaturizer):
+class RadiusOfGyrationFeaturizer(SpatialFeaturizer):
     """Featurizer to return the radius of gyration of a molecule."""
 
     def __init__(self, use_masses: bool = True, force=True, conformer_generation_kwargs=None):

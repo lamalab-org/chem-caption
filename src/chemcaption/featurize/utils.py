@@ -25,9 +25,9 @@ __all__ = [
 def join_list_elements(elements) -> str:
     """Join list elements into a string. First elements separated by comma, last element separated by `and`."""
     if len(elements) == 1:
-        return elements[0]
+        return str(elements[0])
 
-    return ", ".join(elements[:-1]) + ", and " + elements[-1]
+    return ", ".join([str(e) for e in elements[:-1]]) + ", and " + str(elements[-1])
 
 
 @lru_cache(maxsize=128)

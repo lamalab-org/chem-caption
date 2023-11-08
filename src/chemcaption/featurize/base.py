@@ -37,7 +37,7 @@ class AbstractFeaturizer(ABC):
 
     def __init__(self):
         """Initialize class. Initialize periodic table."""
-        self.prompt_template = "Question: What is the {PROPERTY_NAME} of the molecule with {REPR_SYSTEM} {REPR_STRING}?"
+        self.prompt_template = "Question: What {ARTICLE} the {PROPERTY_NAME} of the molecule with {REPR_SYSTEM} {REPR_STRING}?"
         self.completion_template = "Answer: {COMPLETION}"
         self._names = []
         self.constraint = None
@@ -86,7 +86,7 @@ class AbstractFeaturizer(ABC):
         Returns:
             Prompt: Instance of Prompt containing relevant information extracted from `molecule`.
         """
-        completion = self.featurize(molecule=molecule).tolist()
+        completion = self.featurize(molecule=molecule).flatten().tolist()
 
         completion_type = [type(c) for c in completion]
         representation = molecule.representation_string
@@ -97,7 +97,7 @@ class AbstractFeaturizer(ABC):
         completion_name = self.get_names()[0]["noun"]
 
         return Prompt(
-            completion=join_list_elements(completion),
+            completion=completion,
             completion_type=completion_type,
             representation=representation,
             representation_type=representation_type,
