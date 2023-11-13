@@ -150,6 +150,7 @@ class RotableBondProportionFeaturizer(AbstractFeaturizer):
         """
         return ["rotable_proportion", "non_rotable_proportion"]
 
+    @staticmethod
     def _get_bond_types(self, molecule: Molecule) -> List[float]:
         """Return distribution of bonds based on rotability.
 

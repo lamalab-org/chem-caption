@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""Comparator implementations."""
+"""Implementations for molecule Comparator utilities."""
 
 from typing import List
 

@@ -1,7 +1,15 @@
+# -*- coding: utf-8 -*-
+
+"""Unit tests for base submodule."""
+
 from chemcaption.featurize.base import MultipleFeaturizer
 from chemcaption.featurize.electronicity import HydrogenAcceptorCountFeaturizer
-from chemcaption.featurize.stereochemistry import NumChiralCentersFeaturizer
+from chemcaption.featurize.stereochemistry import ChiralCenterCountFeaturizer
 from chemcaption.molecules import SMILESMolecule
+
+__all__ = [
+    "test_multiple_featurizer",
+]
 
 
 def test_multiple_featurizer():
@@ -10,7 +18,7 @@ def test_multiple_featurizer():
     featurizer = MultipleFeaturizer(
         featurizers=[
             HydrogenAcceptorCountFeaturizer(),
-            NumChiralCentersFeaturizer(),
+            ChiralCenterCountFeaturizer(),
         ]
     )
 

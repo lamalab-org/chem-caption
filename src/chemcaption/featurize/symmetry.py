@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""Featurizers for symmetry."""
+"""Featurizers for molecular symmetry."""
 
 from typing import List
 
@@ -35,6 +35,14 @@ class RotationalSymmetryNumberFeaturizer(AbstractFeaturizer):
         ]
 
     def feature_labels(self) -> List[str]:
+        """Return feature label(s).
+
+        Args:
+            None.
+
+        Returns:
+            List[str]: List of labels of extracted features.
+        """
         return ["rotational_symmetry_number"]
 
     def featurize(self, molecule: Molecule) -> np.array:
@@ -84,6 +92,14 @@ class PointGroupFeaturizer(AbstractFeaturizer):
         ]
 
     def feature_labels(self) -> List[str]:
+        """Return feature label(s).
+
+        Args:
+            None.
+
+        Returns:
+            List[str]: List of labels of extracted features.
+        """
         return ["point_group"]
 
     # ToDo: consider if we want to continue

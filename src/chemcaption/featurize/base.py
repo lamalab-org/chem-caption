@@ -12,7 +12,6 @@ import rdkit
 from scipy.spatial import distance_matrix
 
 from chemcaption.featurize.text import Prompt, PromptCollection
-from chemcaption.featurize.utils import join_list_elements
 from chemcaption.molecules import Molecule
 
 # Implemented abstract and high-level classes

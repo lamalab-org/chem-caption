@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""Featurizers for proton- and electron-related information."""
+"""Featurizers for charge-, proton- and electron-related molecular information."""
 
 from typing import List
 
