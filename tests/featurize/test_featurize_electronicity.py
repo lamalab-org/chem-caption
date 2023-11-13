@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+
+"""Unit tests for chemcaption.featurize.electronicity submodule."""
+
 import numpy as np
 
 from chemcaption.featurize.electronicity import (
@@ -6,6 +10,12 @@ from chemcaption.featurize.electronicity import (
     ValenceElectronCountFeaturizer,
 )
 from chemcaption.molecules import SMILESMolecule
+
+__all__ = [
+    "test_hydrogen_acceptor_count_featurizer",
+    "test_hydrogen_donor_count_featurizer",
+    "test_valence_electron_count_featurizer",
+]
 
 
 def test_hydrogen_acceptor_count_featurizer():

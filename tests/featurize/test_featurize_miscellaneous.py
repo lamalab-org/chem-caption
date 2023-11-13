@@ -1,7 +1,13 @@
 # -*- coding: utf-8 -*-
 
-from chemcaption.featurize.misc import SVGFeaturizer
+"""Unit tests for chemcaption.featurize.miscellaneous submodule."""
+
+from chemcaption.featurize.miscellaneous import SVGFeaturizer
 from chemcaption.molecules import SMILESMolecule
+
+__all__ = [
+    "test_svg_featurizer",
+]
 
 
 def test_svg_featurizer():

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""Test chemcaption.featurize.stereochemistry classes."""
+"""Unit tests for chemcaption.featurize.stereochemistry classes."""
 
 
 import numpy as np

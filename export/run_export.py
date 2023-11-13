@@ -12,10 +12,10 @@ from selfies import encoder
 from chemcaption.featurize.adaptor import ValenceElectronCountAdaptor
 from chemcaption.featurize.base import MultipleFeaturizer
 from chemcaption.featurize.bonds import (
-    RotableBondCountFeaturizer,
-    RotableBondProportionFeaturizer,
     BondTypeCountFeaturizer,
     BondTypeProportionFeaturizer,
+    RotableBondCountFeaturizer,
+    RotableBondProportionFeaturizer,
 )
 from chemcaption.featurize.composition import (
     ElementCountFeaturizer,

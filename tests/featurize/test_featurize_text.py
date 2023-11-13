@@ -1,7 +1,15 @@
+# -*- coding: utf-8 -*-
+
+"""Unit tests for chemcaption.featurize.text submodule."""
+
 from chemcaption.featurize.text import Prompt, PromptCollection
 
+__all__ = [
+    "test_prompt_container",
+]
 
-def test_promptcontainer():
+
+def test_prompt_container():
     prompt_1 = Prompt(
         completion="Answer: 30",
         representation="c1ccccc1",

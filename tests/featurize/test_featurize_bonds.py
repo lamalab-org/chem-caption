@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""Tests for chemcaption.featurize.bonds subpackage."""
+"""Unit tests for chemcaption.featurize.bonds submodule."""
 
 import numpy as np
 
@@ -16,10 +16,10 @@ from chemcaption.molecules import SMILESMolecule
 # Implemented tests for bond-related featurizers.
 
 __all__ = [
-    "test_rotable_bond_count_featurizer",
-    "test_rotable_bond_proportion_featurizer",
-    "test_rotable_bond_proportion_featurizer",
     "test_bond_type_count_featurizer",
+    "test_rotable_bond_proportion_featurizer",
+    "test_rotable_bond_count_featurizer",
+    "test_bond_type_proportion_featurizer",
 ]
 
 
