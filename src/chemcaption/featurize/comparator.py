@@ -9,7 +9,7 @@ import numpy as np
 from chemcaption.featurize.base import AbstractFeaturizer, Comparator, MultipleComparator
 from chemcaption.featurize.composition import AtomCountFeaturizer, MolecularFormulaFeaturizer
 from chemcaption.featurize.electronicity import ValenceElectronCountFeaturizer
-from chemcaption.featurize.rules import LipinskiViolationCountFeaturizer
+from chemcaption.featurize.rules import LipinskiFilterFeaturizer
 from chemcaption.featurize.substructure import IsomorphismFeaturizer
 from chemcaption.molecules import Molecule
 
@@ -50,7 +50,7 @@ class LipinskiViolationCountComparator(Comparator):
 
     def __init__(self):
         """Initialize instance."""
-        super().__init__(featurizers=[LipinskiViolationCountFeaturizer()])
+        super().__init__(featurizers=[LipinskiFilterFeaturizer()])
 
     def implementors(self) -> List[str]:
         """

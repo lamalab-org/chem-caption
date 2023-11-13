@@ -17,7 +17,7 @@ from chemcaption.featurize.composition import (
     ElementMassProportionFeaturizer,
 )
 from chemcaption.featurize.electronicity import ValenceElectronCountFeaturizer
-from chemcaption.featurize.rules import LipinskiViolationCountFeaturizer
+from chemcaption.featurize.rules import LipinskiFilterFeaturizer
 from chemcaption.featurize.spatial import (
     AsphericityFeaturizer,
     EccentricityFeaturizer,
@@ -64,7 +64,7 @@ def generate_info(string: str):
 
     count_featurizer = ElementCountFeaturizer(preset=preset)
     count_ratio_featurizer = ElementCountProportionFeaturizer(preset=preset)
-    lipinski_featurizer = LipinskiViolationCountFeaturizer()
+    lipinski_featurizer = LipinskiFilterFeaturizer()
 
     valence_featurizer = ValenceElectronCountFeaturizer()
     isomorphism_featurizer = IsomorphismFeaturizer()

@@ -28,7 +28,7 @@ from chemcaption.featurize.electronicity import (
     HydrogenAcceptorCountFeaturizer,
     HydrogenDonorCountFeaturizer,
 )
-from chemcaption.featurize.rules import LipinskiViolationCountFeaturizer
+from chemcaption.featurize.rules import LipinskiFilterFeaturizer
 from chemcaption.featurize.spatial import (
     AsphericityFeaturizer,
     EccentricityFeaturizer,
@@ -64,7 +64,7 @@ FEATURIZER = MultipleFeaturizer(
         ElementMassProportionFeaturizer(),
         HydrogenAcceptorCountFeaturizer(),
         HydrogenDonorCountFeaturizer(),
-        LipinskiViolationCountFeaturizer(),
+        LipinskiFilterFeaturizer(),
         InertialShapeFactorFeaturizer(),
         EccentricityFeaturizer(),
         AsphericityFeaturizer(),

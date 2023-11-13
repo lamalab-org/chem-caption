@@ -29,7 +29,7 @@ from chemcaption.featurize.composition import (
     ElementMassProportionFeaturizer,
 )
 from chemcaption.featurize.electronicity import ValenceElectronCountFeaturizer
-from chemcaption.featurize.rules import LipinskiViolationCountFeaturizer
+from chemcaption.featurize.rules import LipinskiFilterFeaturizer
 from chemcaption.featurize.spatial import (
     AsphericityFeaturizer,
     EccentricityFeaturizer,
@@ -108,7 +108,7 @@ def generate_featurizer(preset: Optional[List[str]] = None) -> MultipleFeaturize
     #     HydrogenDonorCountAdaptor(),
     #     HydrogenAcceptorCountAdaptor(),
     #     ValenceElectronCountFeaturizer(),
-    #     LipinskiViolationCountFeaturizer(),
+    #     LipinskiFilterFeaturizer(),
     #     TopologyCountFeaturizer(),
     #     NPRFeaturizer(variant="all"),
     #     PMIFeaturizer(variant="all"),

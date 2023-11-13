@@ -5,20 +5,20 @@
 from chemcaption.featurize.rules import (
     GhoseFilterFeaturizer,
     LeadLikenessFilterFeaturizer,
-    LipinskiViolationCountFeaturizer,
+    LipinskiFilterFeaturizer,
 )
 from chemcaption.molecules import SMILESMolecule
 
 __all__ = [
-    "test_lipinski_violation_count_featurizer",
+    "test_lipinski_filter_featurizer",
     "test_ghose_filter_featurizer",
     "test_leadlikeness_filter_featurizer",
 ]
 
 
-def test_lipinski_violation_count_featurizer():
+def test_lipinski_filter_featurizer():
     molecule = SMILESMolecule("O")
-    featurizer = LipinskiViolationCountFeaturizer()
+    featurizer = LipinskiFilterFeaturizer()
 
     results = featurizer.featurize(molecule)
     assert results[0] == 0
