@@ -353,8 +353,8 @@ class MorfeusFeaturizer(AbstractFeaturizer):
 
         return SASA(elements, coordinates, **self.morfeus_kwargs)
 
+    @staticmethod
     def _optimize_molecule_geometry(
-        self,
         molecule: Molecule,
         optimization_method: str = "GFN2-xTB",
         procedure: str = "geometric",
