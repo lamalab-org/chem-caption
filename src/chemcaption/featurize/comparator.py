@@ -17,7 +17,7 @@ from chemcaption.molecules import Molecule
 
 __all__ = [
     "ValenceElectronCountComparator",
-    "LipinskiViolationCountComparator",
+    "LipinskiFilterComparator",
     "AtomCountComparator",
     "IsomerismComparator",
     "IsomorphismComparator",
@@ -45,7 +45,7 @@ class ValenceElectronCountComparator(Comparator):
         return ["Benedict Oshomah Emoekabu"]
 
 
-class LipinskiViolationCountComparator(Comparator):
+class LipinskiFilterComparator(Comparator):
     """Compare molecular instances for parity based on number of violations of Lipinski's rule of Five."""
 
     def __init__(self):

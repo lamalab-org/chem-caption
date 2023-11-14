@@ -6,7 +6,7 @@ from chemcaption.featurize.comparator import (
     IsoelectronicComparator,
     IsomerismComparator,
     IsomorphismComparator,
-    LipinskiViolationCountComparator,
+    LipinskiFilterComparator,
     ValenceElectronCountComparator,
 )
 from chemcaption.molecules import SMILESMolecule
@@ -130,7 +130,7 @@ def test_lipinski_violation_count_comparator():
         SMILESMolecule("C1=CC(=CC=C1Br)Br"),  # 1,4-Dibromobenzene
     ]
 
-    featurizer = LipinskiViolationCountComparator()
+    featurizer = LipinskiFilterComparator()
 
     results = featurizer.compare(lipinski_similar).item()
 
@@ -153,7 +153,7 @@ def test_atom_count_comparator():
         SMILESMolecule("C1=CC(=CC=C1Br)Br"),  # 1,4-Dibromobenzene
     ]
 
-    featurizer = LipinskiViolationCountComparator()
+    featurizer = LipinskiFilterComparator()
 
     results = featurizer.compare(similar_atom_count).item()
 

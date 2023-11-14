@@ -10,7 +10,7 @@ from chemcaption.featurize.comparator import (
     IsoelectronicComparator,
     IsomerismComparator,
     IsomorphismComparator,
-    LipinskiViolationCountComparator,
+    LipinskiFilterComparator,
     ValenceElectronCountComparator,
 )
 from tests.conftests import DISPATCH_MAP, PROPERTY_BANK, batch_molecule_properties
@@ -167,7 +167,7 @@ def test_isoelectronicity_comparator(test_values):
     ),
 )
 def test_lipinski_violation_count_comparator(test_values):
-    """Test LipinskiViolationCountComparator."""
+    """Test LipinskiFilterComparator."""
     string_and_values_pairs = [string_and_values for string_and_values in test_values]
     molecules = [MOLECULE(s[0]) for s in string_and_values_pairs]
 
@@ -175,7 +175,7 @@ def test_lipinski_violation_count_comparator(test_values):
 
     expected = np.array([1]) if len(expected) == 1 else np.array([0])
 
-    featurizer = LipinskiViolationCountComparator()
+    featurizer = LipinskiFilterComparator()
 
     results = featurizer.compare(molecules)
 
