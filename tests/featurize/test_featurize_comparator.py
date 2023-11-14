@@ -3,13 +3,18 @@
 """Unit tests for chemcaption.featurize.comparator submodule."""
 
 from chemcaption.featurize.comparator import (
+    AtomCountComparator,
+    GhoseFilterComparator,
     IsoelectronicComparator,
     IsomerismComparator,
     IsomorphismComparator,
+    LeadLikenessFilterComparator,
     LipinskiFilterComparator,
     ValenceElectronCountComparator,
 )
 from chemcaption.molecules import SMILESMolecule
+
+# Implemented unit tests
 
 __all__ = [
     "test_isoelectronic_comparator",
@@ -17,6 +22,8 @@ __all__ = [
     "test_valence_electron_count_comparator",
     "test_isomorphism_comparator",
     "test_lipinski_violation_count_comparator",
+    "test_ghose_filter_comparator",
+    "test_lead_likeness_filter_comparator",
     "test_atom_count_comparator",
 ]
 
@@ -146,6 +153,52 @@ def test_lipinski_violation_count_comparator():
     assert results == 0
 
 
+def test_ghose_filter_comparator():
+    """Test for similarity via number of Ghose filter violations."""
+    ghose_similar = [
+        SMILESMolecule("C1(Br)=CC=CC=C1Br"),  # 1,2-Dibromobenzene
+        SMILESMolecule("C1=CC(=CC=C1Br)Br"),  # 1,4-Dibromobenzene
+    ]
+
+    featurizer = GhoseFilterComparator()
+
+    results = featurizer.compare(ghose_similar).item()
+
+    assert results == 1
+
+    non_ghose_similar = [
+        SMILESMolecule("[Na+]"),
+        SMILESMolecule("CC/C(=C(\c1ccccc1)c1ccc(OCCN(C)C)cc1)c1ccccc1"),
+    ]
+
+    results = featurizer.compare(non_ghose_similar).item()
+
+    assert results == 0
+
+
+def test_lead_likeness_filter_comparator():
+    """Test for similarity via number of Ghose filter violations."""
+    lead_like = [
+        SMILESMolecule("C1(Br)=CC=CC=C1Br"),  # 1,2-Dibromobenzene
+        SMILESMolecule("C1=CC(=CC=C1Br)Br"),  # 1,4-Dibromobenzene
+    ]
+
+    featurizer = LeadLikenessFilterComparator()
+
+    results = featurizer.compare(lead_like).item()
+
+    assert results == 1
+
+    non_lead_like = [
+        SMILESMolecule("[Na+]"),
+        SMILESMolecule("CC/C(=C(\c1ccccc1)c1ccc(OCCN(C)C)cc1)c1ccccc1"),
+    ]
+
+    results = featurizer.compare(non_lead_like).item()
+
+    assert results == 0
+
+
 def test_atom_count_comparator():
     """Test for similarity via number of atoms in molecule."""
     similar_atom_count = [
@@ -153,7 +206,7 @@ def test_atom_count_comparator():
         SMILESMolecule("C1=CC(=CC=C1Br)Br"),  # 1,4-Dibromobenzene
     ]
 
-    featurizer = LipinskiFilterComparator()
+    featurizer = AtomCountComparator()
 
     results = featurizer.compare(similar_atom_count).item()
 
