@@ -9,7 +9,11 @@ import numpy as np
 from chemcaption.featurize.base import AbstractFeaturizer, Comparator, MultipleComparator
 from chemcaption.featurize.composition import AtomCountFeaturizer, MolecularFormulaFeaturizer
 from chemcaption.featurize.electronicity import ValenceElectronCountFeaturizer
-from chemcaption.featurize.rules import LipinskiFilterFeaturizer
+from chemcaption.featurize.rules import (
+    GhoseFilterFeaturizer,
+    LeadLikenessFilterFeaturizer,
+    LipinskiFilterFeaturizer,
+)
 from chemcaption.featurize.substructure import IsomorphismFeaturizer
 from chemcaption.molecules import Molecule
 
@@ -18,6 +22,8 @@ from chemcaption.molecules import Molecule
 __all__ = [
     "ValenceElectronCountComparator",
     "LipinskiFilterComparator",
+    "GhoseFilterComparator",
+    "LeadLikenessFilterComparator",
     "AtomCountComparator",
     "IsomerismComparator",
     "IsomorphismComparator",
@@ -51,6 +57,46 @@ class LipinskiFilterComparator(Comparator):
     def __init__(self):
         """Initialize instance."""
         super().__init__(featurizers=[LipinskiFilterFeaturizer()])
+
+    def implementors(self) -> List[str]:
+        """
+        Return list of functionality implementors.
+
+        Args:
+            None.
+
+        Returns:
+            List[str]: List of implementors.
+        """
+        return ["Benedict Oshomah Emoekabu"]
+
+
+class GhoseFilterComparator(Comparator):
+    """Compare molecular instances for parity based on number of violations of the Ghose filter."""
+
+    def __init__(self):
+        """Initialize instance."""
+        super().__init__(featurizers=[GhoseFilterFeaturizer()])
+
+    def implementors(self) -> List[str]:
+        """
+        Return list of functionality implementors.
+
+        Args:
+            None.
+
+        Returns:
+            List[str]: List of implementors.
+        """
+        return ["Benedict Oshomah Emoekabu"]
+
+
+class LeadLikenessFilterComparator(Comparator):
+    """Compare molecular instances for parity based on number of violations of the lead-likeness drug filter."""
+
+    def __init__(self):
+        """Initialize instance."""
+        super().__init__(featurizers=[LeadLikenessFilterFeaturizer()])
 
     def implementors(self) -> List[str]:
         """
