@@ -18,5 +18,5 @@ def test_multiple_featurizer():
     assert len(results[0]) == 2
     assert len(results[0]) == len(featurizer.feature_labels())
 
-    text = featurizer.text_featurize(smiles)
+    text = featurizer.text_featurize(pos_key="noun", molecule=smiles)
     assert len(text)

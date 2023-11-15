@@ -22,7 +22,7 @@ def test_pmi_featurizer():
     assert np.isclose(results[0][2], 793, atol=2)
     assert len(featurizer.feature_labels()) == 3
 
-    text = featurizer.text_featurize(molecule)
+    text = featurizer.text_featurize(pos_key="noun", molecule=molecule)
     assert (
         text.to_dict()["filled_prompt"]
         == "Question: What is the first, second, and third principal moments of inertia (PMI) of the molecule with SMILES O=C1C=CC(=O)C(C(=O)O)=C1?"
@@ -41,7 +41,7 @@ def test_asphericity_featurizer():
     assert np.isclose(results[0][0], 0.3, atol=0.2)
     assert len(featurizer.feature_labels()) == 1
 
-    text = featurizer.text_featurize(molecule)
+    text = featurizer.text_featurize(pos_key="noun", molecule=molecule)
     assert (
         text.to_dict()["filled_prompt"]
         == "Question: What is the asphericity of the molecule with SMILES O=C1C=CC(=O)C(C(=O)O)=C1?"
@@ -59,7 +59,7 @@ def test_eccentricity_featurizer():
     assert np.isclose(results[0][0], 0.9, atol=0.2)
     assert len(featurizer.feature_labels()) == 1
 
-    text = featurizer.text_featurize(molecule)
+    text = featurizer.text_featurize(pos_key="noun", molecule=molecule)
     assert (
         text.to_dict()["filled_prompt"]
         == "Question: What is the eccentricity of the molecule with SMILES O=C1C=CC(=O)C(C(=O)O)=C1?"
@@ -77,7 +77,7 @@ def test_inertial_shape_factor():
     assert np.isclose(results[0][0], 0.002, atol=0.01)
     assert len(featurizer.feature_labels()) == 1
 
-    text = featurizer.text_featurize(molecule)
+    text = featurizer.text_featurize(pos_key="noun", molecule=molecule)
     assert (
         text.to_dict()["filled_prompt"]
         == "Question: What is the inertial shape factor of the molecule with SMILES O=C1C=CC(=O)C(C(=O)O)=C1?"
@@ -95,7 +95,7 @@ def test_npr_featurizer():
     assert np.isclose(results[0][0], 0.34, atol=0.2)
     assert len(featurizer.feature_labels()) == 2
 
-    text = featurizer.text_featurize(molecule)
+    text = featurizer.text_featurize(pos_key="noun", molecule=molecule)
     assert (
         text.to_dict()["filled_prompt"]
         == "Question: What is the first, and second normalized principal moments ratio (NPR) of the molecule with SMILES O=C1C=CC(=O)C(C(=O)O)=C1?"

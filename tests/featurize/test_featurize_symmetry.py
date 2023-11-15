@@ -20,7 +20,7 @@ def test_rotational_symmetry_number():
     results = featurizer.featurize(molecule)
     assert results == np.array([1.0])
 
-    text = featurizer.text_featurize(molecule)
+    text = featurizer.text_featurize(pos_key="noun", molecule=molecule)
     assert isinstance(text, Prompt)
     assert "filled_prompt" in text.__dict__()
     assert (
@@ -47,5 +47,5 @@ def test_point_group():
     assert results == np.array(["C1"])
     # see https://pqr.pitt.edu/mol/BSYNRYMUTXBXSQ-UHFFFAOYSA-N
 
-    text = featurizer.text_featurize(molecule)
+    text = featurizer.text_featurize(pos_key="noun", molecule=molecule)
     assert isinstance(text, Prompt)

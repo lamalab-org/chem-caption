@@ -136,7 +136,7 @@ class AbstractFeaturizer(ABC):
         else:
             if len(pos_keys) != len(molecules):
                 raise Exception(
-                    "`pos_keys` must either be a single element of typoe `str`, "
+                    "`pos_keys` must either be a single element of type `str`, "
                     "or an iterable of equal length to the collection of molecules."
                 )
         return [
@@ -272,17 +272,20 @@ class MultipleFeaturizer(AbstractFeaturizer):
 
     def text_featurize(
         self,
+        pos_key: str,
         molecule: Molecule,
     ) -> PromptCollection:
         """Embed features in Prompt instance.
 
         Args:
+            pos_key (str): Part of speech. If exists as key in POS dictionary, return value.
+                Else return value for noun POS.
             molecule (Molecule): Molecule representation.
 
         Returns:
             (PromptCollection): Instance of Prompt containing relevant information extracted from `molecule`.
         """
-        return PromptCollection([f.text_featurize(molecule=molecule) for f in self.featurizers])
+        return PromptCollection([f.text_featurize(pos_key=pos_key, molecule=molecule) for f in self.featurizers])
 
     def feature_labels(self) -> List[str]:
         """Return feature label(s).
