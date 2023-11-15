@@ -91,11 +91,7 @@ class AbstractFeaturizer(ABC):
         completion = completion.flatten().tolist()
 
         if set(completion) == {0, 1} and dtype == "int":
-            mapper = {
-                0: False,
-                1: True,
-            }
-            completion = [mapper[i] for i in completion]
+            completion = [bool(i) for i in completion]
 
         completion_type = [type(c) for c in completion]
         representation = molecule.representation_string
