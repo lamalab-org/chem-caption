@@ -42,12 +42,7 @@ jobs:
         run: |
           pip install -e ".[symmetry,tests]"
       - name: Export pre-tests
-<<<<<<< HEAD
-        run:
-          python3 src/chemcaption/export/pre_test_export.py
-=======
         run: python src/chemcaption/export/pre_test_export.py
->>>>>>> 3c6c55f164399554459955909c924a8fe87241e9
       - name: Test with pytest and generate coverage file
         run:
           pytest tests/featurize/
