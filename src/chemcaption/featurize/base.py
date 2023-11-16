@@ -76,15 +76,15 @@ class AbstractFeaturizer(ABC):
 
     def text_featurize(
         self,
-        pos_key: str,
         molecule: Molecule,
+        pos_key: str = "noun",
     ) -> Prompt:
         """Embed features in Prompt instance.
 
         Args:
+            molecule (Molecule): Molecule representation.
             pos_key (str): Part of speech. If exists as key in POS dictionary, return value.
                 Else return value for noun POS.
-            molecule (Molecule): Molecule representation.
 
         Returns:
             (Prompt): Instance of Prompt containing relevant information extracted from `molecule`.
@@ -116,16 +116,16 @@ class AbstractFeaturizer(ABC):
 
     def text_featurize_many(
         self,
-        pos_keys: Union[str, List[str]],
         molecules: List[Molecule],
+        pos_keys: Union[str, List[str]] = "noun",
     ) -> List[Prompt]:
         """Embed features in Prompt instance for multiple molecules.
 
         Args:
-            pos_keys (Union[str, List[str]]): Parts of speech. If exists as key in POS dictionary, return value.
-                Else return value for noun POS.
             molecules (Sequence[Molecule]):
                 A sequence of molecule representations.
+            pos_keys (Union[str, List[str]]): Parts of speech. If exists as key in POS dictionary, return value.
+                Else return value for noun POS.
 
         Returns:
             (List[Prompt]): List of Prompt instances containing relevant information extracted from each
@@ -285,7 +285,9 @@ class MultipleFeaturizer(AbstractFeaturizer):
         Returns:
             (PromptCollection): Instance of Prompt containing relevant information extracted from `molecule`.
         """
-        return PromptCollection([f.text_featurize(pos_key=pos_key, molecule=molecule) for f in self.featurizers])
+        return PromptCollection(
+            [f.text_featurize(pos_key=pos_key, molecule=molecule) for f in self.featurizers]
+        )
 
     def feature_labels(self) -> List[str]:
         """Return feature label(s).

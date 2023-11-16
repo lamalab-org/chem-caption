@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""Test feature names for uniqueness."""
+"""Test feature names and labels for uniqueness."""
 
 from typing import Dict, List, Tuple, Union
 
@@ -39,7 +39,9 @@ def get_repetitive_labels(
                     repetitive_labels[label]["count"] += 1
                     repetitive_labels[label]["appearance"].append(f.__class__.__name__)
 
-    return {key: value for key, value in repetitive_labels.items() if value["count"] > 1}, all_labels
+    return {
+        key: value for key, value in repetitive_labels.items() if value["count"] > 1
+    }, all_labels
 
 
 if __name__ == "__main__":
