@@ -63,4 +63,8 @@ if __name__ == "__main__":
 
     for k, v in repetitive_labels.items():
         if v["count"] > 1:
-            print(f"{k}", v)
+            print(f"{k}:", v)
+
+    raise Exception(
+        f"Number of redundant labels found: {len(repetitive_labels)}. Please fix as soon as possible!"
+    )
