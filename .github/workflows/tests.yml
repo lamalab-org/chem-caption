@@ -2,7 +2,7 @@ name: Tests
 
 on:
   push:
-    branches: [ main, text_featurize ]
+    branches: [ main ]
   pull_request:
     types: [ opened, synchronize, edited, ready_for_review ]
     branches: [ main ]
