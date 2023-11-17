@@ -1,8 +1,11 @@
 name: Tests
 
 on:
+  workflow_dispatch:
+    name: Manual trigger
+    description: Run tests manually without PR or Push
   push:
-    branches: [ main, text_featurize ]
+    branches: [ main ]
   pull_request:
     types: [ opened, synchronize, edited, ready_for_review ]
     branches: [ main ]
