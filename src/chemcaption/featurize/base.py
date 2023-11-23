@@ -463,6 +463,40 @@ class MorfeusFeaturizer(AbstractFeaturizer):
 
         return molecule
 
+    def _match_coordinates(self, coordinates: np.array):
+        """Match atom coordinates.
+
+        Args:
+            atom (Chem.Atom): Atom instance.
+            coordinates (np.array): Array of atom coordinates.
+
+        Returns:
+
+        """
+        Chem.MolToBlock()
+        Chem.Compute2DCoords()
+
+    def _track_atom_identity(
+        self, molecule: Molecule, max_index: int = 1
+    ) -> List[Union[int, float]]:
+        """Ensure atom identities are tracked irrespective of atom arrangement in molecule.
+
+        Args:
+            molecule (Molecule): Molecular instance.
+            max_index (int): Maximum number of atoms/bonds to consider for identity tracking.
+
+        Returns:
+            List[Union[int, float]]: Atomic numbers of atoms in `molecule` arranged by index.
+        """
+        elements, coordinates = self._get_element_coordinates(molecule=molecule)
+        atoms = molecule.get_atoms(hydrogen=False)
+        atomic_numbers = [atom.GetAtomicNum() for atom in atoms]
+        if (max_index - len(atomic_numbers)) > 0:
+            atomic_numbers += [0 for _ in range(max_index - len(atomic_numbers))]
+        elif (max_index - len(atomic_numbers)) < 0:
+            atomic_numbers = atomic_numbers[: max_index + 1]
+        return atomic_numbers
+
     def implementors(self) -> List[str]:
         """
         Return list of functionality implementors.

@@ -617,6 +617,12 @@ class AtomVolumeFeaturizer(MorfeusFeaturizer):
             (atom_volumes[i] if i <= num_atoms else 0) for i in range(1, self.max_index + 1)
         ]
 
+        # Track atom identities
+        atomic_numbers = self._track_atom_identity(molecule=molecule, max_index=self.max_index)
+
+        # Combine descriptors with atom identities
+        atom_volumes = atom_volumes + atomic_numbers
+
         return np.array(atom_volumes).reshape(1, -1)
 
     def featurize_many(self, molecules: List[Molecule]) -> np.array:
@@ -642,7 +648,9 @@ class AtomVolumeFeaturizer(MorfeusFeaturizer):
         Returns:
             (List[str]): List of labels of extracted features.
         """
-        return [f"solvent_accessible_atom_volume_{i}" for i in range(self.max_index)]
+        return [f"solvent_accessible_atom_volume_{i}" for i in range(self.max_index)] + [
+            f"atomic_number_{i}" for i in range(self.max_index)
+        ]
 
     def implementors(self) -> List[str]:
         """

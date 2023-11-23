@@ -153,7 +153,7 @@ class SolventAccessibleVolumeFeaturizer(MorfeusFeaturizer):
 
 
 class SolventAccessibleAtomAreaFeaturizer(MorfeusFeaturizer):
-    """Return the solvent accessible atom area value for a molecule."""
+    """Return the solvent accessible area value for each atom in a molecule."""
 
     def __init__(
         self,
@@ -209,7 +209,13 @@ class SolventAccessibleAtomAreaFeaturizer(MorfeusFeaturizer):
             (atom_areas[i] if i <= num_atoms else 0) for i in range(1, self.max_index + 1)
         ]
 
-        return np.array(atom_areas).reshape(1, -1)
+        # Track atom identities
+        atomic_numbers = self._track_atom_identity(molecule=molecule, max_index=self.max_index)
+
+        # Combine descriptors with atom identities
+        output = atom_areas + atomic_numbers
+
+        return np.array(output).reshape(1, -1)
 
     def featurize_many(self, molecules: List[Molecule]) -> np.array:
         """
@@ -234,7 +240,9 @@ class SolventAccessibleAtomAreaFeaturizer(MorfeusFeaturizer):
         Returns:
             (List[str]): List of labels of extracted features.
         """
-        return [f"solvent_accessible_atom_area_{i}" for i in range(self.max_index)]
+        return [f"solvent_accessible_atom_area_{i}" for i in range(self.max_index)] + [
+            f"atomic_number_{i}" for i in range(self.max_index)
+        ]
 
     def implementors(self) -> List[str]:
         """

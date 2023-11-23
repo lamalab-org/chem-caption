@@ -526,7 +526,13 @@ class DipoleMomentsFeaturizer(MorfeusFeaturizer):
 
         dipoles = [(dipoles[i - 1] if i <= num_dipoles else 0) for i in range(self.max_index)]
 
-        return np.array(dipoles).reshape(1, -1)
+        # Track atom identities
+        atomic_numbers = self._track_atom_identity(molecule=molecule, max_index=self.max_index)
+
+        # Combine descriptors with atom identities
+        output = dipoles + atomic_numbers
+
+        return np.array(output).reshape(1, -1)
 
     def featurize_many(self, molecules: List[Molecule]) -> np.array:
         """
@@ -551,7 +557,9 @@ class DipoleMomentsFeaturizer(MorfeusFeaturizer):
         Returns:
             (List[str]): List of labels of extracted features.
         """
-        return [f"dipole_{i}_{i+1}" for i in range(self.max_index)]
+        return [f"dipole_{i}_{i+1}" for i in range(self.max_index)] + [
+            f"atomic_number_{i}" for i in range(self.max_index + 1)
+        ]
 
     def implementors(self) -> List[str]:
         """
@@ -619,7 +627,14 @@ class BondOrderFeaturizer(MorfeusFeaturizer):
             (bond_orders[i - 1] if i <= self.max_index else 0) for i in range(self.max_index)
         ]
 
-        return np.array(bond_orders).reshape(1, -1)
+        # Track atom identities
+        atomic_numbers = self._track_atom_identity(molecule=molecule, max_index=self.max_index)
+        print("Number of atoms: ", len(atomic_numbers))
+
+        # Combine descriptors with atom identities
+        output = bond_orders + atomic_numbers
+
+        return np.array(output).reshape(1, -1)
 
     def featurize_many(self, molecules: List[Molecule]) -> np.array:
         """
@@ -644,7 +659,9 @@ class BondOrderFeaturizer(MorfeusFeaturizer):
         Returns:
             (List[str]): List of labels of extracted features.
         """
-        return [f"bond_order_{i}_{i+1}" for i in range(self.max_index)]
+        return [f"bond_order_{i}_{i+1}" for i in range(self.max_index)] + [
+            f"atomic_number_{i}" for i in range(self.max_index + 1)
+        ]
 
     def implementors(self) -> List[str]:
         """
