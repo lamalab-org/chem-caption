@@ -28,6 +28,8 @@ REFERENCE_ATOMIC_NUMBERS = [6, 1, 7, 8, 15, 16, 9, 17, 35, 53]
 __all__ = [
     "test_fragment_count_featurizer",
     "test_fragment_presence_featurizer",
+    "test_topology_count_featurizer",
+    "test_isomorphism_featurizer",
 ]
 
 
@@ -108,6 +110,27 @@ def test_fragment_presence_featurizer(test_input, expected):
 def test_topology_count_featurizer(test_input, expected):
     """Test TopologyCountFeaturizer for number of unique elemental environments."""
     featurizer = TopologyCountFeaturizer.from_preset(preset="organic")
+    molecule = MOLECULE(test_input)
+
+    results = featurizer.featurize(molecule)
+
+    assert np.equal(results, expected).all()
+
+
+"""Test for isomorphism featurizer."""
+
+
+@pytest.mark.parametrize(
+    "test_input, expected",
+    extract_molecule_properties(
+        property_bank=PROPERTY_BANK,
+        representation_name=KIND,
+        property=["weisfeiler_lehman_hash"],
+    ),
+)
+def test_isomorphism_featurizer(test_input, expected):
+    """Test IsomorphismFeaturizer for Weisfeiler-Lehman hash."""
+    featurizer = IsomorphismFeaturizer()
     molecule = MOLECULE(test_input)
 
     results = featurizer.featurize(molecule)
