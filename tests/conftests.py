@@ -34,7 +34,7 @@ BASE_DIR = BASE_DIR if "tests" in BASE_DIR else os.path.join(BASE_DIR, "tests")
 
 # Sources of truth
 PROPERTY_BANK = pd.read_csv(
-    os.path.join(BASE_DIR, "data", "pubchem_response.csv")
+    os.path.join(BASE_DIR, "regression", "data", "pubchem_response.csv")
 ).drop_duplicates()
 
 
@@ -233,3 +233,6 @@ def generate_prompt_test_data(
     results = [(mol, t, t.format(**inspect_info(mol))) for mol in bank for t in templates]
 
     return results
+if __name__ == "__main__":
+    print(os.path.join(BASE_DIR, "regression", "data", "pubchem_response.csv"))
+    print(PROPERTY_BANK.columns[-1])
