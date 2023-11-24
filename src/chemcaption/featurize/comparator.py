@@ -262,7 +262,7 @@ class IsoelectronicComparator(MultipleComparator):
 
 
 class DrugLikenessComparator(MultipleComparator):
-    """Compare molecular instances for parity based on drug-likeness rules."""
+    """Compare molecular instances for similarity based on drug-likeness rules."""
 
     def __init__(self):
         """Initialize instance."""

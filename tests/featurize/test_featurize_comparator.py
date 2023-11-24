@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 
 """Unit tests for chemcaption.featurize.comparator submodule."""
+import numpy as np
 
 from chemcaption.featurize.comparator import (
     AtomCountComparator,
+    DrugLikenessComparator,
     GhoseFilterComparator,
     IsoelectronicComparator,
     IsomerismComparator,
@@ -25,6 +27,7 @@ __all__ = [
     "test_ghose_filter_comparator",
     "test_lead_likeness_filter_comparator",
     "test_atom_count_comparator",
+    "test_drug_likeness_comparator",
 ]
 
 
@@ -218,5 +221,28 @@ def test_atom_count_comparator():
     ]
 
     results = featurizer.compare(non_similar_atom_count).item()
+
+    assert results == 0
+
+
+def test_drug_likeness_comparator():
+    """Test for similarity via molecular drug-likeness."""
+    similar = [
+        SMILESMolecule("C1(Br)=CC=CC=C1Br"),  # 1,2-Dibromobenzene
+        SMILESMolecule("C1=CC(=CC=C1Br)Br"),  # 1,4-Dibromobenzene
+    ]
+
+    featurizer = DrugLikenessComparator()
+
+    results = np.unique(featurizer.compare(similar))
+
+    assert results == 1
+
+    non_similar = [
+        SMILESMolecule("[Na+]"),
+        SMILESMolecule("CC/C(=C(\c1ccccc1)c1ccc(OCCN(C)C)cc1)c1ccccc1"),
+    ]
+
+    results = np.unique(featurizer.compare(non_similar))
 
     assert results == 0
