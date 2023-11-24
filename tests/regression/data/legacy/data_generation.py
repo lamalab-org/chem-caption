@@ -25,7 +25,11 @@ from chemcaption.featurize.spatial import (
     NPRFeaturizer,
     PMIFeaturizer,
 )
-from chemcaption.featurize.substructure import IsomorphismFeaturizer, FragmentSearchFeaturizer
+from chemcaption.featurize.substructure import (
+    FragmentSearchFeaturizer,
+    IsomorphismFeaturizer,
+    TopologyCountFeaturizer,
+)
 from chemcaption.molecules import SMILESMolecule
 
 BASE_DIR = os.getcwd()
@@ -72,6 +76,8 @@ def generate_info(string: str):
     atom_count_featurizer = AtomCountFeaturizer()
     bond_type_count_featurizer = BondTypeCountFeaturizer()
     bond_type_proportion_featurizer = BondTypeProportionFeaturizer()
+
+    topology_featurizer = TopologyCountFeaturizer.from_preset(preset="organic")
 
     # shape_featurizer = MultipleFeaturizer(
     #     featurizers=[
@@ -141,6 +147,9 @@ def generate_info(string: str):
     count_ratios = count_ratio_featurizer.featurize(molecule=mol).reshape((-1,)).tolist()
     keys += count_ratio_featurizer.feature_labels()
 
+    num_environments = topology_featurizer.featurize(molecule=mol).reshape(-1).tolist()
+    keys += topology_featurizer.feature_labels()
+
     valence_count = valence_featurizer.featurize(molecule=mol).item()
 
     bond_type_counts = bond_type_count_featurizer.featurize(molecule=mol).flatten().tolist()
@@ -179,6 +188,7 @@ def generate_info(string: str):
 
     values += counts
     values += count_ratios
+    values += num_environments
 
     # values += shape_features
     # values += npr_pmi

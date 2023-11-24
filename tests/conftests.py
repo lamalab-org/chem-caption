@@ -233,6 +233,8 @@ def generate_prompt_test_data(
     results = [(mol, t, t.format(**inspect_info(mol))) for mol in bank for t in templates]
 
     return results
+
+
 if __name__ == "__main__":
     print(os.path.join(BASE_DIR, "regression", "data", "pubchem_response.csv"))
     print(PROPERTY_BANK.columns[-1])

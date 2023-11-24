@@ -5,13 +5,7 @@
 import numpy as np
 import pytest
 
-from chemcaption.featurize.adaptor import (
-    # HydrogenAcceptorCountAdaptor,
-    # HydrogenDonorCountAdaptor,
-    # MolecularMassAdaptor,
-    # MonoisotopicMolecularMassAdaptor,
-    # RotableBondCountAdaptor,
-    # StrictRotableBondCountAdaptor,
+from chemcaption.featurize.adaptor import (  # HydrogenAcceptorCountAdaptor,; HydrogenDonorCountAdaptor,; MolecularMassAdaptor,; MonoisotopicMolecularMassAdaptor,; RotableBondCountAdaptor,; StrictRotableBondCountAdaptor,
     ValenceElectronCountAdaptor,
 )
 from tests.conftests import DISPATCH_MAP, PROPERTY_BANK, extract_molecule_properties

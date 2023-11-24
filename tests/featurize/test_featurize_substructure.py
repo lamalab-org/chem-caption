@@ -5,8 +5,8 @@
 import numpy as np
 
 from chemcaption.featurize.substructure import (
-    IsomorphismFeaturizer,
     FragmentSearchFeaturizer,
+    IsomorphismFeaturizer,
     TopologyCountFeaturizer,
 )
 from chemcaption.featurize.text import Prompt

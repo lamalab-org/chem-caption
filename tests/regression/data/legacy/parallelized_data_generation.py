@@ -38,8 +38,8 @@ from chemcaption.featurize.spatial import (
     PMIFeaturizer,
 )
 from chemcaption.featurize.substructure import (
-    IsomorphismFeaturizer,
     FragmentSearchFeaturizer,
+    IsomorphismFeaturizer,
     TopologyCountFeaturizer,
 )
 from chemcaption.molecules import SMILESMolecule

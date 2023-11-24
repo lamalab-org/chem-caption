@@ -5,7 +5,11 @@
 import numpy as np
 import pytest
 
-from chemcaption.featurize.substructure import FragmentSearchFeaturizer
+from chemcaption.featurize.substructure import (
+    FragmentSearchFeaturizer,
+    IsomorphismFeaturizer,
+    TopologyCountFeaturizer,
+)
 from chemcaption.presets import SMARTS_MAP
 from tests.conftests import DISPATCH_MAP, PROPERTY_BANK, extract_molecule_properties
 
@@ -15,6 +19,9 @@ MOLECULE = DISPATCH_MAP[KIND]
 # SMARTS substructure search-related presets
 SMARTS_PRESET = "amino"
 PRESET_BASE_LABELS = SMARTS_MAP[SMARTS_PRESET]["names"]
+
+# Topology-related presets
+REFERENCE_ATOMIC_NUMBERS = [6, 1, 7, 8, 15, 16, 9, 17, 35, 53]
 
 # Implemented tests for substructure-related featurizers.
 
@@ -75,6 +82,32 @@ def test_fragment_count_featurizer(test_input, expected):
 def test_fragment_presence_featurizer(test_input, expected):
     """Test FragmentSearchFeaturizer for SMARTS presence detection."""
     featurizer = FragmentSearchFeaturizer.from_preset(count=False, preset=SMARTS_PRESET)
+    molecule = MOLECULE(test_input)
+
+    results = featurizer.featurize(molecule)
+
+    assert np.equal(results, expected).all()
+
+
+"""Test for topology count featurizer."""
+
+
+@pytest.mark.parametrize(
+    "test_input, expected",
+    extract_molecule_properties(
+        property_bank=PROPERTY_BANK,
+        representation_name=KIND,
+        property=list(
+            map(
+                lambda x: "topology_count_" + str(x),
+                REFERENCE_ATOMIC_NUMBERS,
+            )
+        ),
+    ),
+)
+def test_topology_count_featurizer(test_input, expected):
+    """Test TopologyCountFeaturizer for number of unique elemental environments."""
+    featurizer = TopologyCountFeaturizer.from_preset(preset="organic")
     molecule = MOLECULE(test_input)
 
     results = featurizer.featurize(molecule)

@@ -99,7 +99,9 @@ class FragmentSearchFeaturizer(AbstractFeaturizer):
                 f"Valid preset names are: {', '.join(SMARTS_MAP.keys())}."
             )
         smarts_set = SMARTS_MAP[preset]
-        return cls(smarts=smarts_set["smarts"], names=smarts_set["names"], count=count, preset_name=preset)
+        return cls(
+            smarts=smarts_set["smarts"], names=smarts_set["names"], count=count, preset_name=preset
+        )
 
     def featurize(self, molecule: Molecule) -> np.array:
         """
@@ -141,7 +143,9 @@ class FragmentSearchFeaturizer(AbstractFeaturizer):
         suffix = "_count" if self.count else "_presence"
         return [self.preset_name + "_" + name + suffix for name in self._clean_feature_labels()]
 
-    def _clean_feature_labels(self,) -> List[str]:
+    def _clean_feature_labels(
+        self,
+    ) -> List[str]:
         """Clean the feature labels.
 
         Args:
