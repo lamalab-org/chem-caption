@@ -5,7 +5,7 @@
 import numpy as np
 import pytest
 
-from chemcaption.featurize.substructure import SMARTSFeaturizer
+from chemcaption.featurize.substructure import FragmentSearchFeaturizer
 from chemcaption.presets import SMARTS_MAP
 from tests.conftests import DISPATCH_MAP, PROPERTY_BANK, extract_molecule_properties
 
@@ -44,8 +44,8 @@ __all__ = [
     ),
 )
 def test_smarts_count_featurizer(test_input, expected):
-    """Test SMARTSFeaturizer for SMARTS occurrence count."""
-    featurizer = SMARTSFeaturizer.from_preset(count=True, preset=SMARTS_PRESET)
+    """Test FragmentSearchFeaturizer for SMARTS occurrence count."""
+    featurizer = FragmentSearchFeaturizer.from_preset(count=True, preset=SMARTS_PRESET)
     molecule = MOLECULE(test_input)
 
     results = featurizer.featurize(molecule)
@@ -73,8 +73,8 @@ def test_smarts_count_featurizer(test_input, expected):
     ),
 )
 def test_smarts_presence_featurizer(test_input, expected):
-    """Test SMARTSFeaturizer for SMARTS presence detection."""
-    featurizer = SMARTSFeaturizer.from_preset(count=False, preset=SMARTS_PRESET)
+    """Test FragmentSearchFeaturizer for SMARTS presence detection."""
+    featurizer = FragmentSearchFeaturizer.from_preset(count=False, preset=SMARTS_PRESET)
     molecule = MOLECULE(test_input)
 
     results = featurizer.featurize(molecule)

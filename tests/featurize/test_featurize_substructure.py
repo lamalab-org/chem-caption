@@ -6,7 +6,7 @@ import numpy as np
 
 from chemcaption.featurize.substructure import (
     IsomorphismFeaturizer,
-    SMARTSFeaturizer,
+    FragmentSearchFeaturizer,
     TopologyCountFeaturizer,
 )
 from chemcaption.featurize.text import Prompt
@@ -47,7 +47,7 @@ def test_topology_count_featurizer():
 
 def test_smarts_featurizer():
     molecule = SMILESMolecule("C1=CC=CC=C1")
-    featurizer = SMARTSFeaturizer.from_preset("organic")
+    featurizer = FragmentSearchFeaturizer.from_preset("organic")
     results = featurizer.featurize(molecule)
 
     assert len(results) == 1
@@ -64,7 +64,7 @@ def test_smarts_featurizer():
 
     assert text.to_dict()["filled_completion"] == "Answer: 0, 0, 0, 0, 0, 0, 0, 0, and 0"
 
-    featurizer = SMARTSFeaturizer.from_preset("organic", False)
+    featurizer = FragmentSearchFeaturizer.from_preset("organic", False)
     results = featurizer.featurize(molecule)
 
     assert len(results) == 1
@@ -82,7 +82,7 @@ def test_smarts_featurizer():
 
     assert text.to_dict()["filled_completion"] == "Answer: 0, 0, 0, 0, 0, 0, 0, 0, and 0"
 
-    featurizer = SMARTSFeaturizer(["[#6]1:[#6]:[#6]:[#6]:[#6]:[#6]:1"], ["benzene"], False)
+    featurizer = FragmentSearchFeaturizer(["[#6]1:[#6]:[#6]:[#6]:[#6]:[#6]:1"], ["benzene"], False)
     results = featurizer.featurize(molecule)
 
     assert len(results) == 1

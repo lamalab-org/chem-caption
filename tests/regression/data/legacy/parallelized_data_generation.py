@@ -39,7 +39,7 @@ from chemcaption.featurize.spatial import (
 )
 from chemcaption.featurize.substructure import (
     IsomorphismFeaturizer,
-    SMARTSFeaturizer,
+    FragmentSearchFeaturizer,
     TopologyCountFeaturizer,
 )
 from chemcaption.molecules import SMILESMolecule
@@ -121,21 +121,21 @@ def generate_featurizer(preset: Optional[List[str]] = None) -> MultipleFeaturize
     # ]
     #
     # fifth_set = [
-    #     SMARTSFeaturizer.from_preset(count=True, preset="rings"),
-    #     SMARTSFeaturizer.from_preset(count=False, preset="rings"),
-    #     SMARTSFeaturizer.from_preset(count=True, preset="organic"),
-    #     SMARTSFeaturizer.from_preset(count=False, preset="organic"),
-    #     SMARTSFeaturizer.from_preset(count=True, preset="heterocyclic"),
-    #     SMARTSFeaturizer.from_preset(count=False, preset="heterocyclic"),
+    #     FragmentSearchFeaturizer.from_preset(count=True, preset="rings"),
+    #     FragmentSearchFeaturizer.from_preset(count=False, preset="rings"),
+    #     FragmentSearchFeaturizer.from_preset(count=True, preset="organic"),
+    #     FragmentSearchFeaturizer.from_preset(count=False, preset="organic"),
+    #     FragmentSearchFeaturizer.from_preset(count=True, preset="heterocyclic"),
+    #     FragmentSearchFeaturizer.from_preset(count=False, preset="heterocyclic"),
     # ]
     #
     # sixth_set = [
-    #     SMARTSFeaturizer.from_preset(count=True, preset="warheads"),
-    #     SMARTSFeaturizer.from_preset(count=False, preset="warheads"),
-    #     SMARTSFeaturizer.from_preset(count=True, preset="scaffolds"),
-    #     SMARTSFeaturizer.from_preset(count=False, preset="scaffolds"),
-    #     SMARTSFeaturizer.from_preset(count=True, preset="amino"),
-    #     SMARTSFeaturizer.from_preset(count=False, preset="amino"),
+    #     FragmentSearchFeaturizer.from_preset(count=True, preset="warheads"),
+    #     FragmentSearchFeaturizer.from_preset(count=False, preset="warheads"),
+    #     FragmentSearchFeaturizer.from_preset(count=True, preset="scaffolds"),
+    #     FragmentSearchFeaturizer.from_preset(count=False, preset="scaffolds"),
+    #     FragmentSearchFeaturizer.from_preset(count=True, preset="amino"),
+    #     FragmentSearchFeaturizer.from_preset(count=False, preset="amino"),
     # ]
 
     featurizer = MultipleFeaturizer(

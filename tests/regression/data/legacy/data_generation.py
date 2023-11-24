@@ -25,7 +25,7 @@ from chemcaption.featurize.spatial import (
     NPRFeaturizer,
     PMIFeaturizer,
 )
-from chemcaption.featurize.substructure import IsomorphismFeaturizer, SMARTSFeaturizer
+from chemcaption.featurize.substructure import IsomorphismFeaturizer, FragmentSearchFeaturizer
 from chemcaption.molecules import SMILESMolecule
 
 BASE_DIR = os.getcwd()
@@ -188,7 +188,7 @@ def generate_info(string: str):
 
     for preset in ["rings", "organic", "heterocyclic", "warheads", "scaffolds", "amino"]:
         for val in [True, False]:
-            smarts_featurizer = SMARTSFeaturizer.from_preset(count=val, preset=preset)
+            smarts_featurizer = FragmentSearchFeaturizer.from_preset(count=val, preset=preset)
             smarts_presence = smarts_featurizer.featurize(molecule=mol).reshape((-1,)).tolist()
 
             keys += smarts_featurizer.feature_labels()

@@ -13,13 +13,13 @@ from chemcaption.featurize.utils import join_list_elements
 from chemcaption.molecules import Molecule
 from chemcaption.presets import SMARTS_MAP
 
-__all__ = ["SMARTSFeaturizer", "IsomorphismFeaturizer", "TopologyCountFeaturizer"]
+__all__ = ["FragmentSearchFeaturizer", "IsomorphismFeaturizer", "TopologyCountFeaturizer"]
 
 
-"""Featurizer to obtain the presence or count of SMARTS in molecules."""
+"""Featurizer to obtain the presence/count of fragments of interest (specified via SMARTS) in molecules."""
 
 
-class SMARTSFeaturizer(AbstractFeaturizer):
+class FragmentSearchFeaturizer(AbstractFeaturizer):
     """A featurizer for molecular substructure search via SMARTS."""
 
     def __init__(

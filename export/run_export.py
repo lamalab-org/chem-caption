@@ -37,7 +37,7 @@ from chemcaption.featurize.spatial import (
     PMIFeaturizer,
 )
 from chemcaption.featurize.stereochemistry import ChiralCenterCountFeaturizer
-from chemcaption.featurize.substructure import SMARTSFeaturizer
+from chemcaption.featurize.substructure import FragmentSearchFeaturizer
 from chemcaption.molecules import InChIMolecule, SELFIESMolecule, SMILESMolecule
 from chemcaption.presets import ALL_SMARTS
 
@@ -45,7 +45,7 @@ from chemcaption.presets import ALL_SMARTS
 def get_smarts_featurizers():
     featurizers = []
     for name, smarts in ALL_SMARTS.items():
-        featurizers.append(SMARTSFeaturizer([smarts], names=[name]))
+        featurizers.append(FragmentSearchFeaturizer([smarts], names=[name]))
     return featurizers
 
 
