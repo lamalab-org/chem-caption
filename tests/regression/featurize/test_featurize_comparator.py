@@ -7,14 +7,14 @@ import pytest
 
 from chemcaption.featurize.comparator import (
     AtomCountComparator,
+    DrugLikenessComparator,
+    GhoseFilterComparator,
     IsoelectronicComparator,
     IsomerismComparator,
     IsomorphismComparator,
+    LeadLikenessFilterComparator,
     LipinskiFilterComparator,
     ValenceElectronCountComparator,
-    GhoseFilterComparator,
-    DrugLikenessComparator,
-    LeadLikenessFilterComparator,
 )
 from tests.conftests import DISPATCH_MAP, PROPERTY_BANK, batch_molecule_properties
 

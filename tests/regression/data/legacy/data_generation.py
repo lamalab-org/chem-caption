@@ -17,7 +17,11 @@ from chemcaption.featurize.composition import (
     ElementMassProportionFeaturizer,
 )
 from chemcaption.featurize.electronicity import ValenceElectronCountFeaturizer
-from chemcaption.featurize.rules import LipinskiFilterFeaturizer, GhoseFilterFeaturizer, LeadLikenessFilterFeaturizer
+from chemcaption.featurize.rules import (
+    GhoseFilterFeaturizer,
+    LeadLikenessFilterFeaturizer,
+    LipinskiFilterFeaturizer,
+)
 from chemcaption.featurize.spatial import (
     AsphericityFeaturizer,
     EccentricityFeaturizer,
