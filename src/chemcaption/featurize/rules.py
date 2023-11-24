@@ -311,7 +311,7 @@ class LeadLikenessFilterFeaturizer(AbstractFeaturizer):
         Returns:
             (List[str]): List of names of extracted features.
         """
-        return ["num_leadlike_violations"]
+        return ["num_lead_likeness_violations"]
 
     def _mass_violation(self, molecule: Molecule) -> np.array:
         """Return molecule status as regards violation of molecular mass requirement for lead-likeness filter.

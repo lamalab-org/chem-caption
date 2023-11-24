@@ -17,7 +17,7 @@ from chemcaption.featurize.composition import (
     ElementMassProportionFeaturizer,
 )
 from chemcaption.featurize.electronicity import ValenceElectronCountFeaturizer
-from chemcaption.featurize.rules import LipinskiFilterFeaturizer
+from chemcaption.featurize.rules import LipinskiFilterFeaturizer, GhoseFilterFeaturizer, LeadLikenessFilterFeaturizer
 from chemcaption.featurize.spatial import (
     AsphericityFeaturizer,
     EccentricityFeaturizer,
@@ -69,6 +69,8 @@ def generate_info(string: str):
     count_featurizer = ElementCountFeaturizer(preset=preset)
     count_ratio_featurizer = ElementCountProportionFeaturizer(preset=preset)
     lipinski_featurizer = LipinskiFilterFeaturizer()
+    ghose_featurizer = GhoseFilterFeaturizer()
+    lead_featurizer = LeadLikenessFilterFeaturizer()
 
     valence_featurizer = ValenceElectronCountFeaturizer()
     isomorphism_featurizer = IsomorphismFeaturizer()
@@ -114,6 +116,8 @@ def generate_info(string: str):
     num_acceptors = Lipinski.NumHAcceptors(mol.reveal_hydrogens())
 
     num_lipinski_violations = lipinski_featurizer.featurize(mol).item()
+    num_ghose_violations = ghose_featurizer.featurize(mol).item()
+    num_lead_violations = lead_featurizer.featurize(mol).item()
 
     keys = ["smiles", "weisfeiler_lehman_hash", "num_atoms"]
 
@@ -133,6 +137,8 @@ def generate_info(string: str):
         "num_hydrogen_bond_acceptors",
         "num_valence_electrons",
         "num_lipinski_violations",
+        "num_ghose_violations",
+        "num_lead_likeness_violations",
     ]
 
     masses = mass_featurizer.featurize(molecule=mol).reshape((-1,)).tolist()
@@ -182,6 +188,8 @@ def generate_info(string: str):
         num_acceptors,
         valence_count,
         num_lipinski_violations,
+        num_ghose_violations,
+        num_lead_violations,
     ]
     values += masses
     values += mass_ratios
