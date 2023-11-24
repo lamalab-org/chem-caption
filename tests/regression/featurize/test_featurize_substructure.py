@@ -19,8 +19,8 @@ PRESET_BASE_LABELS = SMARTS_MAP[SMARTS_PRESET]["names"]
 # Implemented tests for substructure-related featurizers.
 
 __all__ = [
-    "test_smarts_count_featurizer",
-    "test_smarts_presence_featurizer",
+    "test_fragment_count_featurizer",
+    "test_fragment_presence_featurizer",
 ]
 
 
@@ -43,7 +43,7 @@ __all__ = [
         ),
     ),
 )
-def test_smarts_count_featurizer(test_input, expected):
+def test_fragment_count_featurizer(test_input, expected):
     """Test FragmentSearchFeaturizer for SMARTS occurrence count."""
     featurizer = FragmentSearchFeaturizer.from_preset(count=True, preset=SMARTS_PRESET)
     molecule = MOLECULE(test_input)
@@ -72,7 +72,7 @@ def test_smarts_count_featurizer(test_input, expected):
         ),
     ),
 )
-def test_smarts_presence_featurizer(test_input, expected):
+def test_fragment_presence_featurizer(test_input, expected):
     """Test FragmentSearchFeaturizer for SMARTS presence detection."""
     featurizer = FragmentSearchFeaturizer.from_preset(count=False, preset=SMARTS_PRESET)
     molecule = MOLECULE(test_input)

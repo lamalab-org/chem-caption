@@ -14,7 +14,7 @@ from chemcaption.molecules import SMILESMolecule
 
 __all__ = [
     "test_topology_count_featurizer",
-    "test_smarts_featurizer",
+    "test_fragment_search_featurizer",
     "test_isomorphism_featurizer",
 ]
 
@@ -45,7 +45,7 @@ def test_topology_count_featurizer():
     assert text.to_dict()["filled_completion"] == "Answer: 1, 1, 0, 0, 0, 0, 0, 0, 0, and 0"
 
 
-def test_smarts_featurizer():
+def test_fragment_search_featurizer():
     molecule = SMILESMolecule("C1=CC=CC=C1")
     featurizer = FragmentSearchFeaturizer.from_preset("organic")
     results = featurizer.featurize(molecule)
