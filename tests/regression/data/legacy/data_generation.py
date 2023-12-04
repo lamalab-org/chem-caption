@@ -85,13 +85,13 @@ def generate_info(string: str):
 
     topology_featurizer = TopologyCountFeaturizer.from_preset(preset="organic")
 
-    # shape_featurizer = MultipleFeaturizer(
-    #     featurizers=[
-    #         AsphericityFeaturizer(),
-    #         EccentricityFeaturizer(),
-    #         InertialShapeFactorFeaturizer()
-    #     ]
-    # )
+    shape_featurizer = MultipleFeaturizer(
+        featurizers=[
+            AsphericityFeaturizer(),
+            EccentricityFeaturizer(),
+            InertialShapeFactorFeaturizer(),
+        ]
+    )
     #
     # npr_pmi_featurizer = MultipleFeaturizer(
     #     featurizers = [
@@ -167,7 +167,7 @@ def generate_info(string: str):
         bond_type_proportion_featurizer.featurize(molecule=mol).flatten().tolist()
     )
 
-    # shape_features = shape_featurizer.featurize(molecule=mol).tolist()
+    shape_features = shape_featurizer.featurize(molecule=mol).flatten().tolist()
     # npr_pmi = npr_pmi_featurizer.featurize(molecule=mol).tolist()
 
     values = [
@@ -202,10 +202,10 @@ def generate_info(string: str):
     values += count_ratios
     values += num_environments
 
-    # values += shape_features
+    values += shape_features
     # values += npr_pmi
     #
-    # keys += shape_featurizer.feature_labels()
+    keys += shape_featurizer.feature_labels()
     # keys += npr_pmi_featurizer.feature_labels()
 
     for preset in ["rings", "organic", "heterocyclic", "warheads", "scaffolds", "amino"]:
