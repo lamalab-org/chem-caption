@@ -177,6 +177,7 @@ class MorfeusFeaturizer(AbstractFeaturizer):
         conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
         morfeus_kwargs: Optional[Dict[str, Any]] = None,
         qc_optimize: bool = False,
+        aggregation: Optional[str, List[str]] = None,
     ):
         """Instantiate class.
 
@@ -184,6 +185,7 @@ class MorfeusFeaturizer(AbstractFeaturizer):
             conformer_generation_kwargs (Optional[Dict[str, Any]]): Configuration for conformer generation.
             morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
             qc_optimize (bool): Run QCEngine optimization harness. Defaults to `False`.
+            aggregation (Optional[str, List[str]]): Aggregation to use on generated descriptors. Defaults to `None`.
         """
         super().__init__()
         self._conf_gen_kwargs = (
@@ -193,6 +195,18 @@ class MorfeusFeaturizer(AbstractFeaturizer):
         )
         self.morfeus_kwargs = frozendict(morfeus_kwargs) if morfeus_kwargs else frozendict({})
         self.qc_optimize = qc_optimize
+        self.aggregation = aggregation if aggregation is None else aggregation.lower()
+        self.aggregation_func = {
+            "mean": np.mean,
+            "median": np.median,
+            "std": np.std,
+            "min": np.min,
+            "max": np.max,
+            None: lambda x: x
+        }
+
+        acceptable_aggregations = list(self.aggregation_func.keys())
+        assert self.aggregation in acceptable_aggregations, "Invalid aggregation. Available aggregations are {}".format(acceptable_aggregations)
 
     def _get_conformer(self, mol: Chem.Mol) -> Chem.Mol:
         """Return conformer for molecule.

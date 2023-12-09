@@ -483,6 +483,7 @@ class DipoleMomentsFeaturizer(MorfeusFeaturizer):
         morfeus_kwargs: Optional[Dict[str, Any]] = None,
         qc_optimize: bool = False,
         max_index: Optional[int] = None,
+        aggregation: Optional[str, List[str]] = None,
     ):
         """Instantiate class.
 
@@ -491,11 +492,13 @@ class DipoleMomentsFeaturizer(MorfeusFeaturizer):
             morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
             qc_optimize (bool): Run QCEngine optimization harness. Defaults to `False`.
             max_index (Optional[int]): Maximum number of atoms/bonds to consider for feature generation.
+            aggregation (Optional[str, List[str]]): Aggregation to use on generated descriptors. Defaults to `None`.
         """
         super().__init__(
             conformer_generation_kwargs=conformer_generation_kwargs,
             morfeus_kwargs=morfeus_kwargs,
             qc_optimize=qc_optimize,
+            aggregation=aggregation,
         )
 
         self._names = [
@@ -526,11 +529,17 @@ class DipoleMomentsFeaturizer(MorfeusFeaturizer):
 
         dipoles = [(dipoles[i - 1] if i <= num_dipoles else 0) for i in range(self.max_index)]
 
-        # Track atom identities
-        atomic_numbers = self._track_atom_identity(molecule=molecule, max_index=self.max_index)
+        if self.aggregation is None:
+            # Track atom identities
+            atomic_numbers = self._track_atom_identity(molecule=molecule, max_index=self.max_index)
 
-        # Combine descriptors with atom identities
-        output = dipoles + atomic_numbers
+            # Combine descriptors with atom identities
+            output = dipoles + atomic_numbers
+        else:
+            if type(self.aggregation) == list:
+                output = [self.aggregation_func[agg](dipoles) for agg in self.aggregation]
+            else:
+                output = self.aggregation_func[self.aggregation](dipoles)
 
         return np.array(output).reshape(1, -1)
 
@@ -557,9 +566,15 @@ class DipoleMomentsFeaturizer(MorfeusFeaturizer):
         Returns:
             (List[str]): List of labels of extracted features.
         """
-        return [f"dipole_{i}_{i+1}" for i in range(self.max_index)] + [
-            f"atomic_number_{i}" for i in range(self.max_index + 1)
-        ]
+        if self.aggregation is None:
+            return [f"dipole_{i}_{i+1}" for i in range(self.max_index)] + [
+                f"atomic_number_{i}" for i in range(self.max_index + 1)
+            ]
+        else:
+            if type(self.aggregation) == list:
+                return [f"{agg}_dipole" for agg in self.aggregation]
+            else:
+                return [self.aggregation + "_dipole"]
 
     def implementors(self) -> List[str]:
         """
@@ -583,6 +598,7 @@ class BondOrderFeaturizer(MorfeusFeaturizer):
         morfeus_kwargs: Optional[Dict[str, Any]] = None,
         qc_optimize: bool = False,
         max_index: Optional[int] = None,
+        aggregation: Optional[str, List[str]] = None,
     ):
         """Instantiate class.
 
@@ -591,11 +607,13 @@ class BondOrderFeaturizer(MorfeusFeaturizer):
             morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
             qc_optimize (bool): Run QCEngine optimization harness. Defaults to `False`.
             max_index (Optional[int]): Maximum number of atoms/bonds to consider for feature generation.
+            aggregation (Optional[str, List[str]]): Aggregation to use on generated descriptors. Defaults to `None`.
         """
         super().__init__(
             conformer_generation_kwargs=conformer_generation_kwargs,
             morfeus_kwargs=morfeus_kwargs,
             qc_optimize=qc_optimize,
+            aggregation=aggregation,
         )
 
         self._names = [
@@ -626,13 +644,18 @@ class BondOrderFeaturizer(MorfeusFeaturizer):
         bond_orders = [
             (bond_orders[i - 1] if i <= self.max_index else 0) for i in range(self.max_index)
         ]
+        if self.aggregation is None:
+            # Track atom identities
+            atomic_numbers = self._track_atom_identity(molecule=molecule, max_index=self.max_index)
+            print("Number of atoms: ", len(atomic_numbers))
 
-        # Track atom identities
-        atomic_numbers = self._track_atom_identity(molecule=molecule, max_index=self.max_index)
-        print("Number of atoms: ", len(atomic_numbers))
-
-        # Combine descriptors with atom identities
-        output = bond_orders + atomic_numbers
+            # Combine descriptors with atom identities
+            output = bond_orders + atomic_numbers
+        else:
+            if type(self.aggregation) == list:
+                output = [self.aggregation_func[agg](bond_orders) for agg in self.aggregation]
+            else:
+                output = self.aggregation_func[self.aggregation](bond_orders)
 
         return np.array(output).reshape(1, -1)
 
@@ -659,9 +682,15 @@ class BondOrderFeaturizer(MorfeusFeaturizer):
         Returns:
             (List[str]): List of labels of extracted features.
         """
-        return [f"bond_order_{i}_{i+1}" for i in range(self.max_index)] + [
-            f"atomic_number_{i}" for i in range(self.max_index + 1)
-        ]
+        if self.aggregation is None:
+            return [f"bond_order_{i}_{i+1}" for i in range(self.max_index)] + [
+                f"atomic_number_{i}" for i in range(self.max_index + 1)
+            ]
+        else:
+            if type(self.aggregation) == list:
+                return [f"{agg}_bond_order" for agg in self.aggregation]
+            else:
+                return [self.aggregation + "_bond_order"]
 
     def implementors(self) -> List[str]:
         """
