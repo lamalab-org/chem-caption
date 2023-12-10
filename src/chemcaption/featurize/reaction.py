@@ -161,6 +161,7 @@ class SolventAccessibleAtomAreaFeaturizer(MorfeusFeaturizer):
         morfeus_kwargs: Optional[Dict[str, Any]] = None,
         qc_optimize: bool = False,
         max_index: Optional[int] = None,
+        aggregation: Optional[Union[str, List[str]]] = None,
     ):
         """Instantiate class.
 
@@ -169,11 +170,14 @@ class SolventAccessibleAtomAreaFeaturizer(MorfeusFeaturizer):
             morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
             qc_optimize (bool): Run QCEngine optimization harness. Defaults to `False`.
             max_index (Optional[int]): Maximum number of atoms/bonds to consider for feature generation.
+            aggregation (Optional[Union[str, List[str]]]): Aggregation to use on generated descriptors.
+                Defaults to `None`.
         """
         super().__init__(
             conformer_generation_kwargs=conformer_generation_kwargs,
             morfeus_kwargs=morfeus_kwargs,
             qc_optimize=qc_optimize,
+            aggregation=aggregation,
         )
 
         self._names = [
@@ -209,11 +213,17 @@ class SolventAccessibleAtomAreaFeaturizer(MorfeusFeaturizer):
             (atom_areas[i] if i <= num_atoms else 0) for i in range(1, self.max_index + 1)
         ]
 
-        # Track atom identities
-        atomic_numbers = self._track_atom_identity(molecule=molecule, max_index=self.max_index)
+        if self.aggregation is None:
+            # Track atom identities
+            atomic_numbers = self._track_atom_identity(molecule=molecule, max_index=self.max_index)
 
-        # Combine descriptors with atom identities
-        output = atom_areas + atomic_numbers
+            # Combine descriptors with atom identities
+            output = atom_areas + atomic_numbers
+        else:
+            if isinstance(self.aggregation, (list, tuple, set)):
+                output = [self.aggregation_func[agg](atom_areas) for agg in self.aggregation]
+            else:
+                output = self.aggregation_func[self.aggregation](atom_areas)
 
         return np.array(output).reshape(1, -1)
 
@@ -240,9 +250,20 @@ class SolventAccessibleAtomAreaFeaturizer(MorfeusFeaturizer):
         Returns:
             (List[str]): List of labels of extracted features.
         """
-        return [f"solvent_accessible_atom_area_{i}" for i in range(self.max_index)] + [
+        if self.aggregation is None:
+            return [f"solvent_accessible_atom_area_{i}" for i in range(self.max_index)] + [
             f"atomic_number_{i}" for i in range(self.max_index)
         ]
+        else:
+            if isinstance(self.aggregation, (list, set, tuple)):
+                return [
+                    f"solvent_accessible_atom_area_{agg}"
+                    for agg in self.aggregation
+                ]
+            else:
+                return [
+                    "solvent_accessible_atom_area_" + self.aggregation
+                ]
 
     def implementors(self) -> List[str]:
         """
