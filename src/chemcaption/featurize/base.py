@@ -216,7 +216,11 @@ class MorfeusFeaturizer(AbstractFeaturizer):
 
         self.aggregation = aggregation
 
-        assert self._check_aggregation(self.aggregation), "Invalid aggregation. Available aggregations are {}".format(self._acceptable_aggregations)
+        assert self._check_aggregation(
+            self.aggregation
+        ), "Invalid aggregation. Available aggregations are {}".format(
+            self._acceptable_aggregations
+        )
 
     def _check_aggregation(self, aggregations: Union[str, List[str]]) -> bool:
         """Ensure supported aggregations are provided.
@@ -228,7 +232,9 @@ class MorfeusFeaturizer(AbstractFeaturizer):
             bool: Authenticity of provided aggregations.
         """
         if isinstance(aggregations, str) or aggregations is None:
-            aggregations = [aggregations,]
+            aggregations = [
+                aggregations,
+            ]
 
         return all([(agg in self._acceptable_aggregations) for agg in aggregations])
 
@@ -655,8 +661,8 @@ class MultipleFeaturizer(AbstractFeaturizer):
         Returns:
             (np.array): An array of features for each molecule instance.
         """
-        results = [f.featurize_many(molecules = molecules) for f in self.featurizers]
-        return np.concatenate(results, axis = 1)
+        results = [f.featurize_many(molecules=molecules) for f in self.featurizers]
+        return np.concatenate(results, axis=1)
 
     def feature_labels(self) -> List[str]:
         """Return feature label(s).

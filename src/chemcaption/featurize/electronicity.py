@@ -532,7 +532,9 @@ class AtomChargeFeaturizer(MorfeusFeaturizer):
             atom_charges = atom_charges + atomic_numbers
         else:
             if isinstance(self.aggregation, (list, set, tuple)):
-                atom_charges = [self.aggregation_func[agg](atom_charges) for agg in self.aggregation]
+                atom_charges = [
+                    self.aggregation_func[agg](atom_charges) for agg in self.aggregation
+                ]
             else:
                 atom_charges = self.aggregation_func[self.aggregation](atom_charges)
 
@@ -563,8 +565,8 @@ class AtomChargeFeaturizer(MorfeusFeaturizer):
         """
         if self.aggregation is None:
             return [f"atom_charge_{i}" for i in range(self.max_index)] + [
-            f"atomic_number_{i}" for i in range(self.max_index)
-        ]
+                f"atomic_number_{i}" for i in range(self.max_index)
+            ]
         else:
             if isinstance(self.aggregation, (list, set, tuple)):
                 return [f"atom_charge_{agg}" for agg in self.aggregation]
@@ -657,9 +659,13 @@ class AtomNucleophilicityFeaturizer(MorfeusFeaturizer):
             atom_nucleophilicities = atom_nucleophilicities + atomic_numbers
         else:
             if isinstance(self.aggregation, (list, set, tuple)):
-                atom_nucleophilicities = [self.aggregation_func[agg](atom_nucleophilicities) for agg in self.aggregation]
+                atom_nucleophilicities = [
+                    self.aggregation_func[agg](atom_nucleophilicities) for agg in self.aggregation
+                ]
             else:
-                atom_nucleophilicities = self.aggregation_func[self.aggregation](atom_nucleophilicities)
+                atom_nucleophilicities = self.aggregation_func[self.aggregation](
+                    atom_nucleophilicities
+                )
 
         return np.array(atom_nucleophilicities).reshape(1, -1)
 
@@ -688,14 +694,20 @@ class AtomNucleophilicityFeaturizer(MorfeusFeaturizer):
         """
         if self.aggregation is None:
             return [
-            (f"atom_{i}_local_nucleophilicity" if self.local else f"atom_{i}_nucleophilicity")
-            for i in range(self.max_index)
-        ] + [f"atomic_number_{i}" for i in range(self.max_index)]
+                (f"atom_{i}_local_nucleophilicity" if self.local else f"atom_{i}_nucleophilicity")
+                for i in range(self.max_index)
+            ] + [f"atomic_number_{i}" for i in range(self.max_index)]
         else:
             if isinstance(self.aggregation, (list, set, tuple)):
-                return [(f"local_nucleophilicity_{agg}" if self.local else f"nucleophilicity_{agg}") for agg in self.aggregation]
+                return [
+                    (f"local_nucleophilicity_{agg}" if self.local else f"nucleophilicity_{agg}")
+                    for agg in self.aggregation
+                ]
             else:
-                return [(f"local_nucleophilicity_" if self.local else f"nucleophilicity_") + self.aggregation]
+                return [
+                    (f"local_nucleophilicity_" if self.local else f"nucleophilicity_")
+                    + self.aggregation
+                ]
 
     def implementors(self) -> List[str]:
         """
@@ -787,7 +799,9 @@ class AtomElectrophilicityFeaturizer(MorfeusFeaturizer):
                     self.aggregation_func[agg](atom_electrophilicities) for agg in self.aggregation
                 ]
             else:
-                atom_electrophilicities = self.aggregation_func[self.aggregation](atom_electrophilicities)
+                atom_electrophilicities = self.aggregation_func[self.aggregation](
+                    atom_electrophilicities
+                )
 
         return np.array(atom_electrophilicities).reshape(1, -1)
 
@@ -816,14 +830,20 @@ class AtomElectrophilicityFeaturizer(MorfeusFeaturizer):
         """
         if self.aggregation is None:
             return [
-            (f"atom_{i}_local_electrophilicity" if self.local else f"atom_{i}_electrophilicity")
-            for i in range(self.max_index)
-        ] + [f"atomic_number_{i}" for i in range(self.max_index)]
+                (f"atom_{i}_local_electrophilicity" if self.local else f"atom_{i}_electrophilicity")
+                for i in range(self.max_index)
+            ] + [f"atomic_number_{i}" for i in range(self.max_index)]
         else:
             if isinstance(self.aggregation, (list, set, tuple)):
-                return [(f"local_electrophilicity_{agg}" if self.local else f"electrophilicity_{agg}") for agg in self.aggregation]
+                return [
+                    (f"local_electrophilicity_{agg}" if self.local else f"electrophilicity_{agg}")
+                    for agg in self.aggregation
+                ]
             else:
-                return [(f"local_electrophilicity_" if self.local else f"electrophilicity_") + self.aggregation]
+                return [
+                    (f"local_electrophilicity_" if self.local else f"electrophilicity_")
+                    + self.aggregation
+                ]
 
     def implementors(self) -> List[str]:
         """
