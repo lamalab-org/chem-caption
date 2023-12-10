@@ -177,7 +177,7 @@ class MorfeusFeaturizer(AbstractFeaturizer):
         conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
         morfeus_kwargs: Optional[Dict[str, Any]] = None,
         qc_optimize: bool = False,
-        aggregation: Optional[str, List[str]] = None,
+        aggregation: Optional[Union[str, List[str]]] = None,
     ):
         """Instantiate class.
 
@@ -185,7 +185,7 @@ class MorfeusFeaturizer(AbstractFeaturizer):
             conformer_generation_kwargs (Optional[Dict[str, Any]]): Configuration for conformer generation.
             morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
             qc_optimize (bool): Run QCEngine optimization harness. Defaults to `False`.
-            aggregation (Optional[str, List[str]]): Aggregation to use on generated descriptors. Defaults to `None`.
+            aggregation (Optional[Union[str, List[str]]]): Aggregation to use on generated descriptors. Defaults to `None`.
         """
         super().__init__()
         self._conf_gen_kwargs = (
@@ -195,18 +195,42 @@ class MorfeusFeaturizer(AbstractFeaturizer):
         )
         self.morfeus_kwargs = frozendict(morfeus_kwargs) if morfeus_kwargs else frozendict({})
         self.qc_optimize = qc_optimize
-        self.aggregation = aggregation if aggregation is None else aggregation.lower()
+
+        # Function map for supported aggregations
         self.aggregation_func = {
             "mean": np.mean,
             "median": np.median,
             "std": np.std,
             "min": np.min,
             "max": np.max,
-            None: lambda x: x
         }
 
-        acceptable_aggregations = list(self.aggregation_func.keys())
-        assert self.aggregation in acceptable_aggregations, "Invalid aggregation. Available aggregations are {}".format(acceptable_aggregations)
+        self._acceptable_aggregations = list(self.aggregation_func.keys()) + [None]
+
+        if type(aggregation) is str:
+            aggregation = aggregation.lower()
+        elif type(aggregation) is list:
+            aggregation = [agg.lower() for agg in aggregation]
+        else:
+            pass
+
+        self.aggregation = aggregation
+
+        assert self._check_aggregation(self.aggregation), "Invalid aggregation. Available aggregations are {}".format(self._acceptable_aggregations)
+
+    def _check_aggregation(self, aggregations: Union[str, List[str]]) -> bool:
+        """Ensure supported aggregations are provided.
+
+        Args:
+            None.
+
+        Returns:
+            bool: Authenticity of provided aggregations.
+        """
+        if isinstance(aggregations, str) or aggregations is None:
+            aggregations = [aggregations,]
+
+        return all([(agg in self._acceptable_aggregations) for agg in aggregations])
 
     def _get_conformer(self, mol: Chem.Mol) -> Chem.Mol:
         """Return conformer for molecule.

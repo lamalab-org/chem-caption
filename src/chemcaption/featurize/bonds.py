@@ -482,8 +482,8 @@ class DipoleMomentsFeaturizer(MorfeusFeaturizer):
         conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
         morfeus_kwargs: Optional[Dict[str, Any]] = None,
         qc_optimize: bool = False,
-        max_index: Optional[int] = None,
-        aggregation: Optional[str, List[str]] = None,
+        max_index: Optional[int] = 1,
+        aggregation: Optional[Union[str, List[str]]] = None,
     ):
         """Instantiate class.
 
@@ -492,7 +492,9 @@ class DipoleMomentsFeaturizer(MorfeusFeaturizer):
             morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
             qc_optimize (bool): Run QCEngine optimization harness. Defaults to `False`.
             max_index (Optional[int]): Maximum number of atoms/bonds to consider for feature generation.
-            aggregation (Optional[str, List[str]]): Aggregation to use on generated descriptors. Defaults to `None`.
+                Defaults to `1`.
+            aggregation (Optional[Union[str, List[str]]]): Aggregation to use on generated descriptors.
+                Defaults to `None`.
         """
         super().__init__(
             conformer_generation_kwargs=conformer_generation_kwargs,
@@ -572,9 +574,9 @@ class DipoleMomentsFeaturizer(MorfeusFeaturizer):
             ]
         else:
             if type(self.aggregation) == list:
-                return [f"{agg}_dipole" for agg in self.aggregation]
+                return [f"dipole_{agg}" for agg in self.aggregation]
             else:
-                return [self.aggregation + "_dipole"]
+                return ["dipole_" + self.aggregation]
 
     def implementors(self) -> List[str]:
         """
@@ -597,8 +599,8 @@ class BondOrderFeaturizer(MorfeusFeaturizer):
         conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
         morfeus_kwargs: Optional[Dict[str, Any]] = None,
         qc_optimize: bool = False,
-        max_index: Optional[int] = None,
-        aggregation: Optional[str, List[str]] = None,
+        max_index: Optional[int] = 1,
+        aggregation: Optional[Union[str, List[str]]] = None,
     ):
         """Instantiate class.
 
@@ -607,7 +609,9 @@ class BondOrderFeaturizer(MorfeusFeaturizer):
             morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
             qc_optimize (bool): Run QCEngine optimization harness. Defaults to `False`.
             max_index (Optional[int]): Maximum number of atoms/bonds to consider for feature generation.
-            aggregation (Optional[str, List[str]]): Aggregation to use on generated descriptors. Defaults to `None`.
+                Defaults to `1`.
+            aggregation (Optional[Union[str, List[str]]]): Aggregation to use on generated descriptors.
+                Defaults to `None`.
         """
         super().__init__(
             conformer_generation_kwargs=conformer_generation_kwargs,
@@ -644,10 +648,10 @@ class BondOrderFeaturizer(MorfeusFeaturizer):
         bond_orders = [
             (bond_orders[i - 1] if i <= self.max_index else 0) for i in range(self.max_index)
         ]
+
         if self.aggregation is None:
             # Track atom identities
             atomic_numbers = self._track_atom_identity(molecule=molecule, max_index=self.max_index)
-            print("Number of atoms: ", len(atomic_numbers))
 
             # Combine descriptors with atom identities
             output = bond_orders + atomic_numbers
@@ -688,9 +692,9 @@ class BondOrderFeaturizer(MorfeusFeaturizer):
             ]
         else:
             if type(self.aggregation) == list:
-                return [f"{agg}_bond_order" for agg in self.aggregation]
+                return [f"bond_order_{agg}" for agg in self.aggregation]
             else:
-                return [self.aggregation + "_bond_order"]
+                return ["bond_order_" + self.aggregation]
 
     def implementors(self) -> List[str]:
         """

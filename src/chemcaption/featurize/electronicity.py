@@ -662,9 +662,7 @@ class AtomNucleophilicityFeaturizer(MorfeusFeaturizer):
         return [
             (f"atom_{i}_local_nucleophilicity" if self.local else f"atom_{i}_nucleophilicity")
             for i in range(self.max_index)
-        ] + [
-            f"atomic_number_{i}" for i in range(self.max_index)
-        ]
+        ] + [f"atomic_number_{i}" for i in range(self.max_index)]
 
     def implementors(self) -> List[str]:
         """
@@ -773,9 +771,7 @@ class AtomElectrophilicityFeaturizer(MorfeusFeaturizer):
         return [
             (f"atom_{i}_local_electrophilicity" if self.local else f"atom_{i}_electrophilicity")
             for i in range(self.max_index)
-        ] + [
-            f"atomic_number_{i}" for i in range(self.max_index)
-        ]
+        ] + [f"atomic_number_{i}" for i in range(self.max_index)]
 
     def implementors(self) -> List[str]:
         """
