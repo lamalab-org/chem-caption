@@ -472,6 +472,7 @@ class AtomChargeFeaturizer(MorfeusFeaturizer):
         morfeus_kwargs: Optional[Dict[str, Any]] = None,
         qc_optimize: bool = False,
         max_index: Optional[int] = None,
+        aggregation: Optional[Union[str, List[str]]] = None,
     ):
         """Instantiate class.
 
@@ -480,11 +481,14 @@ class AtomChargeFeaturizer(MorfeusFeaturizer):
             morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
             qc_optimize (bool): Run QCEngine optimization harness. Defaults to `False`.
             max_index (Optional[int]): Maximum number of atoms/bonds to consider for feature generation.
+            aggregation (Optional[Union[str, List[str]]]): Aggregation to use on generated descriptors.
+                Defaults to `None`.
         """
         super().__init__(
             conformer_generation_kwargs=conformer_generation_kwargs,
             morfeus_kwargs=morfeus_kwargs,
             qc_optimize=qc_optimize,
+            aggregation=aggregation,
         )
 
         self._names = [
@@ -519,11 +523,18 @@ class AtomChargeFeaturizer(MorfeusFeaturizer):
         atom_charges = [
             (atom_charges[i] if i <= num_atoms else 0) for i in range(1, self.max_index + 1)
         ]
-        # Track atom identities
-        atomic_numbers = self._track_atom_identity(molecule=molecule, max_index=self.max_index)
 
-        # Combine descriptors with atom identities
-        atom_charges = atom_charges + atomic_numbers
+        if self.aggregation is None:
+            # Track atom identities
+            atomic_numbers = self._track_atom_identity(molecule=molecule, max_index=self.max_index)
+
+            # Combine descriptors with atom identities
+            atom_charges = atom_charges + atomic_numbers
+        else:
+            if isinstance(self.aggregation, (list, set, tuple)):
+                atom_charges = [self.aggregation_func[agg](atom_charges) for agg in self.aggregation]
+            else:
+                atom_charges = self.aggregation_func[self.aggregation](atom_charges)
 
         return np.array(atom_charges).reshape(1, -1)
 
@@ -550,9 +561,15 @@ class AtomChargeFeaturizer(MorfeusFeaturizer):
         Returns:
             (List[str]): List of labels of extracted features.
         """
-        return [f"atom_charge_{i}" for i in range(self.max_index)] + [
-            f"atomic_number_{i}" for i in range(self.max_index + 1)
+        if self.aggregation is None:
+            return [f"atom_charge_{i}" for i in range(self.max_index)] + [
+            f"atomic_number_{i}" for i in range(self.max_index)
         ]
+        else:
+            if isinstance(self.aggregation, (list, set, tuple)):
+                return [f"atom_charge_{agg}" for agg in self.aggregation]
+            else:
+                return ["atom_charge_" + self.aggregation]
 
     def implementors(self) -> List[str]:
         """
@@ -576,6 +593,7 @@ class AtomNucleophilicityFeaturizer(MorfeusFeaturizer):
         morfeus_kwargs: Optional[Dict[str, Any]] = None,
         qc_optimize: bool = False,
         max_index: Optional[int] = None,
+        aggregation: Optional[Union[str, List[str]]] = None,
         local: bool = False,
     ):
         """Instantiate class.
@@ -585,12 +603,15 @@ class AtomNucleophilicityFeaturizer(MorfeusFeaturizer):
             morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
             qc_optimize (bool): Run QCEngine optimization harness. Defaults to `False`.
             max_index (Optional[int]): Maximum number of atoms/bonds to consider for feature generation.
+            aggregation (Optional[Union[str, List[str]]]): Aggregation to use on generated descriptors.
+                Defaults to `None`.
             local (bool): Calculate local descriptor or not. Defaults to `False`.
         """
         super().__init__(
             conformer_generation_kwargs=conformer_generation_kwargs,
             morfeus_kwargs=morfeus_kwargs,
             qc_optimize=qc_optimize,
+            aggregation=aggregation,
         )
 
         self._names = [
@@ -628,11 +649,17 @@ class AtomNucleophilicityFeaturizer(MorfeusFeaturizer):
             (nucleophilicity[i] if i <= num_atoms else 0) for i in range(1, self.max_index + 1)
         ]
 
-        # Track atom identities
-        atomic_numbers = self._track_atom_identity(molecule=molecule, max_index=self.max_index)
+        if self.aggregation is None:
+            # Track atom identities
+            atomic_numbers = self._track_atom_identity(molecule=molecule, max_index=self.max_index)
 
-        # Combine descriptors with atom identities
-        atom_nucleophilicities = atom_nucleophilicities + atomic_numbers
+            # Combine descriptors with atom identities
+            atom_nucleophilicities = atom_nucleophilicities + atomic_numbers
+        else:
+            if isinstance(self.aggregation, (list, set, tuple)):
+                atom_nucleophilicities = [self.aggregation_func[agg](atom_nucleophilicities) for agg in self.aggregation]
+            else:
+                atom_nucleophilicities = self.aggregation_func[self.aggregation](atom_nucleophilicities)
 
         return np.array(atom_nucleophilicities).reshape(1, -1)
 
@@ -659,10 +686,16 @@ class AtomNucleophilicityFeaturizer(MorfeusFeaturizer):
         Returns:
             (List[str]): List of labels of extracted features.
         """
-        return [
+        if self.aggregation is None:
+            return [
             (f"atom_{i}_local_nucleophilicity" if self.local else f"atom_{i}_nucleophilicity")
             for i in range(self.max_index)
         ] + [f"atomic_number_{i}" for i in range(self.max_index)]
+        else:
+            if isinstance(self.aggregation, (list, set, tuple)):
+                return [(f"local_nucleophilicity_{agg}" if self.local else f"nucleophilicity_{agg}") for agg in self.aggregation]
+            else:
+                return [(f"local_nucleophilicity_" if self.local else f"nucleophilicity_") + self.aggregation]
 
     def implementors(self) -> List[str]:
         """
@@ -686,6 +719,7 @@ class AtomElectrophilicityFeaturizer(MorfeusFeaturizer):
         morfeus_kwargs: Optional[Dict[str, Any]] = None,
         qc_optimize: bool = False,
         max_index: Optional[int] = None,
+        aggregation: Optional[Union[str, List[str]]] = None,
         local: bool = False,
     ):
         """Instantiate class.
@@ -695,12 +729,15 @@ class AtomElectrophilicityFeaturizer(MorfeusFeaturizer):
             morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
             qc_optimize (bool): Run QCEngine optimization harness. Defaults to `False`.
             max_index (Optional[int]): Maximum number of atoms/bonds to consider for feature generation.
+            aggregation (Optional[Union[str, List[str]]]): Aggregation to use on generated descriptors.
+                Defaults to `None`.
             local (bool): Calculate local descriptor or not. Defaults to `False`.
         """
         super().__init__(
             conformer_generation_kwargs=conformer_generation_kwargs,
             morfeus_kwargs=morfeus_kwargs,
             qc_optimize=qc_optimize,
+            aggregation=aggregation,
         )
 
         self._names = [
@@ -737,11 +774,20 @@ class AtomElectrophilicityFeaturizer(MorfeusFeaturizer):
         atom_electrophilicities = [
             (electrophilicity[i] if i <= num_atoms else 0) for i in range(1, self.max_index + 1)
         ]
-        # Track atom identities
-        atomic_numbers = self._track_atom_identity(molecule=molecule, max_index=self.max_index)
 
-        # Combine descriptors with atom identities
-        atom_electrophilicities = atom_electrophilicities + atomic_numbers
+        if self.aggregation is None:
+            # Track atom identities
+            atomic_numbers = self._track_atom_identity(molecule=molecule, max_index=self.max_index)
+
+            # Combine descriptors with atom identities
+            atom_electrophilicities = atom_electrophilicities + atomic_numbers
+        else:
+            if isinstance(self.aggregation, (list, tuple, set)):
+                atom_electrophilicities = [
+                    self.aggregation_func[agg](atom_electrophilicities) for agg in self.aggregation
+                ]
+            else:
+                atom_electrophilicities = self.aggregation_func[self.aggregation](atom_electrophilicities)
 
         return np.array(atom_electrophilicities).reshape(1, -1)
 
@@ -755,7 +801,7 @@ class AtomElectrophilicityFeaturizer(MorfeusFeaturizer):
         Returns:
             (np.array): An array of features for each molecule instance.
         """
-        self.max_index = self.fit_on_bond_counts(molecules=molecules)
+        self.max_index = self.fit_on_atom_counts(molecules=molecules)
 
         return super().featurize_many(molecules=molecules)
 
@@ -768,10 +814,16 @@ class AtomElectrophilicityFeaturizer(MorfeusFeaturizer):
         Returns:
             (List[str]): List of labels of extracted features.
         """
-        return [
+        if self.aggregation is None:
+            return [
             (f"atom_{i}_local_electrophilicity" if self.local else f"atom_{i}_electrophilicity")
             for i in range(self.max_index)
         ] + [f"atomic_number_{i}" for i in range(self.max_index)]
+        else:
+            if isinstance(self.aggregation, (list, set, tuple)):
+                return [(f"local_electrophilicity_{agg}" if self.local else f"electrophilicity_{agg}") for agg in self.aggregation]
+            else:
+                return [(f"local_electrophilicity_" if self.local else f"electrophilicity_") + self.aggregation]
 
     def implementors(self) -> List[str]:
         """

@@ -645,6 +645,19 @@ class MultipleFeaturizer(AbstractFeaturizer):
         """
         return PromptCollection([f.text_featurize(molecule=molecule) for f in self.featurizers])
 
+    def featurize_many(self, molecules: List[Molecule]) -> np.array:
+        """
+        Featurize a sequence of Molecule objects.
+
+        Args:
+            molecules (List[Molecule]): A sequence of molecule representations.
+
+        Returns:
+            (np.array): An array of features for each molecule instance.
+        """
+        results = [f.featurize_many(molecules = molecules) for f in self.featurizers]
+        return np.concatenate(results, axis = 1)
+
     def feature_labels(self) -> List[str]:
         """Return feature label(s).
 

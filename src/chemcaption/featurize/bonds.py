@@ -482,7 +482,7 @@ class DipoleMomentsFeaturizer(MorfeusFeaturizer):
         conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
         morfeus_kwargs: Optional[Dict[str, Any]] = None,
         qc_optimize: bool = False,
-        max_index: Optional[int] = 1,
+        max_index: Optional[int] = None,
         aggregation: Optional[Union[str, List[str]]] = None,
     ):
         """Instantiate class.
@@ -529,7 +529,9 @@ class DipoleMomentsFeaturizer(MorfeusFeaturizer):
         dipoles = morfeus_instance.get_dipole(**self.morfeus_kwargs).flatten().tolist()
         num_dipoles = len(dipoles)
 
-        dipoles = [(dipoles[i - 1] if i <= num_dipoles else 0) for i in range(self.max_index)]
+        print(dipoles)
+
+        dipoles = [(dipoles[i] if i < num_dipoles else 0) for i in range(self.max_index)]
 
         if self.aggregation is None:
             # Track atom identities
@@ -538,7 +540,7 @@ class DipoleMomentsFeaturizer(MorfeusFeaturizer):
             # Combine descriptors with atom identities
             output = dipoles + atomic_numbers
         else:
-            if type(self.aggregation) == list:
+            if isinstance(self.aggregation, (list, set, tuple)):
                 output = [self.aggregation_func[agg](dipoles) for agg in self.aggregation]
             else:
                 output = self.aggregation_func[self.aggregation](dipoles)
@@ -570,10 +572,10 @@ class DipoleMomentsFeaturizer(MorfeusFeaturizer):
         """
         if self.aggregation is None:
             return [f"dipole_{i}_{i+1}" for i in range(self.max_index)] + [
-                f"atomic_number_{i}" for i in range(self.max_index + 1)
+                f"atomic_number_{i}" for i in range(self.max_index)
             ]
         else:
-            if type(self.aggregation) == list:
+            if isinstance(self.aggregation, (list, set, tuple)):
                 return [f"dipole_{agg}" for agg in self.aggregation]
             else:
                 return ["dipole_" + self.aggregation]
@@ -599,7 +601,7 @@ class BondOrderFeaturizer(MorfeusFeaturizer):
         conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
         morfeus_kwargs: Optional[Dict[str, Any]] = None,
         qc_optimize: bool = False,
-        max_index: Optional[int] = 1,
+        max_index: Optional[int] = None,
         aggregation: Optional[Union[str, List[str]]] = None,
     ):
         """Instantiate class.
@@ -656,7 +658,7 @@ class BondOrderFeaturizer(MorfeusFeaturizer):
             # Combine descriptors with atom identities
             output = bond_orders + atomic_numbers
         else:
-            if type(self.aggregation) == list:
+            if isinstance(self.aggregation, (list, set, tuple)):
                 output = [self.aggregation_func[agg](bond_orders) for agg in self.aggregation]
             else:
                 output = self.aggregation_func[self.aggregation](bond_orders)
@@ -691,7 +693,7 @@ class BondOrderFeaturizer(MorfeusFeaturizer):
                 f"atomic_number_{i}" for i in range(self.max_index + 1)
             ]
         else:
-            if type(self.aggregation) == list:
+            if isinstance(self.aggregation, (list, set, tuple)):
                 return [f"bond_order_{agg}" for agg in self.aggregation]
             else:
                 return ["bond_order_" + self.aggregation]
