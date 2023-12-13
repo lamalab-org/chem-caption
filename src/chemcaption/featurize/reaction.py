@@ -252,18 +252,13 @@ class SolventAccessibleAtomAreaFeaturizer(MorfeusFeaturizer):
         """
         if self.aggregation is None:
             return [f"solvent_accessible_atom_area_{i}" for i in range(self.max_index)] + [
-            f"atomic_number_{i}" for i in range(self.max_index)
-        ]
+                f"atomic_number_{i}" for i in range(self.max_index)
+            ]
         else:
             if isinstance(self.aggregation, (list, set, tuple)):
-                return [
-                    f"solvent_accessible_atom_area_{agg}"
-                    for agg in self.aggregation
-                ]
+                return [f"solvent_accessible_atom_area_{agg}" for agg in self.aggregation]
             else:
-                return [
-                    "solvent_accessible_atom_area_" + self.aggregation
-                ]
+                return ["solvent_accessible_atom_area_" + self.aggregation]
 
     def implementors(self) -> List[str]:
         """
