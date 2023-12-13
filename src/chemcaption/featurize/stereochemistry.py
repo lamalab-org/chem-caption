@@ -43,7 +43,8 @@ class ChiralCenterCountFeaturizer(AbstractFeaturizer):
         """
         return ["num_chiral_centers"]
 
-    def _find_chiral_centers(self, molecule: Molecule) -> List[Tuple[Any, Union[Any, str]]]:
+    @staticmethod
+    def _find_chiral_centers(molecule: Molecule) -> List[Tuple[Any, Union[Any, str]]]:
         """Return indices for the chiral centers in `molecule`.
 
         Args:
