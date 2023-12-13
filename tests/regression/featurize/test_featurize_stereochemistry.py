@@ -14,7 +14,7 @@ MOLECULE = DISPATCH_MAP[KIND]
 # Implemented tests for stereochemistry-related featurizers.
 
 __all__ = [
-    "test_num_chiral_centers",
+    "test_chiral_center_count_featurizer",
 ]
 
 
@@ -24,7 +24,7 @@ __all__ = [
         property_bank=PROPERTY_BANK, representation_name=KIND, property=["num_chiral_centers"]
     ),
 )
-def test_num_chiral_centers(test_input, expected):
+def test_chiral_center_count_featurizer(test_input, expected):
     """Test ChiralCenterCountFeaturizer."""
     featurizer = ChiralCenterCountFeaturizer()
     molecule = MOLECULE(test_input)

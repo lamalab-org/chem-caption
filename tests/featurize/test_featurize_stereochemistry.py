@@ -11,11 +11,11 @@ from chemcaption.molecules import SMILESMolecule
 # Implemented tests for stereochemistry-related classes.
 
 __all__ = [
-    "test_num_chiral_centers",
+    "test_chiral_center_count_featurizer",
 ]
 
 
-def test_num_chiral_centers():
+def test_chiral_center_count_featurizer():
     mol = SMILESMolecule(representation_string="CC")
 
     featurizer = ChiralCenterCountFeaturizer()
