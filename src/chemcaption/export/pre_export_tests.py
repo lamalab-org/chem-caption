@@ -46,27 +46,39 @@ def get_repetitive_labels(
 
 if __name__ == "__main__":
     repetitive_labels, all_labels = get_repetitive_labels(FEATURIZER)
+    num_repeated_labels = len(repetitive_labels)
 
-    print("Diagnostics:")
-    print("=" * 50)
-    print("Number of featurizers implemented:", len(FEATURIZER.featurizers))
-    print("=" * 50)
+    print("\n\nDiagnostics:".upper(), end = "\n\n")
+    print("=" * 50, end = "\n\n")
+    print("Number of featurizers implemented:", len(FEATURIZER.featurizers), end = "\n\n")
+    print("=" * 50, end = "\n\n")
     print("Number of labels:", len(all_labels))
-    print("Number of repeated labels:", len(repetitive_labels))
+    print("Number of repeated labels:", num_repeated_labels)
     print("Number of unique labels:", len(set(all_labels)))
 
-    if len(repetitive_labels) == 0:
-        print("=" * 50)
+    if num_repeated_labels == 0:
+        print("=" * 50, end = "\n\n")
+        print("Verdict: No duplicate labels detected!\n")
+        print("=" * 50, end="\n\n")
         print("All detected labels:\n")
 
         for i, label in enumerate(all_labels, 1):
             print(f"{i:.3g}.", label)
         exit()
 
-    for k, v in repetitive_labels.items():
+    print("=" * 50, end = "\n\n")
+    print(f"Verdict: {num_repeated_labels} duplicate labels detected!\n")
+    print("=" * 50)
+
+    for i, (k, v) in enumerate(repetitive_labels.items(), start = 1):
         if v["count"] > 1:
-            print(f"{k}:", v)
+            print(f"{i}. Label : {k}:")
+            print(f"     Number of appearances: {v['count']}")
+            print(f"     Appears in:")
+            for j, f in enumerate(v['appearance'], 1):
+                print(f"        {j}. {f}")
+            print()
 
     raise Exception(
-        f"Number of redundant labels found: {len(repetitive_labels)}. Please fix as soon as possible!"
+        f"Number of redundant labels found: {num_repeated_labels}. Please fix as soon as possible!"
     )
