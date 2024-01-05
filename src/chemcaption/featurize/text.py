@@ -85,7 +85,7 @@ class Prompt:
             PRECISION=4,
             PRECISION_TYPE=precision_type,
             COMPLETION=join_list_elements(self.completion),
-            ARTICLE="are" if len(self.completion) > 1 else "is",
+            VERB="are" if len(self.completion) > 1 else "is",
         )
         molecular_info = inspect_info(molecular_info)
 

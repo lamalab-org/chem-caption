@@ -36,7 +36,7 @@ class AbstractFeaturizer(ABC):
 
     def __init__(self):
         """Initialize class. Initialize periodic table."""
-        self.prompt_template = "Question: What {ARTICLE} the {PROPERTY_NAME} of the molecule with {REPR_SYSTEM} {REPR_STRING}?"
+        self.prompt_template = "Question: What {VERB} the {PROPERTY_NAME} of the molecule with {REPR_SYSTEM} {REPR_STRING}?"
         self.completion_template = "Answer: {COMPLETION}"
         self._names = []
         self.constraint = None
