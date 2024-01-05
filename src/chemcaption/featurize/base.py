@@ -4,20 +4,28 @@
 
 from abc import ABC, abstractmethod
 from concurrent.futures import ProcessPoolExecutor
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
 import pandas as pd
 import rdkit
+from colorama import Fore
+from frozendict import frozendict
+from morfeus import SASA, XTB
+from morfeus.conformer import Conformer, ConformerEnsemble
+from rdkit import Chem
 from scipy.spatial import distance_matrix
 
 from chemcaption.featurize.text import Prompt, PromptCollection
+
+from chemcaption.featurize.utils import cached_conformer
 from chemcaption.molecules import Molecule
 
 # Implemented abstract and high-level classes
 
 __all__ = [
     "AbstractFeaturizer",  # Featurizer base class.
+    "MorfeusFeaturizer",
     "AbstractComparator",
     "MultipleFeaturizer",  # Combines multiple featurizers.
     "Comparator",  # Class for comparing featurizer results amongst molecules.
@@ -36,7 +44,8 @@ class AbstractFeaturizer(ABC):
 
     def __init__(self):
         """Initialize class. Initialize periodic table."""
-        self.prompt_template = "Question: What {VERB} the {PROPERTY_NAME} of the molecule with {REPR_SYSTEM} {REPR_STRING}?"
+        self.prompt_template = ("Question: What {VERB} the {PROPERTY_NAME} of the molecule with {REPR_SYSTEM} "
+                                "{REPR_STRING}?")
         self.completion_template = "Answer: {COMPLETION}"
         self._names = []
         self.constraint = None
@@ -120,7 +129,7 @@ class AbstractFeaturizer(ABC):
         """Embed features in Prompt instance for multiple molecules.
 
         Args:
-            molecules (List[Molecule]): A sequence of molecule representations.
+            molecules (List[Molecule]): A list of molecule representations.
 
         Returns:
             List[Prompt]: List of Prompt instances containing relevant information extracted from each
@@ -168,6 +177,378 @@ class AbstractFeaturizer(ABC):
         raise NotImplementedError
 
 
+class MorfeusFeaturizer(AbstractFeaturizer):
+    """Abstract featurizer for morfeus-generated features."""
+
+    def __init__(
+        self,
+        conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
+        morfeus_kwargs: Optional[Dict[str, Any]] = None,
+        qc_optimize: bool = False,
+        aggregation: Optional[Union[str, List[str]]] = None,
+    ):
+        """Instantiate class.
+
+        Args:
+            conformer_generation_kwargs (Optional[Dict[str, Any]]): Configuration for conformer generation.
+            morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
+            qc_optimize (bool): Run QCEngine optimization harness. Defaults to `False`.
+            aggregation (Optional[Union[str, List[str]]]): Aggregation to use on generated descriptors. Defaults to `None`.
+        """
+        super().__init__()
+        self._conf_gen_kwargs = (
+            frozendict(conformer_generation_kwargs)
+            if conformer_generation_kwargs
+            else frozendict({})
+        )
+        self.morfeus_kwargs = frozendict(morfeus_kwargs) if morfeus_kwargs else frozendict({})
+        self.qc_optimize = qc_optimize
+
+        # Function map for supported aggregations
+        self.aggregation_func = {
+            "mean": np.mean,
+            "median": np.median,
+            "std": np.std,
+            "min": np.min,
+            "max": np.max,
+        }
+
+        self._acceptable_aggregations = list(self.aggregation_func.keys()) + [None]
+
+        if type(aggregation) is str:
+            aggregation = aggregation.lower()
+        elif type(aggregation) is list:
+            aggregation = [agg.lower() for agg in aggregation]
+        else:
+            pass
+
+        self.aggregation = aggregation
+
+        assert self._check_aggregation(
+            self.aggregation
+        ), "Invalid aggregation. Available aggregations are {}".format(
+            self._acceptable_aggregations
+        )
+
+    def _check_aggregation(self, aggregations: Union[str, List[str]]) -> bool:
+        """Ensure supported aggregations are provided.
+
+        Args:
+            None.
+
+        Returns:
+            bool: Authenticity of provided aggregations.
+        """
+        if isinstance(aggregations, str) or aggregations is None:
+            aggregations = [
+                aggregations,
+            ]
+
+        return all([(agg in self._acceptable_aggregations) for agg in aggregations])
+
+    def _get_conformer(self, mol: Chem.Mol) -> Chem.Mol:
+        """Return conformer for molecule.
+
+        Args:
+            mol (Chem.Mol): rdkit Molecule.
+
+        Returns:
+            (Chem.Mol): Molecule instance embedded with conformers.
+        """
+        smiles = Chem.MolToSmiles(mol)
+        return cached_conformer(smiles, self._conf_gen_kwargs)
+
+    @staticmethod
+    def _parse_indices(
+        atom_indices: Union[int, List[int]], as_range: bool = False
+    ) -> Tuple[Sequence, bool]:
+        """Preprocess atom indices.
+
+        Args:
+            atom_indices (Union[int, List[int]]): Range of atoms to calculate areas for. Either:
+                - an integer,
+                - a list of integers, or
+                - a two-tuple of integers representing lower index and upper index.
+            as_range (bool): Use `atom_indices` parameter as a range of indices or not. Defaults to `False`
+        """
+        if as_range:
+            if isinstance(atom_indices, int):
+                atom_indices = range(1, atom_indices + 1)
+
+            elif len(atom_indices) == 2:
+                if atom_indices[0] > atom_indices[1]:
+                    raise IndexError(
+                        "`atom_indices` parameter should contain two integers as (lower, upper) i.e., [10, 20]"
+                    )
+                atom_indices = range(atom_indices[0], atom_indices[1] + 1)
+
+            else:
+                as_range = False
+                print(
+                    Fore.RED
+                    + "UserWarning: List of integers passed to `atom_indices` parameter. `as_range` parameter will be refactored to False."
+                    + Fore.RESET
+                )
+
+        else:
+            if isinstance(atom_indices, int):
+                atom_indices = [atom_indices]
+
+        return atom_indices, as_range
+
+    def fit_on_bond_counts(
+        self, molecules: Union[List[Molecule], Tuple[Molecule], Molecule]
+    ) -> int:
+        """Fit instance on molecule collection.
+
+        Args:
+            molecules (Union[List[Molecule], Tuple[Molecule], Molecule]): List of molecular instances.
+
+        Returns:
+            int: Maximum number of bonds in any molecule passed in to featurizer.
+        """
+        molecules = [molecules] if not isinstance(molecules, list) else molecules
+        bond_counts = [self._count_bonds(molecule=molecule) for molecule in molecules]
+        return max(bond_counts)
+
+    @staticmethod
+    def fit_on_atom_counts(molecules: Union[List[Molecule], Tuple[Molecule], Molecule]) -> int:
+        """Fit instance on molecule collection.
+
+        Args:
+            molecules (Union[List[Molecule], Tuple[Molecule], Molecule]): List of molecular instances.
+
+        Returns:
+            int: Maximum number of atoms in any molecule passed in to featurizer.
+        """
+        molecules = [molecules] if not isinstance(molecules, list) else molecules
+        atom_counts = [molecule.reveal_hydrogens().GetNumAtoms() for molecule in molecules]
+        return max(atom_counts)
+
+    @staticmethod
+    def _count_bonds(molecule: Molecule) -> int:
+        """Helper function to count the number of bonds in a molecule.
+
+        Args:
+            molecule (Molecule): Molecular instance.
+
+        Returns:
+            int: Integer representing the number of bonds in a molecule.
+        """
+        bonds = list(molecule.reveal_hydrogens().GetBonds())
+        return len(bonds)
+
+    def _get_element_coordinates(self, molecule: Molecule) -> Tuple[np.array, np.array]:
+        """Return appropriate morfeus instance for feature generation.
+
+        Args:
+            molecule (Molecule): Molecular instance.
+
+        Returns:
+            Tuple[np.array, np.array]: Tuple containing (a). atoms and (b). corresponding coordinates in molecule.
+        """
+        molecule = self._get_conformer(molecule.reveal_hydrogens())
+
+        elements = np.array(
+            [PERIODIC_TABLE.GetElementSymbol(atom.GetAtomicNum()) for atom in molecule.GetAtoms()]
+        )
+        coordinates = molecule.GetConformer().GetPositions()
+
+        return elements, coordinates
+
+    def _get_morfeus_instance(
+        self, molecule: Molecule, morpheus_instance: str = "xtb"
+    ) -> Union[SASA, XTB]:
+        """Return appropriate morfeus instance for feature generation.
+
+        Args:
+            molecule (Molecule): Molecular instance.
+            morpheus_instance (str): Type of morfeus instance. Can take on either `xtb` or `sasa`. Defaults to `xtb`.
+
+        Returns:
+            Union[SASA, XTB]: Appropriate morfeus instance.
+        """
+        if morpheus_instance.lower() not in ["xtb", "sasa"]:
+            raise Exception(
+                "`morpheus_instance` parameter must take on either `xtb` or `sasa` as value."
+            )
+
+        return (
+            self._get_sasa_instance(molecule)
+            if morpheus_instance.lower() == "sasa"
+            else self._get_xtb_instance(molecule)
+        )
+
+    def _get_xtb_instance(self, molecule: Molecule) -> XTB:
+        """Return appropriate morfeus instance for feature generation.
+
+        Args:
+            molecule (Molecule): Molecular instance.
+
+        Returns:
+            XTB: Appropriate morfeus XTB instance.
+        """
+        elements, coordinates = self._get_element_coordinates(molecule)
+
+        return XTB(elements, coordinates, "1")
+
+    def _get_sasa_instance(self, molecule: Molecule) -> SASA:
+        """Return appropriate morfeus instance for feature generation.
+
+        Args:
+            molecule (Molecule): Molecular instance.
+
+        Returns:
+            SASA: Appropriate morfeus SASA instance.
+        """
+        elements, coordinates = self._get_element_coordinates(molecule)
+
+        return SASA(elements, coordinates, **self.morfeus_kwargs)
+
+    @staticmethod
+    def _optimize_molecule_geometry(
+        molecule: Molecule,
+        optimization_method: str = "GFN2-xTB",
+        procedure: str = "geometric",
+        rmsd_method: str = "spyrmsd",
+    ) -> ConformerEnsemble:
+        """Generate conformers and optimize them in 3D space.
+
+        Args:
+            molecule (Molecule): Molecular instance.
+            optimization_method (str): Method to be applied for geometric optimization. Defaults to `GFN2-xTB`.
+            procedure (str): QC engine optimization procedure. Defaults to `geometric`.
+            rmsd_method (str): Base method for conformer pruning w.r.t RMSD property.
+
+        Returns:
+            ConformerEnsemble: An ensemble of generated conformers.
+        """
+        string = Chem.MolToSmiles(molecule.rdkit_mol)
+        # Generate and optimize an ensemble of conformers
+        conformer_ensemble = ConformerEnsemble.from_rdkit(string)
+        conformer_ensemble.optimize_qc_engine(
+            program="xtb", model={"method": optimization_method}, procedure=procedure
+        )
+        conformer_ensemble = conformer_ensemble.prune_rmsd(method=rmsd_method)
+        conformer_ensemble.sort()
+        return conformer_ensemble.update_mol()
+
+    def _generate_conformers(
+        self,
+        molecule: Molecule,
+        num_conformers: int = 1,
+        optimization_method: str = "GFN2-xTB",
+        procedure: str = "geometric",
+        rmsd_method: str = "spyrmsd",
+    ) -> List[Conformer]:
+        """Generate conformers and optimize them in 3D space.
+
+        Args:
+            molecule (Molecule): Molecular instance.
+            num_conformers (int): Number of conformers to return after optimization.
+            optimization_method (str): Method to be applied for geometric optimization. Defaults to `GFN2-xTB`.
+            procedure (str): QC engine optimization procedure. Defaults to `geometric`.
+            rmsd_method (str): Base method for conformer pruning w.r.t RMSD property.
+
+        Returns:
+            List[Chem.Mol]: A list of generated conformers.
+        """
+        conformer_ensemble = self._optimize_molecule_geometry(
+            molecule=molecule,
+            optimization_method=optimization_method,
+            procedure=procedure,
+            rmsd_method=rmsd_method,
+        )
+        conformer_ensemble.sort()  # Sort conformers based on energy levels
+        print("There are", len(conformer_ensemble.conformers), "conformers")
+        return conformer_ensemble.conformers[:num_conformers]
+
+    def _generate_conformer(
+        self,
+        molecule: Molecule,
+        optimization_method: str = "GFN2-xTB",
+        procedure: str = "geometric",
+        rmsd_method: str = "spyrmsd",
+    ) -> Molecule:
+        """Generate a single conformer.
+
+        Args:
+            molecule (Molecule): Molecular instance.
+            optimization_method (str): Method to be applied for geometric optimization. Defaults to `GFN2-xTB`.
+            procedure (str): QC engine optimization procedure. Defaults to `geometric`.
+            rmsd_method (str): Base method for conformer pruning w.r.t RMSD property.
+
+        Returns:
+            Molecule: Molecular instance.
+        """
+        conformer_ensemble = self._optimize_molecule_geometry(
+            molecule=molecule,
+            optimization_method=optimization_method,
+            procedure=procedure,
+            rmsd_method=rmsd_method,
+        )
+
+        print(f"{len(conformer_ensemble.conformers)} conformer(s) generated!")
+
+        try:
+            molecule.rdkit_mol = conformer_ensemble.mol
+        except:
+            print(
+                Fore.RED
+                + "Wholescale conformer embedding failed. Embedding conformers individually...\n"
+                + Fore.RESET
+            )
+            molecule.rdkit_mol = molecule.reveal_hydrogens()
+
+            num_embedded = 0
+            conformers = list(conformer_ensemble.mol.GetConformers())
+
+            for conf in conformers:
+                try:
+                    molecule.rdkit_mol.AddConformer(conf)
+                    num_embedded += 1
+                except:
+                    pass
+
+            message = f"{num_embedded}/{len(conformers)} conformers embedded successfully!\n"
+            print(message + "=" * 70 + "\n")
+
+        return molecule
+
+    def _track_atom_identity(
+        self, molecule: Molecule, max_index: int = 1
+    ) -> List[Union[int, float]]:
+        """Ensure atom identities are tracked irrespective of atom arrangement in molecule.
+
+        Args:
+            molecule (Molecule): Molecular instance.
+            max_index (int): Maximum number of atoms/bonds to consider for identity tracking.
+
+        Returns:
+            List[Union[int, float]]: Atomic numbers of atoms in `molecule` arranged by index.
+        """
+        elements, coordinates = self._get_element_coordinates(molecule=molecule)
+        atoms = molecule.get_atoms(hydrogen=True)
+        atomic_numbers = [atom.GetAtomicNum() for atom in atoms]
+        if (max_index - len(atomic_numbers)) > 0:
+            atomic_numbers += [0 for _ in range(max_index - len(atomic_numbers))]
+        elif (max_index - len(atomic_numbers)) < 0:
+            atomic_numbers = atomic_numbers[:max_index]
+        return atomic_numbers
+
+    def implementors(self) -> List[str]:
+        """
+        Return list of functionality implementors.
+
+        Args:
+            None.
+
+        Returns:
+            List[str]: List of implementors.
+        """
+        return ["Benedict Oshomah Emoekabu"]
+
+
 class AbstractComparator(ABC):
     """Abstract base class for Comparator objects."""
 
@@ -195,7 +576,7 @@ class AbstractComparator(ABC):
             None.
 
         Returns:
-            List[str]: List of implementors.
+            (List[str]): List of implementors.
         """
         raise NotImplementedError
 
@@ -226,8 +607,7 @@ class MultipleFeaturizer(AbstractFeaturizer):
         """Initialize class instance.
 
         Args:
-            featurizers (Optional[List[AbstractFeaturizer]]):
-                A list of featurizer objects. Defaults to `None`.
+            featurizers (Optional[List[AbstractFeaturizer]]): A list of featurizer objects. Defaults to `None`.
 
         """
         super().__init__()
@@ -236,16 +616,15 @@ class MultipleFeaturizer(AbstractFeaturizer):
 
     def featurize(self, molecule: Molecule) -> np.array:
         """
-        Featurize a molecule instance.
-        Returns results from multiple lower-level featurizers.
+        Featurize a molecule instance. Returns results from multiple lower-level featurizers.
 
         Args:
             molecule (Molecule): Molecule representation.
 
         Returns:
-            np.array: Array containing features extracted from molecule, with shape `(1, num_featurizers)`, where
-                `num_featurizers` is the number of featurizers passed to MultipleFeaturizer
-                i.e., `num_featurizers` = len(self.featurizers).
+            np.array: Array containing features extracted from molecule, with shape `[1, N]`, where
+                `N` >= the number of featurizers passed to MultipleFeaturizer
+                i.e., `N`  >=  len(self.featurizers).
         """
         features = [
             feature for f in self.featurizers for feature in f.featurize(molecule).flatten()
@@ -266,6 +645,19 @@ class MultipleFeaturizer(AbstractFeaturizer):
             PromptCollection: Instance of Prompt containing relevant information extracted from `molecule`.
         """
         return PromptCollection([f.text_featurize(molecule=molecule) for f in self.featurizers])
+
+    def featurize_many(self, molecules: List[Molecule]) -> np.array:
+        """
+        Featurize a sequence of Molecule objects.
+
+        Args:
+            molecules (List[Molecule]): A sequence of molecule representations.
+
+        Returns:
+            np.array: An array of features for each molecule instance.
+        """
+        results = [f.featurize_many(molecules=molecules) for f in self.featurizers]
+        return np.concatenate(results, axis=1)
 
     def feature_labels(self) -> List[str]:
         """Return feature label(s).

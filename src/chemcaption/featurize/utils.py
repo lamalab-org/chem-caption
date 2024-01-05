@@ -19,6 +19,7 @@ __all__ = [
     "get_atom_symbols_and_positions",  # Helper function
     "cached_conformer",  # Helper function
     "apply_featurizer",  # Helper function
+    "cached_conformer",
 ]
 
 
@@ -75,3 +76,11 @@ def apply_featurizer(featurize_molecule_pair) -> np.array:
         if isinstance(molecule, list)
         else featurizer.featurize(molecule=molecule)
     )
+
+
+@lru_cache(maxsize=None)
+def cached_conformer(smiles, kwargs):
+    mol, conformers = _get_conformer(smiles=smiles, **kwargs)
+    for conf in conformers.keys():
+        mol.AddConformer(mol.GetConformer(conf))
+    return mol

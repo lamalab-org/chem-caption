@@ -9,7 +9,7 @@ from frozendict import frozendict
 from rdkit import Chem
 from rdkit.Chem import Descriptors3D
 
-from chemcaption.featurize.base import AbstractFeaturizer
+from chemcaption.featurize.base import AbstractFeaturizer, MorfeusFeaturizer
 from chemcaption.featurize.utils import cached_conformer, join_list_elements
 from chemcaption.molecules import Molecule
 
@@ -22,6 +22,7 @@ __all__ = [
     "InertialShapeFactorFeaturizer",
     "NPRFeaturizer",
     "PMIFeaturizer",
+    "AtomVolumeFeaturizer",
     "SpherocityIndexFeaturizer",
     "RadiusOfGyrationFeaturizer",
 ]
@@ -37,14 +38,15 @@ class SpatialFeaturizer(AbstractFeaturizer):
         self,
         use_masses: bool = True,
         force: bool = True,
-        conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
+        conformer_generation_kwargs: Optional[Dict[str, Union[int, str]]] = None,
     ):
         """Instantiate initialization scheme to be inherited.
 
         Args:
             use_masses (bool): Utilize elemental masses in eccentricity calculation. Defaults to `True`.
-            force (bool): Utilize force field calculations for energy minimization.
-            conformer_generation_kwargs (dict): Keyword arguments for conformer generation.
+            force (bool): Utilize force field calculations for energy minimization. Defaults to `True`.
+            conformer_generation_kwargs (Optional[Dict[str, Union[int, str]]]):
+                Keyword arguments for conformer generation. Defaults to `None`.
         """
         super().__init__()
 
@@ -58,7 +60,15 @@ class SpatialFeaturizer(AbstractFeaturizer):
             else frozendict({})
         )
 
-    def _get_conformer(self, mol):
+    def _get_conformer(self, mol: Chem.Mol) -> Chem.Mol:
+        """Returns molecular object embedded with conformers.
+
+        Args:
+            mol (Chem.Mol): Rdkit molecular instance.
+
+        Returns:
+            (Chem.Mol): Rdkit molecular instance embedded with conformers.
+        """
         smiles = Chem.MolToSmiles(mol)
         return cached_conformer(smiles, self._conf_gen_kwargs)
 
@@ -123,14 +133,15 @@ class EccentricityFeaturizer(SpatialFeaturizer):
         self,
         use_masses: bool = True,
         force: bool = True,
-        conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
+        conformer_generation_kwargs: Optional[Dict[str, Union[int, str]]] = None,
     ):
         """Initialize class object.
 
         Args:
             use_masses (bool): Utilize elemental masses in eccentricity calculation. Defaults to `True`.
-            force (bool): Utilize force field calculations for energy minimization.
-            conformer_generation_kwargs (Optional[Dict[str, Any]]): Keyword arguments for conformer generation.
+            force (bool): Utilize force field calculations for energy minimization. Defaults to `True`.
+            conformer_generation_kwargs (Optional[Dict[str, Union[int, str]]]):
+                Keyword arguments for conformer generation. Defaults to `None`.
         """
         super().__init__(
             use_masses=use_masses,
@@ -189,14 +200,15 @@ class AsphericityFeaturizer(SpatialFeaturizer):
         self,
         use_masses: bool = True,
         force: bool = True,
-        conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
+        conformer_generation_kwargs: Optional[Dict[str, Union[int, str]]] = None,
     ):
         """Initialize class object.
 
         Args:
             use_masses (bool): Utilize elemental masses in asphericity calculation. Defaults to `True`.
-            force (bool): Utilize force field calculations for energy minimization.
-            conformer_generation_kwargs (Optional[Dict[str, Any]]): Keyword arguments for conformer generation.
+            force (bool): Utilize force field calculations for energy minimization. Defaults to `True`.
+            conformer_generation_kwargs (Optional[Dict[str, Union[int, str]]]):
+                Keyword arguments for conformer generation. Defaults to `None`.
         """
         super().__init__(
             use_masses=use_masses,
@@ -256,14 +268,15 @@ class InertialShapeFactorFeaturizer(SpatialFeaturizer):
         self,
         use_masses: bool = True,
         force: bool = True,
-        conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
+        conformer_generation_kwargs: Optional[Dict[str, Union[int, str]]] = None,
     ):
         """Initialize class object.
 
         Args:
-            use_masses (bool): Utilize elemental masses in eccentricity calculation. Defaults to `True`.
-            force (bool): Utilize force field calculations for energy minimization.
-            conformer_generation_kwargs (Optional[Dict[str, Any]]): Keyword arguments for conformer generation.
+            use_masses (bool): Utilize elemental masses for calculating the inertial shape factor. Defaults to `True`.
+            force (bool): Utilize force field calculations for energy minimization. Defaults to `True`.
+            conformer_generation_kwargs (Optional[Dict[str, Union[int, str]]]):
+                Keyword arguments for conformer generation. Defaults to `None`.
         """
         super().__init__(
             use_masses=use_masses,
@@ -324,7 +337,7 @@ class NPRFeaturizer(SpatialFeaturizer):
         variant: Union[int, str] = "all",  # today make iterable
         use_masses: bool = True,
         force: bool = True,
-        conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
+        conformer_generation_kwargs: Optional[Dict[str, Union[int, str]]] = None,
     ):
         """Initialize class object.
 
@@ -332,8 +345,9 @@ class NPRFeaturizer(SpatialFeaturizer):
             variant (Union[int, str]): Variant of normalized principal moments ratio (NPR) to calculate.
                 May take either value of `1`, `2`, or `all`. Defaults to `all`.
             use_masses (bool): Utilize elemental masses in calculating the NPR. Defaults to `True`.
-            force (bool): Utilize force field calculations for energy minimization.
-            conformer_generation_kwargs (Optional[Dict[str, Any]]): Keyword arguments for conformer generation.
+            force (bool): Utilize force field calculations for energy minimization. Defaults to `True`.
+            conformer_generation_kwargs (Optional[Dict[str, Union[int, str]]]):
+                Keyword arguments for conformer generation. Defaults to `None`.
         """
         variant = variant if isinstance(variant, int) else variant.lower()
 
@@ -382,7 +396,7 @@ class NPRFeaturizer(SpatialFeaturizer):
             None.
 
         Returns:
-            None.
+            List[str]: Generate labels for featurizer.
         """
         if self.variant == "all":
             return [f"npr{i}_value" for i in range(1, 3)]
@@ -438,7 +452,7 @@ class PMIFeaturizer(SpatialFeaturizer):
         variant: Union[int, str] = "all",
         use_masses: bool = True,
         force: bool = True,
-        conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
+        conformer_generation_kwargs: Optional[Dict[str, Union[int, str]]] = None,
     ):
         """Initialize class object.
 
@@ -446,8 +460,9 @@ class PMIFeaturizer(SpatialFeaturizer):
             variant (Union[int, str]): Variant of principal moments of inertia (PMI) to calculate.
                 May take either value of `1`, `2`, `3`, or `all`. Defaults to `all`.
             use_masses (bool): Utilize elemental masses in calculating the PMI. Defaults to `True`.
-            force (bool): Utilize force field calculations for energy minimization.
-            conformer_generation_kwargs (Optional[Dict[str, Any]]): Keyword arguments for conformer generation.
+            force (bool): Utilize force field calculations for energy minimization. Defaults to `True`.
+            conformer_generation_kwargs (Optional[Dict[str, Union[int, str]]]):
+                Keyword arguments for conformer generation. Defaults to `None`.
         """
 
         super().__init__(
@@ -473,7 +488,7 @@ class PMIFeaturizer(SpatialFeaturizer):
             None.
 
         Returns:
-            None.
+            List[str]: Generate labels for featurizer.
         """
         if self.variant == "all":
             return [f"pmi{i}_value" for i in range(1, 4)]
@@ -532,6 +547,130 @@ class PMIFeaturizer(SpatialFeaturizer):
 
         pmi_value = pmi_function(mol, force=self.force, useAtomicMasses=self.use_masses)
         return np.array([pmi_value]).reshape(1, -1)
+
+    def implementors(self) -> List[str]:
+        """
+        Return list of functionality implementors.
+
+        Args:
+            None.
+
+        Returns:
+            List[str]: List of implementors.
+        """
+        return ["Benedict Oshomah Emoekabu"]
+
+
+class AtomVolumeFeaturizer(MorfeusFeaturizer):
+    """Return the solvent accessible volume per atom in molecule."""
+
+    def __init__(
+        self,
+        conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
+        morfeus_kwargs: Optional[Dict[str, Any]] = None,
+        qc_optimize: bool = False,
+        max_index: Optional[int] = None,
+        aggregation: Optional[Union[str, List[str]]] = None,
+    ):
+        """Instantiate class.
+
+        Args:
+            conformer_generation_kwargs (Optional[Dict[str, Any]]): Configuration for conformer generation.
+            morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
+            qc_optimize (bool): Run QCEngine optimization harness. Defaults to `False`.
+            max_index (Optional[int]): Maximum number of atoms/bonds to consider for feature generation.
+                Redundant if `aggregation` is not `None`.
+            aggregation (Optional[Union[str, List[str]]]): Aggregation to use on generated descriptors.
+                Defaults to `None`. If `None`, track atom/bond/molecular descriptors and identities.
+        """
+        super().__init__(
+            conformer_generation_kwargs=conformer_generation_kwargs,
+            morfeus_kwargs=morfeus_kwargs,
+            qc_optimize=qc_optimize,
+            aggregation=aggregation,
+        )
+
+        self._names = [
+            {
+                "noun": "solvent accessible atom volume",
+            },
+        ]
+
+        self.max_index = max_index
+
+    def featurize(self, molecule: Molecule) -> np.array:
+        """Featurize single molecule instance.
+
+        Args:
+            molecule (Molecule): Molecule representation.
+
+        Returns:
+            (np.array): Array containing solvent accessible volumes for atoms in molecule instance.
+        """
+        if self.qc_optimize:
+            molecule = self._generate_conformer(molecule=molecule)
+
+        morfeus_instance = self._get_morfeus_instance(molecule=molecule, morpheus_instance="sasa")
+
+        atom_volumes = morfeus_instance.atom_volumes
+        num_atoms = len(atom_volumes)
+
+        if self.max_index is None:
+            self.max_index = self.fit_on_atom_counts(molecules=molecule)
+
+        atom_volumes = [
+            (atom_volumes[i] if i <= num_atoms else 0) for i in range(1, self.max_index + 1)
+        ]
+
+        if self.aggregation is None:
+            # Track atom identities
+            atomic_numbers = self._track_atom_identity(molecule=molecule, max_index=self.max_index)
+
+            # Combine descriptors with atom identities
+            atom_volumes = atom_volumes + atomic_numbers
+        else:
+            if isinstance(self.aggregation, (list, tuple, set)):
+                atom_volumes = [
+                    self.aggregation_func[agg](atom_volumes) for agg in self.aggregation
+                ]
+            else:
+                atom_volumes = self.aggregation_func[self.aggregation](atom_volumes)
+
+        return np.array(atom_volumes).reshape(1, -1)
+
+    def featurize_many(self, molecules: List[Molecule]) -> np.array:
+        """
+        Featurize a sequence of Molecule objects.
+
+        Args:
+            molecules (List[Molecule]): A sequence of molecule representations.
+
+        Returns:
+            (np.array): An array of features for each molecule instance.
+        """
+        if self.max_index is None:
+            self.max_index = self.fit_on_atom_counts(molecules=molecules)
+
+        return super().featurize_many(molecules=molecules)
+
+    def feature_labels(self) -> List[str]:
+        """Return feature label(s).
+
+        Args:
+            None.
+
+        Returns:
+            (List[str]): List of labels of extracted features.
+        """
+        if self.aggregation is None:
+            return [f"solvent_accessible_atom_volume_{i}" for i in range(self.max_index)] + [
+                f"atomic_number_{i}" for i in range(self.max_index)
+            ]
+        else:
+            if isinstance(self.aggregation, (list, set, tuple)):
+                return [f"solvent_accessible_atom_volume_{agg}" for agg in self.aggregation]
+            else:
+                return ["solvent_accessible_atom_volume_" + self.aggregation]
 
     def implementors(self) -> List[str]:
         """

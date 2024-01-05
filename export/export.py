@@ -12,23 +12,41 @@ from selfies import encoder
 from chemcaption.featurize.adaptor import ValenceElectronCountAdaptor
 from chemcaption.featurize.base import MultipleFeaturizer
 from chemcaption.featurize.bonds import (
+    BondOrderFeaturizer,
     BondTypeCountFeaturizer,
     BondTypeProportionFeaturizer,
+    DipoleMomentsFeaturizer,
     RotableBondCountFeaturizer,
     RotableBondProportionFeaturizer,
 )
 from chemcaption.featurize.composition import (
+    AtomCountFeaturizer,
+    DegreeOfUnsaturationFeaturizer,
     ElementCountFeaturizer,
+    ElementCountProportionFeaturizer,
     ElementMassFeaturizer,
     ElementMassProportionFeaturizer,
     MolecularFormulaFeaturizer,
     MonoisotopicMolecularMassFeaturizer,
 )
 from chemcaption.featurize.electronicity import (
+    AtomChargeFeaturizer,
+    AtomElectrophilicityFeaturizer,
+    AtomNucleophilicityFeaturizer,
+    HOMOEnergyFeaturizer,
     HydrogenAcceptorCountFeaturizer,
     HydrogenDonorCountFeaturizer,
+    LUMOEnergyFeaturizer,
+    MoleculeElectrofugalityFeaturizer,
+    MoleculeElectrophilicityFeaturizer,
+    MoleculeNucleofugalityFeaturizer,
+    MoleculeNucleophilicityFeaturizer,
 )
-from chemcaption.featurize.rules import LipinskiViolationCountFeaturizer
+from chemcaption.featurize.rules import (
+    GhoseFilterFeaturizer,
+    LeadLikenessFilterFeaturizer,
+    LipinskiViolationCountFeaturizer,
+)
 from chemcaption.featurize.spatial import (
     AsphericityFeaturizer,
     EccentricityFeaturizer,
@@ -52,20 +70,36 @@ def get_smarts_featurizers():
 FEATURIZER = MultipleFeaturizer(
     get_smarts_featurizers()
     + [
+        AtomCountFeaturizer(),
         ValenceElectronCountAdaptor(),
         RotableBondCountFeaturizer(),
         RotableBondProportionFeaturizer(),
         BondTypeCountFeaturizer(),
         BondTypeProportionFeaturizer(),
+        BondOrderFeaturizer(),
+        RotableBondCountFeaturizer(),
+        DipoleMomentsFeaturizer(),
         MolecularFormulaFeaturizer(),
         MonoisotopicMolecularMassFeaturizer(),
         ElementMassFeaturizer(),
         ElementCountFeaturizer(),
         ElementMassProportionFeaturizer(),
+        ElementCountProportionFeaturizer(),
+        DegreeOfUnsaturationFeaturizer(),
         HydrogenAcceptorCountFeaturizer(),
         HydrogenDonorCountFeaturizer(),
+        HOMOEnergyFeaturizer(),
+        LUMOEnergyFeaturizer(),
+        AtomChargeFeaturizer(),
+        AtomNucleophilicityFeaturizer(),
+        AtomElectrophilicityFeaturizer(),
+        MoleculeNucleophilicityFeaturizer(),
+        MoleculeElectrophilicityFeaturizer(),
+        MoleculeNucleofugalityFeaturizer(),
+        MoleculeElectrofugalityFeaturizer(),
         LipinskiViolationCountFeaturizer(),
-        InertialShapeFactorFeaturizer(),
+        GhoseFilterFeaturizer(),
+        LeadLikenessFilterFeaturizer(),
         EccentricityFeaturizer(),
         AsphericityFeaturizer(),
         InertialShapeFactorFeaturizer(),
