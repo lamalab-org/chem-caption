@@ -128,9 +128,9 @@ class AbstractMolecule(ABC):
         return self._rdkit_mol
 
     @rdkit_mol.setter
-    def rdkit_mol(self, **kwargs: dict) -> None:
+    def rdkit_mol(self, mol: Chem.Mol) -> None:
         """Set molecular representation via rdkit."""
-        self._rdkit_mol = self.get_rdkit_mol()
+        self._rdkit_mol = mol
         return
 
     def __repr__(self) -> str:

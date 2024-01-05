@@ -35,6 +35,14 @@ class RotationalSymmetryNumberFeaturizer(AbstractFeaturizer):
         ]
 
     def feature_labels(self) -> List[str]:
+        """Return feature label(s).
+
+        Args:
+            None.
+
+        Returns:
+            (List[str]): List of labels for extracted features.
+        """
         return ["rotational_symmetry_number"]
 
     def featurize(self, molecule: Molecule) -> np.array:
@@ -62,7 +70,7 @@ class RotationalSymmetryNumberFeaturizer(AbstractFeaturizer):
             None.
 
         Returns:
-            List[str]: List of implementors.
+            (List[str]): List of implementors.
         """
         return ["Kevin Maik Jablonka"]
 
@@ -84,6 +92,14 @@ class PointGroupFeaturizer(AbstractFeaturizer):
         ]
 
     def feature_labels(self) -> List[str]:
+        """Return feature label(s).
+
+        Args:
+            None.
+
+        Returns:
+            (List[str]): List of labels for extracted features.
+        """
         return ["point_group"]
 
     # ToDo: consider if we want to continue
@@ -116,6 +132,6 @@ class PointGroupFeaturizer(AbstractFeaturizer):
             None.
 
         Returns:
-            List[str]: List of implementors.
+            (List[str]): List of implementors.
         """
         return ["Kevin Maik Jablonka"]

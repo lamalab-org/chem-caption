@@ -32,14 +32,13 @@ class ChiralCenterCountFeaturizer(AbstractFeaturizer):
         ]
 
     def feature_labels(self) -> List[str]:
-        """
-        Return list of feature labels.
+        """Return feature label(s).
 
         Args:
             None.
 
         Returns:
-            List[str]: List of feature labels.
+            (List[str]): List of labels for extracted features.
         """
         return ["num_chiral_centers"]
 
@@ -80,6 +79,6 @@ class ChiralCenterCountFeaturizer(AbstractFeaturizer):
             None.
 
         Returns:
-            List[str]: List of implementors.
+            (List[str]): List of implementors.
         """
         return ["Kevin Maik Jablonka"]
