@@ -570,6 +570,7 @@ class AtomVolumeFeaturizer(MorfeusFeaturizer):
         morfeus_kwargs: Optional[Dict[str, Any]] = None,
         qc_optimize: bool = False,
         max_index: Optional[int] = None,
+        aggregation: Optional[Union[str, List[str]]] = None,
     ):
         """Instantiate class.
 
@@ -578,11 +579,15 @@ class AtomVolumeFeaturizer(MorfeusFeaturizer):
             morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
             qc_optimize (bool): Run QCEngine optimization harness. Defaults to `False`.
             max_index (Optional[int]): Maximum number of atoms/bonds to consider for feature generation.
+                Redundant if `aggregation` is not `None`.
+            aggregation (Optional[Union[str, List[str]]]): Aggregation to use on generated descriptors.
+                Defaults to `None`. If `None`, track atom/bond/molecular descriptors and identities.
         """
         super().__init__(
             conformer_generation_kwargs=conformer_generation_kwargs,
             morfeus_kwargs=morfeus_kwargs,
             qc_optimize=qc_optimize,
+            aggregation=aggregation,
         )
 
         self._names = [
@@ -617,11 +622,19 @@ class AtomVolumeFeaturizer(MorfeusFeaturizer):
             (atom_volumes[i] if i <= num_atoms else 0) for i in range(1, self.max_index + 1)
         ]
 
-        # Track atom identities
-        atomic_numbers = self._track_atom_identity(molecule=molecule, max_index=self.max_index)
+        if self.aggregation is None:
+            # Track atom identities
+            atomic_numbers = self._track_atom_identity(molecule=molecule, max_index=self.max_index)
 
-        # Combine descriptors with atom identities
-        atom_volumes = atom_volumes + atomic_numbers
+            # Combine descriptors with atom identities
+            atom_volumes = atom_volumes + atomic_numbers
+        else:
+            if isinstance(self.aggregation, (list, tuple, set)):
+                atom_volumes = [
+                    self.aggregation_func[agg](atom_volumes) for agg in self.aggregation
+                ]
+            else:
+                atom_volumes = self.aggregation_func[self.aggregation](atom_volumes)
 
         return np.array(atom_volumes).reshape(1, -1)
 
@@ -635,7 +648,8 @@ class AtomVolumeFeaturizer(MorfeusFeaturizer):
         Returns:
             (np.array): An array of features for each molecule instance.
         """
-        self.max_index = self.fit_on_atom_counts(molecules=molecules)
+        if self.max_index is None:
+            self.max_index = self.fit_on_atom_counts(molecules=molecules)
 
         return super().featurize_many(molecules=molecules)
 
@@ -648,9 +662,15 @@ class AtomVolumeFeaturizer(MorfeusFeaturizer):
         Returns:
             (List[str]): List of labels of extracted features.
         """
-        return [f"solvent_accessible_atom_volume_{i}" for i in range(self.max_index)] + [
-            f"atomic_number_{i}" for i in range(self.max_index)
-        ]
+        if self.aggregation is None:
+            return [f"solvent_accessible_atom_volume_{i}" for i in range(self.max_index)] + [
+                f"atomic_number_{i}" for i in range(self.max_index)
+            ]
+        else:
+            if isinstance(self.aggregation, (list, set, tuple)):
+                return [f"solvent_accessible_atom_volume_{agg}" for agg in self.aggregation]
+            else:
+                return ["solvent_accessible_atom_volume_" + self.aggregation]
 
     def implementors(self) -> List[str]:
         """

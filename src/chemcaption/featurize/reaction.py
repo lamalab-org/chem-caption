@@ -170,8 +170,9 @@ class SolventAccessibleAtomAreaFeaturizer(MorfeusFeaturizer):
             morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
             qc_optimize (bool): Run QCEngine optimization harness. Defaults to `False`.
             max_index (Optional[int]): Maximum number of atoms/bonds to consider for feature generation.
+                Redundant if `aggregation` is not `None`.
             aggregation (Optional[Union[str, List[str]]]): Aggregation to use on generated descriptors.
-                Defaults to `None`.
+                Defaults to `None`. If `None`, track atom/bond/molecular descriptors and identities.
         """
         super().__init__(
             conformer_generation_kwargs=conformer_generation_kwargs,
@@ -237,7 +238,8 @@ class SolventAccessibleAtomAreaFeaturizer(MorfeusFeaturizer):
         Returns:
             (np.array): An array of features for each molecule instance.
         """
-        self.max_index = self.fit_on_atom_counts(molecules=molecules)
+        if self.max_index is None:
+            self.max_index = self.fit_on_atom_counts(molecules=molecules)
 
         return super().featurize_many(molecules=molecules)
 

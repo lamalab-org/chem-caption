@@ -533,12 +533,12 @@ class MorfeusFeaturizer(AbstractFeaturizer):
             List[Union[int, float]]: Atomic numbers of atoms in `molecule` arranged by index.
         """
         elements, coordinates = self._get_element_coordinates(molecule=molecule)
-        atoms = molecule.get_atoms(hydrogen=False)
+        atoms = molecule.get_atoms(hydrogen=True)
         atomic_numbers = [atom.GetAtomicNum() for atom in atoms]
         if (max_index - len(atomic_numbers)) > 0:
             atomic_numbers += [0 for _ in range(max_index - len(atomic_numbers))]
         elif (max_index - len(atomic_numbers)) < 0:
-            atomic_numbers = atomic_numbers[: max_index + 1]
+            atomic_numbers = atomic_numbers[:max_index]
         return atomic_numbers
 
     def implementors(self) -> List[str]:

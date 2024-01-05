@@ -481,8 +481,9 @@ class AtomChargeFeaturizer(MorfeusFeaturizer):
             morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
             qc_optimize (bool): Run QCEngine optimization harness. Defaults to `False`.
             max_index (Optional[int]): Maximum number of atoms/bonds to consider for feature generation.
+                Redundant if `aggregation` is not `None`.
             aggregation (Optional[Union[str, List[str]]]): Aggregation to use on generated descriptors.
-                Defaults to `None`.
+                Defaults to `None`. If `None`, track atom/bond/molecular descriptors and identities.
         """
         super().__init__(
             conformer_generation_kwargs=conformer_generation_kwargs,
@@ -550,7 +551,8 @@ class AtomChargeFeaturizer(MorfeusFeaturizer):
         Returns:
             (np.array): An array of features for each molecule instance.
         """
-        self.max_index = self.fit_on_atom_counts(molecules=molecules)
+        if self.max_index is None:
+            self.max_index = self.fit_on_atom_counts(molecules=molecules)
 
         return super().featurize_many(molecules=molecules)
 
@@ -605,8 +607,9 @@ class AtomNucleophilicityFeaturizer(MorfeusFeaturizer):
             morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
             qc_optimize (bool): Run QCEngine optimization harness. Defaults to `False`.
             max_index (Optional[int]): Maximum number of atoms/bonds to consider for feature generation.
+                Redundant if `aggregation` is not `None`.
             aggregation (Optional[Union[str, List[str]]]): Aggregation to use on generated descriptors.
-                Defaults to `None`.
+                Defaults to `None`. If `None`, track atom/bond/molecular descriptors and identities.
             local (bool): Calculate local descriptor or not. Defaults to `False`.
         """
         super().__init__(
@@ -679,7 +682,8 @@ class AtomNucleophilicityFeaturizer(MorfeusFeaturizer):
         Returns:
             (np.array): An array of features for each molecule instance.
         """
-        self.max_index = self.fit_on_atom_counts(molecules=molecules)
+        if self.max_index is None:
+            self.max_index = self.fit_on_atom_counts(molecules=molecules)
 
         return super().featurize_many(molecules=molecules)
 
@@ -741,8 +745,9 @@ class AtomElectrophilicityFeaturizer(MorfeusFeaturizer):
             morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
             qc_optimize (bool): Run QCEngine optimization harness. Defaults to `False`.
             max_index (Optional[int]): Maximum number of atoms/bonds to consider for feature generation.
+                Redundant if `aggregation` is not `None`.
             aggregation (Optional[Union[str, List[str]]]): Aggregation to use on generated descriptors.
-                Defaults to `None`.
+                Defaults to `None`. If `None`, track atom/bond/molecular descriptors and identities.
             local (bool): Calculate local descriptor or not. Defaults to `False`.
         """
         super().__init__(
@@ -815,7 +820,8 @@ class AtomElectrophilicityFeaturizer(MorfeusFeaturizer):
         Returns:
             (np.array): An array of features for each molecule instance.
         """
-        self.max_index = self.fit_on_atom_counts(molecules=molecules)
+        if self.max_index is None:
+            self.max_index = self.fit_on_atom_counts(molecules=molecules)
 
         return super().featurize_many(molecules=molecules)
 

@@ -492,9 +492,9 @@ class DipoleMomentsFeaturizer(MorfeusFeaturizer):
             morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
             qc_optimize (bool): Run QCEngine optimization harness. Defaults to `False`.
             max_index (Optional[int]): Maximum number of atoms/bonds to consider for feature generation.
-                Defaults to `1`.
+                Redundant if `aggregation` is not `None`.
             aggregation (Optional[Union[str, List[str]]]): Aggregation to use on generated descriptors.
-                Defaults to `None`.
+                Defaults to `None`. If `None`, track atom/bond/molecular descriptors and identities.
         """
         super().__init__(
             conformer_generation_kwargs=conformer_generation_kwargs,
@@ -529,7 +529,8 @@ class DipoleMomentsFeaturizer(MorfeusFeaturizer):
         dipoles = morfeus_instance.get_dipole(**self.morfeus_kwargs).flatten().tolist()
         num_dipoles = len(dipoles)
 
-        print(dipoles)
+        if self.max_index is None:
+            self.max_index = self.fit_on_bond_counts(molecules=molecule)
 
         dipoles = [(dipoles[i] if i < num_dipoles else 0) for i in range(self.max_index)]
 
@@ -557,7 +558,8 @@ class DipoleMomentsFeaturizer(MorfeusFeaturizer):
         Returns:
             (np.array): An array of features for each molecule instance.
         """
-        self.max_index = self.fit_on_bond_counts(molecules=molecules)
+        if self.max_index is None:
+            self.max_index = self.fit_on_bond_counts(molecules=molecules)
 
         return super().featurize_many(molecules=molecules)
 
@@ -611,9 +613,9 @@ class BondOrderFeaturizer(MorfeusFeaturizer):
             morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
             qc_optimize (bool): Run QCEngine optimization harness. Defaults to `False`.
             max_index (Optional[int]): Maximum number of atoms/bonds to consider for feature generation.
-                Defaults to `1`.
+                Redundant if `aggregation` is not `None`.
             aggregation (Optional[Union[str, List[str]]]): Aggregation to use on generated descriptors.
-                Defaults to `None`.
+                Defaults to `None`. If `None`, track atom/bond/molecular descriptors and identities.
         """
         super().__init__(
             conformer_generation_kwargs=conformer_generation_kwargs,
@@ -647,6 +649,9 @@ class BondOrderFeaturizer(MorfeusFeaturizer):
 
         bond_orders = morfeus_instance.get_bond_orders(**self.morfeus_kwargs).flatten().tolist()
 
+        if self.max_index is None:
+            self.max_index = self.fit_on_bond_counts(molecules=molecule)
+
         bond_orders = [
             (bond_orders[i - 1] if i <= self.max_index else 0) for i in range(self.max_index)
         ]
@@ -675,7 +680,8 @@ class BondOrderFeaturizer(MorfeusFeaturizer):
         Returns:
             (np.array): An array of features for each molecule instance.
         """
-        self.max_index = self.fit_on_bond_counts(molecules=molecules)
+        if self.max_index is None:
+            self.max_index = self.fit_on_bond_counts(molecules=molecules)
 
         return super().featurize_many(molecules=molecules)
 
@@ -690,7 +696,7 @@ class BondOrderFeaturizer(MorfeusFeaturizer):
         """
         if self.aggregation is None:
             return [f"bond_order_{i}_{i+1}" for i in range(self.max_index)] + [
-                f"atomic_number_{i}" for i in range(self.max_index + 1)
+                f"atomic_number_{i}" for i in range(self.max_index)
             ]
         else:
             if isinstance(self.aggregation, (list, set, tuple)):
