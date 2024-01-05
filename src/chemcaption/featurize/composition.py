@@ -84,7 +84,7 @@ class MolecularMassFeaturizer(AbstractFeaturizer):
         super().__init__()
 
         self.template = (
-            "What is the {PROPERTY_NAME} of the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
+            "What {VERB} the {PROPERTY_NAME} of the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
         )
         self._names = [
             {
@@ -140,7 +140,7 @@ class MonoisotopicMolecularMassFeaturizer(AbstractFeaturizer):
         super().__init__()
 
         self.template = (
-            "What is the {PROPERTY_NAME} of the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
+            "What {VERB} the {PROPERTY_NAME} of the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
         )
         self._names = [
             {
@@ -205,7 +205,7 @@ class ElementMassFeaturizer(AbstractFeaturizer):
             self._preset = ["Carbon", "Hydrogen", "Nitrogen", "Oxygen"]
 
         self.template = (
-            "What is the {PROPERTY_NAME} for the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
+            "What {VERB} the {PROPERTY_NAME} for the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
         )
 
     def get_names(self) -> List[Dict[str, str]]:
@@ -217,7 +217,8 @@ class ElementMassFeaturizer(AbstractFeaturizer):
         Returns:
             (List[Dict[str, str]]): List of names for extracted features according to parts-of-speech.
         """
-        return [{"noun": "total mass of " + join_list_elements(self.preset)}]
+        noun = "masses" if len(self.preset) > 1 else "mass"
+        return [{"noun": f"total {noun} of " + join_list_elements(self.preset)}]
 
     def feature_labels(self) -> List[str]:
         """Return feature label(s).
@@ -376,7 +377,8 @@ class ElementMassProportionFeaturizer(ElementMassFeaturizer):
         Returns:
             (List[Dict[str, str]]): List of names for extracted features according to parts-of-speech.
         """
-        return [{"noun": "mass proportion of " + join_list_elements(self.preset)}]
+        proportion = "proportions" if len(self.preset) > 1 else "proportion"
+        return [{"noun": f"mass {proportion} of " + join_list_elements(self.preset)}]
 
     def feature_labels(self) -> List[str]:
         return [self.prefix + element.lower() + self.suffix for element in self.preset]
@@ -434,7 +436,8 @@ class ElementCountFeaturizer(ElementMassFeaturizer):
         Returns:
             (List[Dict[str, str]]): List of names for extracted features according to parts-of-speech.
         """
-        return [{"noun": "atom count of " + join_list_elements(self.preset)}]
+        count = "counts" if len(self.preset) > 1 else "count"
+        return [{"noun": f"atom {count} of " + join_list_elements(self.preset)}]
 
     @staticmethod
     def _get_atom_count(element: str, molecule: Molecule) -> int:
@@ -521,7 +524,8 @@ class ElementCountProportionFeaturizer(ElementCountFeaturizer):
         Returns:
             (List[Dict[str, str]]): List of names for extracted features according to parts-of-speech.
         """
-        return [{"noun": "relative atom count of " + join_list_elements(self.preset)}]
+        count = "counts" if len(self.preset) > 1 else "count"
+        return [{"noun": f"relative atom {count} of " + join_list_elements(self.preset)}]
 
     def feature_labels(self) -> List[str]:
         """Return feature label(s).

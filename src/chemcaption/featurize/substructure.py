@@ -63,14 +63,18 @@ class SMARTSFeaturizer(AbstractFeaturizer):
         Returns:
             List[Dict[str, str]]: List of dictionaries containing feature names.
         """
+        if len(self.smart_names) == 1:
+            name = "Is"
+            noun = "count"
+        else:
+            name = "Are"
+            noun = "counts"
+
         if self.count:
-            name = "Question: What is the count of " + join_list_elements(self.smart_names)
+            name = f"Question: What {name.lower()} the {noun} of " + join_list_elements(self.smart_names)
 
         else:
-            if len(self.smart_names) == 1:
-                name = "Question: Is " + join_list_elements(self.smart_names)
-            else:
-                name = "Question: Are " + join_list_elements(self.smart_names)
+            name = f"Question: {name} " + join_list_elements(self.smart_names)
 
         return [{"noun": name}]
 
@@ -242,8 +246,10 @@ class TopologyCountFeaturizer(AbstractFeaturizer):
             PeriodicTable.GetElementSymbol(periodic_table, atomic_number)
             for atomic_number in self.reference_atomic_numbers
         ]
+
+        noun = "numbers" if len(self.reference_atomic_numbers) > 1 else "number"
         return [
-            {"noun": f"number of topologically unique environments of {join_list_elements(names)}"}
+            {"noun": f"{noun} of topologically unique environments of {join_list_elements(names)}"}
         ]
 
     @classmethod
