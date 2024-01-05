@@ -2,12 +2,12 @@
 
 """Featurizers for chemical bond-related information."""
 
-from typing import Dict, List, Union
+from typing import Any, Dict, List, Optional, Union
 
 import numpy as np
 from rdkit.Chem import rdMolDescriptors
 
-from chemcaption.featurize.base import AbstractFeaturizer
+from chemcaption.featurize.base import AbstractFeaturizer, MorfeusFeaturizer
 from chemcaption.featurize.utils import join_list_elements
 from chemcaption.molecules import Molecule
 
@@ -18,6 +18,8 @@ __all__ = [
     "RotableBondProportionFeaturizer",
     "BondTypeCountFeaturizer",
     "BondTypeProportionFeaturizer",
+    "DipoleMomentsFeaturizer",
+    "BondOrderFeaturizer",
 ]
 
 
@@ -218,7 +220,7 @@ class BondTypeCountFeaturizer(AbstractFeaturizer):
         """
         all_bonds = self._get_bonds(molecule)
 
-        bond_types, index = self._get_bond_types(), 0 if not bool(self.prefix) else 1
+        bond_types, index = self._get_bond_types(), 1 if self.count else 0
 
         num_bonds = [
             all_bonds.count(bond_type.split("_")[index].upper())
@@ -254,7 +256,6 @@ class BondTypeCountFeaturizer(AbstractFeaturizer):
         Returns:
             bond_types (List[str]): List of strings of bond types.
         """
-
         if "ALL" in self.bond_type:
             bond_types = self._rdkit_bond_types()
 
@@ -429,7 +430,6 @@ class BondTypeProportionFeaturizer(BondTypeCountFeaturizer):
             if "ALL" in self.bond_type
             else len(self._get_bonds(molecule=molecule))
         )
-        print(num_bonds)
 
         bond_proportion = [count / total_bond_count for count in num_bonds]
 
@@ -470,5 +470,248 @@ class BondTypeProportionFeaturizer(BondTypeCountFeaturizer):
 
         Returns:
             List[str]: List of implementors.
+        """
+        return ["Benedict Oshomah Emoekabu"]
+
+
+class DipoleMomentsFeaturizer(MorfeusFeaturizer):
+    """Return the dipole moments for a molecule."""
+
+    def __init__(
+        self,
+        conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
+        morfeus_kwargs: Optional[Dict[str, Any]] = None,
+        qc_optimize: bool = False,
+        max_index: Optional[int] = None,
+        aggregation: Optional[Union[str, List[str]]] = None,
+    ):
+        """Instantiate class.
+
+        Args:
+            conformer_generation_kwargs (Optional[Dict[str, Any]]): Configuration for conformer generation.
+            morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
+            qc_optimize (bool): Run QCEngine optimization harness. Defaults to `False`.
+            max_index (Optional[int]): Maximum number of atoms/bonds to consider for feature generation.
+                Redundant if `aggregation` is not `None`.
+            aggregation (Optional[Union[str, List[str]]]): Aggregation to use on generated descriptors.
+                Defaults to `None`. If `None`, track atom/bond/molecular descriptors and identities.
+        """
+        super().__init__(
+            conformer_generation_kwargs=conformer_generation_kwargs,
+            morfeus_kwargs=morfeus_kwargs,
+            qc_optimize=qc_optimize,
+            aggregation=aggregation,
+        )
+
+        self._names = [
+            {
+                "noun": "dipole moments",
+            },
+        ]
+
+        self.max_index = max_index
+
+    def featurize(self, molecule: Molecule) -> np.array:
+        """
+        Featurize single molecule instance.
+
+        Args:
+            molecule (Molecule): Molecule representation.
+
+        Returns:
+            (np.array): Array containing dipole moments for bonds in molecule instance.
+        """
+        if self.qc_optimize:
+            molecule = self._generate_conformer(molecule=molecule)
+
+        morfeus_instance = self._get_morfeus_instance(molecule=molecule, morpheus_instance="xtb")
+
+        dipoles = morfeus_instance.get_dipole(**self.morfeus_kwargs).flatten().tolist()
+        num_dipoles = len(dipoles)
+
+        if self.max_index is None:
+            self.max_index = self.fit_on_bond_counts(molecules=molecule)
+
+        dipoles = [(dipoles[i] if i < num_dipoles else 0) for i in range(self.max_index)]
+
+        if self.aggregation is None:
+            # Track atom identities
+            atomic_numbers = self._track_atom_identity(molecule=molecule, max_index=self.max_index)
+
+            # Combine descriptors with atom identities
+            output = dipoles + atomic_numbers
+        else:
+            if isinstance(self.aggregation, (list, set, tuple)):
+                output = [self.aggregation_func[agg](dipoles) for agg in self.aggregation]
+            else:
+                output = self.aggregation_func[self.aggregation](dipoles)
+
+        return np.array(output).reshape(1, -1)
+
+    def featurize_many(self, molecules: List[Molecule]) -> np.array:
+        """
+        Featurize a sequence of Molecule objects.
+
+        Args:
+            molecules (List[Molecule]): A sequence of molecule representations.
+
+        Returns:
+            (np.array): An array of features for each molecule instance.
+        """
+        if self.max_index is None:
+            self.max_index = self.fit_on_bond_counts(molecules=molecules)
+
+        return super().featurize_many(molecules=molecules)
+
+    def feature_labels(self) -> List[str]:
+        """Return feature label(s).
+
+        Args:
+            None.
+
+        Returns:
+            (List[str]): List of labels of extracted features.
+        """
+        if self.aggregation is None:
+            return [f"dipole_{i}_{i+1}" for i in range(self.max_index)] + [
+                f"atomic_number_{i}" for i in range(self.max_index)
+            ]
+        else:
+            if isinstance(self.aggregation, (list, set, tuple)):
+                return [f"dipole_{agg}" for agg in self.aggregation]
+            else:
+                return ["dipole_" + self.aggregation]
+
+    def implementors(self) -> List[str]:
+        """
+        Return list of functionality implementors.
+
+        Args:
+            None.
+
+        Returns:
+            (List[str]): List of implementors.
+        """
+        return ["Benedict Oshomah Emoekabu"]
+
+
+class BondOrderFeaturizer(MorfeusFeaturizer):
+    """Return the bond orders for bonds in a molecule."""
+
+    def __init__(
+        self,
+        conformer_generation_kwargs: Optional[Dict[str, Any]] = None,
+        morfeus_kwargs: Optional[Dict[str, Any]] = None,
+        qc_optimize: bool = False,
+        max_index: Optional[int] = None,
+        aggregation: Optional[Union[str, List[str]]] = None,
+    ):
+        """Instantiate class.
+
+        Args:
+            conformer_generation_kwargs (Optional[Dict[str, Any]]): Configuration for conformer generation.
+            morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.
+            qc_optimize (bool): Run QCEngine optimization harness. Defaults to `False`.
+            max_index (Optional[int]): Maximum number of atoms/bonds to consider for feature generation.
+                Redundant if `aggregation` is not `None`.
+            aggregation (Optional[Union[str, List[str]]]): Aggregation to use on generated descriptors.
+                Defaults to `None`. If `None`, track atom/bond/molecular descriptors and identities.
+        """
+        super().__init__(
+            conformer_generation_kwargs=conformer_generation_kwargs,
+            morfeus_kwargs=morfeus_kwargs,
+            qc_optimize=qc_optimize,
+            aggregation=aggregation,
+        )
+
+        self._names = [
+            {
+                "noun": "bond orders",
+            },
+        ]
+
+        self.max_index = max_index
+
+    def featurize(self, molecule: Molecule) -> np.array:
+        """
+        Featurize single molecule instance.
+
+        Args:
+            molecule (Molecule): Molecule representation.
+
+        Returns:
+            (np.array): Array containing bond orders for bonds in molecule instance.
+        """
+        if self.qc_optimize:
+            molecule = self._generate_conformer(molecule=molecule)
+
+        morfeus_instance = self._get_morfeus_instance(molecule=molecule, morpheus_instance="xtb")
+
+        bond_orders = morfeus_instance.get_bond_orders(**self.morfeus_kwargs).flatten().tolist()
+
+        if self.max_index is None:
+            self.max_index = self.fit_on_bond_counts(molecules=molecule)
+
+        bond_orders = [
+            (bond_orders[i - 1] if i <= self.max_index else 0) for i in range(self.max_index)
+        ]
+
+        if self.aggregation is None:
+            # Track atom identities
+            atomic_numbers = self._track_atom_identity(molecule=molecule, max_index=self.max_index)
+
+            # Combine descriptors with atom identities
+            output = bond_orders + atomic_numbers
+        else:
+            if isinstance(self.aggregation, (list, set, tuple)):
+                output = [self.aggregation_func[agg](bond_orders) for agg in self.aggregation]
+            else:
+                output = self.aggregation_func[self.aggregation](bond_orders)
+
+        return np.array(output).reshape(1, -1)
+
+    def featurize_many(self, molecules: List[Molecule]) -> np.array:
+        """
+        Featurize a sequence of Molecule objects.
+
+        Args:
+            molecules (List[Molecule]): A sequence of molecule representations.
+
+        Returns:
+            (np.array): An array of features for each molecule instance.
+        """
+        if self.max_index is None:
+            self.max_index = self.fit_on_bond_counts(molecules=molecules)
+
+        return super().featurize_many(molecules=molecules)
+
+    def feature_labels(self) -> List[str]:
+        """Return feature label(s).
+
+        Args:
+            None.
+
+        Returns:
+            (List[str]): List of labels of extracted features.
+        """
+        if self.aggregation is None:
+            return [f"bond_order_{i}_{i+1}" for i in range(self.max_index)] + [
+                f"atomic_number_{i}" for i in range(self.max_index)
+            ]
+        else:
+            if isinstance(self.aggregation, (list, set, tuple)):
+                return [f"bond_order_{agg}" for agg in self.aggregation]
+            else:
+                return ["bond_order_" + self.aggregation]
+
+    def implementors(self) -> List[str]:
+        """
+        Return list of functionality implementors.
+
+        Args:
+            None.
+
+        Returns:
+            (List[str]): List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]
