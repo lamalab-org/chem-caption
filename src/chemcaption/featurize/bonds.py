@@ -407,7 +407,9 @@ class BondTypeProportionFeaturizer(BondTypeCountFeaturizer):
             (List[Dict[str, str]]): List of names for extracted features according to parts-of-speech.
         """
         mapped_names = [
-            _MAP_BOND_TYPE_TO_CLEAN_NAME[bond_type] for bond_type in super().feature_labels()
+            _MAP_BOND_TYPE_TO_CLEAN_NAME[bond_type]
+            for bond_type in super().feature_labels()
+            if "num_bonds" != bond_type
         ]
         return [
             {"noun": "What is the proportion of " + join_list_elements(mapped_names) + " bonds"}
