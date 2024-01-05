@@ -163,7 +163,7 @@ class IsomorphismFeaturizer(AbstractFeaturizer):
         super().__init__()
 
         self.template = (
-            "According to the Weisfeiler-Lehman isomorphism test, what is the {PROPERTY_NAME} for "
+            "According to the Weisfeiler-Lehman isomorphism test, what {VERB} the {PROPERTY_NAME} for "
             "the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
         )
         self._names = [

@@ -26,7 +26,7 @@ class RotationalSymmetryNumberFeaturizer(AbstractFeaturizer):
         super().__init__()
 
         self.template = (
-            "What is the {PROPERTY_NAME} for a molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
+            "What {VERB} the {PROPERTY_NAME} for a molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
         )
         self._names = [
             {
@@ -83,7 +83,7 @@ class PointGroupFeaturizer(AbstractFeaturizer):
         super().__init__()
 
         self.template = (
-            "What is the {PROPERTY_NAME} of a molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
+            "What {VERB} the {PROPERTY_NAME} of a molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
         )
         self._names = [
             {
