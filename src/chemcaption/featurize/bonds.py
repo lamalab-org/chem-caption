@@ -489,9 +489,6 @@ class BondTypeProportionFeaturizer(BondTypeCountFeaturizer):
         """
         bond_types = [label for label in super().feature_labels() if label != "num_bonds"]
 
-        # bond_types = [l.replace("_bond_proportion", "") for l in bond_types]
-        # bond_types = ["_".join(["num", l, "bonds"]) for l in bond_types]
-
         mapped_names = [_MAP_BOND_TYPE_TO_CLEAN_NAME[bond_type] for bond_type in bond_types]
 
         if len(mapped_names) > 1:
