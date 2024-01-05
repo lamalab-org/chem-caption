@@ -29,13 +29,13 @@ from chemcaption.featurize.spatial import (
     NPRFeaturizer,
     PMIFeaturizer,
 )
+from chemcaption.featurize.stereochemistry import ChiralCenterCountFeaturizer
 from chemcaption.featurize.substructure import (
     FragmentSearchFeaturizer,
     IsomorphismFeaturizer,
     TopologyCountFeaturizer,
 )
-from chemcaption.featurize.stereochemistry import ChiralCenterCountFeaturizer
-from chemcaption.featurize.symmetry import RotationalSymmetryNumberFeaturizer, PointGroupFeaturizer
+from chemcaption.featurize.symmetry import PointGroupFeaturizer, RotationalSymmetryNumberFeaturizer
 from chemcaption.molecules import SMILESMolecule
 
 BASE_DIR = os.getcwd()
@@ -91,20 +91,17 @@ def generate_info(string: str):
     rotation_symmetry_featurizer = RotationalSymmetryNumberFeaturizer()
     point_group_featurizer = PointGroupFeaturizer()
 
-    # shape_featurizer = MultipleFeaturizer(
-    #     featurizers=[
-    #         AsphericityFeaturizer(),
-    #         EccentricityFeaturizer(),
-    #         InertialShapeFactorFeaturizer(),
-    #     ]
-    # )
-    #
-    # npr_pmi_featurizer = MultipleFeaturizer(
-    #     featurizers = [
-    #         NPRFeaturizer(variant="all"),
-    #         PMIFeaturizer(variant="all")
-    #     ]
-    # )
+    shape_featurizer = MultipleFeaturizer(
+        featurizers=[
+            AsphericityFeaturizer(),
+            EccentricityFeaturizer(),
+            InertialShapeFactorFeaturizer(),
+        ]
+    )
+
+    npr_pmi_featurizer = MultipleFeaturizer(
+        featurizers=[NPRFeaturizer(variant="all"), PMIFeaturizer(variant="all")]
+    )
 
     mol = SMILESMolecule(string)
 
@@ -169,7 +166,9 @@ def generate_info(string: str):
     num_chiral_centers = chiral_featurizer.featurize(molecule=mol).reshape(-1).tolist()
     keys += chiral_featurizer.feature_labels()
 
-    rotation_symmetry_number = rotation_symmetry_featurizer.featurize(molecule=mol).reshape(-1).tolist()
+    rotation_symmetry_number = (
+        rotation_symmetry_featurizer.featurize(molecule=mol).reshape(-1).tolist()
+    )
     keys += rotation_symmetry_featurizer.feature_labels()
 
     point_group = point_group_featurizer.featurize(molecule=mol).reshape(-1).tolist()
@@ -182,8 +181,8 @@ def generate_info(string: str):
         bond_type_proportion_featurizer.featurize(molecule=mol).flatten().tolist()
     )
 
-    # shape_features = shape_featurizer.featurize(molecule=mol).flatten().tolist()
-    # npr_pmi = npr_pmi_featurizer.featurize(molecule=mol).tolist()
+    shape_features = shape_featurizer.featurize(molecule=mol).flatten().tolist()
+    npr_pmi = npr_pmi_featurizer.featurize(molecule=mol).tolist()
 
     values = [
         string,
@@ -220,11 +219,11 @@ def generate_info(string: str):
     values += rotation_symmetry_number
     values += point_group
 
-    # values += shape_features
-    # values += npr_pmi
-    #
-    # keys += shape_featurizer.feature_labels()
-    # keys += npr_pmi_featurizer.feature_labels()
+    values += shape_features
+    values += npr_pmi
+
+    keys += shape_featurizer.feature_labels()
+    keys += npr_pmi_featurizer.feature_labels()
 
     for preset in ["rings", "organic", "heterocyclic", "warheads", "scaffolds", "amino"]:
         for val in [True, False]:
@@ -239,26 +238,28 @@ def generate_info(string: str):
 
 def extend_dataset(dataset, featurizer):
     new_data = [
-        [string] + featurizer.featurize(molecule = SMILESMolecule(string)).flatten().tolist()
+        [string] + featurizer.featurize(molecule=SMILESMolecule(string)).flatten().tolist()
         for string in smiles_list
     ]
     print("New data generated!")
-    new_data = pd.DataFrame(data=new_data, columns = ["smiles"] + featurizer.feature_labels())
+    new_data = pd.DataFrame(data=new_data, columns=["smiles"] + featurizer.feature_labels())
     new_data = pd.merge(left=dataset, right=new_data, left_on="smiles", right_on="smiles")
     print("New data merged and persisted!")
     return new_data
+
 
 if __name__ == "__main__":
     data = [generate_info(string) for string in smiles_list]
 
     data = pd.DataFrame(data=data)
-    # data.to_csv("data/generated_data.csv", index=False)
 
     PROPERTY_SUBSET = PROPERTY_BANK.drop(
         labels=[col for col in PROPERTY_BANK.columns if col.__contains__("num")], axis=1
     )
 
-    NEW_DATA = pd.merge(left=PROPERTY_SUBSET, right=data, left_on="smiles", right_on="smiles").rename(
+    NEW_DATA = pd.merge(
+        left=PROPERTY_SUBSET, right=data, left_on="smiles", right_on="smiles"
+    ).rename(
         columns={
             "molar_mass": "molecular_mass",
             "exact_mass": "exact_molecular_mass",
@@ -266,21 +267,8 @@ if __name__ == "__main__":
         }
     )
 
-    # featurizer = MultipleFeaturizer(
-    #     featurizers = [
-    #         # PointGroupFeaturizer(),
-    #         RotationalSymmetryNumberFeaturizer()
-    #     ]
-    # )
-
     NEW_PATH = os.path.join(BASE_DIR.replace("legacy", ""), "merged_pubchem_response.csv")
     NEW_DATA.to_csv(NEW_PATH, index=False)
     print("New dataset persisted!")
-
-    # OLD_DATA = pd.read_csv(NEW_PATH)
-    # print("Old dataset loaded!")
-    #
-    # NEW_DATA = extend_dataset(dataset = OLD_DATA, featurizer = featurizer)
-    # print("New dataset generated!")
 
     print(NEW_DATA.columns)

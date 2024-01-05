@@ -9,18 +9,13 @@ from typing import List, Optional
 
 import pandas as pd
 
-from chemcaption.featurize.adaptor import (
-    HydrogenAcceptorCountAdaptor,
-    HydrogenDonorCountAdaptor,
-    NonRotableBondCountAdaptor,
-    RotableBondCountAdaptor,
-    RotableBondDistributionAdaptor,
-    StrictNonRotableBondCountAdaptor,
-    StrictRotableBondCountAdaptor,
-    StrictRotableBondDistributionAdaptor,
-)
 from chemcaption.featurize.base import MultipleFeaturizer
-from chemcaption.featurize.bonds import BondTypeCountFeaturizer
+from chemcaption.featurize.bonds import (
+    BondTypeCountFeaturizer,
+    BondTypeProportionFeaturizer,
+    RotableBondCountFeaturizer,
+    RotableBondProportionFeaturizer,
+)
 from chemcaption.featurize.composition import (
     AtomCountFeaturizer,
     ElementCountFeaturizer,
@@ -28,7 +23,11 @@ from chemcaption.featurize.composition import (
     ElementMassFeaturizer,
     ElementMassProportionFeaturizer,
 )
-from chemcaption.featurize.electronicity import ValenceElectronCountFeaturizer
+from chemcaption.featurize.electronicity import (
+    HydrogenAcceptorCountFeaturizer,
+    HydrogenDonorCountFeaturizer,
+    ValenceElectronCountFeaturizer,
+)
 from chemcaption.featurize.rules import LipinskiFilterFeaturizer
 from chemcaption.featurize.spatial import (
     AsphericityFeaturizer,
@@ -93,59 +92,55 @@ def generate_featurizer(preset: Optional[List[str]] = None) -> MultipleFeaturize
         ElementCountProportionFeaturizer(preset=preset),
     ]
 
-    # second_set = [
-    #     BondTypeCountFeaturizer(bond_type="all"),
-    #     BondTypeProportionFeaturizer(bond_type="all"),
-    #     RotableBondCountAdaptor(),
-    #     NonRotableBondCountAdaptor(),
-    #     StrictRotableBondCountAdaptor(),
-    #     StrictNonRotableBondCountAdaptor(),
-    #     RotableBondDistributionAdaptor(),
-    #     StrictRotableBondDistributionAdaptor(),
-    # ]
+    second_set = [
+        BondTypeCountFeaturizer(bond_type="all"),
+        BondTypeProportionFeaturizer(bond_type="all"),
+        RotableBondCountFeaturizer(),
+        RotableBondProportionFeaturizer(),
+    ]
 
-    # third_set = [
-    #     HydrogenDonorCountAdaptor(),
-    #     HydrogenAcceptorCountAdaptor(),
-    #     ValenceElectronCountFeaturizer(),
-    #     LipinskiFilterFeaturizer(),
-    #     TopologyCountFeaturizer(),
-    #     NPRFeaturizer(variant="all"),
-    #     PMIFeaturizer(variant="all"),
-    # ]
-    #
-    # fourth_set = [
-    #     AsphericityFeaturizer(),
-    #     EccentricityFeaturizer(),
-    #     InertialShapeFactorFeaturizer(),
-    # ]
-    #
-    # fifth_set = [
-    #     FragmentSearchFeaturizer.from_preset(count=True, preset="rings"),
-    #     FragmentSearchFeaturizer.from_preset(count=False, preset="rings"),
-    #     FragmentSearchFeaturizer.from_preset(count=True, preset="organic"),
-    #     FragmentSearchFeaturizer.from_preset(count=False, preset="organic"),
-    #     FragmentSearchFeaturizer.from_preset(count=True, preset="heterocyclic"),
-    #     FragmentSearchFeaturizer.from_preset(count=False, preset="heterocyclic"),
-    # ]
-    #
-    # sixth_set = [
-    #     FragmentSearchFeaturizer.from_preset(count=True, preset="warheads"),
-    #     FragmentSearchFeaturizer.from_preset(count=False, preset="warheads"),
-    #     FragmentSearchFeaturizer.from_preset(count=True, preset="scaffolds"),
-    #     FragmentSearchFeaturizer.from_preset(count=False, preset="scaffolds"),
-    #     FragmentSearchFeaturizer.from_preset(count=True, preset="amino"),
-    #     FragmentSearchFeaturizer.from_preset(count=False, preset="amino"),
-    # ]
+    third_set = [
+        HydrogenAcceptorCountFeaturizer(),
+        HydrogenDonorCountFeaturizer(),
+        ValenceElectronCountFeaturizer(),
+        LipinskiFilterFeaturizer(),
+        TopologyCountFeaturizer.from_preset(preset="organic"),
+        NPRFeaturizer(variant="all"),
+        PMIFeaturizer(variant="all"),
+    ]
+
+    fourth_set = [
+        AsphericityFeaturizer(),
+        EccentricityFeaturizer(),
+        InertialShapeFactorFeaturizer(),
+    ]
+
+    fifth_set = [
+        FragmentSearchFeaturizer.from_preset(count=True, preset="rings"),
+        FragmentSearchFeaturizer.from_preset(count=False, preset="rings"),
+        FragmentSearchFeaturizer.from_preset(count=True, preset="organic"),
+        FragmentSearchFeaturizer.from_preset(count=False, preset="organic"),
+        FragmentSearchFeaturizer.from_preset(count=True, preset="heterocyclic"),
+        FragmentSearchFeaturizer.from_preset(count=False, preset="heterocyclic"),
+    ]
+
+    sixth_set = [
+        FragmentSearchFeaturizer.from_preset(count=True, preset="warheads"),
+        FragmentSearchFeaturizer.from_preset(count=False, preset="warheads"),
+        FragmentSearchFeaturizer.from_preset(count=True, preset="scaffolds"),
+        FragmentSearchFeaturizer.from_preset(count=False, preset="scaffolds"),
+        FragmentSearchFeaturizer.from_preset(count=True, preset="amino"),
+        FragmentSearchFeaturizer.from_preset(count=False, preset="amino"),
+    ]
 
     featurizer = MultipleFeaturizer(
         featurizers=[
             MultipleFeaturizer(featurizers=first_set),
-            # MultipleFeaturizer(featurizers=second_set),
-            # MultipleFeaturizer(featurizers=third_set),
-            # MultipleFeaturizer(featurizers=fourth_set),
-            # MultipleFeaturizer(featurizers=fifth_set),
-            # MultipleFeaturizer(featurizers=sixth_set)
+            MultipleFeaturizer(featurizers=second_set),
+            MultipleFeaturizer(featurizers=third_set),
+            MultipleFeaturizer(featurizers=fourth_set),
+            MultipleFeaturizer(featurizers=fifth_set),
+            MultipleFeaturizer(featurizers=sixth_set),
         ]
     )
 
@@ -217,7 +212,6 @@ def persist_data(chunk_size: int = 30, delete: bool = False) -> None:
 
         if os.path.isfile(NEW_PATH):
             old_data = pd.read_csv(NEW_PATH)
-            # columns = old_data.columns
             data = pd.concat((old_data, data), axis=0)
 
         data.to_csv(NEW_PATH, index=False)
