@@ -33,13 +33,13 @@ class SMARTSFeaturizer(AbstractFeaturizer):
 
         Args:
             smarts (Optional[List[str]]): SMARTS strings that are matched with the molecules.
-                Defaults to None.
+                Defaults to `None`.
             names (Optional[List[str]]): Names of the SMARTS strings.
                 If None, the SMARTS strings are used as names.
-                Defaults to None.
-            count (bool): If set to True, count pattern frequency.
+                Defaults to `None`.
+            count (bool): If set to `True`, count pattern frequency.
                 Otherwise, only encode presence.
-                Defaults to True.
+                Defaults to `True`.
         """
         super().__init__()
 
@@ -208,18 +208,34 @@ class TopologyCountFeaturizer(AbstractFeaturizer):
         """Initialize class object.
 
         Args:
-            reference_atomic_numbers (List[int]): Atomic numbers for elements of interest.
+            reference_atomic_numbers (List[int]): Atomic number(s) for element(s) of interest.
         """
         super().__init__()
         self.reference_atomic_numbers = reference_atomic_numbers
 
     def feature_labels(self) -> List[str]:
+        """Return feature label(s).
+
+        Args:
+            None.
+
+        Returns:
+            (List[str]): List of labels for extracted features.
+        """
         return [
             "topology_count_" + str(atomic_number)
             for atomic_number in self.reference_atomic_numbers
         ]
 
     def get_names(self) -> List[Dict[str, str]]:
+        """Return feature names.
+
+        Args:
+            None.
+
+        Returns:
+            (List[Dict[str, str]]): List of names for extracted features according to parts-of-speech.
+        """
         # map the numbers to names
         periodic_table = GetPeriodicTable()
         names = [
@@ -232,6 +248,14 @@ class TopologyCountFeaturizer(AbstractFeaturizer):
 
     @classmethod
     def from_preset(cls, preset: str):
+        """Generate class instance with atomic numbers of interest based on predefined presets.
+
+        Args:
+            preset (str): Preset of interest.
+
+        Returns:
+            self: Instance of self.
+        """
         if preset == "organic":
             # Use C, H, N, O, P, S, F, Cl, Br, I
             return cls(reference_atomic_numbers=[6, 1, 7, 8, 15, 16, 9, 17, 35, 53])
@@ -259,9 +283,8 @@ class TopologyCountFeaturizer(AbstractFeaturizer):
             ]
         ).reshape((1, -1))
 
-    def _get_number_of_topologically_distinct_atoms(
-        self, molecule: Molecule, atomic_number: int = 12
-    ):
+    @staticmethod
+    def _get_number_of_topologically_distinct_atoms(molecule: Molecule, atomic_number: int = 12):
         """Return the number of unique `element` environments based on environmental topology.
 
         Args:

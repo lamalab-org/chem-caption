@@ -96,7 +96,7 @@ class ValenceElectronCountAdaptor(RDKitAdaptor):
         """Initialize class.
 
         Args:
-            None
+            None.
         """
         super().__init__(
             rdkit_function=Descriptors.NumValenceElectrons,

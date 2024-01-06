@@ -32,8 +32,7 @@ class ChiralCenterCountFeaturizer(AbstractFeaturizer):
         ]
 
     def feature_labels(self) -> List[str]:
-        """
-        Return list of feature labels.
+        """Return feature label(s).
 
         Args:
             None.

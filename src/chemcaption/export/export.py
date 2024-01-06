@@ -17,8 +17,10 @@ from selfies import encoder
 from chemcaption.featurize.adaptor import ValenceElectronCountAdaptor
 from chemcaption.featurize.base import MultipleFeaturizer
 from chemcaption.featurize.bonds import (
+    BondOrderFeaturizer,
     BondTypeCountFeaturizer,
     BondTypeProportionFeaturizer,
+    DipoleMomentsFeaturizer,
     RotableBondCountFeaturizer,
     RotableBondProportionFeaturizer,
 )
@@ -34,8 +36,17 @@ from chemcaption.featurize.composition import (
     MonoisotopicMolecularMassFeaturizer,
 )
 from chemcaption.featurize.electronicity import (
+    AtomChargeFeaturizer,
+    AtomElectrophilicityFeaturizer,
+    AtomNucleophilicityFeaturizer,
+    HOMOEnergyFeaturizer,
     HydrogenAcceptorCountFeaturizer,
     HydrogenDonorCountFeaturizer,
+    LUMOEnergyFeaturizer,
+    MoleculeElectrofugalityFeaturizer,
+    MoleculeElectrophilicityFeaturizer,
+    MoleculeNucleofugalityFeaturizer,
+    MoleculeNucleophilicityFeaturizer,
 )
 from chemcaption.featurize.misc import SVGFeaturizer
 from chemcaption.featurize.rules import (
@@ -73,12 +84,16 @@ def get_smarts_featurizers():
 FEATURIZER = MultipleFeaturizer(
     get_smarts_featurizers()
     + [
+        AtomCountFeaturizer(),
         ValenceElectronCountAdaptor(),
         RotableBondCountFeaturizer(),
         RotableBondProportionFeaturizer(),
         BondTypeCountFeaturizer(),
         BondTypeProportionFeaturizer(),
         DegreeOfUnsaturationFeaturizer(),
+        BondOrderFeaturizer(),
+        RotableBondCountFeaturizer(),
+        DipoleMomentsFeaturizer(),
         MolecularFormulaFeaturizer(),
         MonoisotopicMolecularMassFeaturizer(),
         AtomCountFeaturizer(),
@@ -89,6 +104,15 @@ FEATURIZER = MultipleFeaturizer(
         ElementCountProportionFeaturizer(),
         HydrogenAcceptorCountFeaturizer(),
         HydrogenDonorCountFeaturizer(),
+        HOMOEnergyFeaturizer(),
+        LUMOEnergyFeaturizer(),
+        AtomChargeFeaturizer(),
+        AtomNucleophilicityFeaturizer(),
+        AtomElectrophilicityFeaturizer(),
+        MoleculeNucleophilicityFeaturizer(),
+        MoleculeElectrophilicityFeaturizer(),
+        MoleculeNucleofugalityFeaturizer(),
+        MoleculeElectrofugalityFeaturizer(),
         LipinskiViolationCountFeaturizer(),
         GhoseFilterFeaturizer(),
         LeadLikenessFilterFeaturizer(),
