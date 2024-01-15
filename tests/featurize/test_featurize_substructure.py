@@ -25,7 +25,7 @@ def test_topology_count_featurizer():
     text = featurizer.text_featurize(pos_key="noun", molecule=molecule)
     assert (
         text.to_dict()["filled_prompt"]
-        == "Question: What is the number of topologically unique environments of C, H, N, O, P, S, F, Cl, Br, and I of the molecule with SMILES c1ccccc1?"
+        == "Question: What are the numbers of topologically unique environments of C, H, N, O, P, S, F, Cl, Br, and I of the molecule with SMILES c1ccccc1?"
     )
 
     assert text.to_dict()["filled_completion"] == "Answer: 1, 1, 0, 0, 0, 0, 0, 0, 0, and 0"
@@ -45,7 +45,7 @@ def test_smarts_featurizer():
 
     assert (
         text.to_dict()["filled_prompt"]
-        == "Question: What is the count of carboxyl, carbonyl, ether, alkanol, thiol, halogen, amine, amide, and ketone in the molecule with SMILES c1ccccc1?\nConstraint: return a list of integers."
+        == "Question: What are the counts of carboxyl, carbonyl, ether, alkanol, thiol, halogen, amine, amide, and ketone in the molecule with SMILES c1ccccc1?\nConstraint: return a list of integers."
     )
 
     assert text.to_dict()["filled_completion"] == "Answer: 0, 0, 0, 0, 0, 0, 0, 0, and 0"

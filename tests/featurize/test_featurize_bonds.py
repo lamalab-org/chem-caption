@@ -37,7 +37,7 @@ def test_bond_type_count_featurizer():
 
     assert (
         text.to_dict()["filled_prompt"]
-        == """Question: What is the number of unspecified, single, double, triple, quadruple, quintuple, hextuple, one-and-a-half, two-and-a-half, three-and-a-half, four-and-a-half, five-and-a-half, aromatic, ionic, hydrogen, three-center, dative one-electron, dative two-electron, other, and zero-order bonds in the molecule with SMILES c1ccccc1?
+        == """Question: What are the numbers of unspecified, single, double, triple, quadruple, quintuple, hextuple, one-and-a-half, two-and-a-half, three-and-a-half, four-and-a-half, five-and-a-half, aromatic, ionic, hydrogen, three-center, dative one-electron, dative two-electron, other, and zero-order bonds in the molecule with SMILES c1ccccc1?
 Constraint: Return a list of comma separated integers."""
     )
 
@@ -69,7 +69,7 @@ def test_rotable_bond_proportion_featurizer():
 
     assert (
         text.to_dict()["filled_prompt"]
-        == """Question: What is the proportion of rotatable and non-rotatable bonds of the molecule with SMILES c1ccccc1?"""
+        == """Question: What are the proportions of rotatable and non-rotatable bonds of the molecule with SMILES c1ccccc1?"""
     )
 
     assert text.to_dict()["filled_completion"] == "Answer: 0.0 and 1.0"
@@ -110,7 +110,7 @@ def test_bond_type_proportion_featurizer():
     print(text.to_dict()["filled_prompt"])
     assert (
         text.to_dict()["filled_prompt"]
-        == """Question: What is the proportion of unspecified, single, double, triple, quadruple, quintuple, hextuple, one-and-a-half, two-and-a-half, three-and-a-half, four-and-a-half, five-and-a-half, aromatic, ionic, hydrogen, three-center, dative one-electron, dative two-electron, other, and zero-order bonds in the molecule with SMILES c1ccccc1?
+        == """Question: What are the proportions of unspecified, single, double, triple, quadruple, quintuple, hextuple, one-and-a-half, two-and-a-half, three-and-a-half, four-and-a-half, five-and-a-half, aromatic, ionic, hydrogen, three-center, dative one-electron, dative two-electron, other, and zero-order bonds in the molecule with SMILES c1ccccc1?
 Constraint: Return a list of comma separated floats."""
     )
     print(text.to_dict()["filled_completion"])

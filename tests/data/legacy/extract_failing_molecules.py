@@ -19,7 +19,7 @@ def extract_code_content(page: str) -> List[List[str]]:
         page (str): HTML page of interest.
 
     Returns:
-        errors (List[List[str]]): List of specific errors.
+        List[List[str]]: List of specific errors.
     """
     response = open(page, "r").read()
     soup = BeautifulSoup(response, "lxml")
@@ -45,10 +45,11 @@ def split_string(string_list: List[str]) -> Tuple[str, str, int, int]:
         string_list (List): List to split.
 
     Returns:
-        test_type (str) Type of test the string records.
-        string (str): Molecular representation string.
-        actual (int): Actual value returned from test.
-        expected (int): Value test was expected to return.
+        Tuple[str, str, int, int]: Tuple containing:
+            - test_type (str) Type of test the string records.
+            - string (str): Molecular representation string.
+            - actual (int): Actual value returned from test.
+            - expected (int): Value test was expected to return.
     """
     first, second = string_list[:2]
     first = first.strip()
