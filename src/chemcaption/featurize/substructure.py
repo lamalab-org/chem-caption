@@ -36,7 +36,7 @@ class FragmentSearchFeaturizer(AbstractFeaturizer):
             smarts (Optional[List[str]]): SMARTS strings that are matched with the molecules.
                 Defaults to `None`.
             names (Optional[List[str]]): Names of the SMARTS strings.
-                If None, the SMARTS strings are used as names.
+                If `None`, the SMARTS strings are used as names.
                 Defaults to `None`.
             count (bool): If set to `True`, count pattern frequency.
                 Otherwise, only encode presence.
@@ -64,16 +64,20 @@ class FragmentSearchFeaturizer(AbstractFeaturizer):
             None.
 
         Returns:
-            (List[Dict[str, str]]): List of dictionaries containing feature names.
+            List[Dict[str, str]]: List of dictionaries containing feature names.
         """
+        if len(self.smart_names) == 1:
+            name = "Is"
+            noun = "count"
+        else:
+            name = "Are"
+            noun = "counts"
+
         if self.count:
-            name = "Question: What is the count of " + join_list_elements(self.smart_names)
+            name = f"Question: What {name.lower()} the {noun} of " + join_list_elements(self.smart_names)
 
         else:
-            if len(self.smart_names) == 1:
-                name = "Question: Is " + join_list_elements(self.smart_names)
-            else:
-                name = "Question: Are " + join_list_elements(self.smart_names)
+            name = f"Question: {name} " + join_list_elements(self.smart_names)
 
         return [{"noun": name}]
 
@@ -116,7 +120,7 @@ class FragmentSearchFeaturizer(AbstractFeaturizer):
             molecule (Molecule): Molecule representation.
 
         Returns:
-            (np.array): Array containing integer counts/signifier of pattern presence.
+            np.array: Array containing integer counts/signifier of pattern presence.
         """
         if self.count:
             results = [
@@ -181,7 +185,7 @@ class IsomorphismFeaturizer(AbstractFeaturizer):
         super().__init__()
 
         self.template = (
-            "According to the Weisfeiler-Lehman isomorphism test, what is the {PROPERTY_NAME} for "
+            "According to the Weisfeiler-Lehman isomorphism test, what {VERB} the {PROPERTY_NAME} for "
             "the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
         )
         self._names = [
@@ -203,7 +207,7 @@ class IsomorphismFeaturizer(AbstractFeaturizer):
             molecule (Molecule): Molecule representation.
 
         Returns:
-            (np.array): Array containing int representation of isoelectronic status between
+            np.array: Array containing int representation of isoelectronic status between
                 `self.reference_molecule` and `molecule`.
         """
         molecule_graph = molecule.to_graph()
@@ -242,7 +246,7 @@ class TopologyCountFeaturizer(AbstractFeaturizer):
             None.
 
         Returns:
-            (List[str]): List of labels for extracted features.
+            List[str]: List of labels for extracted features.
         """
         return [
             "topology_count_" + str(atomic_number)
@@ -256,7 +260,7 @@ class TopologyCountFeaturizer(AbstractFeaturizer):
             None.
 
         Returns:
-            (List[Dict[str, str]]): List of names for extracted features according to parts-of-speech.
+            List[Dict[str, str]]: List of names for extracted features according to parts-of-speech.
         """
         # map the numbers to names
         periodic_table = GetPeriodicTable()
@@ -264,8 +268,10 @@ class TopologyCountFeaturizer(AbstractFeaturizer):
             PeriodicTable.GetElementSymbol(periodic_table, atomic_number)
             for atomic_number in self.reference_atomic_numbers
         ]
+
+        noun = "numbers" if len(self.reference_atomic_numbers) > 1 else "number"
         return [
-            {"noun": f"number of topologically unique environments of {join_list_elements(names)}"}
+            {"noun": f"{noun} of topologically unique environments of {join_list_elements(names)}"}
         ]
 
     @classmethod
@@ -294,7 +300,7 @@ class TopologyCountFeaturizer(AbstractFeaturizer):
             molecule (Molecule): Molecule representation.
 
         Returns:
-            (np.array): Array containing number of unique `element` environments.
+            np.array: Array containing number of unique `element` environments.
         """
         return np.array(
             [
@@ -314,9 +320,9 @@ class TopologyCountFeaturizer(AbstractFeaturizer):
             atomic_number (int): Atomic number for `element` of interest.
 
         Returns:
-            (int): Number of unique environments.
+            int: Number of unique environments.
         """
-        mol = rdkit.Chem.AddHs(molecule.rdkit_mol) if atomic_number == 1 else molecule.rdkit_mol
+        mol = molecule.reveal_hydrogens() if atomic_number == 1 else molecule.rdkit_mol
 
         # Get unique canonical atom rankings
         atom_ranks = list(rdkit.Chem.rdmolfiles.CanonicalRankAtoms(mol, breakTies=False))

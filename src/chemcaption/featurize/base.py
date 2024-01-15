@@ -17,7 +17,8 @@ from rdkit import Chem
 from scipy.spatial import distance_matrix
 
 from chemcaption.featurize.text import Prompt, PromptCollection
-from chemcaption.featurize.utils import cached_conformer, join_list_elements
+
+from chemcaption.featurize.utils import cached_conformer
 from chemcaption.molecules import Molecule
 
 # Implemented abstract and high-level classes
@@ -43,7 +44,8 @@ class AbstractFeaturizer(ABC):
 
     def __init__(self):
         """Initialize class. Initialize periodic table."""
-        self.prompt_template = "Question: What is the {PROPERTY_NAME} of the molecule with {REPR_SYSTEM} {REPR_STRING}?"
+        self.prompt_template = ("Question: What {VERB} the {PROPERTY_NAME} of the molecule with {REPR_SYSTEM} "
+                                "{REPR_STRING}?")
         self.completion_template = "Answer: {COMPLETION}"
         self._names = []
         self.constraint = None
@@ -55,7 +57,7 @@ class AbstractFeaturizer(ABC):
             None.
 
         Returns:
-            (List[Dict[str, str]]): List of names for extracted features according to parts-of-speech.
+            List[Dict[str, str]]: List of names for extracted features according to parts-of-speech.
         """
         return self._names
 
@@ -90,9 +92,15 @@ class AbstractFeaturizer(ABC):
             molecule (Molecule): Molecule representation.
 
         Returns:
-            (Prompt): Instance of Prompt containing relevant information extracted from `molecule`.
+            Prompt: Instance of Prompt containing relevant information extracted from `molecule`.
         """
-        completion = self.featurize(molecule=molecule).tolist()
+        completion = self.featurize(molecule=molecule)
+        dtype = completion.dtype
+
+        completion = completion.flatten().tolist()
+
+        if set(completion) == {0, 1} and dtype == "int":
+            completion = [bool(i) for i in completion]
 
         completion_type = [type(c) for c in completion]
         representation = molecule.representation_string
@@ -103,7 +111,7 @@ class AbstractFeaturizer(ABC):
         completion_name = self.get_names()[0]["noun"]
 
         return Prompt(
-            completion=join_list_elements(completion),
+            completion=completion,
             completion_type=completion_type,
             representation=representation,
             representation_type=representation_type,
@@ -125,7 +133,7 @@ class AbstractFeaturizer(ABC):
                 A sequence of molecule representations.
 
         Returns:
-            (List[Prompt]): List of Prompt instances containing relevant information extracted from each
+            List[Prompt]: List of Prompt instances containing relevant information extracted from each
                 molecule in `molecules`.
         """
         return [self.text_featurize(molecule=molecule) for molecule in molecules]
@@ -150,7 +158,7 @@ class AbstractFeaturizer(ABC):
             None.
 
         Returns:
-            (List[str]): List of labels of extracted features.
+            List[str]: List of labels of extracted features.
         """
         raise NotImplementedError
 
@@ -161,7 +169,7 @@ class AbstractFeaturizer(ABC):
             None.
 
         Returns:
-            (List[Dict[str, str]]): List of names for extracted features according to parts-of-speech.
+            List[Dict[str, str]]: List of names for extracted features according to parts-of-speech.
         """
         return self._names
 
@@ -338,7 +346,7 @@ class MorfeusFeaturizer(AbstractFeaturizer):
             molecule (Molecule): Molecular instance.
 
         Returns:
-            (Tuple[np.array, np.array]): Tuple containing (a). atoms and (b). corresponding coordinates in molecule.
+            Tuple[np.array, np.array]: Tuple containing (a). atoms and (b). corresponding coordinates in molecule.
         """
         molecule = self._get_conformer(molecule.reveal_hydrogens())
 
@@ -359,7 +367,7 @@ class MorfeusFeaturizer(AbstractFeaturizer):
             morpheus_instance (str): Type of morfeus instance. Can take on either `xtb` or `sasa`. Defaults to `xtb`.
 
         Returns:
-            (Union[SASA, XTB]): Appropriate morfeus instance.
+            Union[SASA, XTB]: Appropriate morfeus instance.
         """
         if morpheus_instance.lower() not in ["xtb", "sasa"]:
             raise Exception(
@@ -379,7 +387,7 @@ class MorfeusFeaturizer(AbstractFeaturizer):
             molecule (Molecule): Molecular instance.
 
         Returns:
-            (XTB): Appropriate morfeus XTB instance.
+            XTB: Appropriate morfeus XTB instance.
         """
         elements, coordinates = self._get_element_coordinates(molecule)
 
@@ -392,7 +400,7 @@ class MorfeusFeaturizer(AbstractFeaturizer):
             molecule (Molecule): Molecular instance.
 
         Returns:
-            (SASA): Appropriate morfeus SASA instance.
+            SASA: Appropriate morfeus SASA instance.
         """
         elements, coordinates = self._get_element_coordinates(molecule)
 
@@ -414,7 +422,7 @@ class MorfeusFeaturizer(AbstractFeaturizer):
             rmsd_method (str): Base method for conformer pruning w.r.t RMSD property.
 
         Returns:
-            (ConformerEnsemble): An ensemble of generated conformers.
+            ConformerEnsemble: An ensemble of generated conformers.
         """
         string = Chem.MolToSmiles(molecule.rdkit_mol)
         # Generate and optimize an ensemble of conformers
@@ -444,7 +452,7 @@ class MorfeusFeaturizer(AbstractFeaturizer):
             rmsd_method (str): Base method for conformer pruning w.r.t RMSD property.
 
         Returns:
-            (List[Chem.Mol]): A list of generated conformers.
+            List[Chem.Mol]: A list of generated conformers.
         """
         conformer_ensemble = self._optimize_molecule_geometry(
             molecule=molecule,
@@ -472,7 +480,7 @@ class MorfeusFeaturizer(AbstractFeaturizer):
             rmsd_method (str): Base method for conformer pruning w.r.t RMSD property.
 
         Returns:
-            (Molecule): Molecular instance.
+            Molecule: Molecular instance.
         """
         conformer_ensemble = self._optimize_molecule_geometry(
             molecule=molecule,
@@ -537,7 +545,7 @@ class MorfeusFeaturizer(AbstractFeaturizer):
             None.
 
         Returns:
-            (List[str]): List of implementors.
+            List[str]: List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]
 
@@ -581,7 +589,7 @@ class AbstractComparator(ABC):
             None.
 
         Returns:
-            (List[str]): List of labels of extracted features.
+            List[str]: List of labels of extracted features.
         """
         raise NotImplementedError
 
@@ -615,9 +623,9 @@ class MultipleFeaturizer(AbstractFeaturizer):
             molecule (Molecule): Molecule representation.
 
         Returns:
-            features (np.array), array shape [1, N]:
-                Array containing features extracted from molecule.
-                `N` >= the number of featurizers passed to MultipleFeaturizer.
+            np.array: Array containing features extracted from molecule, with shape `[1, N]`, where
+                `N` >= the number of featurizers passed to MultipleFeaturizer
+                i.e., `N`  >=  len(self.featurizers).
         """
         features = [
             feature for f in self.featurizers for feature in f.featurize(molecule).flatten()
@@ -635,7 +643,7 @@ class MultipleFeaturizer(AbstractFeaturizer):
             molecule (Molecule): Molecule representation.
 
         Returns:
-            (PromptCollection): Instance of Prompt containing relevant information extracted from `molecule`.
+            PromptCollection: Instance of Prompt containing relevant information extracted from `molecule`.
         """
         return PromptCollection([f.text_featurize(molecule=molecule) for f in self.featurizers])
 
@@ -647,7 +655,7 @@ class MultipleFeaturizer(AbstractFeaturizer):
             molecules (List[Molecule]): A sequence of molecule representations.
 
         Returns:
-            (np.array): An array of features for each molecule instance.
+            np.array: An array of features for each molecule instance.
         """
         results = [f.featurize_many(molecules=molecules) for f in self.featurizers]
         return np.concatenate(results, axis=1)
@@ -704,7 +712,7 @@ class MultipleFeaturizer(AbstractFeaturizer):
                 Defaults to `False`.
 
         Returns:
-            (pd.DataFrame): DataFrame generated from feature array.
+            pd.DataFrame: DataFrame generated from feature array.
         """
         features = self.featurize_many(molecules=molecules)
 
@@ -756,7 +764,7 @@ class Comparator(AbstractComparator):
             featurizers (Optional[List[AbstractFeaturizer]]): List of lower-level featurizers. Defaults to `None`.
 
         Returns:
-            self : Instance of self with state updated.
+            Comparator : Instance of self with state updated.
         """
         if featurizers is None:
             self.featurizers = featurizers
@@ -774,14 +782,14 @@ class Comparator(AbstractComparator):
 
         return self
 
-    def __str__(self):
+    def __str__(self) -> str:
         """Return string representation.
 
         Args:
             None.
 
         Returns:
-            (str): String representation of `self`.
+            str: String representation of `self`.
         """
         return self.__class__.__name__
 
@@ -795,12 +803,11 @@ class Comparator(AbstractComparator):
 
         Args:
             featurizer (AbstractFeaturizer): Featurizer to compare on.
-            molecules (List[Molecule]):
-                List containing a pair of molecule instances.
-            epsilon (float): Small float. Precision bound for numerical inconsistencies. Defaults to 0.0.
+            molecules (List[Molecule]): List containing a pair of molecule instances.
+            epsilon (float): Small float. Precision bound for numerical inconsistencies. Defaults to `0.0`.
 
         Returns:
-            (np.array): Comparison results. 1 if all extracted features are equal, else 0.
+            np.array: Comparison results. `1` if all extracted features are equal, else `0`.
         """
         batch_results = featurizer.featurize_many(molecules=molecules)
 
@@ -823,7 +830,7 @@ class Comparator(AbstractComparator):
             epsilon (float): Small float. Precision bound for numerical inconsistencies. Defaults to 0.0.
 
         Returns:
-            (np.array): Array containing extracted features with shape `(1, N)`,
+            np.array: Array containing extracted features with shape `(1, N)`,
                 where `N` is the number of featurizers provided at initialization time.
         """
         results = [
@@ -864,7 +871,7 @@ class Comparator(AbstractComparator):
             epsilon (float): Small float. Precision bound for numerical inconsistencies. Defaults to 0.0.
 
         Returns:
-            (np.array): Array containing comparison results with shape `(1, N)`,
+            np.array: Array containing comparison results with shape `(1, N)`,
                 where `N` is the number of featurizers provided at initialization time.
         """
         return self.featurize(molecules=molecules, epsilon=epsilon)
@@ -937,7 +944,7 @@ class MultipleComparator(Comparator):
             epsilon (float): Small float. Precision bound for numerical inconsistencies. Defaults to 0.0.
 
         Returns:
-            (np.array): Array containing comparison results with shape `(1, N)`,
+            np.array: Array containing comparison results with shape `(1, N)`,
                 where `N` is the number of Comparators provided at initialization time.
         """
         features = [

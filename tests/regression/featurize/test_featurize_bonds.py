@@ -78,7 +78,7 @@ def test_rotable_bond_proportion_featurizer(test_input, expected):
 def test_bond_type_count_featurizer(test_input, expected):
     """Test for BondTypeCountFeaturizer."""
     bond_type = list(map(lambda x: x.split("_")[1] if len(x.split("_")) == 3 else x, BOND_TYPES))
-    featurizer = BondTypeCountFeaturizer(bond_type=bond_type[:-1])
+    featurizer = BondTypeCountFeaturizer(bond_type="all" if "num_bonds" in bond_type else bond_type)
     molecule = MOLECULE(test_input)
 
     results = featurizer.featurize(molecule)

@@ -67,7 +67,7 @@ def generate_featurizer(preset: Optional[List[str]] = None) -> MultipleFeaturize
         None.
 
     Returns:
-        (MultipleFeaturizer): MultipleFeaturizer instance.
+        MultipleFeaturizer: MultipleFeaturizer instance.
     """
     if preset is None:
         preset = [

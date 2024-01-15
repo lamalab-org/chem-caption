@@ -41,7 +41,7 @@ def test_pmi_featurizer():
     text = featurizer.text_featurize(molecule)
     assert (
         text.to_dict()["filled_prompt"]
-        == "Question: What is the first, second, and third principal moments of inertia (PMI) of the molecule with SMILES O=C1C=CC(=O)C(C(=O)O)=C1?"
+        == "Question: What are the first, second, and third principal moments of inertia (PMI) of the molecule with SMILES O=C1C=CC(=O)C(C(=O)O)=C1?"
     )
     # ToDo: make the test below less brittle
     assert text.to_dict()["filled_completion"] == "Answer: 272.4289, 546.3806, and 792.5727"
@@ -114,7 +114,7 @@ def test_npr_featurizer():
     text = featurizer.text_featurize(molecule)
     assert (
         text.to_dict()["filled_prompt"]
-        == "Question: What is the first, and second normalized principal moments ratio (NPR) of the molecule with SMILES O=C1C=CC(=O)C(C(=O)O)=C1?"
+        == "Question: What are the first, and second normalized principal moments ratio (NPR) of the molecule with SMILES O=C1C=CC(=O)C(C(=O)O)=C1?"
     )
     assert text.to_dict()["filled_completion"][:-3] == "Answer: 0.3437 and 0.6"
 

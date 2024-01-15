@@ -27,7 +27,7 @@ def generate_dataframe(smiles: List[str], comparator: Comparator):
         comparator (Comparator): Comparator instance.
 
     Returns:
-        (pd.DataFrame): DataFrame containing comparison features. Shape [`N` × `N`]:
+        pd.DataFrame: DataFrame containing comparison features. Shape `(N × N)`:
             where `N` = Number of strings in `smiles`.
     """
     df = [
@@ -50,7 +50,7 @@ def generate_comparator_info(strings: List[str]):
         strings (List[str]): SMILES string.
 
     Returns:
-        (Dict[str, Union[int, float]]): Hash map from property name to property value of type int or float.
+        Dict[str, Union[int, float]]: Hash map from property name to property value of type int or float.
     """
     keys = [
         "smiles",

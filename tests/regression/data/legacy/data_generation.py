@@ -54,7 +54,7 @@ def generate_info(string: str):
         string (str): SMILES string.
 
     Returns:
-        (Dict[str, Union[int, float]]): Hash map from property name to property value of type int or float.
+        Dict[str, Union[int, float]]: Hash map from property name to property value of type int or float.
     """
     preset = [
         "Carbon",
