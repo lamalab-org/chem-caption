@@ -38,18 +38,19 @@ class ChiralCenterCountFeaturizer(AbstractFeaturizer):
             None.
 
         Returns:
-            (List[str]): List of labels for extracted features.
+            List[str]: List of feature labels.
         """
         return ["num_chiral_centers"]
 
-    def _find_chiral_centers(self, molecule: Molecule) -> List[Tuple[Any, Union[Any, str]]]:
+    @staticmethod
+    def _find_chiral_centers(molecule: Molecule) -> List[Tuple[Any, Union[Any, str]]]:
         """Return indices for the chiral centers in `molecule`.
 
         Args:
             molecule (Molecule): Molecular instance.
 
         Returns:
-            chiral_cc (List[Tuple[Any, Union[Any, str]]]): Indices for chiral centers.
+            List[Tuple[Any, Union[Any, str]]]: Indices for chiral centers.
         """
         mol = molecule.reveal_hydrogens()
         AllChem.EmbedMolecule(mol)
@@ -66,7 +67,7 @@ class ChiralCenterCountFeaturizer(AbstractFeaturizer):
             molecule (Molecule): Molecular representation.
 
         Returns:
-            (np.array): number of chiral centers.
+            np.array: number of chiral centers.
         """
         chiral_cc = self._find_chiral_centers(molecule)
         return np.array([len(chiral_cc)]).reshape((1, 1))
@@ -79,6 +80,6 @@ class ChiralCenterCountFeaturizer(AbstractFeaturizer):
             None.
 
         Returns:
-            (List[str]): List of implementors.
+            List[str]: List of implementors.
         """
         return ["Kevin Maik Jablonka"]

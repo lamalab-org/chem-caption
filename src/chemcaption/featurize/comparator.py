@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""Comparator implementations."""
+"""Implementations for molecule Comparator utilities."""
 
 from typing import List
 
@@ -40,7 +40,7 @@ class ValenceElectronCountComparator(Comparator):
             None.
 
         Returns:
-            (List[str]): List of implementors.
+            List[str]: List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]
 
@@ -60,7 +60,7 @@ class LipinskiViolationCountComparator(Comparator):
             None.
 
         Returns:
-            (List[str]): List of implementors.
+            List[str]: List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]
 
@@ -80,7 +80,7 @@ class AtomCountComparator(Comparator):
             None.
 
         Returns:
-            (List[str]): List of implementors.
+            List[str]: List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]
 
@@ -111,7 +111,7 @@ class IsomerismComparator(Comparator):
             epsilon (float): Small float. Precision bound for numerical inconsistencies. Defaults to 0.0.
 
         Returns:
-            (np.array): Comparison results. 1 if all extracted features are equal, else 0.
+            np.array: Comparison results. 1 if all extracted features are equal, else 0.
         """
         result = [self.featurizers[0].featurize(molecule).item() for molecule in molecules]
         return np.array([len(set(result)) == 1], dtype=int).reshape((1, -1))
@@ -124,7 +124,7 @@ class IsomerismComparator(Comparator):
             None.
 
         Returns:
-            (List[str]): List of implementors.
+            List[str]: List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]
 
@@ -151,7 +151,7 @@ class IsomorphismComparator(Comparator):
             epsilon (float): Small float. Precision bound for numerical inconsistencies. Defaults to 0.0.
 
         Returns:
-            (np.array): Comparison results. 1 if all extracted features are equal, else 0.
+            np.array: Comparison results. 1 if all extracted features are equal, else 0.
         """
         result = [self.featurizers[0].featurize(molecule).item() for molecule in molecules]
         return np.array([len(set(result)) == 1], dtype=int).reshape((1, -1))
@@ -164,7 +164,7 @@ class IsomorphismComparator(Comparator):
             None.
 
         Returns:
-            (List[str]): List of implementors.
+            List[str]: List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]
 
@@ -195,7 +195,7 @@ class IsoelectronicComparator(MultipleComparator):
             epsilon (float): Small float. Precision bound for numerical inconsistencies. Defaults to 0.0.
 
         Returns:
-            (np.array): Comparison results. 1 if molecules are isoelectronic, else 0.
+            np.array: Comparison results. 1 if molecules are isoelectronic, else 0.
         """
         return np.reshape(
             self.featurize(molecules=molecules, epsilon=epsilon).all(), (1, 1)
@@ -209,6 +209,6 @@ class IsoelectronicComparator(MultipleComparator):
             None.
 
         Returns:
-            (List[str]): List of implementors.
+            List[str]: List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]

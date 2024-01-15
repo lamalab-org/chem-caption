@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""Featurizers for proton- and electron-related information."""
+"""Featurizers for charge-, proton- and electron-related molecular information."""
 
 from typing import Any, Dict, List, Optional, Union
 
@@ -64,7 +64,7 @@ class HydrogenAcceptorCountFeaturizer(AbstractFeaturizer):
             molecule (Molecule): Molecular representation.
 
         Returns:
-            (np.array): Number of Hydrogen bond acceptors present in `molecule`.
+            np.array: Number of Hydrogen bond acceptors present in `molecule`.
         """
         return np.array([rdMolDescriptors.CalcNumHBA(molecule.reveal_hydrogens())]).reshape((1, -1))
 
@@ -175,7 +175,7 @@ class ValenceElectronCountFeaturizer(AbstractFeaturizer):
             molecule (Molecule): Molecule representation.
 
         Returns:
-            (np.array): Array containing number of valence electrons.
+            np.array: Array containing number of valence electrons.
         """
         num_valence_electrons = Descriptors.NumValenceElectrons(molecule.reveal_hydrogens())
 
@@ -189,7 +189,7 @@ class ValenceElectronCountFeaturizer(AbstractFeaturizer):
             None.
 
         Returns:
-            (List[str]): List of implementors.
+            List[str]: List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]
 
@@ -1003,7 +1003,7 @@ class MoleculeElectrophilicityFeaturizer(MorfeusFeaturizer):
             None.
 
         Returns:
-            (List[str]): List of implementors.
+            List[str]: List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]
 
@@ -1043,7 +1043,7 @@ class MoleculeNucleofugalityFeaturizer(MorfeusFeaturizer):
             molecule (Molecule): Molecule representation.
 
         Returns:
-            (np.array): Array containing global nucleofugality value for the molecule instance.
+            np.array: Array containing global nucleofugality value for the molecule instance.
         """
         if self.qc_optimize:
             molecule = self._generate_conformer(molecule=molecule)
@@ -1063,7 +1063,7 @@ class MoleculeNucleofugalityFeaturizer(MorfeusFeaturizer):
             None.
 
         Returns:
-            (List[str]): List of labels of extracted features.
+            List[str]: List of labels of extracted features.
         """
         return ["molecular_nucleofugality"]
 
@@ -1075,7 +1075,7 @@ class MoleculeNucleofugalityFeaturizer(MorfeusFeaturizer):
             None.
 
         Returns:
-            (List[str]): List of implementors.
+            List[str]: List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]
 
@@ -1115,7 +1115,7 @@ class MoleculeElectrofugalityFeaturizer(MorfeusFeaturizer):
             molecule (Molecule): Molecule representation.
 
         Returns:
-            (np.array): Array containing global electrofugality value for the molecule instance.
+            np.array: Array containing global electrofugality value for the molecule instance.
         """
         if self.qc_optimize:
             molecule = self._generate_conformer(molecule=molecule)
@@ -1147,6 +1147,6 @@ class MoleculeElectrofugalityFeaturizer(MorfeusFeaturizer):
             None.
 
         Returns:
-            (List[str]): List of implementors.
+            List[str]: List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]

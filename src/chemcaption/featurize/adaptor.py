@@ -53,7 +53,7 @@ class RDKitAdaptor(AbstractFeaturizer):
             molecule (Molecule): Molecule representation.
 
         Returns:
-            (np.array): Array containing extracted features.
+            np.array: Array containing extracted features.
         """
         feature = self.rdkit_function(molecule.rdkit_mol, **self.rdkit_function_kwargs)
         feature = (
@@ -72,7 +72,7 @@ class RDKitAdaptor(AbstractFeaturizer):
             None.
 
         Returns:
-            (List[str]): List of labels of extracted features.
+            List[str]: List of labels of extracted features.
         """
         return self._label
 
@@ -84,7 +84,7 @@ class RDKitAdaptor(AbstractFeaturizer):
             None.
 
         Returns:
-            (List[str]): List of implementors.
+            List[str]: List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]
 
@@ -123,7 +123,7 @@ class ValenceElectronCountAdaptor(RDKitAdaptor):
             molecule (Molecule): Molecule representation.
 
         Returns:
-            (np.array): Array containing number of valence electrons.
+            np.array: Array containing number of valence electrons.
         """
         return super().featurize(molecule=molecule)
 
@@ -135,6 +135,6 @@ class ValenceElectronCountAdaptor(RDKitAdaptor):
             None.
 
         Returns:
-            (List[str]): List of implementors.
+            List[str]: List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]

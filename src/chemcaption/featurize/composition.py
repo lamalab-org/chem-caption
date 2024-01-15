@@ -47,7 +47,7 @@ class MolecularFormulaFeaturizer(AbstractFeaturizer):
             None.
 
         Returns:
-            (List[str]): List of labels for extracted features.
+            List[str]: List of labels for extracted features.
         """
         return ["molecular_formula"]
 
@@ -59,7 +59,7 @@ class MolecularFormulaFeaturizer(AbstractFeaturizer):
             molecule (Molecule): Molecular representation.
 
         Returns:
-            (str): Molecular formular of `molecule`.
+            str: Molecular formular of `molecule`.
         """
         return np.array([molecule.get_composition()]).reshape((1, 1))
 
@@ -71,7 +71,7 @@ class MolecularFormulaFeaturizer(AbstractFeaturizer):
             None.
 
         Returns:
-            (List[str]): List of implementors.
+            List[str]: List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]
 
@@ -84,7 +84,7 @@ class MolecularMassFeaturizer(AbstractFeaturizer):
         super().__init__()
 
         self.template = (
-            "What is the {PROPERTY_NAME} of the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
+            "What {VERB} the {PROPERTY_NAME} of the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
         )
         self._names = [
             {
@@ -114,7 +114,7 @@ class MolecularMassFeaturizer(AbstractFeaturizer):
             molecule (Molecule): Molecular representation.
 
         Returns:
-            molar_mass (float): Molecular mass of `molecule`.
+            float: Molecular mass of `molecule`.
         """
         molar_mass = Descriptors.MolWt(molecule.rdkit_mol)
         return np.array([molar_mass]).reshape((1, -1))
@@ -127,7 +127,7 @@ class MolecularMassFeaturizer(AbstractFeaturizer):
             None.
 
         Returns:
-            (List[str]): List of implementors.
+            List[str]: List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]
 
@@ -140,7 +140,7 @@ class MonoisotopicMolecularMassFeaturizer(AbstractFeaturizer):
         super().__init__()
 
         self.template = (
-            "What is the {PROPERTY_NAME} of the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
+            "What {VERB} the {PROPERTY_NAME} of the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
         )
         self._names = [
             {
@@ -170,7 +170,7 @@ class MonoisotopicMolecularMassFeaturizer(AbstractFeaturizer):
             molecule (Molecule): Molecular representation.
 
         Returns:
-            molar_mass (float): Monoisotopic molecular mass of `molecule`.
+            float: Monoisotopic molecular mass of `molecule`.
         """
         monoisotopic_molar_mass = Descriptors.ExactMolWt(molecule.rdkit_mol)
         return np.array([monoisotopic_molar_mass]).reshape((1, -1))
@@ -183,7 +183,7 @@ class MonoisotopicMolecularMassFeaturizer(AbstractFeaturizer):
             None.
 
         Returns:
-            (List[str]): List of implementors.
+            List[str]: List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]
 
@@ -205,7 +205,7 @@ class ElementMassFeaturizer(AbstractFeaturizer):
             self._preset = ["Carbon", "Hydrogen", "Nitrogen", "Oxygen"]
 
         self.template = (
-            "What is the {PROPERTY_NAME} for the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
+            "What {VERB} the {PROPERTY_NAME} for the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
         )
 
     def get_names(self) -> List[Dict[str, str]]:
@@ -217,7 +217,8 @@ class ElementMassFeaturizer(AbstractFeaturizer):
         Returns:
             (List[Dict[str, str]]): List of names for extracted features according to parts-of-speech.
         """
-        return [{"noun": "total mass of " + join_list_elements(self.preset)}]
+        noun = "masses" if len(self.preset) > 1 else "mass"
+        return [{"noun": f"total {noun} of " + join_list_elements(self.preset)}]
 
     def feature_labels(self) -> List[str]:
         """Return feature label(s).
@@ -261,7 +262,7 @@ class ElementMassFeaturizer(AbstractFeaturizer):
             molecules (Union[Molecule, List[Molecule]]): Sequence of molecular instances.
 
         Returns:
-            self (ElementMassFeaturizer): Instance of self with updated state.
+            ElementMassFeaturizer: Instance of self with updated state.
         """
         if isinstance(molecules, list):
             unique_elements = set()
@@ -275,7 +276,8 @@ class ElementMassFeaturizer(AbstractFeaturizer):
 
         return self
 
-    def _get_element_mass(self, element: str, molecule: Molecule) -> float:
+    @staticmethod
+    def _get_element_mass(element: str, molecule: Molecule) -> float:
         """
         Get the total mass component of an element in a molecule.
 
@@ -284,7 +286,7 @@ class ElementMassFeaturizer(AbstractFeaturizer):
             molecule (Molecule): Molecular representation.
 
         Returns:
-            element_mass (float): Total mass accounted for by `element`` in `molecule`.
+            float: Total mass accounted for by `element` in `molecule`.
         """
         if len(element) > 2:
             element_mass = [
@@ -307,7 +309,7 @@ class ElementMassFeaturizer(AbstractFeaturizer):
             molecule (Molecule): Molecular representation instance.
 
         Returns:
-            element_masses (List[float]): List of elemental masses.
+            List[float]: List of elemental masses.
         """
         element_masses = [
             self._get_element_mass(element=element, molecule=molecule) for element in self.preset
@@ -315,7 +317,8 @@ class ElementMassFeaturizer(AbstractFeaturizer):
 
         return element_masses
 
-    def _get_unique_elements(self, molecule: Molecule) -> List[str]:
+    @staticmethod
+    def _get_unique_elements(molecule: Molecule) -> List[str]:
         """
         Get unique elements that make up a molecule.
 
@@ -323,7 +326,7 @@ class ElementMassFeaturizer(AbstractFeaturizer):
             molecule (Molecule): Molecular representation.
 
         Returns:
-            unique_elements (List[str]): Unique list of element_names or element_symbols in `molecule`.
+            List[str]: Unique list of element_names or element_symbols in `molecule`.
         """
         unique_elements = [
             PERIODIC_TABLE.GetElementName(atom.GetAtomicNum()).capitalize()
@@ -351,7 +354,7 @@ class ElementMassFeaturizer(AbstractFeaturizer):
             None.
 
         Returns:
-            (List[str]): List of implementors.
+            List[str]: List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]
 
@@ -374,7 +377,8 @@ class ElementMassProportionFeaturizer(ElementMassFeaturizer):
         Returns:
             (List[Dict[str, str]]): List of names for extracted features according to parts-of-speech.
         """
-        return [{"noun": "mass proportion of " + join_list_elements(self.preset)}]
+        proportion = "proportions" if len(self.preset) > 1 else "proportion"
+        return [{"noun": f"mass {proportion} of " + join_list_elements(self.preset)}]
 
     def feature_labels(self) -> List[str]:
         return [self.prefix + element.lower() + self.suffix for element in self.preset]
@@ -400,7 +404,7 @@ class ElementMassProportionFeaturizer(ElementMassFeaturizer):
             None.
 
         Returns:
-            (List[str]): List of implementors.
+            List[str]: List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]
 
@@ -432,9 +436,11 @@ class ElementCountFeaturizer(ElementMassFeaturizer):
         Returns:
             (List[Dict[str, str]]): List of names for extracted features according to parts-of-speech.
         """
-        return [{"noun": "atom count of " + join_list_elements(self.preset)}]
+        count = "counts" if len(self.preset) > 1 else "count"
+        return [{"noun": f"atom {count} of " + join_list_elements(self.preset)}]
 
-    def _get_atom_count(self, element: str, molecule: Molecule) -> int:
+    @staticmethod
+    def _get_atom_count(element: str, molecule: Molecule) -> int:
         """
         Get number of atoms of element in a molecule.
 
@@ -443,7 +449,7 @@ class ElementCountFeaturizer(ElementMassFeaturizer):
             molecule (Molecule): Molecular representation instance.
 
         Returns:
-            atom_count (int): Number of atoms of element in molecule.
+            int: Number of atoms of element in molecule.
         """
         atom_count = len(
             [
@@ -464,7 +470,7 @@ class ElementCountFeaturizer(ElementMassFeaturizer):
             molecule (Molecule): Molecular representation instance.
 
         Returns:
-            atom_counts (List[int]): List of elemental atom counts.
+            List[int]: List of elemental atom counts.
         """
         atom_counts = [
             self._get_atom_count(element=element, molecule=molecule) for element in self.preset
@@ -492,7 +498,7 @@ class ElementCountFeaturizer(ElementMassFeaturizer):
             None.
 
         Returns:
-            (List[str]): List of implementors.
+            List[str]: List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]
 
@@ -518,7 +524,8 @@ class ElementCountProportionFeaturizer(ElementCountFeaturizer):
         Returns:
             (List[Dict[str, str]]): List of names for extracted features according to parts-of-speech.
         """
-        return [{"noun": "relative atom count of " + join_list_elements(self.preset)}]
+        count = "counts" if len(self.preset) > 1 else "count"
+        return [{"noun": f"relative atom {count} of " + join_list_elements(self.preset)}]
 
     def feature_labels(self) -> List[str]:
         """Return feature label(s).
@@ -552,7 +559,7 @@ class ElementCountProportionFeaturizer(ElementCountFeaturizer):
             None.
 
         Returns:
-            (List[str]): List of implementors.
+            List[str]: List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]
 
@@ -611,7 +618,7 @@ class AtomCountFeaturizer(ElementCountFeaturizer):
             None.
 
         Returns:
-            (List[str]): List of implementors.
+            List[str]: List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]
 
@@ -644,7 +651,8 @@ class DegreeOfUnsaturationFeaturizer(AbstractFeaturizer):
         """
         return ["degree_of_unsaturation"]
 
-    def _get_degree_of_unsaturation_for_mol(self, molecule: Molecule):
+    @staticmethod
+    def _get_degree_of_unsaturation_for_mol(molecule: Molecule):
         """Return the degree of unsaturation for a molecule.
 
         .. math::
@@ -656,7 +664,7 @@ class DegreeOfUnsaturationFeaturizer(AbstractFeaturizer):
             molecule (Molecule): Molecule instance.
 
         Returns:
-            (int): Degree of unsaturation.
+            int: Degree of unsaturation.
         """
         # add hydrogens
         mol = molecule.reveal_hydrogens()
@@ -686,6 +694,6 @@ class DegreeOfUnsaturationFeaturizer(AbstractFeaturizer):
             None.
 
         Returns:
-            (List[str]): List of implementors.
+            List[str]: List of implementors.
         """
         return ["Kevin Maik Jablonka"]

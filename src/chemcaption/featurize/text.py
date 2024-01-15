@@ -8,6 +8,7 @@ from typing import Any, Dict, List, Optional, Union
 import numpy as np
 
 from chemcaption.featurize.text_utils import inspect_info
+from chemcaption.featurize.utils import join_list_elements
 
 # Implemented text-related classes
 
@@ -35,7 +36,7 @@ class Prompt:
             None.
 
         Returns:
-            (dict): Dictionary containing all relevant prompt-related information.
+            Dict[str, Any]: Dictionary containing all relevant prompt-related information.
         """
 
         return self.__dict__()
@@ -47,7 +48,7 @@ class Prompt:
             None.
 
         Returns:
-            (dict): Dictionary containing all relevant prompt-related information.
+            Dict[str, Any]: Dictionary containing all relevant prompt-related information.
         """
 
         return {
@@ -65,24 +66,26 @@ class Prompt:
             "filled_completion": self.fill_template(self.completion_template),
         }
 
-    def fill_template(self, template, precision_type: str = "decimal") -> str:
+    def fill_template(self, template: str, precision_type: str = "decimal") -> str:
         """Fill up the prompt template with appropriate values.
 
         Args:
+            template (str): Template format as string.
             precision_type (str): Level of precision for approximation purposes. Can be `decimal` or `significant`.
                 Defaults to `decimal`.
 
         Returns:
-            (str): Appropriately formatted template.
+            str: Appropriately formatted template.
         """
         molecular_info = dict(
             PROPERTY_NAME=self.completion_names,
             REPR_SYSTEM=self.representation_type,
             REPR_STRING=self.representation,
-            PROPERTY_VALUE=self.completion,
+            PROPERTY_VALUE=join_list_elements(self.completion),
             PRECISION=4,
             PRECISION_TYPE=precision_type,
             COMPLETION=self.completion,
+            VERB="are" if len(self.completion) > 1 else "is",
         )
         molecular_info = inspect_info(molecular_info)
 
@@ -95,7 +98,7 @@ class Prompt:
             None.
 
         Returns:
-            (str): Appropriately formatted template.
+            str: Appropriately formatted template.
         """
         return str(self.__dict__())
 
@@ -111,7 +114,7 @@ class Prompt:
             None.
 
         Returns:
-            (List[str]): List of implementors.
+            List[str]: List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]
 
