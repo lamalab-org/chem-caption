@@ -70,7 +70,7 @@ class Prompt:
         """Fill up the prompt template with appropriate values.
 
         Args:
-            template (str): Template format as string.
+            template (str): Prompt template.
             precision_type (str): Level of precision for approximation purposes. Can be `decimal` or `significant`.
                 Defaults to `decimal`.
 

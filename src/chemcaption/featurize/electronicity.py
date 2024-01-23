@@ -244,7 +244,7 @@ class ElectronAffinityFeaturizer(MorfeusFeaturizer):
             None.
 
         Returns:
-            (List[str]): List of labels of extracted features.
+            List[str]: List of labels of extracted features.
         """
         return ["electron_affinity"]
 
@@ -256,7 +256,7 @@ class ElectronAffinityFeaturizer(MorfeusFeaturizer):
             None.
 
         Returns:
-            (List[str]): List of implementors.
+            List[str]: List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]
 
@@ -297,7 +297,7 @@ class IonizationPotentialFeaturizer(MorfeusFeaturizer):
             molecule (Molecule): Molecule representation.
 
         Returns:
-            (np.array): Array containing ionization potential for molecule instance.
+            np.array: Array containing ionization potential for molecule instance.
         """
         if self.qc_optimize:
             molecule = self._generate_conformer(molecule=molecule)
@@ -311,7 +311,7 @@ class IonizationPotentialFeaturizer(MorfeusFeaturizer):
             None.
 
         Returns:
-            (List[str]): List of labels of extracted features.
+            List[str]: List of labels of extracted features.
         """
         return ["ionization_potential"]
 
@@ -323,7 +323,7 @@ class IonizationPotentialFeaturizer(MorfeusFeaturizer):
             None.
 
         Returns:
-            (List[str]): List of implementors.
+            List[str]: List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]
 
@@ -364,7 +364,7 @@ class HOMOEnergyFeaturizer(MorfeusFeaturizer):
             molecule (Molecule): Molecule representation.
 
         Returns:
-            (np.array): Array containing energy of highest occupied molecular orbital for molecule instance.
+            np.array: Array containing energy of highest occupied molecular orbital for molecule instance.
         """
         if self.qc_optimize:
             molecule = self._generate_conformer(molecule=molecule)
@@ -379,7 +379,7 @@ class HOMOEnergyFeaturizer(MorfeusFeaturizer):
             None.
 
         Returns:
-            (List[str]): List of labels of extracted features.
+            List[str]: List of labels of extracted features.
         """
         return ["homo_energy"]
 
@@ -391,7 +391,7 @@ class HOMOEnergyFeaturizer(MorfeusFeaturizer):
             None.
 
         Returns:
-            (List[str]): List of implementors.
+            List[str]: List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]
 
@@ -432,7 +432,7 @@ class LUMOEnergyFeaturizer(MorfeusFeaturizer):
             molecule (Molecule): Molecule representation.
 
         Returns:
-            (np.array): Array containing energy of lowest unoccupied molecular orbital for molecule instance.
+            np.array: Array containing energy of lowest unoccupied molecular orbital for molecule instance.
         """
         if self.qc_optimize:
             molecule = self._generate_conformer(molecule=molecule)
@@ -446,7 +446,7 @@ class LUMOEnergyFeaturizer(MorfeusFeaturizer):
             None.
 
         Returns:
-            (List[str]): List of labels of extracted features.
+            List[str]: List of labels of extracted features.
         """
         return ["lumo_energy"]
 
@@ -458,7 +458,7 @@ class LUMOEnergyFeaturizer(MorfeusFeaturizer):
             None.
 
         Returns:
-            (List[str]): List of implementors.
+            List[str]: List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]
 

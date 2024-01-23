@@ -92,10 +92,10 @@ class SpatialFeaturizer(AbstractFeaturizer):
 
         Args:
             *x (Chem.Mol): rdkit Molecule object.
-            **y (Union[str, int]): Keyword arguments.
+            **y (Dict[str, Union[int, str]]): Keyword arguments.
 
         Returns:
-            List[Union[int, float]]: List of results for all variants of measure of interest.
+            List[Union[int, float]]: List of computed results for different variants of interest.
         """
         keys = self._base_rdkit_utility_keys()
         results = [self.FUNCTION_MAP[idx](*x, **y) for idx in keys]

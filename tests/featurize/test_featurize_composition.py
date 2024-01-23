@@ -27,7 +27,7 @@ def test_molecular_formula_featurizer():
 
     assert len(featurizer.feature_labels()) == 1
 
-    text = featurizer.text_featurize(molecule)
+    text = featurizer.text_featurize(pos_key="noun", molecule=molecule)
     assert (
         text.to_dict()["filled_prompt"]
         == "Question: What is the molecular formula of the molecule with SMILES c1ccccc1?"  # kekule form
@@ -41,7 +41,7 @@ def test_molecular_mass_featurizer():
     results = featurizer.featurize(molecule)
     assert np.isclose(results[0], 18.015)
 
-    text = featurizer.text_featurize(molecule)
+    text = featurizer.text_featurize(pos_key="noun", molecule=molecule)
     assert (
         text.to_dict()["filled_prompt"]
         == "Question: What is the molecular mass of the molecule with SMILES O?"
@@ -57,7 +57,7 @@ def test_monoisotopicmass_featurizer():
     results = featurizer.featurize(molecule)
     assert np.isclose(results[0], 18.0106)
 
-    text = featurizer.text_featurize(molecule)
+    text = featurizer.text_featurize(pos_key="noun", molecule=molecule)
     assert (
         text.to_dict()["filled_prompt"]
         == "Question: What is the monoisotopic molecular mass of the molecule with SMILES O?"
@@ -76,7 +76,7 @@ def test_element_mass_featurizer():
     assert results[0][2] == 0
     assert results[0][3] == 15.999
 
-    text = featurizer.text_featurize(molecule)
+    text = featurizer.text_featurize(pos_key="noun", molecule=molecule)
 
     assert (
         text.to_dict()["filled_prompt"]
@@ -92,7 +92,7 @@ def test_element_mass_proportion_featurizer():
     results = featurizer.featurize(molecule)
     assert len(results[0]) == len(featurizer.feature_labels())
 
-    text = featurizer.text_featurize(molecule)
+    text = featurizer.text_featurize(pos_key="noun", molecule=molecule)
     assert (
         text.to_dict()["filled_prompt"]
         == "Question: What are the mass proportions of Carbon, Hydrogen, Nitrogen, and Oxygen of the molecule with SMILES O?"
@@ -106,7 +106,7 @@ def test_element_count_proportion_featurizer():
     results = featurizer.featurize(molecule)
     assert len(results[0]) == len(featurizer.feature_labels())
 
-    text = featurizer.text_featurize(molecule)
+    text = featurizer.text_featurize(pos_key="noun", molecule=molecule)
     assert (
         text.to_dict()["filled_prompt"]
         == "Question: What are the relative atom counts of Carbon, Hydrogen, Nitrogen, and Oxygen of the molecule with SMILES O?"
@@ -122,7 +122,7 @@ def test_element_count_featurizer():
     results = featurizer.featurize(molecule)
     assert len(results[0]) == len(featurizer.feature_labels())
 
-    text = featurizer.text_featurize(molecule)
+    text = featurizer.text_featurize(pos_key="noun", molecule=molecule)
     assert (
         text.to_dict()["filled_prompt"]
         == "Question: What are the atom counts of Carbon, Hydrogen, Nitrogen, and Oxygen of the molecule with SMILES O?"
@@ -138,7 +138,7 @@ def test_atom_count_featurizer():
     results = featurizer.featurize(molecule)
     assert len(results[0]) == len(featurizer.feature_labels())
 
-    text = featurizer.text_featurize(molecule)
+    text = featurizer.text_featurize(pos_key="noun", molecule=molecule)
     assert (
         text.to_dict()["filled_prompt"]
         == "Question: What is the total number of atoms of the molecule with SMILES O?"
@@ -154,7 +154,7 @@ def test_degree_of_unsaturation_featurizer():
     results = featurizer.featurize(molecule)
     assert len(results[0]) == len(featurizer.feature_labels())
 
-    text = featurizer.text_featurize(molecule)
+    text = featurizer.text_featurize(pos_key="noun", molecule=molecule)
     assert (
         text.to_dict()["filled_prompt"]
         == "Question: What is the degree of unsaturation of the molecule with SMILES O?"

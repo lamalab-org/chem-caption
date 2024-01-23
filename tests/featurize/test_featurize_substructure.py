@@ -11,7 +11,7 @@ def test_topology_count_featurizer():
     results = featurizer.featurize(molecule)
     assert len(results) == 1
     assert len(results[0]) == len(featurizer.feature_labels())
-    text = featurizer.text_featurize(molecule)
+    text = featurizer.text_featurize(pos_key="noun", molecule=molecule)
     assert isinstance(text, Prompt)
 
     featurizer = TopologyCountFeaturizer.from_preset("organic")
@@ -22,7 +22,7 @@ def test_topology_count_featurizer():
     assert results[0][1] == 1
     assert np.sum(results) == 2
 
-    text = featurizer.text_featurize(molecule)
+    text = featurizer.text_featurize(pos_key="noun", molecule=molecule)
     assert (
         text.to_dict()["filled_prompt"]
         == "Question: What are the numbers of topologically unique environments of C, H, N, O, P, S, F, Cl, Br, and I of the molecule with SMILES c1ccccc1?"
@@ -41,7 +41,7 @@ def test_smarts_featurizer():
 
     assert sum(results[0]) == 0
 
-    text = featurizer.text_featurize(molecule)
+    text = featurizer.text_featurize(pos_key="noun", molecule=molecule)
 
     assert (
         text.to_dict()["filled_prompt"]
@@ -58,7 +58,7 @@ def test_smarts_featurizer():
 
     assert sum(results[0]) == 0
 
-    text = featurizer.text_featurize(molecule)
+    text = featurizer.text_featurize(pos_key="noun", molecule=molecule)
 
     assert (
         text.to_dict()["filled_prompt"]
@@ -76,7 +76,7 @@ def test_smarts_featurizer():
 
     assert sum(results[0]) == 1
 
-    text = featurizer.text_featurize(molecule)
+    text = featurizer.text_featurize(pos_key="noun", molecule=molecule)
 
     assert (
         text.to_dict()["filled_prompt"]

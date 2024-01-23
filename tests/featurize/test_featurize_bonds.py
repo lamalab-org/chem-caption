@@ -32,7 +32,7 @@ def test_bond_type_count_featurizer():
     assert results_dict["num_bonds"] == 12
     assert results_dict["num_aromatic_bonds"] == 6
     assert results_dict["num_single_bonds"] == 6
-    text = bt.text_featurize(molecule)
+    text = bt.text_featurize(pos_key="noun", molecule=molecule)
     assert isinstance(text, Prompt)
 
     assert (
@@ -47,7 +47,7 @@ Constraint: Return a list of comma separated integers."""
     )
 
     bt = BondTypeCountFeaturizer(count=False)
-    text = bt.text_featurize(molecule)
+    text = bt.text_featurize(pos_key="noun", molecule=molecule)
     assert isinstance(text, Prompt)
 
     assert (
@@ -64,7 +64,7 @@ def test_rotable_bond_proportion_featurizer():
     assert len(results) == 1
     assert len(results[0]) == len(brf.feature_labels())
     assert np.sum(results) == 1
-    text = brf.text_featurize(molecule)
+    text = brf.text_featurize(pos_key="noun", molecule=molecule)
     assert isinstance(text, Prompt)
 
     assert (
@@ -82,7 +82,7 @@ def test_rotable_bond_count_featurizer():
     assert len(results) == 1
     assert len(results[0]) == len(rbcf.feature_labels())
     assert np.sum(results) == 0
-    text = rbcf.text_featurize(molecule)
+    text = rbcf.text_featurize(pos_key="noun", molecule=molecule)
     assert isinstance(text, Prompt)
 
     assert (
@@ -104,7 +104,7 @@ def test_bond_type_proportion_featurizer():
 
     assert len(results[0]) == len(featurizer.feature_labels())
 
-    text = featurizer.text_featurize(molecule)
+    text = featurizer.text_featurize(pos_key="noun", molecule=molecule)
 
     assert isinstance(text, Prompt)
     print(text.to_dict()["filled_prompt"])
