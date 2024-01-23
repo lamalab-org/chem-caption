@@ -1,3 +1,8 @@
+# -*- coding: utf-8 -*-
+
+"""Export script."""
+
+# Utility import
 from pathlib import Path
 from typing import Union
 
@@ -27,6 +32,7 @@ from chemcaption.featurize.composition import (
     ElementMassFeaturizer,
     ElementMassProportionFeaturizer,
     MolecularFormulaFeaturizer,
+    MolecularMassFeaturizer,
     MonoisotopicMolecularMassFeaturizer,
 )
 from chemcaption.featurize.electronicity import (
@@ -42,6 +48,7 @@ from chemcaption.featurize.electronicity import (
     MoleculeNucleofugalityFeaturizer,
     MoleculeNucleophilicityFeaturizer,
 )
+from chemcaption.featurize.miscellaneous import SVGFeaturizer
 from chemcaption.featurize.rules import (
     GhoseFilterFeaturizer,
     LeadLikenessFilterFeaturizer,
@@ -54,9 +61,16 @@ from chemcaption.featurize.spatial import (
     InertialShapeFactorFeaturizer,
     NPRFeaturizer,
     PMIFeaturizer,
+    RadiusOfGyrationFeaturizer,
+    SpherocityIndexFeaturizer,
 )
 from chemcaption.featurize.stereochemistry import ChiralCenterCountFeaturizer
-from chemcaption.featurize.substructure import FragmentSearchFeaturizer
+from chemcaption.featurize.substructure import (
+    IsomorphismFeaturizer,
+    FragmentSearchFeaturizer,
+    TopologyCountFeaturizer,
+)
+from chemcaption.featurize.symmetry import PointGroupFeaturizer, RotationalSymmetryNumberFeaturizer
 from chemcaption.molecules import InChIMolecule, SELFIESMolecule, SMILESMolecule
 from chemcaption.presets import ALL_SMARTS
 
@@ -77,16 +91,18 @@ FEATURIZER = MultipleFeaturizer(
         RotableBondProportionFeaturizer(),
         BondTypeCountFeaturizer(),
         BondTypeProportionFeaturizer(),
+        DegreeOfUnsaturationFeaturizer(),
         BondOrderFeaturizer(),
         RotableBondCountFeaturizer(),
         DipoleMomentsFeaturizer(),
         MolecularFormulaFeaturizer(),
         MonoisotopicMolecularMassFeaturizer(),
+        AtomCountFeaturizer(),
+        MolecularMassFeaturizer(),
         ElementMassFeaturizer(),
         ElementCountFeaturizer(),
         ElementMassProportionFeaturizer(),
         ElementCountProportionFeaturizer(),
-        DegreeOfUnsaturationFeaturizer(),
         HydrogenAcceptorCountFeaturizer(),
         HydrogenDonorCountFeaturizer(),
         HOMOEnergyFeaturizer(),
@@ -106,7 +122,14 @@ FEATURIZER = MultipleFeaturizer(
         InertialShapeFactorFeaturizer(),
         NPRFeaturizer(),
         PMIFeaturizer(),
+        SpherocityIndexFeaturizer(),
+        RadiusOfGyrationFeaturizer(),
         ChiralCenterCountFeaturizer(),
+        TopologyCountFeaturizer(reference_atomic_numbers=[6, 8]),
+        IsomorphismFeaturizer(),
+        PointGroupFeaturizer(),
+        RotationalSymmetryNumberFeaturizer(),
+        SVGFeaturizer(),
     ]
 )
 

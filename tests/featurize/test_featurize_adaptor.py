@@ -20,7 +20,7 @@ def test_valence_electron_count():
     assert len(results[0]) == len(featurizer.feature_labels())
     assert np.sum(results) == 30
 
-    text = featurizer.text_featurize(molecule)
+    text = featurizer.text_featurize(pos_key="noun", molecule=molecule)
     assert (
         text.to_dict()["filled_prompt"]
         == "Question: What is the number of valence electrons of the molecule with SMILES c1ccccc1?"

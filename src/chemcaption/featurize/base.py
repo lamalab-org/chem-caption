@@ -85,11 +85,14 @@ class AbstractFeaturizer(ABC):
     def text_featurize(
         self,
         molecule: Molecule,
+        pos_key: str = "noun",
     ) -> Prompt:
         """Embed features in Prompt instance.
 
         Args:
             molecule (Molecule): Molecule representation.
+            pos_key (str): Part of speech. If exists as key in POS dictionary, return value.
+                Else return value for noun POS.
 
         Returns:
             Prompt: Instance of Prompt containing relevant information extracted from `molecule`.
@@ -108,7 +111,10 @@ class AbstractFeaturizer(ABC):
 
         completion_labels = self.feature_labels()
 
-        completion_name = self.get_names()[0]["noun"]
+        try:
+            completion_name = self.get_names()[0][pos_key]
+        except KeyError:
+            completion_name = self.get_names()[0]["noun"]
 
         return Prompt(
             completion=completion,
@@ -125,18 +131,32 @@ class AbstractFeaturizer(ABC):
     def text_featurize_many(
         self,
         molecules: List[Molecule],
+        pos_keys: Union[str, List[str]] = "noun",
     ) -> List[Prompt]:
         """Embed features in Prompt instance for multiple molecules.
 
         Args:
             molecules (Sequence[Molecule]):
                 A sequence of molecule representations.
+            pos_keys (Union[str, List[str]]): Parts of speech. If exists as key in POS dictionary, return value.
+                Else return value for noun POS.
 
         Returns:
             List[Prompt]: List of Prompt instances containing relevant information extracted from each
                 molecule in `molecules`.
         """
-        return [self.text_featurize(molecule=molecule) for molecule in molecules]
+        if isinstance(pos_keys, str):
+            pos_keys = [pos_keys] * len(molecules)
+        else:
+            if len(pos_keys) != len(molecules):
+                raise Exception(
+                    "`pos_keys` must either be a single element of type `str`, "
+                    "or an iterable of equal length to the collection of molecules."
+                )
+        return [
+            self.text_featurize(pos_key=pos_key, molecule=molecule)
+            for pos_key, molecule in zip(pos_keys, molecules)
+        ]
 
     @abstractmethod
     def implementors(self) -> List[str]:
@@ -158,7 +178,7 @@ class AbstractFeaturizer(ABC):
             None.
 
         Returns:
-            List[str]: List of labels of extracted features.
+            (List[str]): List of labels of extracted features.
         """
         raise NotImplementedError
 
@@ -608,7 +628,8 @@ class MultipleFeaturizer(AbstractFeaturizer):
         """Initialize class instance.
 
         Args:
-            featurizers (Optional[List[AbstractFeaturizer]]): A list of featurizer objects. Defaults to `None`.
+            featurizers (Optional[List[AbstractFeaturizer]]):
+                A list of featurizer objects. Defaults to `None`.
 
         """
         super().__init__()
@@ -617,7 +638,8 @@ class MultipleFeaturizer(AbstractFeaturizer):
 
     def featurize(self, molecule: Molecule) -> np.array:
         """
-        Featurize a molecule instance. Returns results from multiple lower-level featurizers.
+        Featurize a molecule instance.
+        Returns results from multiple lower-level featurizers.
 
         Args:
             molecule (Molecule): Molecule representation.
@@ -636,16 +658,21 @@ class MultipleFeaturizer(AbstractFeaturizer):
     def text_featurize(
         self,
         molecule: Molecule,
+        pos_key: str = "noun",
     ) -> PromptCollection:
         """Embed features in Prompt instance.
 
         Args:
             molecule (Molecule): Molecule representation.
+            pos_key (str): Part of speech. If exists as key in POS dictionary, return value.
+                Else return value for noun POS.
 
         Returns:
             PromptCollection: Instance of Prompt containing relevant information extracted from `molecule`.
         """
-        return PromptCollection([f.text_featurize(molecule=molecule) for f in self.featurizers])
+        return PromptCollection(
+            [f.text_featurize(pos_key=pos_key, molecule=molecule) for f in self.featurizers]
+        )
 
     def featurize_many(self, molecules: List[Molecule]) -> np.array:
         """

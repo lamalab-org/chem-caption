@@ -28,7 +28,7 @@ def test_lipinski_filter_featurizer():
     results = featurizer.featurize(molecule)
     assert results[0] == 1
 
-    text = featurizer.text_featurize(molecule)
+    text = featurizer.text_featurize(pos_key="noun", molecule=molecule)
     assert (
         text.to_dict()["filled_prompt"]
         == "Question: What is the number of Lipinski violations of the molecule with SMILES CCCCCCCCCCCCCCCC?"

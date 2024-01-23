@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""Unit tests for chemcaption.featurize.text submodule."""
+"""Unit tests for `chemcaption.featurize.text` submodule."""
 
 from chemcaption.featurize.text import Prompt, PromptCollection
 
