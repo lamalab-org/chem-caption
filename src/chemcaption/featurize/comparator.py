@@ -9,7 +9,11 @@ import numpy as np
 from chemcaption.featurize.base import AbstractFeaturizer, Comparator, MultipleComparator
 from chemcaption.featurize.composition import AtomCountFeaturizer, MolecularFormulaFeaturizer
 from chemcaption.featurize.electronicity import ValenceElectronCountFeaturizer
-from chemcaption.featurize.rules import LipinskiViolationCountFeaturizer
+from chemcaption.featurize.rules import (
+    GhoseFilterFeaturizer,
+    LeadLikenessFilterFeaturizer,
+    LipinskiFilterFeaturizer,
+)
 from chemcaption.featurize.substructure import IsomorphismFeaturizer
 from chemcaption.molecules import Molecule
 
@@ -17,11 +21,14 @@ from chemcaption.molecules import Molecule
 
 __all__ = [
     "ValenceElectronCountComparator",
-    "LipinskiViolationCountComparator",
+    "LipinskiFilterComparator",
+    "GhoseFilterComparator",
+    "LeadLikenessFilterComparator",
     "AtomCountComparator",
     "IsomerismComparator",
     "IsomorphismComparator",
     "IsoelectronicComparator",
+    "DrugLikenessComparator",
 ]
 
 
@@ -45,12 +52,52 @@ class ValenceElectronCountComparator(Comparator):
         return ["Benedict Oshomah Emoekabu"]
 
 
-class LipinskiViolationCountComparator(Comparator):
+class LipinskiFilterComparator(Comparator):
     """Compare molecular instances for parity based on number of violations of Lipinski's rule of Five."""
 
     def __init__(self):
         """Initialize instance."""
-        super().__init__(featurizers=[LipinskiViolationCountFeaturizer()])
+        super().__init__(featurizers=[LipinskiFilterFeaturizer()])
+
+    def implementors(self) -> List[str]:
+        """
+        Return list of functionality implementors.
+
+        Args:
+            None.
+
+        Returns:
+            List[str]: List of implementors.
+        """
+        return ["Benedict Oshomah Emoekabu"]
+
+
+class GhoseFilterComparator(Comparator):
+    """Compare molecular instances for parity based on number of violations of the Ghose filter."""
+
+    def __init__(self):
+        """Initialize instance."""
+        super().__init__(featurizers=[GhoseFilterFeaturizer()])
+
+    def implementors(self) -> List[str]:
+        """
+        Return list of functionality implementors.
+
+        Args:
+            None.
+
+        Returns:
+            List[str]: List of implementors.
+        """
+        return ["Benedict Oshomah Emoekabu"]
+
+
+class LeadLikenessFilterComparator(Comparator):
+    """Compare molecular instances for parity based on number of violations of the lead-likeness drug filter."""
+
+    def __init__(self):
+        """Initialize instance."""
+        super().__init__(featurizers=[LeadLikenessFilterFeaturizer()])
 
     def implementors(self) -> List[str]:
         """
@@ -200,6 +247,54 @@ class IsoelectronicComparator(MultipleComparator):
         return np.reshape(
             self.featurize(molecules=molecules, epsilon=epsilon).all(), (1, 1)
         ).astype(int)
+
+    def implementors(self) -> List[str]:
+        """
+        Return list of functionality implementors.
+
+        Args:
+            None.
+
+        Returns:
+            List[str]: List of implementors.
+        """
+        return ["Benedict Oshomah Emoekabu"]
+
+
+class DrugLikenessComparator(MultipleComparator):
+    """Compare molecular instances for similarity based on drug-likeness rules."""
+
+    def __init__(self):
+        """Initialize instance."""
+        super().__init__(
+            comparators=[
+                LipinskiFilterComparator(),
+                GhoseFilterComparator(),
+                LeadLikenessFilterComparator(),
+            ]
+        )
+
+    def compare(
+        self,
+        molecules: List[Molecule],
+        epsilon: float = 0.0,
+    ) -> np.array:
+        """
+        Compare multiple molecular instances for drug-likeness status. `1` if all molecules are similar, else `0`.
+
+        Args:
+            molecules (List[Molecule]): Molecule instances to be compared.
+            epsilon (float): Small float. Precision bound for numerical inconsistencies. Defaults to 0.0.
+
+        Returns:
+            (np.array): Comparison results. Array of shape `(1, N)`, where `N` = number of drug-rule comparators.
+                Each column from `0` to`N-1` equals `1` if molecules are similar with respect to drug rule, else `0`.
+        """
+        results = [
+            comparator.compare(molecules=molecules, epsilon=epsilon)
+            for comparator in self.comparators
+        ]
+        return np.concatenate(results, axis=1)
 
     def implementors(self) -> List[str]:
         """

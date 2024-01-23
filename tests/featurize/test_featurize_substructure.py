@@ -1,8 +1,22 @@
+# -*- coding: utf-8 -*-
+
+"""Unit tests for chemcaption.featurize.substructure submodule."""
+
 import numpy as np
 
-from chemcaption.featurize.substructure import SMARTSFeaturizer, TopologyCountFeaturizer
+from chemcaption.featurize.substructure import (
+    FragmentSearchFeaturizer,
+    IsomorphismFeaturizer,
+    TopologyCountFeaturizer,
+)
 from chemcaption.featurize.text import Prompt
 from chemcaption.molecules import SMILESMolecule
+
+__all__ = [
+    "test_topology_count_featurizer",
+    "test_fragment_search_featurizer",
+    "test_isomorphism_featurizer",
+]
 
 
 def test_topology_count_featurizer():
@@ -31,9 +45,9 @@ def test_topology_count_featurizer():
     assert text.to_dict()["filled_completion"] == "Answer: 1, 1, 0, 0, 0, 0, 0, 0, 0, and 0"
 
 
-def test_smarts_featurizer():
+def test_fragment_search_featurizer():
     molecule = SMILESMolecule("C1=CC=CC=C1")
-    featurizer = SMARTSFeaturizer.from_preset("organic")
+    featurizer = FragmentSearchFeaturizer.from_preset("organic")
     results = featurizer.featurize(molecule)
 
     assert len(results) == 1
@@ -50,7 +64,7 @@ def test_smarts_featurizer():
 
     assert text.to_dict()["filled_completion"] == "Answer: 0, 0, 0, 0, 0, 0, 0, 0, and 0"
 
-    featurizer = SMARTSFeaturizer.from_preset("organic", False)
+    featurizer = FragmentSearchFeaturizer.from_preset("organic", False)
     results = featurizer.featurize(molecule)
 
     assert len(results) == 1
@@ -68,7 +82,7 @@ def test_smarts_featurizer():
 
     assert text.to_dict()["filled_completion"] == "Answer: 0, 0, 0, 0, 0, 0, 0, 0, and 0"
 
-    featurizer = SMARTSFeaturizer(["[#6]1:[#6]:[#6]:[#6]:[#6]:[#6]:1"], ["benzene"], False)
+    featurizer = FragmentSearchFeaturizer(["[#6]1:[#6]:[#6]:[#6]:[#6]:[#6]:1"], ["benzene"], False)
     results = featurizer.featurize(molecule)
 
     assert len(results) == 1
@@ -84,3 +98,23 @@ def test_smarts_featurizer():
     )
 
     assert text.to_dict()["filled_completion"] == "Answer: 1"
+
+
+def test_isomorphism_featurizer():
+    molecule = SMILESMolecule("C1=CC=CC=C1")
+    featurizer = IsomorphismFeaturizer()
+
+    results = featurizer.featurize(molecule).item()
+
+    assert results == "81d9780b026c6719bae68a874d450d22"
+
+    text = featurizer.text_featurize(molecule)
+
+    assert isinstance(text, Prompt)
+
+    assert (
+        text.to_dict()["filled_prompt"]
+        == "Question: What is the Weisfeiler-Lehman graph hash of the molecule with SMILES c1ccccc1?"
+    )
+
+    assert text.to_dict()["filled_completion"] == "Answer: 81d9780b026c6719bae68a874d450d22"

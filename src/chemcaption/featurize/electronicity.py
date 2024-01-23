@@ -76,7 +76,7 @@ class HydrogenAcceptorCountFeaturizer(AbstractFeaturizer):
             None.
 
         Returns:
-            (List[str]): List of implementors.
+            List[str]: List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]
 
@@ -116,7 +116,7 @@ class HydrogenDonorCountFeaturizer(AbstractFeaturizer):
             molecule (Molecule): Molecular representation.
 
         Returns:
-            (np.array): Number of Hydrogen bond donors present in `molecule`.
+            np.array: Number of Hydrogen bond donors present in `molecule`.
         """
         return np.array([rdMolDescriptors.CalcNumHBD(molecule.reveal_hydrogens())]).reshape((1, -1))
 
@@ -128,7 +128,7 @@ class HydrogenDonorCountFeaturizer(AbstractFeaturizer):
             None.
 
         Returns:
-            (List[str]): List of implementors.
+            List[str]: List of implementors.
         """
         return ["Benedict Oshomah Emoekabu"]
 

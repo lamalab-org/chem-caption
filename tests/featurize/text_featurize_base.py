@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""Unit tests for base submodule."""
+"""Unit tests for chemcaption.featurize.base submodule."""
 
 from chemcaption.featurize.base import MultipleFeaturizer
 from chemcaption.featurize.electronicity import HydrogenAcceptorCountFeaturizer
@@ -27,4 +27,4 @@ def test_multiple_featurizer():
     assert len(results[0]) == len(featurizer.feature_labels())
 
     text = featurizer.text_featurize(pos_key="noun", molecule=smiles)
-    assert len(text)
+    assert len(text) == len(featurizer.featurizers)

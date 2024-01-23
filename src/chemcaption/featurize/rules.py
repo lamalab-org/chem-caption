@@ -14,13 +14,13 @@ from chemcaption.molecules import Molecule
 # Implemented drug rule-related featurizers.
 
 __all__ = [
-    "LipinskiViolationCountFeaturizer",
+    "LipinskiFilterFeaturizer",
     "GhoseFilterFeaturizer",
     "LeadLikenessFilterFeaturizer",
 ]
 
 
-class LipinskiViolationCountFeaturizer(AbstractFeaturizer):
+class LipinskiFilterFeaturizer(AbstractFeaturizer):
     """Returns the number of violations of Lipinski's Rule of 5."""
 
     def __init__(self):
@@ -44,7 +44,8 @@ class LipinskiViolationCountFeaturizer(AbstractFeaturizer):
         """
         return ["num_lipinski_violations"]
 
-    def _mass_violation(self, molecule: Molecule) -> np.array:
+    @staticmethod
+    def _mass_violation(molecule: Molecule) -> np.array:
         """Return molecule status as regards violation of Lipinski's molar mass rule (must be < 500 Daltons).
 
         Args:
@@ -56,7 +57,8 @@ class LipinskiViolationCountFeaturizer(AbstractFeaturizer):
         molar_mass = Descriptors.ExactMolWt(molecule.rdkit_mol)
         return np.array([molar_mass > 500], dtype=int).reshape((1, -1))
 
-    def _hydrogen_bond_donor_violation(self, molecule: Molecule) -> np.array:
+    @staticmethod
+    def _hydrogen_bond_donor_violation(molecule: Molecule) -> np.array:
         """Return molecule status as regards violation of Lipinski's hydrogen bond donor rule (must be < 5).
 
         Args:
@@ -68,7 +70,8 @@ class LipinskiViolationCountFeaturizer(AbstractFeaturizer):
         hbd = Chem.Lipinski.NumHDonors(molecule.rdkit_mol)
         return np.array([hbd > 5], dtype=int).reshape((1, -1))
 
-    def _hydrogen_bond_acceptor_violation(self, molecule: Molecule) -> np.array:
+    @staticmethod
+    def _hydrogen_bond_acceptor_violation(molecule: Molecule) -> np.array:
         """Return molecule status as regards violation of Lipinski's hydrogen bond acceptor rule (must be < 10).
 
         Args:
@@ -80,7 +83,8 @@ class LipinskiViolationCountFeaturizer(AbstractFeaturizer):
         hba = Chem.Lipinski.NumHAcceptors(molecule.rdkit_mol)
         return np.array([hba > 10], dtype=int).reshape((1, -1))
 
-    def _log_p_violation(self, molecule: Molecule) -> np.array:
+    @staticmethod
+    def _log_p_violation(molecule: Molecule) -> np.array:
         """Return molecule status as regards violation of Lipinski's LogP rule (must be < 5).
 
         Args:
@@ -311,7 +315,7 @@ class LeadLikenessFilterFeaturizer(AbstractFeaturizer):
         Returns:
             List[str]: List of names of extracted features.
         """
-        return ["num_leadlike_violations"]
+        return ["num_lead_likeness_violations"]
 
     def _mass_violation(self, molecule: Molecule) -> np.array:
         """Return molecule status as regards violation of molecular mass requirement for lead-likeness filter.

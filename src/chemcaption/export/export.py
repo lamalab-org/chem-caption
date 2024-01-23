@@ -48,12 +48,13 @@ from chemcaption.featurize.electronicity import (
     MoleculeNucleofugalityFeaturizer,
     MoleculeNucleophilicityFeaturizer,
 )
-from chemcaption.featurize.misc import SVGFeaturizer
+from chemcaption.featurize.miscellaneous import SVGFeaturizer
 from chemcaption.featurize.rules import (
     GhoseFilterFeaturizer,
     LeadLikenessFilterFeaturizer,
-    LipinskiViolationCountFeaturizer,
+    LipinskiFilterFeaturizer,
 )
+
 from chemcaption.featurize.spatial import (
     AsphericityFeaturizer,
     EccentricityFeaturizer,
@@ -66,7 +67,7 @@ from chemcaption.featurize.spatial import (
 from chemcaption.featurize.stereochemistry import ChiralCenterCountFeaturizer
 from chemcaption.featurize.substructure import (
     IsomorphismFeaturizer,
-    SMARTSFeaturizer,
+    FragmentSearchFeaturizer,
     TopologyCountFeaturizer,
 )
 from chemcaption.featurize.symmetry import PointGroupFeaturizer, RotationalSymmetryNumberFeaturizer
@@ -77,7 +78,7 @@ from chemcaption.presets import ALL_SMARTS
 def get_smarts_featurizers():
     featurizers = []
     for name, smarts in ALL_SMARTS.items():
-        featurizers.append(SMARTSFeaturizer([smarts], names=[name]))
+        featurizers.append(FragmentSearchFeaturizer([smarts], names=[name]))
     return featurizers
 
 
@@ -113,7 +114,7 @@ FEATURIZER = MultipleFeaturizer(
         MoleculeElectrophilicityFeaturizer(),
         MoleculeNucleofugalityFeaturizer(),
         MoleculeElectrofugalityFeaturizer(),
-        LipinskiViolationCountFeaturizer(),
+        LipinskiFilterFeaturizer(),
         GhoseFilterFeaturizer(),
         LeadLikenessFilterFeaturizer(),
         EccentricityFeaturizer(),

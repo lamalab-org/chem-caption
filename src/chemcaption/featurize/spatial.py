@@ -735,7 +735,7 @@ class SpherocityIndexFeaturizer(SpatialFeaturizer):
         mol = self._get_conformer(mol)
 
         spherocity_index = Descriptors3D.SpherocityIndex(
-            mol, force=self.force, useAtomicMasses=self.use_masses
+            mol,
         )
         return np.array([spherocity_index]).reshape(1, -1)
 

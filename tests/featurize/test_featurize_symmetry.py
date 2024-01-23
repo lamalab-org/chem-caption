@@ -1,12 +1,17 @@
 # -*- coding: utf-8 -*-
 
-"""Test symmetry featurizers."""
+"""Unit tests for chemcaption.featurize.symmetry submodule."""
 
 import numpy as np
 
 from chemcaption.featurize.symmetry import PointGroupFeaturizer, RotationalSymmetryNumberFeaturizer
 from chemcaption.featurize.text import Prompt
 from chemcaption.molecules import SMILESMolecule
+
+__all__ = [
+    "test_rotational_symmetry_number",
+    "test_point_group_featurizer",
+]
 
 
 def test_rotational_symmetry_number():
@@ -30,7 +35,7 @@ def test_rotational_symmetry_number():
     assert text.to_dict()["filled_completion"] == "Answer: 1"
 
 
-def test_point_group():
+def test_point_group_featurizer():
     """Test point group featurizer."""
     featurizer = PointGroupFeaturizer()
     molecule = SMILESMolecule(representation_string="CC")

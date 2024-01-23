@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+
+"""Unit tests for chemcaption.featurize.spatial submodule."""
+
 import numpy as np
 
 from chemcaption.featurize.spatial import (
@@ -6,6 +10,8 @@ from chemcaption.featurize.spatial import (
     InertialShapeFactorFeaturizer,
     NPRFeaturizer,
     PMIFeaturizer,
+    RadiusOfGyrationFeaturizer,
+    SpherocityIndexFeaturizer,
 )
 from chemcaption.molecules import SMILESMolecule
 
@@ -15,6 +21,8 @@ __all__ = [
     "test_eccentricity_featurizer",
     "test_inertial_shape_factor",
     "test_npr_featurizer",
+    "test_radius_of_gyration_featurizer",
+    "test_spherocity_index_featurizer",
 ]
 
 
@@ -109,3 +117,39 @@ def test_npr_featurizer():
         == "Question: What are the first, and second normalized principal moments ratio (NPR) of the molecule with SMILES O=C1C=CC(=O)C(C(=O)O)=C1?"
     )
     assert text.to_dict()["filled_completion"][:-3] == "Answer: 0.3437 and 0.6"
+
+
+def test_radius_of_gyration_featurizer():
+    """Test RadiusOfGyrationFeaturizer."""
+    featurizer = RadiusOfGyrationFeaturizer()
+    molecule = SMILESMolecule("O=C1C=CC(=O)C=C1C(=O)O")
+
+    results = featurizer.featurize(molecule).item()
+
+    assert np.isclose(results, 2.301, atol=0.2)
+    assert len(featurizer.feature_labels()) == 1
+
+    text = featurizer.text_featurize(molecule)
+    assert (
+        text.to_dict()["filled_prompt"]
+        == "Question: What is the radius of gyration of the molecule with SMILES O=C1C=CC(=O)C(C(=O)O)=C1?"
+    )
+    assert text.to_dict()["filled_completion"] == "Answer: 2.3015"
+
+
+def test_spherocity_index_featurizer():
+    """Test SpherocityIndexFeaturizer."""
+    featurizer = SpherocityIndexFeaturizer()
+    molecule = SMILESMolecule("O=C1C=CC(=O)C=C1C(=O)O")
+
+    results = featurizer.featurize(molecule).item()
+
+    assert np.isclose(results, 0.0353, atol=0.2)
+    assert len(featurizer.feature_labels()) == 1
+
+    text = featurizer.text_featurize(molecule)
+    assert (
+        text.to_dict()["filled_prompt"]
+        == "Question: What is the spherocity index of the molecule with SMILES O=C1C=CC(=O)C(C(=O)O)=C1?"
+    )
+    assert text.to_dict()["filled_completion"] == "Answer: 0.0353"

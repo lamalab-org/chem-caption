@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+
+"""Unit tests for chemcaption.featurize.composition submodule."""
+
 import numpy as np
 
 from chemcaption.featurize.composition import (
@@ -12,6 +16,18 @@ from chemcaption.featurize.composition import (
     MonoisotopicMolecularMassFeaturizer,
 )
 from chemcaption.molecules import SMILESMolecule
+
+__all__ = [
+    "test_molecular_formula_featurizer",
+    "test_molecular_mass_featurizer",
+    "test_monoisotopic_mass_featurizer",
+    "test_element_mass_featurizer",
+    "test_element_mass_proportion_featurizer",
+    "test_element_count_proportion_featurizer",
+    "test_element_count_featurizer",
+    "test_atom_count_featurizer",
+    "test_degree_of_unsaturation_featurizer",
+]
 
 
 def test_molecular_formula_featurizer():
@@ -51,7 +67,7 @@ def test_molecular_mass_featurizer():
     assert len(featurizer.feature_labels()) == 1
 
 
-def test_monoisotopicmass_featurizer():
+def test_monoisotopic_mass_featurizer():
     molecule = SMILESMolecule("O")
     featurizer = MonoisotopicMolecularMassFeaturizer()
     results = featurizer.featurize(molecule)

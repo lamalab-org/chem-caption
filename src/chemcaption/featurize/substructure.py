@@ -13,13 +13,13 @@ from chemcaption.featurize.utils import join_list_elements
 from chemcaption.molecules import Molecule
 from chemcaption.presets import SMARTS_MAP
 
-__all__ = ["SMARTSFeaturizer", "IsomorphismFeaturizer", "TopologyCountFeaturizer"]
+__all__ = ["FragmentSearchFeaturizer", "IsomorphismFeaturizer", "TopologyCountFeaturizer"]
 
 
-"""Featurizer to obtain the presence or count of SMARTS in molecules."""
+"""Featurizer to obtain the presence/count of fragments of interest (specified via SMARTS) in molecules."""
 
 
-class SMARTSFeaturizer(AbstractFeaturizer):
+class FragmentSearchFeaturizer(AbstractFeaturizer):
     """A featurizer for molecular substructure search via SMARTS."""
 
     def __init__(
@@ -27,6 +27,7 @@ class SMARTSFeaturizer(AbstractFeaturizer):
         smarts: List[str],
         names: Optional[List[str]],
         count: bool = True,
+        preset_name: str = "custom",
     ):
         """
         Initialize class.
@@ -40,12 +41,14 @@ class SMARTSFeaturizer(AbstractFeaturizer):
             count (bool): If set to `True`, count pattern frequency.
                 Otherwise, only encode presence.
                 Defaults to `True`.
+            preset_name (str): Name to give preset of interest. Defaults to `custom`.
         """
         super().__init__()
 
         self.smart_names = names if names is not None else smarts
         self.smarts = smarts
         self.count = count
+        self.preset_name = preset_name
         self.constraint = (
             "Constraint: return a list of integers."
             if self.count
@@ -100,7 +103,9 @@ class SMARTSFeaturizer(AbstractFeaturizer):
                 f"Valid preset names are: {', '.join(SMARTS_MAP.keys())}."
             )
         smarts_set = SMARTS_MAP[preset]
-        return cls(smarts=smarts_set["smarts"], names=smarts_set["names"], count=count)
+        return cls(
+            smarts=smarts_set["smarts"], names=smarts_set["names"], count=count, preset_name=preset
+        )
 
     def featurize(self, molecule: Molecule) -> np.array:
         """
@@ -137,10 +142,27 @@ class SMARTSFeaturizer(AbstractFeaturizer):
             None.
 
         Returns:
-            List[str]: List of labels of extracted features.
+            List[str]: List of labels for extracted features.
         """
         suffix = "_count" if self.count else "_presence"
-        return [name + suffix for name in self.smart_names]
+        return [self.preset_name + "_" + name + suffix for name in self._clean_feature_labels()]
+
+    def _clean_feature_labels(
+        self,
+    ) -> List[str]:
+        """Clean the feature labels.
+
+        Args:
+            None.
+
+        Returns:
+            List[str]: List of cleaned feature labels.
+        """
+        feature_names = [
+            "".join([("_" if c in "[]()-" else c) for c in name]).lower()
+            for name in self.smart_names
+        ]
+        return feature_names
 
     def implementors(self) -> List[str]:
         """

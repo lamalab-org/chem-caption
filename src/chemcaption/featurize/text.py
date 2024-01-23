@@ -125,3 +125,14 @@ class PromptCollection:
 
     def to_list(self):
         return [prompt.to_dict() for prompt in self.prompts]
+
+    def __len__(self) -> int:
+        """Return number of Prompt objects encapsulated.
+
+        Args:
+            None.
+
+        Returns:
+            int: Number of Prompt instances encapsulated by `self`.
+        """
+        return len(self.prompts)
