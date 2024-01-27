@@ -1,27 +1,52 @@
 API Documentation
 =====================
 
+Molecules
+----------------------
+
+.. automodule:: chemcaption.molecules
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Molecular Presets
+----------------------
+
+.. automodule:: chemcaption.presets
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
 Featurizers
 ----------------------
 
-Composition
-..............
+Base Module
+...........
+
+.. automodule:: chemcaption.featurize.base
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Molecular Composition
+.....................
 
 .. automodule:: chemcaption.featurize.composition
    :members:
    :undoc-members:
    :show-inheritance:
 
-Symmetry
-...........
+Molecular Symmetry
+..................
 
 .. automodule:: chemcaption.featurize.symmetry
    :members:
    :undoc-members:
    :show-inheritance:
 
-Sterochemistry
-................
+Stereochemistry
+...............
 
 .. automodule:: chemcaption.featurize.stereochemistry
    :members:
@@ -29,8 +54,8 @@ Sterochemistry
    :show-inheritance:
 
 
-3D structure
-...............
+Molecular Spatial (3D) Structure
+................................
 
 .. automodule:: chemcaption.featurize.spatial
    :members:
@@ -38,8 +63,8 @@ Sterochemistry
    :show-inheritance:
 
 
-Electronic properties
-.......................
+Molecular Electronic Properties
+...............................
 
 .. automodule:: chemcaption.featurize.electronicity
    :members:
@@ -47,8 +72,8 @@ Electronic properties
    :show-inheritance:
 
 
-Rules 
-.......
+Drug-likeness Rules
+...................
 
 .. automodule:: chemcaption.featurize.rules
    :members:
@@ -56,8 +81,8 @@ Rules
    :show-inheritance:
 
 
-Substructure
-...............
+Molecular Substructure
+......................
 
 .. automodule:: chemcaption.featurize.substructure
    :members:
@@ -65,8 +90,8 @@ Substructure
    :show-inheritance:
 
 
-Bonds 
-.......
+Molecular and Chemical Bonds
+............................
 
 .. automodule:: chemcaption.featurize.bonds
    :members:
@@ -77,6 +102,38 @@ Adaptor
 .......
 
 .. automodule:: chemcaption.featurize.adaptor
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Molecular Comparisons
+......................
+
+.. automodule:: chemcaption.featurize.comparator
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Molecular Reactions
+......................
+
+.. automodule:: chemcaption.featurize.reaction
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Molecules as Text
+......................
+
+.. automodule:: chemcaption.featurize.text
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Miscellaneous Featurizers
+.........................
+
+.. automodule:: chemcaption.featurize.miscellaneous
    :members:
    :undoc-members:
    :show-inheritance:

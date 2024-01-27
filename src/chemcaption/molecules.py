@@ -14,12 +14,12 @@ from typing_extensions import TypeAlias
 # Implemented molecular representation classes.
 
 __all__ = [
-    "Molecule",
-    "MoleculeGraph",
     "AbstractMolecule",
     "SMILESMolecule",
     "SELFIESMolecule",
     "InChIMolecule",
+    "Molecule",
+    "MoleculeGraph",
     "DISPATCH_MAP",
     "PERIODIC_TABLE",
 ]
