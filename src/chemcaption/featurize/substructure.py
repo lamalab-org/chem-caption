@@ -74,7 +74,9 @@ class FragmentSearchFeaturizer(AbstractFeaturizer):
             noun = "counts"
 
         if self.count:
-            name = f"Question: What {name.lower()} the {noun} of " + join_list_elements(self.smart_names)
+            name = f"Question: What {name.lower()} the {noun} of " + join_list_elements(
+                self.smart_names
+            )
 
         else:
             name = f"Question: {name} " + join_list_elements(self.smart_names)
@@ -86,7 +88,7 @@ class FragmentSearchFeaturizer(AbstractFeaturizer):
         """
         Args:
             preset (str): Preset name of the substructures encoded by the SMARTS strings.
-                Predefined presets can be specified as strings, and can be one of:
+            Predefined presets can be specified as strings, and can be one of:
                     - `heterocyclic`,
                     - `rings`,
                     - `amino`,

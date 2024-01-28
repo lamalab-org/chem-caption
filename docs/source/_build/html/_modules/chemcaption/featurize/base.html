@@ -201,7 +201,7 @@
 
 <span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
 <span class="kn">from</span> <span class="nn">concurrent.futures</span> <span class="kn">import</span> <span class="n">ProcessPoolExecutor</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
@@ -214,7 +214,6 @@
 <span class="kn">from</span> <span class="nn">scipy.spatial</span> <span class="kn">import</span> <span class="n">distance_matrix</span>
 
 <span class="kn">from</span> <span class="nn">chemcaption.featurize.text</span> <span class="kn">import</span> <span class="n">Prompt</span><span class="p">,</span> <span class="n">PromptCollection</span>
-
 <span class="kn">from</span> <span class="nn">chemcaption.featurize.utils</span> <span class="kn">import</span> <span class="n">cached_conformer</span>
 <span class="kn">from</span> <span class="nn">chemcaption.molecules</span> <span class="kn">import</span> <span class="n">Molecule</span>
 
@@ -243,8 +242,10 @@
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize class. Initialize periodic table.&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">prompt_template</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;Question: What </span><span class="si">{VERB}</span><span class="s2"> the </span><span class="si">{PROPERTY_NAME}</span><span class="s2"> of the molecule with </span><span class="si">{REPR_SYSTEM}</span><span class="s2"> &quot;</span>
-                                <span class="s2">&quot;</span><span class="si">{REPR_STRING}</span><span class="s2">?&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prompt_template</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;Question: What </span><span class="si">{VERB}</span><span class="s2"> the </span><span class="si">{PROPERTY_NAME}</span><span class="s2"> of the molecule with </span><span class="si">{REPR_SYSTEM}</span><span class="s2"> &quot;</span>
+            <span class="s2">&quot;</span><span class="si">{REPR_STRING}</span><span class="s2">?&quot;</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">completion_template</span> <span class="o">=</span> <span class="s2">&quot;Answer: </span><span class="si">{COMPLETION}</span><span class="s2">&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_names</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">constraint</span> <span class="o">=</span> <span class="kc">None</span>
@@ -1056,7 +1057,11 @@
 <span class="k">class</span> <span class="nc">Comparator</span><span class="p">(</span><span class="n">AbstractComparator</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Compare molecules based on featurizer outputs.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">featurizers</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">AbstractFeaturizer</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">featurizers</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">AbstractFeaturizer</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">comparison_func</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Instantiate class.</span>
 
 <span class="sd">        Args:</span>
@@ -1065,6 +1070,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">featurizers</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">comparison_func</span> <span class="o">=</span> <span class="n">comparison_func</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fit_on_featurizers</span><span class="p">(</span><span class="n">featurizers</span><span class="o">=</span><span class="n">featurizers</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Comparator.fit_on_featurizers">
@@ -1128,6 +1134,33 @@
 
         <span class="k">return</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">distance_results</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">epsilon</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
 
+<div class="viewcode-block" id="Comparator.base_compare">
+<a class="viewcode-back" href="../../../api.html#chemcaption.featurize.base.Comparator.base_compare">[docs]</a>
+    <span class="k">def</span> <span class="nf">base_compare</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">featurizer</span><span class="p">:</span> <span class="n">AbstractFeaturizer</span><span class="p">,</span>
+        <span class="n">molecules</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Molecule</span><span class="p">],</span>
+        <span class="n">epsilon</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return results of molecule feature comparison between molecule instance pairs.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            featurizer (AbstractFeaturizer): Featurizer to compare on.</span>
+<span class="sd">            molecules (List[Molecule]): List containing a pair of molecule instances.</span>
+<span class="sd">            epsilon (float): Small float. Precision bound for numerical inconsistencies. Defaults to `0.0`.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            np.array: Comparison results. `1` if all extracted features are equal, else `0`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">comparison_func</span><span class="p">(</span><span class="n">featurizer</span><span class="o">=</span><span class="n">featurizer</span><span class="p">,</span> <span class="n">molecules</span><span class="o">=</span><span class="n">molecules</span><span class="p">,</span> <span class="n">epsilon</span><span class="o">=</span><span class="n">epsilon</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">comparison_func</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compare_on_featurizer</span><span class="p">(</span>
+                <span class="n">featurizer</span><span class="o">=</span><span class="n">featurizer</span><span class="p">,</span> <span class="n">molecules</span><span class="o">=</span><span class="n">molecules</span><span class="p">,</span> <span class="n">epsilon</span><span class="o">=</span><span class="n">epsilon</span>
+            <span class="p">)</span>
+        <span class="p">)</span></div>
+
+
 <div class="viewcode-block" id="Comparator.featurize">
 <a class="viewcode-back" href="../../../api.html#chemcaption.featurize.base.Comparator.featurize">[docs]</a>
     <span class="k">def</span> <span class="nf">featurize</span><span class="p">(</span>
@@ -1149,7 +1182,7 @@
 <span class="sd">                where `N` is the number of featurizers provided at initialization time.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">results</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_compare_on_featurizer</span><span class="p">(</span><span class="n">featurizer</span><span class="o">=</span><span class="n">featurizer</span><span class="p">,</span> <span class="n">molecules</span><span class="o">=</span><span class="n">molecules</span><span class="p">,</span> <span class="n">epsilon</span><span class="o">=</span><span class="n">epsilon</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">base_compare</span><span class="p">(</span><span class="n">featurizer</span><span class="o">=</span><span class="n">featurizer</span><span class="p">,</span> <span class="n">molecules</span><span class="o">=</span><span class="n">molecules</span><span class="p">,</span> <span class="n">epsilon</span><span class="o">=</span><span class="n">epsilon</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">featurizer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">featurizers</span>
         <span class="p">]</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span></div>

@@ -275,7 +275,9 @@
             <span class="n">noun</span> <span class="o">=</span> <span class="s2">&quot;counts&quot;</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">count</span><span class="p">:</span>
-            <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Question: What </span><span class="si">{</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s2"> the </span><span class="si">{</span><span class="n">noun</span><span class="si">}</span><span class="s2"> of &quot;</span> <span class="o">+</span> <span class="n">join_list_elements</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">smart_names</span><span class="p">)</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Question: What </span><span class="si">{</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s2"> the </span><span class="si">{</span><span class="n">noun</span><span class="si">}</span><span class="s2"> of &quot;</span> <span class="o">+</span> <span class="n">join_list_elements</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">smart_names</span>
+            <span class="p">)</span>
 
         <span class="k">else</span><span class="p">:</span>
             <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Question: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> &quot;</span> <span class="o">+</span> <span class="n">join_list_elements</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">smart_names</span><span class="p">)</span>
@@ -290,7 +292,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            preset (str): Preset name of the substructures encoded by the SMARTS strings.</span>
-<span class="sd">                Predefined presets can be specified as strings, and can be one of:</span>
+<span class="sd">            Predefined presets can be specified as strings, and can be one of:</span>
 <span class="sd">                    - `heterocyclic`,</span>
 <span class="sd">                    - `rings`,</span>
 <span class="sd">                    - `amino`,</span>
