@@ -17,7 +17,6 @@ from rdkit import Chem
 from scipy.spatial import distance_matrix
 
 from chemcaption.featurize.text import Prompt, PromptCollection
-
 from chemcaption.featurize.utils import cached_conformer
 from chemcaption.molecules import Molecule
 
@@ -30,6 +29,7 @@ __all__ = [
     "MultipleFeaturizer",  # Combines multiple featurizers.
     "Comparator",  # Class for comparing featurizer results amongst molecules.
     "MultipleComparator",  # Higher-level Comparator. Returns lower-level Comparator instances.
+    "GridComparator",
     "PERIODIC_TABLE",  # Periodic table
 ]
 
@@ -44,8 +44,10 @@ class AbstractFeaturizer(ABC):
 
     def __init__(self):
         """Initialize class. Initialize periodic table."""
-        self.prompt_template = ("Question: What {VERB} the {PROPERTY_NAME} of the molecule with {REPR_SYSTEM} "
-                                "{REPR_STRING}?")
+        self.prompt_template = (
+            "Question: What {VERB} the {PROPERTY_NAME} of the molecule with {REPR_SYSTEM} "
+            "{REPR_STRING}?"
+        )
         self.completion_template = "Answer: {COMPLETION}"
         self._names = []
         self.constraint = None
@@ -636,6 +638,17 @@ class MultipleFeaturizer(AbstractFeaturizer):
 
         self.featurizers = featurizers
 
+    def __len__(self):
+        """Return the number of featurizers.
+
+        Args:
+            None.
+
+        Returns:
+            int: Number of comparators.
+        """
+        return len(self.featurizers)
+
     def featurize(self, molecule: Molecule) -> np.array:
         """
         Featurize a molecule instance.
@@ -757,6 +770,30 @@ class MultipleFeaturizer(AbstractFeaturizer):
 
         return pd.DataFrame(data=features, columns=columns)
 
+    def __str__(self) -> str:
+        """Return string representation.
+
+        Args:
+            None.
+
+        Returns:
+            str: String representation of `self`.
+        """
+        return self.__class__.__name__
+
+    def __string__(self) -> str:
+        """Return string representation.
+
+        Args:
+            None.
+
+        Returns:
+            str: String representation of `self`.
+        """
+        str_list = [featurizer.__class__.__name__ for featurizer in self.featurizers]
+        template = "{}(featurizers=" + "[" + ("{}," * len(self.featurizers))[:-1] + "])"
+        return template.format(self.__class__.__name__, *str_list)
+
     def implementors(self) -> List[str]:
         """
         Return list of functionality implementors.
@@ -819,6 +856,19 @@ class Comparator(AbstractComparator):
             str: String representation of `self`.
         """
         return self.__class__.__name__
+
+    def __string__(self) -> str:
+        """Return string representation.
+
+        Args:
+            None.
+
+        Returns:
+            str: String representation of `self`.
+        """
+        str_list = [featurizer.__class__.__name__ for featurizer in self.featurizers]
+        template = "{}(featurizers=" + "[" + ("{}," * len(self.featurizers))[:-1] + "])"
+        return template.format(self.__class__.__name__, *str_list)
 
     def _compare_on_featurizer(
         self,
@@ -931,6 +981,17 @@ class MultipleComparator(Comparator):
 
         self.fit_on_comparators(comparators=comparators)  # If all comparators pass the check
 
+    def __len__(self):
+        """Return the number of comparators.
+
+        Args:
+            None.
+
+        Returns:
+            int: Number of comparators.
+        """
+        return len(self.comparators)
+
     def fit_on_comparators(self, comparators: Optional[List[Comparator]] = None):
         """Fit MultipleComparator instance on lower-level comparators.
 
@@ -997,6 +1058,189 @@ class MultipleComparator(Comparator):
             labels += comparator.feature_labels()
 
         return labels
+
+    def __str__(self) -> str:
+        """Return string representation.
+
+        Args:
+            None.
+
+        Returns:
+            str: String representation of `self`.
+        """
+        str_list = [comparator.__str__() for comparator in self.comparators]
+        template = "{}(comparators=" + "[" + ("{}," * len(self.comparators))[:-1] + "])"
+        return template.format(self.__class__.__name__, *str_list)
+
+    def implementors(self) -> List[str]:
+        """
+        Return list of functionality implementors.
+
+        Args:
+            None.
+
+        Returns:
+            List[str]: List of implementors.
+        """
+        return ["Benedict Oshomah Emoekabu"]
+
+
+class GridComparator(MultipleComparator):
+    """A Comparator to compare molecular instances in grids."""
+
+    def __init__(
+        self,
+        comparators: Union[List[Comparator], MultipleComparator],
+        factors: Union[List[str], List[int]],
+    ):
+        """Instantiate grid comparator.
+
+        Args:
+            comparators (Union[List[Comparator], MultipleComparator]): List of comparators or MultipleComparator instance.
+            factors (Union[List[str], List[int]]): List of features to compare on.
+        """
+        super().__init__(comparators=comparators)
+
+        if isinstance(comparators, list):
+            assert len(factors) == len(
+                comparators
+            ), "Ensure number of factors matches number of comparators."
+        else:
+            assert len(factors) == len(
+                comparators.comparators
+            ), "Ensure number of factors matches number of comparators."
+
+        self.factor_to_channel = dict(enumerate(factors))
+        self.channel_to_factor = {v: k for k, v in self.factor_to_channel.items()}
+
+        self.index_grid = None
+        self.comparison_array = None
+        self.comparator = (
+            comparators
+            if isinstance(comparators, MultipleComparator)
+            else MultipleComparator(comparators=comparators)
+        )
+
+    def comparison_grid(self, molecules: List[Molecule]) -> None:
+        """Generate grids to store molecule indices and Comparator results.
+
+        Args:
+            molecules (List[Molecule]): List of molecular instances.
+
+        Returns:
+            None.
+        """
+        num_molecules = len(molecules)
+
+        row_indices, col_indices = np.meshgrid(
+            list(range(num_molecules)), list(range(num_molecules))
+        )
+        index_grid = list(zip(row_indices.flatten().tolist(), col_indices.flatten().tolist()))
+
+        index_grid = [set(p) for p in index_grid]
+        index_grid = [(tuple(p) if len(p) == 2 else tuple(list(p) * 2)) for p in index_grid]
+
+        comparison_array = np.zeros(
+            shape=(num_molecules, num_molecules, len(self.factor_to_channel))
+        )
+
+        self.index_grid = index_grid
+        self.comparison_array = comparison_array
+
+        return
+
+    def grid_compare(
+        self,
+        molecules: List[Molecule],
+        factor: Union[str, int],
+        epsilon: float = 0.0,
+    ) -> np.array:
+        """
+        Compare features from multiple molecular instances. Generate similarity grid, where
+            1 if molecules are similar, else 0.
+
+        Args:
+            molecules (List[Molecule]): Molecule instances to be compared.
+            factor (Union[str, int]): Factor to compare for.
+            epsilon (float): Small float. Precision bound for numerical inconsistencies. Defaults to 0.0.
+
+        Returns:
+            np.array: Array containing comparison results with shape `(N, N, F)`, where:
+                `N` is the number of molecules and `F` is the number of factors/featurizers
+                 provided at initialization time.
+        """
+        channel = self.factor_to_channel[factor]
+        comparator = self.comparator.comparators[channel]
+
+        if self.comparison_array is None:
+            self.comparison_grid(molecules=molecules)
+
+        for index_pair in self.index_grid:
+            row, col = index_pair
+            molecule_pair = [molecules[row], molecules[col]]
+            pair_result = self.compare_pair(
+                comparator=comparator, molecule_pair=molecule_pair, epsilon=epsilon
+            )
+
+            self.comparison_array[row, col, channel] = pair_result
+
+        return self.comparison_array
+
+    @staticmethod
+    def compare_pair(
+        comparator: Comparator, molecule_pair: List[Molecule], epsilon: float = 0.0
+    ) -> np.array:
+        """
+        Compare features from multiple molecular instances. Generate similarity grid, where
+            1 if molecules are similar, else 0.
+
+        Args:
+            comparator (Comparator): Comparator for use in comparison.
+            molecule_pair (List[Molecule]): A pair of Molecule instances to be compared.
+            epsilon (float): Small float. Precision bound for numerical inconsistencies. Defaults to 0.0.
+
+        Returns:
+            np.array: Array containing comparison results.
+        """
+        comparator_results = comparator.compare(molecules=molecule_pair, epsilon=epsilon)
+        return comparator_results
+
+    def __str__(self) -> str:
+        """Return string representation.
+
+        Args:
+            None.
+
+        Returns:
+            str: String representation of `self`.
+        """
+        return self.__class__.__name__
+
+    def __string__(self) -> str:
+        """Return string representation.
+
+        Args:
+            None.
+
+        Returns:
+            str: String representation of `self`.
+        """
+        str_list = [comp.__class__.__name__ for comp in self.comparators]
+        template = "{}(featurizers=" + "[" + ("{}," * len(self.comparators))[:-1] + "])"
+        return template.format(self.__class__.__name__, *str_list)
+
+    def __full_string__(self) -> str:
+        """Return string representation.
+
+        Args:
+            None.
+
+        Returns:
+            str: String representation of `self`.
+        """
+        str_list = [comp.__string__() for comp in self.comparators]
+        template = "{}(featurizers=" + "[" + ("{}," * len(self.comparators))[:-1] + "])"
+        return template.format(self.__class__.__name__, *str_list)
 
     def implementors(self) -> List[str]:
         """

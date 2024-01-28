@@ -60,9 +60,11 @@ class Prompt:
             "completion_names": self.completion_names,
             "completion_labels": self.completion_labels,
             "constraint": self.constraint,
-            "filled_prompt": self.fill_template(self.prompt_template) + f"\n{self.constraint}"
-            if self.constraint
-            else self.fill_template(self.prompt_template),
+            "filled_prompt": (
+                self.fill_template(self.prompt_template) + f"\n{self.constraint}"
+                if self.constraint
+                else self.fill_template(self.prompt_template)
+            ),
             "filled_completion": self.fill_template(self.completion_template),
         }
 
