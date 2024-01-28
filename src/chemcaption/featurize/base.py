@@ -1086,11 +1086,19 @@ class MultipleComparator(Comparator):
 
 
 class GridComparator(MultipleComparator):
+    """A Comparator to compare molecular instances in grids."""
+
     def __init__(
         self,
         comparators: Union[List[Comparator], MultipleComparator],
         factors: Union[List[str], List[int]],
     ):
+        """Instantiate grid comparator.
+
+        Args:
+            comparators (Union[List[Comparator], MultipleComparator]): List of comparators or MultipleComparator instance.
+            factors (Union[List[str], List[int]]): List of features to compare on.
+        """
         super().__init__(comparators=comparators)
 
         if isinstance(comparators, list):
@@ -1114,6 +1122,14 @@ class GridComparator(MultipleComparator):
         )
 
     def comparison_grid(self, molecules: List[Molecule]) -> None:
+        """Generate grids to store molecule indices and Comparator results.
+
+        Args:
+            molecules (List[Molecule]): List of molecular instances.
+
+        Returns:
+            None.
+        """
         num_molecules = len(molecules)
 
         row_indices, col_indices = np.meshgrid(
@@ -1137,10 +1153,11 @@ class GridComparator(MultipleComparator):
         self,
         molecules: List[Molecule],
         factor: Union[str, int],
-        epsilon: float = .0,
+        epsilon: float = 0.0,
     ) -> np.array:
         """
-        Compare features from multiple molecular instances. 1 if all molecules are similar, else 0.
+        Compare features from multiple molecular instances. Generate similarity grid, where
+            1 if molecules are similar, else 0.
 
         Args:
             molecules (List[Molecule]): Molecule instances to be compared.
@@ -1161,14 +1178,30 @@ class GridComparator(MultipleComparator):
         for index_pair in self.index_grid:
             row, col = index_pair
             molecule_pair = [molecules[row], molecules[col]]
-            pair_result = self.compare_pair(comparator=comparator, molecule_pair=molecule_pair, epsilon=epsilon)
+            pair_result = self.compare_pair(
+                comparator=comparator, molecule_pair=molecule_pair, epsilon=epsilon
+            )
 
             self.comparison_array[row, col, channel] = pair_result
 
         return self.comparison_array
 
     @staticmethod
-    def compare_pair(comparator: Comparator, molecule_pair: List[Molecule], epsilon: float = .0):
+    def compare_pair(
+        comparator: Comparator, molecule_pair: List[Molecule], epsilon: float = 0.0
+    ) -> np.array:
+        """
+        Compare features from multiple molecular instances. Generate similarity grid, where
+            1 if molecules are similar, else 0.
+
+        Args:
+            comparator (Comparator): Comparator for use in comparison.
+            molecule_pair (List[Molecule]): A pair of Molecule instances to be compared.
+            epsilon (float): Small float. Precision bound for numerical inconsistencies. Defaults to 0.0.
+
+        Returns:
+            np.array: Array containing comparison results.
+        """
         comparator_results = comparator.compare(molecules=molecule_pair, epsilon=epsilon)
         return comparator_results
 
