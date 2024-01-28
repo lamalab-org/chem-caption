@@ -38,16 +38,16 @@ PERIODIC_TABLE = rdkit.Chem.GetPeriodicTable()  # Periodic table
 class MoleculeGraph(nx.Graph):
     """Graph representation for molecular instances."""
 
-    def __init__(self, molecule: Chem.Mol):
+    def __init__(self, molecule: Union[Chem.Mol, Molecule]):
         """Initialize instance.
 
         Args:
-            molecule (Chem.Mol): RDKit molecular instance.
+            molecule (Union[Chem.Mol, Molecule]): RDKit molecular instance.
 
         """
         super().__init__()
 
-        self.molecule = molecule
+        self.molecule = molecule if isinstance(molecule, Chem.Mol) else molecule.reveal_hydrogens()
         self.graph = self.molecule_to_graph()
         self._hash = None
 

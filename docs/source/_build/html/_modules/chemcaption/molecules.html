@@ -237,16 +237,16 @@
 <span class="k">class</span> <span class="nc">MoleculeGraph</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Graph representation for molecular instances.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">molecule</span><span class="p">:</span> <span class="n">Chem</span><span class="o">.</span><span class="n">Mol</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">molecule</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Chem</span><span class="o">.</span><span class="n">Mol</span><span class="p">,</span> <span class="n">Molecule</span><span class="p">]):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize instance.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            molecule (Chem.Mol): RDKit molecular instance.</span>
+<span class="sd">            molecule (Union[Chem.Mol, Molecule]): RDKit molecular instance.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">molecule</span> <span class="o">=</span> <span class="n">molecule</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">molecule</span> <span class="o">=</span> <span class="n">molecule</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">molecule</span><span class="p">,</span> <span class="n">Chem</span><span class="o">.</span><span class="n">Mol</span><span class="p">)</span> <span class="k">else</span> <span class="n">molecule</span><span class="o">.</span><span class="n">reveal_hydrogens</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">graph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">molecule_to_graph</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_hash</span> <span class="o">=</span> <span class="kc">None</span>
 

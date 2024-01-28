@@ -85,8 +85,7 @@ class FragmentSearchFeaturizer(AbstractFeaturizer):
     def from_preset(cls, preset: str, count: bool = True):
         """
         Args:
-            preset (str): Preset name of the substructures
-                encoded by the SMARTS strings.
+            preset (str): Preset name of the substructures encoded by the SMARTS strings.
                 Predefined presets can be specified as strings, and can be one of:
                     - `heterocyclic`,
                     - `rings`,
@@ -95,6 +94,7 @@ class FragmentSearchFeaturizer(AbstractFeaturizer):
                     - `warheads` or
                     - `organic`.
                     - `all`
+
             count (bool): If set to True, count pattern frequency.
         """
         if preset not in SMARTS_MAP:
@@ -114,6 +114,7 @@ class FragmentSearchFeaturizer(AbstractFeaturizer):
         Return integer array representing the:
             - frequency or
             - presence
+
             of molecular patterns in a molecule.
 
         Args:

@@ -289,8 +289,7 @@
     <span class="k">def</span> <span class="nf">from_preset</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">preset</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">count</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
-<span class="sd">            preset (str): Preset name of the substructures</span>
-<span class="sd">                encoded by the SMARTS strings.</span>
+<span class="sd">            preset (str): Preset name of the substructures encoded by the SMARTS strings.</span>
 <span class="sd">                Predefined presets can be specified as strings, and can be one of:</span>
 <span class="sd">                    - `heterocyclic`,</span>
 <span class="sd">                    - `rings`,</span>
@@ -299,6 +298,7 @@
 <span class="sd">                    - `warheads` or</span>
 <span class="sd">                    - `organic`.</span>
 <span class="sd">                    - `all`</span>
+
 <span class="sd">            count (bool): If set to True, count pattern frequency.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">preset</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">SMARTS_MAP</span><span class="p">:</span>
@@ -321,6 +321,7 @@
 <span class="sd">        Return integer array representing the:</span>
 <span class="sd">            - frequency or</span>
 <span class="sd">            - presence</span>
+
 <span class="sd">            of molecular patterns in a molecule.</span>
 
 <span class="sd">        Args:</span>

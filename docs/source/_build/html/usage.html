@@ -137,7 +137,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -190,7 +190,7 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
@@ -198,6 +198,180 @@
         <article role="main">
           <section id="usage">
 <h1>Usage<a class="headerlink" href="#usage" title="Link to this heading">#</a></h1>
+<p>The main idea of chemcaption is to be able to represent molecules in memory, generate molecular fingerprints from these
+molecules, and store these fingerprints as either tabular data or graph data (i.e., node/edge attributes). In addition,
+we can convert these generated fingerprints as text.</p>
+<p>A basic workflow of how to use <em>chemcaption</em> can be seen below:</p>
+<section id="molecular-representation">
+<h2>Molecular Representation<a class="headerlink" href="#molecular-representation" title="Link to this heading">#</a></h2>
+<p><strong>Chemcaption</strong> provides multiple means of representing molecules within a program. At present,
+molecules can be represented as SMILES molecules, InChI molecules, and SELFIES molecules,
+corresponding to the SMILES, InChI and SELFIES string representation systems respectively.</p>
+<p>At present, work is ongoing to increase the number of molecular representations supported. As an example,
+generating a molecular instance from a SMILES string would proceed like so:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">chemcaption.molecules</span> <span class="kn">import</span> <span class="n">SMILESMolecule</span>
+<span class="n">molecule_string</span> <span class="o">=</span> <span class="s2">&quot;CCCC=C&quot;</span> <span class="c1"># Pentane</span>
+<span class="n">molecule</span> <span class="o">=</span> <span class="n">SMILESMolecule</span><span class="p">(</span><span class="n">representation_string</span><span class="o">=</span><span class="n">molecule_string</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Similar can be done for other string systems by replacing <strong>SMILESMolecule</strong> and <strong>molecular_string</strong>
+with the appropriate class and string respectively.</p>
+</section>
+<section id="molecules-as-graphs">
+<h2>Molecules as Graphs<a class="headerlink" href="#molecules-as-graphs" title="Link to this heading">#</a></h2>
+<p>Molecules can be modeled as graphs too. To do this, there are multiple approaches. The two easiest approaches would be to either:</p>
+<ol class="arabic simple">
+<li><p>Call the specialized <strong>to_graph</strong> method designed for this (<strong>RECOMMENDED!</strong>) or</p></li>
+<li><p>Pass the molecule into the <strong>MoleculeGraph</strong> class.</p></li>
+</ol>
+<p>Examples:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">chemcaption.molecules</span> <span class="kn">import</span> <span class="n">SMILESMolecule</span>
+
+<span class="n">molecule_string</span> <span class="o">=</span> <span class="s2">&quot;CCCC=C&quot;</span> <span class="c1"># Pentane</span>
+<span class="n">molecule</span> <span class="o">=</span> <span class="n">SMILESMolecule</span><span class="p">(</span><span class="n">representation_string</span><span class="o">=</span><span class="n">molecule_string</span><span class="p">)</span>
+<span class="n">molecule_graph</span> <span class="o">=</span> <span class="n">molecule</span><span class="o">.</span><span class="n">to_graph</span><span class="p">()</span> <span class="c1"># Return molecule as a graph</span>
+</pre></div>
+</div>
+<p>The other approach is displayed below:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">chemcaption.molecules</span> <span class="kn">import</span> <span class="n">SMILESMolecule</span><span class="p">,</span> <span class="n">MoleculeGraph</span>
+
+<span class="n">molecule_string</span> <span class="o">=</span> <span class="s2">&quot;CCCC=C&quot;</span> <span class="c1"># Pentane</span>
+<span class="n">molecule</span> <span class="o">=</span> <span class="n">SMILESMolecule</span><span class="p">(</span><span class="n">representation_string</span><span class="o">=</span><span class="n">molecule_string</span><span class="p">)</span>
+<span class="n">molecule_graph</span> <span class="o">=</span> <span class="n">MoleculeGraph</span><span class="p">(</span><span class="n">molecule</span> <span class="o">=</span> <span class="n">molecule</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The generated graph can then be processed as desired.</p>
+</section>
+<section id="molecule-featurization-single-molecules">
+<h2>Molecule Featurization (Single Molecules)<a class="headerlink" href="#molecule-featurization-single-molecules" title="Link to this heading">#</a></h2>
+<p>With the molecular representation ensured, the next step would likely be to featurize a molecule i.e.,
+generate molecular fingerprints from the molecule.</p>
+<p>To do this, the basic steps would be to:</p>
+<ol class="arabic simple">
+<li><p>Instatiate the molecule(s) of interest.</p></li>
+<li><p>Instantiate the featurizer of interest (with parameters, if required).</p></li>
+<li><p>Pass the molecule to the <strong>featurize</strong> function.</p></li>
+</ol>
+<p>The <strong>featurize</strong> method returns a numpy array containing the feature of interest.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">chemcaption.molecules</span> <span class="kn">import</span> <span class="n">SMILESMolecule</span>
+<span class="kn">from</span> <span class="nn">chemcaption.featurize.composition</span> <span class="kn">import</span> <span class="n">MolecularMassFeaturizer</span>
+
+<span class="n">molecule_string</span> <span class="o">=</span> <span class="s2">&quot;CCCC=C&quot;</span> <span class="c1"># Pentane</span>
+<span class="n">molecule</span> <span class="o">=</span> <span class="n">SMILESMolecule</span><span class="p">(</span><span class="n">representation_string</span><span class="o">=</span><span class="n">molecule_string</span><span class="p">)</span> <span class="c1"># STEP 1</span>
+
+<span class="n">featurizer</span> <span class="o">=</span> <span class="n">MolecularMassFeaturizer</span><span class="p">()</span> <span class="c1"># STEP 2</span>
+
+<span class="n">feature</span> <span class="o">=</span> <span class="n">featurizer</span><span class="o">.</span><span class="n">featurize</span><span class="p">(</span><span class="n">molecule</span> <span class="o">=</span> <span class="n">molecule</span><span class="p">)</span> <span class="c1"># STEP 3</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">feature</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">feature</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="molecule-featurization-batched-molecules">
+<h2>Molecule Featurization (Batched Molecules)<a class="headerlink" href="#molecule-featurization-batched-molecules" title="Link to this heading">#</a></h2>
+<p>The featurization process is not limited to single molecules alone; featurization can be batched. For this,
+we need a sequence or collection of molecular instances and the <strong>featurize_many</strong> featurizer method.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">chemcaption.molecules</span> <span class="kn">import</span> <span class="n">SMILESMolecule</span>
+<span class="kn">from</span> <span class="nn">chemcaption.featurize.composition</span> <span class="kn">import</span> <span class="n">MolecularMassFeaturizer</span>
+
+<span class="n">molecule_string1</span> <span class="o">=</span> <span class="s2">&quot;CCCC=C&quot;</span>     <span class="c1"># Pentane</span>
+<span class="n">molecule_string2</span> <span class="o">=</span> <span class="s2">&quot;[C-]#[O+]&quot;</span>  <span class="c1"># Carbon II Oxide</span>
+<span class="n">molecule_string3</span> <span class="o">=</span> <span class="s2">&quot;N#N&quot;</span>        <span class="c1"># Nitrogen molecule</span>
+
+<span class="n">molecule1</span> <span class="o">=</span> <span class="n">SMILESMolecule</span><span class="p">(</span><span class="n">representation_string</span><span class="o">=</span><span class="n">molecule_string1</span><span class="p">)</span> <span class="c1"># STEP 1</span>
+<span class="n">molecule2</span> <span class="o">=</span> <span class="n">SMILESMolecule</span><span class="p">(</span><span class="n">representation_string</span><span class="o">=</span><span class="n">molecule_string2</span><span class="p">)</span> <span class="c1"># STEP 1</span>
+<span class="n">molecule3</span> <span class="o">=</span> <span class="n">SMILESMolecule</span><span class="p">(</span><span class="n">representation_string</span><span class="o">=</span><span class="n">molecule_string3</span><span class="p">)</span> <span class="c1"># STEP 1</span>
+
+<span class="n">molecules</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">molecule1</span><span class="p">,</span>
+    <span class="n">molecule2</span><span class="p">,</span>
+    <span class="n">molecule3</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="n">featurizer1</span> <span class="o">=</span> <span class="n">MolecularMassFeaturizer</span><span class="p">()</span> <span class="c1"># STEP 2</span>
+
+<span class="n">feature</span> <span class="o">=</span> <span class="n">featurizer</span><span class="o">.</span><span class="n">featurize_many</span><span class="p">(</span><span class="n">molecules</span> <span class="o">=</span> <span class="n">molecules</span><span class="p">)</span> <span class="c1"># STEP 3</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">feature</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">feature</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">feature</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="molecule-featurization-batched-featurizers">
+<h2>Molecule Featurization (Batched Featurizers)<a class="headerlink" href="#molecule-featurization-batched-featurizers" title="Link to this heading">#</a></h2>
+<p>In addition to batching molecules, featurizers can also be batched. This
+allows generation of multiple different fingerprints for multiple different molecules at the same time.
+This is done via a special high-level featurize: <strong>MultipleFeaturizer</strong>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">chemcaption.molecules</span> <span class="kn">import</span> <span class="n">SMILESMolecule</span>
+
+<span class="kn">from</span> <span class="nn">chemcaption.featurize.base</span> <span class="kn">import</span> <span class="n">MultipleFeaturizer</span>
+<span class="kn">from</span> <span class="nn">chemcaption.featurize.composition</span> <span class="kn">import</span> <span class="n">MolecularMassFeaturizer</span><span class="p">,</span> <span class="n">AtomCountFeaturizer</span>
+
+<span class="n">molecule_string1</span> <span class="o">=</span> <span class="s2">&quot;CCCC=C&quot;</span>     <span class="c1"># Pentane</span>
+<span class="n">molecule_string2</span> <span class="o">=</span> <span class="s2">&quot;[C-]#[O+]&quot;</span>  <span class="c1"># Carbon II Oxide</span>
+<span class="n">molecule_string3</span> <span class="o">=</span> <span class="s2">&quot;N#N&quot;</span>        <span class="c1"># Nitrogen molecule</span>
+
+<span class="n">molecule1</span> <span class="o">=</span> <span class="n">SMILESMolecule</span><span class="p">(</span><span class="n">representation_string</span><span class="o">=</span><span class="n">molecule_string1</span><span class="p">)</span> <span class="c1"># STEP 1</span>
+<span class="n">molecule2</span> <span class="o">=</span> <span class="n">SMILESMolecule</span><span class="p">(</span><span class="n">representation_string</span><span class="o">=</span><span class="n">molecule_string2</span><span class="p">)</span> <span class="c1"># STEP 1</span>
+<span class="n">molecule3</span> <span class="o">=</span> <span class="n">SMILESMolecule</span><span class="p">(</span><span class="n">representation_string</span><span class="o">=</span><span class="n">molecule_string3</span><span class="p">)</span> <span class="c1"># STEP 1</span>
+
+<span class="n">molecules</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">molecule1</span><span class="p">,</span>
+    <span class="n">molecule2</span><span class="p">,</span>
+    <span class="n">molecule3</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="n">featurizer1</span> <span class="o">=</span> <span class="n">MolecularMassFeaturizer</span><span class="p">()</span>                     <span class="c1"># STEP 2</span>
+<span class="n">featurizer2</span> <span class="o">=</span> <span class="n">AtomCountFeaturizer</span><span class="p">()</span>                         <span class="c1"># STEP 2</span>
+
+<span class="n">featurizers</span> <span class="o">=</span> <span class="p">[</span><span class="n">featurizer1</span><span class="p">,</span> <span class="n">featurizer2</span><span class="p">]</span>                    <span class="c1"># STEP 2</span>
+
+<span class="n">featurizer</span> <span class="o">=</span> <span class="n">MultipleFeaturizer</span><span class="p">(</span><span class="n">featurizers</span> <span class="o">=</span> <span class="n">featurizers</span><span class="p">)</span>  <span class="c1"># STEP 2</span>
+
+<span class="n">feature</span> <span class="o">=</span> <span class="n">featurizer</span><span class="o">.</span><span class="n">featurize_many</span><span class="p">(</span><span class="n">molecules</span> <span class="o">=</span> <span class="n">molecules</span><span class="p">)</span> <span class="c1"># STEP 3</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">feature</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">feature</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">feature</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="molecule-featurization-adapted-featurizers">
+<h2>Molecule Featurization (Adapted Featurizers)<a class="headerlink" href="#molecule-featurization-adapted-featurizers" title="Link to this heading">#</a></h2>
+<p>Some projects require some novel featurization, which is embodied by a function.
+This function can be converted into a featurizer of its own by leveraging the <strong>RDKitAdaptor</strong>.</p>
+<p>Here, as an example, we define a function which:</p>
+<ol class="arabic simple">
+<li><p>Takes in a molecular instance,</p></li>
+<li><p>Extracts its molecular string,</p></li>
+<li><p>Tells the number of occurrences of the character <strong>=</strong>, i.e., the number of double bonds in the molecule.</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">carbon_atom_counter_in_string</span><span class="p">(</span><span class="n">molecule</span><span class="p">):</span>
+    <span class="n">molecule_string</span> <span class="o">=</span> <span class="n">molecule</span><span class="o">.</span><span class="n">representation_string</span> <span class="c1"># Get string</span>
+    <span class="k">return</span> <span class="n">molecule_string</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This function will then be converted to a featurizer, and the rest of the workflow continues as normal:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">chemcaption.molecules</span> <span class="kn">import</span> <span class="n">SMILESMolecule</span>
+<span class="kn">from</span> <span class="nn">chemcaption.featurize.adaptor</span> <span class="kn">import</span> <span class="n">RDKitAdaptor</span>
+
+<span class="c1"># Convert function to featurizer via RDKitAdaptor</span>
+<span class="n">function_featurizer</span> <span class="o">=</span> <span class="n">RDKitAdaptor</span><span class="p">(</span><span class="n">rdkit_function</span> <span class="o">=</span> <span class="n">carbon_atom_counter_in_string</span><span class="p">)</span>
+
+<span class="c1"># Generate molecule instance</span>
+<span class="n">molecule_string</span> <span class="o">=</span> <span class="s2">&quot;N#N&quot;</span>  <span class="c1"># Nitrogen molecule</span>
+<span class="n">molecule</span> <span class="o">=</span> <span class="n">SMILESMolecule</span><span class="p">(</span><span class="n">representation_string</span><span class="o">=</span><span class="n">molecule_string</span><span class="p">)</span>
+
+<span class="n">feature</span> <span class="o">=</span> <span class="n">function_featurizer</span><span class="o">.</span><span class="n">featurize</span><span class="p">(</span><span class="n">molecule</span> <span class="o">=</span> <span class="n">molecule</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">feature</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">feature</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">feature</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
 </section>
 
         </article>
@@ -243,8 +417,32 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Usage</a><ul>
+<li><a class="reference internal" href="#molecular-representation">Molecular Representation</a></li>
+<li><a class="reference internal" href="#molecules-as-graphs">Molecules as Graphs</a></li>
+<li><a class="reference internal" href="#molecule-featurization-single-molecules">Molecule Featurization (Single Molecules)</a></li>
+<li><a class="reference internal" href="#molecule-featurization-batched-molecules">Molecule Featurization (Batched Molecules)</a></li>
+<li><a class="reference internal" href="#molecule-featurization-batched-featurizers">Molecule Featurization (Batched Featurizers)</a></li>
+<li><a class="reference internal" href="#molecule-featurization-adapted-featurizers">Molecule Featurization (Adapted Featurizers)</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

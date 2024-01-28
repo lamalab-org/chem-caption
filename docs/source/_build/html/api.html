@@ -396,7 +396,7 @@
 <p>Initialize instance.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>molecule</strong> (<em>Chem.Mol</em>) – RDKit molecular instance.</p>
+<dd class="field-odd"><p><strong>molecule</strong> (<em>Union</em><em>[</em><em>Chem.Mol</em><em>, </em><em>Molecule</em><em>]</em>) – RDKit molecular instance.</p>
 </dd>
 </dl>
 <dl class="py method">
@@ -3813,8 +3813,7 @@ Defaults to <cite>True</cite>.</p></li>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>preset</strong> (<em>str</em>) – <p>Preset name of the substructures
-encoded by the SMARTS strings.
+<li><p><strong>preset</strong> (<em>str</em>) – <p>Preset name of the substructures encoded by the SMARTS strings.
 Predefined presets can be specified as strings, and can be one of:</p>
 <blockquote>
 <div><ul>
