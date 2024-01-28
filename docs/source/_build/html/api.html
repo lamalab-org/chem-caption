@@ -909,13 +909,16 @@ Defaults to <cite>False</cite>.</p></li>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="chemcaption.featurize.base.Comparator">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Comparator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">featurizers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/chemcaption/featurize/base.html#Comparator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chemcaption.featurize.base.Comparator" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Comparator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">featurizers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comparison_func</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/chemcaption/featurize/base.html#Comparator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chemcaption.featurize.base.Comparator" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#chemcaption.featurize.base.AbstractComparator" title="chemcaption.featurize.base.AbstractComparator"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractComparator</span></code></a></p>
 <p>Compare molecules based on featurizer outputs.</p>
 <p>Instantiate class.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>featurizers</strong> (<em>Optional</em><em>[</em><em>List</em><em>[</em><a class="reference internal" href="#chemcaption.featurize.base.AbstractFeaturizer" title="chemcaption.featurize.base.AbstractFeaturizer"><em>AbstractFeaturizer</em></a><em>]</em><em>]</em>) – List of featurizers to compare over. Defaults to <cite>None</cite>.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>featurizers</strong> (<em>Optional</em><em>[</em><em>List</em><em>[</em><a class="reference internal" href="#chemcaption.featurize.base.AbstractFeaturizer" title="chemcaption.featurize.base.AbstractFeaturizer"><em>AbstractFeaturizer</em></a><em>]</em><em>]</em>) – List of featurizers to compare over. Defaults to <cite>None</cite>.</p></li>
+<li><p><strong>comparison_func</strong> (<em>Callable</em>) – </p></li>
+</ul>
 </dd>
 </dl>
 <dl class="py method">
@@ -931,6 +934,27 @@ Defaults to <cite>False</cite>.</p></li>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="#chemcaption.featurize.base.Comparator" title="chemcaption.featurize.base.Comparator">Comparator</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chemcaption.featurize.base.Comparator.base_compare">
+<span class="sig-name descname"><span class="pre">base_compare</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">featurizer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">molecules</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/chemcaption/featurize/base.html#Comparator.base_compare"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chemcaption.featurize.base.Comparator.base_compare" title="Link to this definition">#</a></dt>
+<dd><p>Return results of molecule feature comparison between molecule instance pairs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>featurizer</strong> (<a class="reference internal" href="#chemcaption.featurize.base.AbstractFeaturizer" title="chemcaption.featurize.base.AbstractFeaturizer"><em>AbstractFeaturizer</em></a>) – Featurizer to compare on.</p></li>
+<li><p><strong>molecules</strong> (<em>List</em><em>[</em><em>Molecule</em><em>]</em>) – List containing a pair of molecule instances.</p></li>
+<li><p><strong>epsilon</strong> (<em>float</em>) – Small float. Precision bound for numerical inconsistencies. Defaults to <cite>0.0</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Comparison results. <cite>1</cite> if all extracted features are equal, else <cite>0</cite>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.array</p>
 </dd>
 </dl>
 </dd></dl>
@@ -5537,6 +5561,7 @@ Defaults to <cite>decimal</cite>.</p></li>
 </li>
 <li><a class="reference internal" href="#chemcaption.featurize.base.Comparator"><code class="docutils literal notranslate"><span class="pre">Comparator</span></code></a><ul>
 <li><a class="reference internal" href="#chemcaption.featurize.base.Comparator.fit_on_featurizers"><code class="docutils literal notranslate"><span class="pre">Comparator.fit_on_featurizers()</span></code></a></li>
+<li><a class="reference internal" href="#chemcaption.featurize.base.Comparator.base_compare"><code class="docutils literal notranslate"><span class="pre">Comparator.base_compare()</span></code></a></li>
 <li><a class="reference internal" href="#chemcaption.featurize.base.Comparator.featurize"><code class="docutils literal notranslate"><span class="pre">Comparator.featurize()</span></code></a></li>
 <li><a class="reference internal" href="#chemcaption.featurize.base.Comparator.feature_labels"><code class="docutils literal notranslate"><span class="pre">Comparator.feature_labels()</span></code></a></li>
 <li><a class="reference internal" href="#chemcaption.featurize.base.Comparator.compare"><code class="docutils literal notranslate"><span class="pre">Comparator.compare()</span></code></a></li>

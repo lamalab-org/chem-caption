@@ -275,7 +275,9 @@
             <span class="n">noun</span> <span class="o">=</span> <span class="s2">&quot;counts&quot;</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">count</span><span class="p">:</span>
-            <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Question: What </span><span class="si">{</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s2"> the </span><span class="si">{</span><span class="n">noun</span><span class="si">}</span><span class="s2"> of &quot;</span> <span class="o">+</span> <span class="n">join_list_elements</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">smart_names</span><span class="p">)</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Question: What </span><span class="si">{</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s2"> the </span><span class="si">{</span><span class="n">noun</span><span class="si">}</span><span class="s2"> of &quot;</span> <span class="o">+</span> <span class="n">join_list_elements</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">smart_names</span>
+            <span class="p">)</span>
 
         <span class="k">else</span><span class="p">:</span>
             <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Question: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> &quot;</span> <span class="o">+</span> <span class="n">join_list_elements</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">smart_names</span><span class="p">)</span>

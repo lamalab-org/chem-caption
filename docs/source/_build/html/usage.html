@@ -372,6 +372,223 @@ This function can be converted into a featurizer of its own by leveraging the <s
 </pre></div>
 </div>
 </section>
+<section id="molecule-featurization-text">
+<h2>Molecule Featurization (Text)<a class="headerlink" href="#molecule-featurization-text" title="Link to this heading">#</a></h2>
+<p>The above featurization processes are all valid, with the added functionality of being able to generate the features as
+part of text.</p>
+<p>Here, for instance, we revisit the example where we convert a function to a featurizer. This time, we generate the
+features as text, leveraging the <strong>text_featurize</strong> method.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">chemcaption.molecules</span> <span class="kn">import</span> <span class="n">SMILESMolecule</span>
+<span class="kn">from</span> <span class="nn">chemcaption.featurize.adaptor</span> <span class="kn">import</span> <span class="n">RDKitAdaptor</span>
+
+<span class="c1"># Convert function to featurizer via RDKitAdaptor</span>
+<span class="n">function_featurizer</span> <span class="o">=</span> <span class="n">RDKitAdaptor</span><span class="p">(</span><span class="n">rdkit_function</span> <span class="o">=</span> <span class="n">carbon_atom_counter_in_string</span><span class="p">)</span>
+
+<span class="c1"># Generate molecule instance</span>
+<span class="n">molecule_string</span> <span class="o">=</span> <span class="s2">&quot;N#N&quot;</span>  <span class="c1"># Nitrogen molecule</span>
+<span class="n">molecule</span> <span class="o">=</span> <span class="n">SMILESMolecule</span><span class="p">(</span><span class="n">representation_string</span><span class="o">=</span><span class="n">molecule_string</span><span class="p">)</span>
+
+<span class="n">feature</span> <span class="o">=</span> <span class="n">function_featurizer</span><span class="o">.</span><span class="n">text_featurize</span><span class="p">(</span><span class="n">molecule</span> <span class="o">=</span> <span class="n">molecule</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">feature</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">feature</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">feature</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="molecular-comparison-single-featurizer">
+<h2>Molecular Comparison (Single Featurizer)<a class="headerlink" href="#molecular-comparison-single-featurizer" title="Link to this heading">#</a></h2>
+<p>One of the driving interests of the <strong>chemcaption</strong> project is to improve on efforts to generate graph data
+for applications in chemistry. In <strong>chemcaption</strong>, the answer to this is the <strong>Comparator</strong> class.</p>
+<p>The <strong>Comparator</strong> class allows the comparison of molecular instances based upon some criteria. Some default
+Comparators are implemented in <strong>chemcaption</strong> at the moment. In addition, the Comparator API makes it easy
+for any user to define their own Comparator instances.</p>
+<p>Utilizing a pre-defined comparator is as simple as:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">chemcaption.molecules</span> <span class="kn">import</span> <span class="n">SMILESMolecule</span>
+<span class="kn">from</span> <span class="nn">chemcaption.featurize.comparator</span> <span class="kn">import</span> <span class="n">AtomCountComparator</span>
+
+<span class="c1"># Convert function to featurizer via RDKitAdaptor</span>
+<span class="n">comparator</span> <span class="o">=</span> <span class="n">AtomCountComparator</span><span class="p">()</span>
+
+<span class="c1"># Generate molecular instances</span>
+<span class="n">molecule_string1</span> <span class="o">=</span> <span class="s2">&quot;CCCC=C&quot;</span>     <span class="c1"># Pentane</span>
+<span class="n">molecule_string2</span> <span class="o">=</span> <span class="s2">&quot;[C-]#[O+]&quot;</span>  <span class="c1"># Carbon II Oxide</span>
+<span class="n">molecule_string3</span> <span class="o">=</span> <span class="s2">&quot;N#N&quot;</span>        <span class="c1"># Nitrogen molecule</span>
+
+<span class="n">molecule1</span> <span class="o">=</span> <span class="n">SMILESMolecule</span><span class="p">(</span><span class="n">representation_string</span><span class="o">=</span><span class="n">molecule_string1</span><span class="p">)</span> <span class="c1"># STEP 1</span>
+<span class="n">molecule2</span> <span class="o">=</span> <span class="n">SMILESMolecule</span><span class="p">(</span><span class="n">representation_string</span><span class="o">=</span><span class="n">molecule_string2</span><span class="p">)</span> <span class="c1"># STEP 1</span>
+<span class="n">molecule3</span> <span class="o">=</span> <span class="n">SMILESMolecule</span><span class="p">(</span><span class="n">representation_string</span><span class="o">=</span><span class="n">molecule_string3</span><span class="p">)</span> <span class="c1"># STEP 1</span>
+
+<span class="n">molecules</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">molecule1</span><span class="p">,</span>
+    <span class="n">molecule2</span><span class="p">,</span>
+    <span class="n">molecule3</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="n">feature</span> <span class="o">=</span> <span class="n">comparator</span><span class="o">.</span><span class="n">compare</span><span class="p">(</span><span class="n">molecules</span> <span class="o">=</span> <span class="n">molecules</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">feature</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">feature</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">feature</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>As can be attested to, calling the Comparator API is just as straightforward as calling the AbstractFeaturizer API;
+just replace the call to the <strong>featurize</strong> method with a call to the <strong>compare</strong> method.</p>
+</section>
+<section id="molecular-comparison-batched-featurizers-adapted-comparators">
+<h2>Molecular Comparison (Batched Featurizers &amp; Adapted Comparators)<a class="headerlink" href="#molecular-comparison-batched-featurizers-adapted-comparators" title="Link to this heading">#</a></h2>
+<p>In addition to comparison on one featurizer, comparison can be carried out between molecules over multiple featurizers.</p>
+<p>In this case, all that is needed is to pass a collection of featurizers to the more general <strong>Comparator</strong> constructor.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">chemcaption.molecules</span> <span class="kn">import</span> <span class="n">SMILESMolecule</span>
+
+<span class="kn">from</span> <span class="nn">chemcaption.featurize.composition</span> <span class="kn">import</span> <span class="n">MolecularMassFeaturizer</span><span class="p">,</span> <span class="n">AtomCountFeaturizer</span>
+<span class="kn">from</span> <span class="nn">chemcaption.featurize.base</span> <span class="kn">import</span> <span class="n">Comparator</span>
+
+<span class="c1"># Instantiate featurizers for comparison purposes</span>
+<span class="n">featurizer1</span> <span class="o">=</span> <span class="n">MolecularMassFeaturizer</span><span class="p">()</span>                     <span class="c1"># STEP 2</span>
+<span class="n">featurizer2</span> <span class="o">=</span> <span class="n">AtomCountFeaturizer</span><span class="p">()</span>                         <span class="c1"># STEP 2</span>
+
+<span class="c1"># Collate featurizers</span>
+<span class="n">featurizers</span> <span class="o">=</span> <span class="p">[</span><span class="n">featurizer1</span><span class="p">,</span> <span class="n">featurizer2</span><span class="p">]</span>
+
+<span class="c1"># Convert function to featurizer via RDKitAdaptor</span>
+<span class="n">comparator</span> <span class="o">=</span> <span class="n">Comparator</span><span class="p">(</span><span class="n">featurizers</span> <span class="o">=</span> <span class="n">featurizers</span><span class="p">)</span>
+
+<span class="c1"># Generate molecular instances</span>
+<span class="n">molecule_string1</span> <span class="o">=</span> <span class="s2">&quot;CCCC=C&quot;</span>     <span class="c1"># Pentane</span>
+<span class="n">molecule_string2</span> <span class="o">=</span> <span class="s2">&quot;[C-]#[O+]&quot;</span>  <span class="c1"># Carbon II Oxide</span>
+<span class="n">molecule_string3</span> <span class="o">=</span> <span class="s2">&quot;N#N&quot;</span>        <span class="c1"># Nitrogen molecule</span>
+
+<span class="n">molecule1</span> <span class="o">=</span> <span class="n">SMILESMolecule</span><span class="p">(</span><span class="n">representation_string</span><span class="o">=</span><span class="n">molecule_string1</span><span class="p">)</span> <span class="c1"># STEP 1</span>
+<span class="n">molecule2</span> <span class="o">=</span> <span class="n">SMILESMolecule</span><span class="p">(</span><span class="n">representation_string</span><span class="o">=</span><span class="n">molecule_string2</span><span class="p">)</span> <span class="c1"># STEP 1</span>
+<span class="n">molecule3</span> <span class="o">=</span> <span class="n">SMILESMolecule</span><span class="p">(</span><span class="n">representation_string</span><span class="o">=</span><span class="n">molecule_string3</span><span class="p">)</span> <span class="c1"># STEP 1</span>
+
+<span class="n">molecules</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">molecule1</span><span class="p">,</span>
+    <span class="n">molecule2</span><span class="p">,</span>
+    <span class="n">molecule3</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="n">feature</span> <span class="o">=</span> <span class="n">comparator</span><span class="o">.</span><span class="n">compare</span><span class="p">(</span><span class="n">molecules</span> <span class="o">=</span> <span class="n">molecules</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">feature</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">feature</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">feature</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="molecular-comparison-adapted-comparators">
+<h2>Molecular Comparison (Adapted Comparators)<a class="headerlink" href="#molecular-comparison-adapted-comparators" title="Link to this heading">#</a></h2>
+<p>To design a specific comparator, all that is needed is to specify what sort of comparison will be carried out.
+This specification is packaged as a function: <strong>comparison_func</strong>. This method takes in three main inputs:</p>
+<ul class="simple">
+<li><p>The featurizer of interest,</p></li>
+<li><p>The molecules to be compared, and</p></li>
+<li><p>a small float for numerical stability (<strong>OPTIONAL!</strong>).</p></li>
+</ul>
+<p>As an example, we will define here a comparator which checks if a set of molecules have the same values for the
+same property.</p>
+<p>First, we define our comparison function:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">comparison_function</span><span class="p">(</span><span class="n">featurizer</span><span class="p">,</span> <span class="n">molecules</span><span class="p">,</span> <span class="n">epsilon</span> <span class="o">=</span> <span class="mf">.1</span><span class="p">):</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="n">featurizer</span><span class="o">.</span><span class="n">featurize_many</span><span class="p">(</span><span class="n">molecules</span> <span class="o">=</span> <span class="n">molecules</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">results</span><span class="p">))</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We then use this function to generate our comparator:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">chemcaption.featurize.base</span> <span class="kn">import</span> <span class="n">Comparator</span>
+
+<span class="k">class</span> <span class="nc">MyComparator</span><span class="p">(</span><span class="n">Comparator</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">featurizers</span><span class="p">,</span> <span class="n">comparison_func</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">comparison_func</span> <span class="o">=</span> <span class="n">comparison_func</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>With the Comparator class defined, we can move on to actually generating the molecules and comparing them. In this
+instance, we wish to compare the molecules to see whether or not they have the same:</p>
+<ol class="arabic simple">
+<li><p>Molecular mass, and</p></li>
+<li><p>Number of atoms</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">chemcaption.molecules</span> <span class="kn">import</span> <span class="n">SMILESMolecule</span>
+
+<span class="kn">from</span> <span class="nn">chemcaption.featurize.composition</span> <span class="kn">import</span> <span class="n">MolecularMassFeaturizer</span><span class="p">,</span> <span class="n">AtomCountFeaturizer</span>
+
+<span class="c1"># Instantiate featurizers for comparison purposes</span>
+<span class="n">featurizer1</span> <span class="o">=</span> <span class="n">MolecularMassFeaturizer</span><span class="p">()</span>                     <span class="c1"># STEP 2</span>
+<span class="n">featurizer2</span> <span class="o">=</span> <span class="n">AtomCountFeaturizer</span><span class="p">()</span>                         <span class="c1"># STEP 2</span>
+
+<span class="c1"># Collate featurizers</span>
+<span class="n">featurizers</span> <span class="o">=</span> <span class="p">[</span><span class="n">featurizer1</span><span class="p">,</span> <span class="n">featurizer2</span><span class="p">]</span>
+
+<span class="c1">#Instantiate comparator instance</span>
+<span class="n">comparator</span> <span class="o">=</span> <span class="n">MyComparator</span><span class="p">(</span><span class="n">featurizers</span> <span class="o">=</span> <span class="n">featurizers</span><span class="p">,</span> <span class="n">comparison_func</span> <span class="o">=</span> <span class="n">comparison_function</span><span class="p">)</span>
+
+<span class="c1"># Generate molecular instances</span>
+<span class="n">molecule_string1</span> <span class="o">=</span> <span class="s2">&quot;CCCC=C&quot;</span>     <span class="c1"># Pentane</span>
+<span class="n">molecule_string2</span> <span class="o">=</span> <span class="s2">&quot;[C-]#[O+]&quot;</span>  <span class="c1"># Carbon II Oxide</span>
+<span class="n">molecule_string3</span> <span class="o">=</span> <span class="s2">&quot;N#N&quot;</span>        <span class="c1"># Nitrogen molecule</span>
+
+<span class="n">molecule1</span> <span class="o">=</span> <span class="n">SMILESMolecule</span><span class="p">(</span><span class="n">representation_string</span><span class="o">=</span><span class="n">molecule_string1</span><span class="p">)</span> <span class="c1"># STEP 1</span>
+<span class="n">molecule2</span> <span class="o">=</span> <span class="n">SMILESMolecule</span><span class="p">(</span><span class="n">representation_string</span><span class="o">=</span><span class="n">molecule_string2</span><span class="p">)</span> <span class="c1"># STEP 1</span>
+<span class="n">molecule3</span> <span class="o">=</span> <span class="n">SMILESMolecule</span><span class="p">(</span><span class="n">representation_string</span><span class="o">=</span><span class="n">molecule_string3</span><span class="p">)</span> <span class="c1"># STEP 1</span>
+
+<span class="n">molecules</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">molecule1</span><span class="p">,</span>
+    <span class="n">molecule2</span><span class="p">,</span>
+    <span class="n">molecule3</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="c1"># Compare molecules</span>
+<span class="n">feature</span> <span class="o">=</span> <span class="n">comparator</span><span class="o">.</span><span class="n">compare</span><span class="p">(</span><span class="n">molecules</span> <span class="o">=</span> <span class="n">molecules</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">feature</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">feature</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="molecular-comparison-batched-comparators">
+<h2>Molecular Comparison (Batched Comparators)<a class="headerlink" href="#molecular-comparison-batched-comparators" title="Link to this heading">#</a></h2>
+<p>In addition to the above, and similarly to featurizers, comparators can also be batched.
+This allows multiple types of comparisons to be carried out simultaneously.</p>
+<p>As an instance, we wish to compare a set of molecules for their number of atoms and their number of valence electrons.
+We can do this by leveraging the <strong>MultipleComparator</strong>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">chemcaption.molecules</span> <span class="kn">import</span> <span class="n">SMILESMolecule</span>
+
+<span class="kn">from</span> <span class="nn">chemcaption.featurize.base</span> <span class="kn">import</span> <span class="n">MultipleComparator</span>
+<span class="kn">from</span> <span class="nn">chemcaption.featurize.comparator</span> <span class="kn">import</span> <span class="n">AtomCountComparator</span><span class="p">,</span> <span class="n">ValenceElectronCountComparator</span>
+
+<span class="c1"># Instantiate comparators for comparison purposes</span>
+<span class="n">comparator1</span> <span class="o">=</span> <span class="n">AtomCountComparator</span><span class="p">()</span>                <span class="c1"># STEP 2</span>
+<span class="n">comparator2</span> <span class="o">=</span> <span class="n">ValenceElectronCountComparator</span><span class="p">()</span>     <span class="c1"># STEP 2</span>
+
+<span class="c1"># Collate comparators</span>
+<span class="n">comparators</span> <span class="o">=</span> <span class="p">[</span><span class="n">comparator1</span><span class="p">,</span> <span class="n">comparator2</span><span class="p">]</span>
+
+<span class="c1"># Instantiate comparator instance</span>
+<span class="n">mega_comparator</span> <span class="o">=</span> <span class="n">MultipleComparator</span><span class="p">(</span><span class="n">featurizers</span> <span class="o">=</span> <span class="n">featurizers</span><span class="p">)</span>
+
+<span class="c1"># Generate molecular instances</span>
+<span class="n">molecule_string1</span> <span class="o">=</span> <span class="s2">&quot;CCCC=C&quot;</span>     <span class="c1"># Pentane</span>
+<span class="n">molecule_string2</span> <span class="o">=</span> <span class="s2">&quot;[C-]#[O+]&quot;</span>  <span class="c1"># Carbon II Oxide</span>
+<span class="n">molecule_string3</span> <span class="o">=</span> <span class="s2">&quot;N#N&quot;</span>        <span class="c1"># Nitrogen molecule</span>
+
+<span class="n">molecule1</span> <span class="o">=</span> <span class="n">SMILESMolecule</span><span class="p">(</span><span class="n">representation_string</span><span class="o">=</span><span class="n">molecule_string1</span><span class="p">)</span> <span class="c1"># STEP 1</span>
+<span class="n">molecule2</span> <span class="o">=</span> <span class="n">SMILESMolecule</span><span class="p">(</span><span class="n">representation_string</span><span class="o">=</span><span class="n">molecule_string2</span><span class="p">)</span> <span class="c1"># STEP 1</span>
+<span class="n">molecule3</span> <span class="o">=</span> <span class="n">SMILESMolecule</span><span class="p">(</span><span class="n">representation_string</span><span class="o">=</span><span class="n">molecule_string3</span><span class="p">)</span> <span class="c1"># STEP 1</span>
+
+<span class="n">molecules</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">molecule1</span><span class="p">,</span>
+    <span class="n">molecule2</span><span class="p">,</span>
+    <span class="n">molecule3</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="c1"># Compare molecules</span>
+<span class="n">feature</span> <span class="o">=</span> <span class="n">mega_comparator</span><span class="o">.</span><span class="n">compare</span><span class="p">(</span><span class="n">molecules</span> <span class="o">=</span> <span class="n">molecules</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">feature</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">feature</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
 </section>
 
         </article>
@@ -436,6 +653,11 @@ This function can be converted into a featurizer of its own by leveraging the <s
 <li><a class="reference internal" href="#molecule-featurization-batched-molecules">Molecule Featurization (Batched Molecules)</a></li>
 <li><a class="reference internal" href="#molecule-featurization-batched-featurizers">Molecule Featurization (Batched Featurizers)</a></li>
 <li><a class="reference internal" href="#molecule-featurization-adapted-featurizers">Molecule Featurization (Adapted Featurizers)</a></li>
+<li><a class="reference internal" href="#molecule-featurization-text">Molecule Featurization (Text)</a></li>
+<li><a class="reference internal" href="#molecular-comparison-single-featurizer">Molecular Comparison (Single Featurizer)</a></li>
+<li><a class="reference internal" href="#molecular-comparison-batched-featurizers-adapted-comparators">Molecular Comparison (Batched Featurizers &amp; Adapted Comparators)</a></li>
+<li><a class="reference internal" href="#molecular-comparison-adapted-comparators">Molecular Comparison (Adapted Comparators)</a></li>
+<li><a class="reference internal" href="#molecular-comparison-batched-comparators">Molecular Comparison (Batched Comparators)</a></li>
 </ul>
 </li>
 </ul>

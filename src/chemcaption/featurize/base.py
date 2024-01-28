@@ -4,7 +4,7 @@
 
 from abc import ABC, abstractmethod
 from concurrent.futures import ProcessPoolExecutor
-from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
+from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -17,7 +17,6 @@ from rdkit import Chem
 from scipy.spatial import distance_matrix
 
 from chemcaption.featurize.text import Prompt, PromptCollection
-
 from chemcaption.featurize.utils import cached_conformer
 from chemcaption.molecules import Molecule
 
@@ -44,8 +43,10 @@ class AbstractFeaturizer(ABC):
 
     def __init__(self):
         """Initialize class. Initialize periodic table."""
-        self.prompt_template = ("Question: What {VERB} the {PROPERTY_NAME} of the molecule with {REPR_SYSTEM} "
-                                "{REPR_STRING}?")
+        self.prompt_template = (
+            "Question: What {VERB} the {PROPERTY_NAME} of the molecule with {REPR_SYSTEM} "
+            "{REPR_STRING}?"
+        )
         self.completion_template = "Answer: {COMPLETION}"
         self._names = []
         self.constraint = None
@@ -773,7 +774,11 @@ class MultipleFeaturizer(AbstractFeaturizer):
 class Comparator(AbstractComparator):
     """Compare molecules based on featurizer outputs."""
 
-    def __init__(self, featurizers: Optional[List[AbstractFeaturizer]] = None):
+    def __init__(
+        self,
+        featurizers: Optional[List[AbstractFeaturizer]] = None,
+        comparison_func: Callable = None,
+    ):
         """Instantiate class.
 
         Args:
@@ -782,6 +787,7 @@ class Comparator(AbstractComparator):
         """
         super().__init__()
         self.featurizers = None
+        self.comparison_func = comparison_func
         self.fit_on_featurizers(featurizers=featurizers)
 
     def fit_on_featurizers(self, featurizers: Optional[List[AbstractFeaturizer]] = None):
@@ -842,6 +848,30 @@ class Comparator(AbstractComparator):
 
         return (np.mean(distance_results) <= epsilon).astype(int).reshape((1, -1))
 
+    def base_compare(
+        self,
+        featurizer: AbstractFeaturizer,
+        molecules: List[Molecule],
+        epsilon: float = 0.0,
+    ) -> np.array:
+        """Return results of molecule feature comparison between molecule instance pairs.
+
+        Args:
+            featurizer (AbstractFeaturizer): Featurizer to compare on.
+            molecules (List[Molecule]): List containing a pair of molecule instances.
+            epsilon (float): Small float. Precision bound for numerical inconsistencies. Defaults to `0.0`.
+
+        Returns:
+            np.array: Comparison results. `1` if all extracted features are equal, else `0`.
+        """
+        return (
+            self.comparison_func(featurizer=featurizer, molecules=molecules, epsilon=epsilon)
+            if self.comparison_func is not None
+            else self._compare_on_featurizer(
+                featurizer=featurizer, molecules=molecules, epsilon=epsilon
+            )
+        )
+
     def featurize(
         self,
         molecules: List[Molecule],
@@ -861,7 +891,7 @@ class Comparator(AbstractComparator):
                 where `N` is the number of featurizers provided at initialization time.
         """
         results = [
-            self._compare_on_featurizer(featurizer=featurizer, molecules=molecules, epsilon=epsilon)
+            self.base_compare(featurizer=featurizer, molecules=molecules, epsilon=epsilon)
             for featurizer in self.featurizers
         ]
         return np.concatenate(results, axis=-1)
