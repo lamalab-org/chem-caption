@@ -4,6 +4,7 @@
 
 from abc import ABC, abstractmethod
 from concurrent.futures import ProcessPoolExecutor
+from functools import lru_cache
 from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
@@ -428,6 +429,7 @@ class MorfeusFeaturizer(AbstractFeaturizer):
         return SASA(elements, coordinates, **self.morfeus_kwargs)
 
     @staticmethod
+    @lru_cache(maxsize=None)
     def _optimize_molecule_geometry(
         molecule: Molecule,
         optimization_method: str = "GFN2-xTB",
@@ -485,6 +487,7 @@ class MorfeusFeaturizer(AbstractFeaturizer):
         print("There are", len(conformer_ensemble.conformers), "conformers")
         return conformer_ensemble.conformers[:num_conformers]
 
+    @lru_cache(maxsize=None)
     def _generate_conformer(
         self,
         molecule: Molecule,
@@ -549,13 +552,14 @@ class MorfeusFeaturizer(AbstractFeaturizer):
         Returns:
             List[Union[int, float]]: Atomic numbers of atoms in `molecule` arranged by index.
         """
-        elements, coordinates = self._get_element_coordinates(molecule=molecule)
         atoms = molecule.get_atoms(hydrogen=True)
         atomic_numbers = [atom.GetAtomicNum() for atom in atoms]
+
         if (max_index - len(atomic_numbers)) > 0:
             atomic_numbers += [0 for _ in range(max_index - len(atomic_numbers))]
         elif (max_index - len(atomic_numbers)) < 0:
             atomic_numbers = atomic_numbers[:max_index]
+
         return atomic_numbers
 
     def implementors(self) -> List[str]:
@@ -675,6 +679,7 @@ class MultipleFeaturizer(AbstractFeaturizer):
             [f.text_featurize(pos_key=pos_key, molecule=molecule) for f in self.featurizers]
         )
 
+    @lru_cache(maxsize=None)
     def featurize_many(self, molecules: List[Molecule]) -> np.array:
         """
         Featurize a sequence of Molecule objects.
@@ -872,6 +877,7 @@ class Comparator(AbstractComparator):
             )
         )
 
+    @lru_cache(maxsize=None)
     def featurize(
         self,
         molecules: List[Molecule],
