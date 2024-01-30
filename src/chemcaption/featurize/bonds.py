@@ -77,7 +77,7 @@ class RotableBondCountFeaturizer(AbstractFeaturizer):
         """
         return ["num_rotable_bonds"]
 
-    def featurize(self, molecule: Molecule) -> np.array:
+    def featurize(self, molecule: Molecule) -> np.ndarray:
         """
         Featurize single molecule instance. Count the number of rotable (single, non-terminal) bonds in a molecule.
 
@@ -85,7 +85,7 @@ class RotableBondCountFeaturizer(AbstractFeaturizer):
             molecule (Molecule): Molecule representation.
 
         Returns:
-            np.array: Number of rotable bonds in molecule.
+            np.ndarray: Number of rotable bonds in molecule.
         """
         num_rotable = rdMolDescriptors.CalcNumRotatableBonds(
             molecule.reveal_hydrogens(), strict=True
@@ -172,7 +172,7 @@ class RotableBondProportionFeaturizer(AbstractFeaturizer):
 
         return bond_distribution
 
-    def featurize(self, molecule: Molecule) -> np.array:
+    def featurize(self, molecule: Molecule) -> np.ndarray:
         """Featurize single molecule instance.
         Return distribution of bonds based on rotability.
 
@@ -180,7 +180,7 @@ class RotableBondProportionFeaturizer(AbstractFeaturizer):
             molecule (Molecule): Molecular representation.
 
         Returns:
-            np.array: Array containing distribution of the bonds based on rotability.
+            np.ndarray: Array containing distribution of the bonds based on rotability.
         """
         return np.array(self._get_bond_types(molecule=molecule)).reshape((1, -1))
 
@@ -430,7 +430,7 @@ class BondTypeCountFeaturizer(AbstractFeaturizer):
 
         return unique_bonds
 
-    def featurize(self, molecule: Molecule) -> np.array:
+    def featurize(self, molecule: Molecule) -> np.ndarray:
         """
         Featurize single molecule instance.
 
@@ -443,7 +443,7 @@ class BondTypeCountFeaturizer(AbstractFeaturizer):
             molecule (Molecule): Molecule representation.
 
         Returns:
-            np.array: Array containing integer counts/signifier of bond type(s).
+            np.ndarray: Array containing integer counts/signifier of bond type(s).
         """
         return np.array(self._count_bonds(molecule=molecule)).reshape(1, -1)
 
@@ -527,7 +527,7 @@ class BondTypeProportionFeaturizer(BondTypeCountFeaturizer):
 
         return bond_proportion
 
-    def featurize(self, molecule: Molecule) -> np.array:
+    def featurize(self, molecule: Molecule) -> np.ndarray:
         """
         Return float(s) containing on bond type proportion(s).
 
@@ -535,7 +535,7 @@ class BondTypeProportionFeaturizer(BondTypeCountFeaturizer):
             molecule (Molecule): Molecule representation.
 
         Returns:
-            np.array: Array containing bond type proportion(s).
+            np.ndarray: Array containing bond type proportion(s).
         """
         return np.array(self._get_bond_distribution(molecule=molecule)).reshape(1, -1)
 
@@ -603,7 +603,7 @@ class DipoleMomentsFeaturizer(MorfeusFeaturizer):
 
         self.max_index = max_index
 
-    def featurize(self, molecule: Molecule) -> np.array:
+    def featurize(self, molecule: Molecule) -> np.ndarray:
         """
         Featurize single molecule instance.
 
@@ -611,7 +611,7 @@ class DipoleMomentsFeaturizer(MorfeusFeaturizer):
             molecule (Molecule): Molecule representation.
 
         Returns:
-            (np.array): Array containing dipole moments for bonds in molecule instance.
+            np.ndarray: Array containing dipole moments for bonds in molecule instance.
         """
         if self.qc_optimize:
             molecule = self._generate_conformer(molecule=molecule)
@@ -640,7 +640,7 @@ class DipoleMomentsFeaturizer(MorfeusFeaturizer):
 
         return np.array(output).reshape(1, -1)
 
-    def featurize_many(self, molecules: List[Molecule]) -> np.array:
+    def featurize_many(self, molecules: List[Molecule]) -> np.ndarray:
         """
         Featurize a sequence of Molecule objects.
 
@@ -648,7 +648,7 @@ class DipoleMomentsFeaturizer(MorfeusFeaturizer):
             molecules (List[Molecule]): A sequence of molecule representations.
 
         Returns:
-            (np.array): An array of features for each molecule instance.
+            np.ndarray: An array of features for each molecule instance.
         """
         if self.max_index is None:
             self.max_index = self.fit_on_bond_counts(molecules=molecules)
@@ -724,7 +724,7 @@ class BondOrderFeaturizer(MorfeusFeaturizer):
 
         self.max_index = max_index
 
-    def featurize(self, molecule: Molecule) -> np.array:
+    def featurize(self, molecule: Molecule) -> np.ndarray:
         """
         Featurize single molecule instance.
 
@@ -732,7 +732,7 @@ class BondOrderFeaturizer(MorfeusFeaturizer):
             molecule (Molecule): Molecule representation.
 
         Returns:
-            np.array: Array containing bond orders for bonds in molecule instance.
+            np.ndarray: Array containing bond orders for bonds in molecule instance.
         """
         if self.qc_optimize:
             molecule = self._generate_conformer(molecule=molecule)
@@ -762,7 +762,7 @@ class BondOrderFeaturizer(MorfeusFeaturizer):
 
         return np.array(output).reshape(1, -1)
 
-    def featurize_many(self, molecules: List[Molecule]) -> np.array:
+    def featurize_many(self, molecules: List[Molecule]) -> np.ndarray:
         """
         Featurize a sequence of Molecule objects.
 
@@ -770,7 +770,7 @@ class BondOrderFeaturizer(MorfeusFeaturizer):
             molecules (List[Molecule]): A sequence of molecule representations.
 
         Returns:
-            np.array: An array of features for each molecule instance.
+            np.ndarray: An array of features for each molecule instance.
         """
         if self.max_index is None:
             self.max_index = self.fit_on_bond_counts(molecules=molecules)

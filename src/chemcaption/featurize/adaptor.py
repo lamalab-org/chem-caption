@@ -43,7 +43,7 @@ class RDKitAdaptor(AbstractFeaturizer):
     def featurize(
         self,
         molecule: Molecule,
-    ) -> np.array:
+    ) -> np.ndarray:
         """
         Featurize single molecule instance.
 
@@ -53,7 +53,7 @@ class RDKitAdaptor(AbstractFeaturizer):
             molecule (Molecule): Molecule representation.
 
         Returns:
-            np.array: Array containing extracted features.
+            np.ndarray: Array containing extracted features.
         """
         feature = self.rdkit_function(molecule.rdkit_mol, **self.rdkit_function_kwargs)
         feature = (
@@ -115,7 +115,7 @@ class ValenceElectronCountAdaptor(RDKitAdaptor):
             },
         ]
 
-    def featurize(self, molecule: Molecule) -> np.array:
+    def featurize(self, molecule: Molecule) -> np.ndarray:
         """
         Featurize single molecule instance. Extract and return valence electron count for molecular object.
 
@@ -123,7 +123,7 @@ class ValenceElectronCountAdaptor(RDKitAdaptor):
             molecule (Molecule): Molecule representation.
 
         Returns:
-            np.array: Array containing number of valence electrons.
+            np.ndarray: Array containing number of valence electrons.
         """
         return super().featurize(molecule=molecule)
 

@@ -51,7 +51,7 @@ class MolecularFormulaFeaturizer(AbstractFeaturizer):
         """
         return ["molecular_formula"]
 
-    def featurize(self, molecule: Molecule) -> np.array:
+    def featurize(self, molecule: Molecule) -> np.ndarray:
         """
         Featurize single molecule instance. Get the molecular formular of a molecule.
 
@@ -99,14 +99,14 @@ class MolecularMassFeaturizer(AbstractFeaturizer):
             None.
 
         Returns:
-            (List[str]): List of labels for extracted features.
+            List[str]: List of labels for extracted features.
         """
         return ["molecular_mass"]
 
     def featurize(
         self,
         molecule: Molecule,
-    ) -> np.array:
+    ) -> np.ndarray:
         """
         Featurize single molecule instance. Get the molecular mass of a molecule.
 
@@ -155,14 +155,14 @@ class MonoisotopicMolecularMassFeaturizer(AbstractFeaturizer):
             None.
 
         Returns:
-            (List[str]): List of labels for extracted features.
+            List[str]: List of labels for extracted features.
         """
         return ["monoisotopic_molecular_mass"]
 
     def featurize(
         self,
         molecule: Molecule,
-    ) -> np.array:
+    ) -> np.ndarray:
         """
         Featurize single molecule instance. Get the monoisotopic molecular mass of a molecule.
 
@@ -215,7 +215,7 @@ class ElementMassFeaturizer(AbstractFeaturizer):
             None.
 
         Returns:
-            (List[Dict[str, str]]): List of names for extracted features according to parts-of-speech.
+            List[Dict[str, str]]: List of names for extracted features according to parts-of-speech.
         """
         noun = "masses" if len(self.preset) > 1 else "mass"
         return [{"noun": f"total {noun} of " + join_list_elements(self.preset)}]
@@ -227,7 +227,7 @@ class ElementMassFeaturizer(AbstractFeaturizer):
             None.
 
         Returns:
-            (List[str]): List of labels for extracted features.
+            List[str]: List of labels for extracted features.
         """
         return [element.lower() + "_mass" for element in self.preset]
 
@@ -334,7 +334,7 @@ class ElementMassFeaturizer(AbstractFeaturizer):
         ]
         return unique_elements
 
-    def featurize(self, molecule: Molecule) -> np.array:
+    def featurize(self, molecule: Molecule) -> np.ndarray:
         """
         Featurize single molecule instance. Get the total mass component for elements in a molecule.
 
@@ -342,7 +342,7 @@ class ElementMassFeaturizer(AbstractFeaturizer):
             molecule (Molecule): Molecular representation.
 
         Returns:
-            np.array: Molecular contribution by mass for elements in molecule.
+            np.ndarray: Molecular contribution by mass for elements in molecule.
         """
         return np.array(self._get_profile(molecule=molecule)).reshape((1, -1))
 
@@ -375,7 +375,7 @@ class ElementMassProportionFeaturizer(ElementMassFeaturizer):
             None.
 
         Returns:
-            (List[Dict[str, str]]): List of names for extracted features according to parts-of-speech.
+            List[Dict[str, str]]: List of names for extracted features according to parts-of-speech.
         """
         proportion = "proportions" if len(self.preset) > 1 else "proportion"
         return [{"noun": f"mass {proportion} of " + join_list_elements(self.preset)}]
@@ -392,7 +392,7 @@ class ElementMassProportionFeaturizer(ElementMassFeaturizer):
         """
         return [self.prefix + element.lower() + self.suffix for element in self.preset]
 
-    def featurize(self, molecule: Molecule) -> np.array:
+    def featurize(self, molecule: Molecule) -> np.ndarray:
         """
         Featurize single molecule instance. Get the total mass proportion for elements in a molecule.
 
@@ -400,7 +400,7 @@ class ElementMassProportionFeaturizer(ElementMassFeaturizer):
             molecule (Molecule): Molecular representation.
 
         Returns:
-            np.array: Molecular proportional contribution by mass for elements in molecule.
+            np.ndarray: Molecular proportional contribution by mass for elements in molecule.
         """
         molar_mass = Descriptors.MolWt(molecule.rdkit_mol)
         return np.array(self._get_profile(molecule=molecule)).reshape((1, -1)) / molar_mass
@@ -432,7 +432,7 @@ class ElementCountFeaturizer(ElementMassFeaturizer):
             None.
 
         Returns:
-            (List[str]): List of labels for extracted features.
+            List[str]: List of labels for extracted features.
         """
         return ["num_" + element.lower() + "_atoms" for element in self.preset]
 
@@ -443,7 +443,7 @@ class ElementCountFeaturizer(ElementMassFeaturizer):
             None.
 
         Returns:
-            (List[Dict[str, str]]): List of names for extracted features according to parts-of-speech.
+            List[Dict[str, str]]: List of names for extracted features according to parts-of-speech.
         """
         count = "counts" if len(self.preset) > 1 else "count"
         return [{"noun": f"atom {count} of " + join_list_elements(self.preset)}]
@@ -487,7 +487,7 @@ class ElementCountFeaturizer(ElementMassFeaturizer):
 
         return atom_counts
 
-    def featurize(self, molecule: Molecule) -> np.array:
+    def featurize(self, molecule: Molecule) -> np.ndarray:
         """
         Featurize single molecule instance. Get the atom count for elements in a molecule.
 
@@ -495,7 +495,7 @@ class ElementCountFeaturizer(ElementMassFeaturizer):
             molecule (Molecule): Molecular representation.
 
         Returns:
-            np.array: Molecular contribution by atom count for elements in molecule.
+            np.ndarray: Molecular contribution by atom count for elements in molecule.
         """
         return np.array([self._get_profile(molecule=molecule)]).reshape((1, -1))
 
@@ -531,7 +531,7 @@ class ElementCountProportionFeaturizer(ElementCountFeaturizer):
             None.
 
         Returns:
-            (List[Dict[str, str]]): List of names for extracted features according to parts-of-speech.
+            List[Dict[str, str]]: List of names for extracted features according to parts-of-speech.
         """
         count = "counts" if len(self.preset) > 1 else "count"
         return [{"noun": f"relative atom {count} of " + join_list_elements(self.preset)}]
@@ -543,11 +543,11 @@ class ElementCountProportionFeaturizer(ElementCountFeaturizer):
             None.
 
         Returns:
-            (List[str]): List of labels for extracted features.
+            List[str]: List of labels for extracted features.
         """
         return [element.lower() + "_atom_ratio" for element in self.preset]
 
-    def featurize(self, molecule: Molecule) -> np.array:
+    def featurize(self, molecule: Molecule) -> np.ndarray:
         """
         Featurize single molecule instance. Get the atom count proportion for elements in a molecule.
 
@@ -555,7 +555,7 @@ class ElementCountProportionFeaturizer(ElementCountFeaturizer):
             molecule (Molecule): Molecular representation.
 
         Returns:
-            np.array: Molecular proportional contribution by atom count for elements in molecule.
+            np.ndarray: Molecular proportional contribution by atom count for elements in molecule.
         """
         num_atoms = len(molecule.get_atoms(hydrogen=True))
         return np.array(self._get_profile(molecule=molecule)).reshape((1, -1)) / num_atoms
@@ -592,7 +592,7 @@ class AtomCountFeaturizer(ElementCountFeaturizer):
             None.
 
         Returns:
-            (List[Dict[str, str]]): List of names for extracted features according to parts-of-speech.
+            List[Dict[str, str]]: List of names for extracted features according to parts-of-speech.
         """
         return [{"noun": "total number of atoms"}]
 
@@ -603,11 +603,11 @@ class AtomCountFeaturizer(ElementCountFeaturizer):
             None.
 
         Returns:
-            (List[str]): List of labels for extracted features.
+            List[str]: List of labels for extracted features.
         """
         return ["num_atoms"]
 
-    def featurize(self, molecule: Molecule) -> np.array:
+    def featurize(self, molecule: Molecule) -> np.ndarray:
         """
         Featurize single molecule instance. Get the atom count proportion for elements in a molecule.
 
@@ -615,7 +615,7 @@ class AtomCountFeaturizer(ElementCountFeaturizer):
             molecule (Molecule): Molecular representation.
 
         Returns:
-            np.array: Number of atoms in `molecule`.
+            np.ndarray: Number of atoms in `molecule`.
         """
         return np.array([len(molecule.get_atoms(hydrogen=True))]).reshape((1, -1))
 
@@ -656,12 +656,12 @@ class DegreeOfUnsaturationFeaturizer(AbstractFeaturizer):
             None.
 
         Returns:
-            (List[str]): List of labels for extracted features.
+            List[str]: List of labels for extracted features.
         """
         return ["degree_of_unsaturation"]
 
     @staticmethod
-    def _get_degree_of_unsaturation_for_mol(molecule: Molecule):
+    def _get_degree_of_unsaturation_for_mol(molecule: Molecule) -> float:
         """Return the degree of unsaturation for a molecule.
 
         .. math::
@@ -683,7 +683,7 @@ class DegreeOfUnsaturationFeaturizer(AbstractFeaturizer):
         du = 1 + 0.5 * sum([n * (v - 2) for v, n in valence_counter.items()])
         return du
 
-    def featurize(self, molecule: Molecule) -> np.array:
+    def featurize(self, molecule: Molecule) -> np.ndarray:
         """
         Featurize single molecule instance. Returns the degree of unsaturation of a molecule.
 
@@ -691,7 +691,7 @@ class DegreeOfUnsaturationFeaturizer(AbstractFeaturizer):
             molecule (Molecule): Molecular representation.
 
         Returns:
-            np.array: degree of unsaturation.
+            np.ndarray: degree of unsaturation.
         """
         return np.array([self._get_degree_of_unsaturation_for_mol(molecule)]).reshape((1, 1))
 

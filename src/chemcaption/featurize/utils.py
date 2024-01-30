@@ -59,7 +59,7 @@ def cached_conformer(smiles, kwargs):
     return mol
 
 
-def apply_featurizer(featurize_molecule_pair) -> np.array:
+def apply_featurizer(featurize_molecule_pair) -> np.ndarray:
     """Apply a featurizer to a molecule instance to give molecular features.
 
     Args:
@@ -68,7 +68,7 @@ def apply_featurizer(featurize_molecule_pair) -> np.array:
             (Molecule): Molecular instance.
 
     Returns:
-        np.array: Featurizer outputs.
+        np.ndarray: Featurizer outputs.
     """
     featurizer, molecule = featurize_molecule_pair[0], featurize_molecule_pair[1]
     return (

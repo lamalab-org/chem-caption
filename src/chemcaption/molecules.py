@@ -191,6 +191,72 @@ class AbstractMolecule(ABC):
         """
         return Chem.rdMolDescriptors.CalcMolFormula(self.rdkit_mol)
 
+    def kekulize_molecule(self, hydrogens: bool = False) -> Chem:
+        """Convert kekulize molecular instance.
+
+        Args:
+            hydrogens (bool): Reveal hydrogen atoms or not. Defaults to `False`.
+
+        Returns:
+            AbstractMolecule: Version of self with kekulized molecule.
+        """
+        if hydrogens:
+            rdkit_mol = self.reveal_hydrogens()
+        else:
+            rdkit_mol = self.rdkit_mol
+
+        Chem.Kekulize(rdkit_mol,  clearAromaticFlags = True)
+
+        self.rdkit_mol =  rdkit_mol
+
+        return self
+
+    def sanitize_molecule(self, hydrogens: bool = False):
+        """Sanitize molecular instance.
+
+        Args:
+            hydrogens (bool): Reveal hydrogen atoms or not. Defaults to `False`.
+
+        Returns:
+            AbstractMolecule: Version of self with sanitized molecule.
+        """
+        if hydrogens:
+            rdkit_mol = self.reveal_hydrogens()
+        else:
+            rdkit_mol = self.rdkit_mol
+
+        Chem.SanitizeMol(rdkit_mol)
+
+        self.rdkit_mol =  rdkit_mol
+
+        return self
+
+    def preprocess_molecule(self, kekulize_hydrogens: bool = False, sanitize_hydrogens: bool = False):
+        """Sanitize molecular instance.
+
+        Args:
+            kekulize_hydrogens (bool): Reveal hydrogen atoms in kekulization process or not. Defaults to `False`.
+            sanitize_hydrogens (bool): Reveal hydrogen atoms in sanitization process or not. Defaults to `False`.
+
+        Returns:
+            AbstractMolecule: Version of self with sanitized molecule.
+        """
+        self.kekulize_molecule(hydrogens=kekulize_hydrogens)
+        self.sanitize_molecule(hydrogens=sanitize_hydrogens)
+
+        return self
+
+    def to_smiles(self) -> str:
+        """Convert molecular instance to SMILES string.
+
+        Args:
+            None.
+
+        Returns:
+            str: SMILES string for molecule.
+        """
+        return Chem.MolToSmiles(self.rdkit_mol)
+
     def to_graph(self) -> MoleculeGraph:
         """Convert molecule to graph.
 

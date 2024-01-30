@@ -162,7 +162,7 @@ class EccentricityFeaturizer(SpatialFeaturizer):
         """
         return ["eccentricity"]
 
-    def featurize(self, molecule: Molecule) -> np.array:
+    def featurize(self, molecule: Molecule) -> np.ndarray:
         """
         Featurize single molecule instance. Extract eccentricity value for `molecule`.
 
@@ -170,7 +170,7 @@ class EccentricityFeaturizer(SpatialFeaturizer):
             molecule (Molecule): Molecule representation.
 
         Returns:
-            np.array: Array containing eccentricity value.
+            np.ndarray: Array containing eccentricity value.
         """
         mol = molecule.rdkit_mol
         mol = self._get_conformer(mol)
@@ -229,7 +229,7 @@ class AsphericityFeaturizer(SpatialFeaturizer):
         """
         return ["asphericity"]
 
-    def featurize(self, molecule: Molecule) -> np.array:
+    def featurize(self, molecule: Molecule) -> np.ndarray:
         """
         Featurize single molecule instance. Extract asphericity value for `molecule`.
 
@@ -237,7 +237,7 @@ class AsphericityFeaturizer(SpatialFeaturizer):
             molecule (Molecule): Molecule representation.
 
         Returns:
-            np.array: Array containing asphericity value.
+            np.ndarray: Array containing asphericity value.
         """
         mol = molecule.reveal_hydrogens()
 
@@ -297,7 +297,7 @@ class InertialShapeFactorFeaturizer(SpatialFeaturizer):
         """
         return ["inertial_shape_factor"]
 
-    def featurize(self, molecule: Molecule) -> np.array:
+    def featurize(self, molecule: Molecule) -> np.ndarray:
         """
         Featurize single molecule instance. Extract inertia shape factor for `molecule`.
 
@@ -305,7 +305,7 @@ class InertialShapeFactorFeaturizer(SpatialFeaturizer):
             molecule (Molecule): Molecule representation.
 
         Returns:
-            np.array: Array containing inertia shape factor.
+            np.ndarray: Array containing inertia shape factor.
         """
         mol = molecule.rdkit_mol
 
@@ -413,7 +413,7 @@ class NPRFeaturizer(SpatialFeaturizer):
         """
         return self._parse_labels()
 
-    def featurize(self, molecule: Molecule) -> np.array:
+    def featurize(self, molecule: Molecule) -> np.ndarray:
         """
         Featurize single molecule instance. Extract NPR value for `molecule`.
 
@@ -421,7 +421,7 @@ class NPRFeaturizer(SpatialFeaturizer):
             molecule (Molecule): Molecule representation.
 
         Returns:
-            np.array: Array containing value(s) for NPR.
+            np.ndarray: Array containing value(s) for NPR.
         """
         mol = molecule.rdkit_mol
 
@@ -529,7 +529,7 @@ class PMIFeaturizer(SpatialFeaturizer):
         )
         return [{"noun": join_list_elements(names) + name}]
 
-    def featurize(self, molecule: Molecule) -> np.array:
+    def featurize(self, molecule: Molecule) -> np.ndarray:
         """
         Featurize single molecule instance. Extract PMI value for `molecule`.
 
@@ -537,7 +537,7 @@ class PMIFeaturizer(SpatialFeaturizer):
             molecule (Molecule): Molecule representation.
 
         Returns:
-            np.array: Array containing value(s) for PMI.
+            np.ndarray: Array containing value(s) for PMI.
         """
         mol = molecule.rdkit_mol
 
@@ -598,14 +598,14 @@ class AtomVolumeFeaturizer(MorfeusFeaturizer):
 
         self.max_index = max_index
 
-    def featurize(self, molecule: Molecule) -> np.array:
+    def featurize(self, molecule: Molecule) -> np.ndarray:
         """Featurize single molecule instance.
 
         Args:
             molecule (Molecule): Molecule representation.
 
         Returns:
-            (np.array): Array containing solvent accessible volumes for atoms in molecule instance.
+            np.ndarray: Array containing solvent accessible volumes for atoms in molecule instance.
         """
         if self.qc_optimize:
             molecule = self._generate_conformer(molecule=molecule)
@@ -638,7 +638,7 @@ class AtomVolumeFeaturizer(MorfeusFeaturizer):
 
         return np.array(atom_volumes).reshape(1, -1)
 
-    def featurize_many(self, molecules: List[Molecule]) -> np.array:
+    def featurize_many(self, molecules: List[Molecule]) -> np.ndarray:
         """
         Featurize a sequence of Molecule objects.
 
@@ -646,7 +646,7 @@ class AtomVolumeFeaturizer(MorfeusFeaturizer):
             molecules (List[Molecule]): A sequence of molecule representations.
 
         Returns:
-            (np.array): An array of features for each molecule instance.
+            np.ndarray: An array of features for each molecule instance.
         """
         if self.max_index is None:
             self.max_index = self.fit_on_atom_counts(molecules=molecules)
@@ -720,7 +720,7 @@ class SpherocityIndexFeaturizer(SpatialFeaturizer):
         """
         return ["spherocity_index"]
 
-    def featurize(self, molecule: Molecule) -> np.array:
+    def featurize(self, molecule: Molecule) -> np.ndarray:
         """
         Featurize single molecule instance. Extract spherocity index for `molecule`.
 
@@ -728,7 +728,7 @@ class SpherocityIndexFeaturizer(SpatialFeaturizer):
             molecule (Molecule): Molecule representation.
 
         Returns:
-            np.array: Array containing spherocity index value.
+            np.ndarray: Array containing spherocity index value.
         """
         mol = molecule.rdkit_mol
 
@@ -787,7 +787,7 @@ class RadiusOfGyrationFeaturizer(SpatialFeaturizer):
         """
         return ["radius_of_gyration"]
 
-    def featurize(self, molecule: Molecule) -> np.array:
+    def featurize(self, molecule: Molecule) -> np.ndarray:
         """
         Featurize single molecule instance. Extract radius of gyration for `molecule`.
 
@@ -795,7 +795,7 @@ class RadiusOfGyrationFeaturizer(SpatialFeaturizer):
             molecule (Molecule): Molecule representation.
 
         Returns:
-            np.array: Array containing the value for the radius of gyration.
+            np.ndarray: Array containing the value for the radius of gyration.
         """
         mol = molecule.rdkit_mol
 

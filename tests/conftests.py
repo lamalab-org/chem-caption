@@ -45,7 +45,7 @@ def extract_molecule_properties(
     property_bank: pd.DataFrame,
     representation_name: str = "smiles",
     property: Union[List[str], str] = "molar_mass",
-) -> List[Tuple[str, np.array]]:
+) -> List[Tuple[str, np.ndarray]]:
     """Extract SMILES string and the value of `property`.
 
     Args:
@@ -54,7 +54,7 @@ def extract_molecule_properties(
         property (Union[List[str], str]): Properties of interest. Must be a feature(s) in `property_bank`.
 
     Returns:
-        List[Tuple[str, np.array]]: List of `(molecular_string, property value)` tuples.
+        List[Tuple[str, np.ndarray]]: List of `(molecular_string, property value)` tuples.
     """
     representation_name = representation_name.lower()
     property = [property] if not isinstance(property, list) else property
@@ -76,7 +76,7 @@ def batch_molecule_properties(
     representation_name: str = "smiles",
     property: Union[List[str], str] = "molar_mass",
     batch_size: int = 2,
-) -> List[List[Tuple[str, np.array]]]:
+) -> List[List[Tuple[str, np.ndarray]]]:
     """Batch extracted SMILES strings and `property` values. Especially useful for `Comparator` testing.
 
     Args:
@@ -86,7 +86,7 @@ def batch_molecule_properties(
         batch_size (int): Number of times to batch extracted properties. Defaults to `2`.
 
     Returns:
-        List[List[Tuple[str, np.array]]]: List containing multiple `(molecular_string, property value)` tuples.
+        List[List[Tuple[str, np.ndarray]]]: List containing multiple `(molecular_string, property value)` tuples.
     """
     results = extract_molecule_properties(
         property_bank=property_bank,
