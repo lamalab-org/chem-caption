@@ -69,11 +69,10 @@ class AbstractFeaturizer(ABC):
 
     def featurize_many(self, molecules: List[Molecule]) -> np.ndarray:
         """
-        Featurize a sequence of Molecule objects.
+        Featurize a collection of molecular instances.
 
         Args:
-            molecules (Sequence[Molecule]):
-                A sequence of molecule representations.
+            molecules (List[Molecule]): A sequence of molecule representations.
 
         Returns:
             np.ndarray: An array of features for each molecule instance.

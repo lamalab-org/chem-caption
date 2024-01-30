@@ -191,6 +191,33 @@ class AbstractMolecule(ABC):
         """
         return Chem.rdMolDescriptors.CalcMolFormula(self.rdkit_mol)
 
+    def kekulize_molecule(self):
+        """Convert kekulize molecular instance.
+
+        Args:
+            None.
+
+        Returns:
+            AbstractMolecule: Version of self with kekulized molecule.
+        """
+        rdkit_mol = self.reveal_hydrogens()
+        Chem.Kekulize(rdkit_mol,  clearAromaticFlags = True)
+
+        self.rdkit_mol =  rdkit_mol
+
+        return self
+
+    def to_smiles(self) -> str:
+        """Convert molecular instance to SMILES string.
+
+        Args:
+            None.
+
+        Returns:
+            str: SMILES string for molecule.
+        """
+        return Chem.MolToSmiles(self.rdkit_mol)
+
     def to_graph(self) -> MoleculeGraph:
         """Convert molecule to graph.
 

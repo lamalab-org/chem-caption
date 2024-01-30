@@ -372,16 +372,13 @@ class BondComparator(Comparator):
         return ["Benedict Oshomah Emoekabu"]
 
 
-class MoleculeComparator(MultipleComparator):
+class MoleculeComparator(Comparator):
     """Compare molecular instances for parity based on molecule identity."""
 
     def __init__(self):
         """Initialize instance."""
         super().__init__(
-            comparators=[
-                IsomerismComparator(),
-                BondComparator(),
-            ]
+            featurizers=None
         )
 
     def compare(
@@ -399,9 +396,8 @@ class MoleculeComparator(MultipleComparator):
         Returns:
             np.ndarray: Comparison results. 1 if molecules are the same, else 0.
         """
-        return np.reshape(
-            self.featurize(molecules=molecules, epsilon=epsilon).all(), (1, 1)
-        ).astype(int)
+        results = np.array([len(set([mol.to_smiles() for mol in molecules])) == 1])
+        return results.reshape(1, -1).astype(int)
 
     def implementors(self) -> List[str]:
         """
