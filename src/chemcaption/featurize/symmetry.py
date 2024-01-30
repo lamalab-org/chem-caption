@@ -45,7 +45,7 @@ class RotationalSymmetryNumberFeaturizer(AbstractFeaturizer):
         """
         return ["rotational_symmetry_number"]
 
-    def featurize(self, molecule: Molecule) -> np.array:
+    def featurize(self, molecule: Molecule) -> np.ndarray:
         """
         Featurize single molecule instance. Returns the rotational symmetry number of a molecule.
 
@@ -55,7 +55,7 @@ class RotationalSymmetryNumberFeaturizer(AbstractFeaturizer):
             molecule (Molecule): Molecular representation.
 
         Returns:
-            np.array: Rotational symmetry number.
+            np.ndarray: Rotational symmetry number.
         """
         mol = molecule.rdkit_mol
         m = _rdkit_to_pymatgen(mol)
@@ -107,7 +107,7 @@ class PointGroupFeaturizer(AbstractFeaturizer):
     # I think we have to, because there are infinitely many
     # and for one-hot encoding we would need to know the
     # possible point groups beforehand
-    def featurize(self, molecule: Molecule) -> np.array:
+    def featurize(self, molecule: Molecule) -> np.ndarray:
         """
         Featurize single molecule instance. Returns the point group of a molecule.
 
@@ -117,7 +117,7 @@ class PointGroupFeaturizer(AbstractFeaturizer):
             molecule (Molecule): Molecular representation.
 
         Returns:
-            np.array: Schoenflies symbol of point group.
+            np.ndarray: Schoenflies symbol of point group.
         """
         mol = molecule.rdkit_mol
         m = _rdkit_to_pymatgen(mol)

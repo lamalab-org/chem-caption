@@ -46,7 +46,7 @@ class SolventAccessibleSurfaceAreaFeaturizer(MorfeusFeaturizer):
             },
         ]
 
-    def featurize(self, molecule: Molecule) -> np.array:
+    def featurize(self, molecule: Molecule) -> np.ndarray:
         """
         Featurize single molecule instance.
 
@@ -54,7 +54,7 @@ class SolventAccessibleSurfaceAreaFeaturizer(MorfeusFeaturizer):
             molecule (Molecule): Molecule representation.
 
         Returns:
-            (np.array): Array containing solvent accessible surface area (SASA) for molecule instance.
+            np.ndarray: Array containing solvent accessible surface area (SASA) for molecule instance.
         """
         if self.qc_optimize:
             molecule = self._generate_conformer(molecule=molecule)
@@ -113,7 +113,7 @@ class SolventAccessibleVolumeFeaturizer(MorfeusFeaturizer):
             },
         ]
 
-    def featurize(self, molecule: Molecule) -> np.array:
+    def featurize(self, molecule: Molecule) -> np.ndarray:
         """
         Featurize single molecule instance.
 
@@ -121,7 +121,7 @@ class SolventAccessibleVolumeFeaturizer(MorfeusFeaturizer):
             molecule (Molecule): Molecule representation.
 
         Returns:
-            (np.array): Array containing solvent accessible volume for molecule instance.
+            np.ndarray: Array containing solvent accessible volume for molecule instance.
         """
         if self.qc_optimize:
             molecule = self._generate_conformer(molecule=molecule)
@@ -189,7 +189,7 @@ class SolventAccessibleAtomAreaFeaturizer(MorfeusFeaturizer):
 
         self.max_index = max_index
 
-    def featurize(self, molecule: Molecule) -> np.array:
+    def featurize(self, molecule: Molecule) -> np.ndarray:
         """
         Featurize single molecule instance.
 
@@ -197,7 +197,7 @@ class SolventAccessibleAtomAreaFeaturizer(MorfeusFeaturizer):
             molecule (Molecule): Molecule representation.
 
         Returns:
-            (np.array): Array containing solvent accessible atom area for atoms in molecule instance.
+            np.ndarray: Array containing solvent accessible atom area for atoms in molecule instance.
         """
         if self.qc_optimize:
             molecule = self._generate_conformer(molecule=molecule)
@@ -228,7 +228,7 @@ class SolventAccessibleAtomAreaFeaturizer(MorfeusFeaturizer):
 
         return np.array(output).reshape(1, -1)
 
-    def featurize_many(self, molecules: List[Molecule]) -> np.array:
+    def featurize_many(self, molecules: List[Molecule]) -> np.ndarray:
         """
         Featurize a sequence of Molecule objects.
 
@@ -236,7 +236,7 @@ class SolventAccessibleAtomAreaFeaturizer(MorfeusFeaturizer):
             molecules (List[Molecule]): A sequence of molecule representations.
 
         Returns:
-            (np.array): An array of features for each molecule instance.
+            np.ndarray: An array of features for each molecule instance.
         """
         if self.max_index is None:
             self.max_index = self.fit_on_atom_counts(molecules=molecules)

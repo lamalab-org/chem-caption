@@ -85,7 +85,7 @@ class SVGFeaturizer(AbstractFeaturizer):
         svg_string = self._mol_to_svg(molecule=molecule).replace("svg:", "")
         return SVG(svg_string)
 
-    def featurize(self, molecule: Molecule) -> np.array:
+    def featurize(self, molecule: Molecule) -> np.ndarray:
         """
         Featurize single molecule instance. Generate SVG representation for molecule.
 
@@ -93,7 +93,7 @@ class SVGFeaturizer(AbstractFeaturizer):
             molecule (Molecule): Molecule representation.
 
         Returns:
-            np.array: Array containing SVG representation in string form.
+            np.ndarray: Array containing SVG representation in string form.
         """
         return np.array([self._mol_to_svg(molecule=molecule)]).reshape(1, 1)
 

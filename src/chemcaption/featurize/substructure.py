@@ -109,7 +109,7 @@ class FragmentSearchFeaturizer(AbstractFeaturizer):
             smarts=smarts_set["smarts"], names=smarts_set["names"], count=count, preset_name=preset
         )
 
-    def featurize(self, molecule: Molecule) -> np.array:
+    def featurize(self, molecule: Molecule) -> np.ndarray:
         """
         Featurize single molecule instance.
 
@@ -122,7 +122,7 @@ class FragmentSearchFeaturizer(AbstractFeaturizer):
             molecule (Molecule): Molecule representation.
 
         Returns:
-            np.array: Array containing integer counts/signifier of pattern presence.
+            np.ndarray: Array containing integer counts/signifier of pattern presence.
         """
         if self.count:
             results = [
@@ -201,7 +201,7 @@ class IsomorphismFeaturizer(AbstractFeaturizer):
     def feature_labels(self) -> List[str]:
         return ["weisfeiler_lehman_hash"]
 
-    def featurize(self, molecule: Molecule) -> np.array:
+    def featurize(self, molecule: Molecule) -> np.ndarray:
         """
         Featurize single molecule instance. Extract and return features from molecular object.
 
@@ -209,7 +209,7 @@ class IsomorphismFeaturizer(AbstractFeaturizer):
             molecule (Molecule): Molecule representation.
 
         Returns:
-            np.array: Array containing int representation of isoelectronic status between
+            np.ndarray: Array containing int representation of isoelectronic status between
                 `self.reference_molecule` and `molecule`.
         """
         molecule_graph = molecule.to_graph()
@@ -294,7 +294,7 @@ class TopologyCountFeaturizer(AbstractFeaturizer):
         elif preset == "nitrogen":
             return cls(reference_atomic_numbers=[7])
 
-    def featurize(self, molecule: Molecule) -> np.array:
+    def featurize(self, molecule: Molecule) -> np.ndarray:
         """
         Featurize single molecule instance. Extract number of unique environments for `elements` of interest.
 
@@ -302,7 +302,7 @@ class TopologyCountFeaturizer(AbstractFeaturizer):
             molecule (Molecule): Molecule representation.
 
         Returns:
-            np.array: Array containing number of unique `element` environments.
+            np.ndarray: Array containing number of unique `element` environments.
         """
         return np.array(
             [

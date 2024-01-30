@@ -63,11 +63,11 @@ class AbstractFeaturizer(ABC):
         return self._names
 
     @abstractmethod
-    def featurize(self, molecule: Molecule) -> np.array:
+    def featurize(self, molecule: Molecule) -> np.ndarray:
         """Featurize single Molecule instance."""
         raise NotImplementedError
 
-    def featurize_many(self, molecules: List[Molecule]) -> np.array:
+    def featurize_many(self, molecules: List[Molecule]) -> np.ndarray:
         """
         Featurize a sequence of Molecule objects.
 
@@ -76,7 +76,7 @@ class AbstractFeaturizer(ABC):
                 A sequence of molecule representations.
 
         Returns:
-            np.array: An array of features for each molecule instance.
+            np.ndarray: An array of features for each molecule instance.
         """
         with ProcessPoolExecutor() as executor:
             results = list(executor.map(self.featurize, molecules))
@@ -179,7 +179,7 @@ class AbstractFeaturizer(ABC):
             None.
 
         Returns:
-            (List[str]): List of labels of extracted features.
+            List[str]: List of labels of extracted features.
         """
         raise NotImplementedError
 
@@ -360,14 +360,14 @@ class MorfeusFeaturizer(AbstractFeaturizer):
         bonds = list(molecule.reveal_hydrogens().GetBonds())
         return len(bonds)
 
-    def _get_element_coordinates(self, molecule: Molecule) -> Tuple[np.array, np.array]:
+    def _get_element_coordinates(self, molecule: Molecule) -> Tuple[np.ndarray, np.ndarray]:
         """Return appropriate morfeus instance for feature generation.
 
         Args:
             molecule (Molecule): Molecular instance.
 
         Returns:
-            Tuple[np.array, np.array]: Tuple containing (a). atoms and (b). corresponding coordinates in molecule.
+            Tuple[np.ndarray, np.ndarray]: Tuple containing (a). atoms and (b). corresponding coordinates in molecule.
         """
         molecule = self._get_conformer(molecule.reveal_hydrogens())
 
@@ -580,12 +580,12 @@ class AbstractComparator(ABC):
         self._names = []
 
     @abstractmethod
-    def featurize(self, molecules: List[Molecule]) -> np.array:
+    def featurize(self, molecules: List[Molecule]) -> np.ndarray:
         """Featurize multiple Molecule instances."""
         raise NotImplementedError
 
     @abstractmethod
-    def compare(self, molecules: List[Molecule]) -> np.array:
+    def compare(self, molecules: List[Molecule]) -> np.ndarray:
         """Compare features from multiple molecular instances. 1 if all molecules are similar, else 0."""
         raise NotImplementedError
 
@@ -637,7 +637,7 @@ class MultipleFeaturizer(AbstractFeaturizer):
 
         self.featurizers = featurizers
 
-    def featurize(self, molecule: Molecule) -> np.array:
+    def featurize(self, molecule: Molecule) -> np.ndarray:
         """
         Featurize a molecule instance.
         Returns results from multiple lower-level featurizers.
@@ -646,7 +646,7 @@ class MultipleFeaturizer(AbstractFeaturizer):
             molecule (Molecule): Molecule representation.
 
         Returns:
-            np.array: Array containing features extracted from molecule, with shape `[1, N]`, where
+            np.ndarray: Array containing features extracted from molecule, with shape `[1, N]`, where
                 `N` >= the number of featurizers passed to MultipleFeaturizer
                 i.e., `N`  >=  len(self.featurizers).
         """
@@ -675,7 +675,7 @@ class MultipleFeaturizer(AbstractFeaturizer):
             [f.text_featurize(pos_key=pos_key, molecule=molecule) for f in self.featurizers]
         )
 
-    def featurize_many(self, molecules: List[Molecule]) -> np.array:
+    def featurize_many(self, molecules: List[Molecule]) -> np.ndarray:
         """
         Featurize a sequence of Molecule objects.
 
@@ -683,7 +683,7 @@ class MultipleFeaturizer(AbstractFeaturizer):
             molecules (List[Molecule]): A sequence of molecule representations.
 
         Returns:
-            np.array: An array of features for each molecule instance.
+            np.ndarray: An array of features for each molecule instance.
         """
         results = [f.featurize_many(molecules=molecules) for f in self.featurizers]
         return np.concatenate(results, axis=1)
@@ -826,7 +826,7 @@ class Comparator(AbstractComparator):
         featurizer: AbstractFeaturizer,
         molecules: List[Molecule],
         epsilon: float = 0.0,
-    ) -> np.array:
+    ) -> np.ndarray:
         """Return results of molecule feature comparison between molecule instance pairs.
 
         Args:
@@ -835,7 +835,7 @@ class Comparator(AbstractComparator):
             epsilon (float): Small float. Precision bound for numerical inconsistencies. Defaults to `0.0`.
 
         Returns:
-            np.array: Comparison results. `1` if all extracted features are equal, else `0`.
+            np.ndarray: Comparison results. `1` if all extracted features are equal, else `0`.
         """
         batch_results = featurizer.featurize_many(molecules=molecules)
 
@@ -847,7 +847,7 @@ class Comparator(AbstractComparator):
         self,
         molecules: List[Molecule],
         epsilon: float = 0.0,
-    ) -> np.array:
+    ) -> np.ndarray:
         """
         Featurize multiple molecule instances.
 
@@ -858,7 +858,7 @@ class Comparator(AbstractComparator):
             epsilon (float): Small float. Precision bound for numerical inconsistencies. Defaults to 0.0.
 
         Returns:
-            np.array: Array containing extracted features with shape `(1, N)`,
+            np.ndarray: Array containing extracted features with shape `(1, N)`,
                 where `N` is the number of featurizers provided at initialization time.
         """
         results = [
@@ -890,7 +890,7 @@ class Comparator(AbstractComparator):
         self,
         molecules: List[Molecule],
         epsilon: float = 0.0,
-    ) -> np.array:
+    ) -> np.ndarray:
         """
         Compare features from multiple molecular instances. 1 if all molecules are similar, else 0.
 
@@ -899,7 +899,7 @@ class Comparator(AbstractComparator):
             epsilon (float): Small float. Precision bound for numerical inconsistencies. Defaults to 0.0.
 
         Returns:
-            np.array: Array containing comparison results with shape `(1, N)`,
+            np.ndarray: Array containing comparison results with shape `(1, N)`,
                 where `N` is the number of featurizers provided at initialization time.
         """
         return self.featurize(molecules=molecules, epsilon=epsilon)
@@ -963,7 +963,7 @@ class MultipleComparator(Comparator):
         self,
         molecules: List[Molecule],
         epsilon: float = 0.0,
-    ) -> np.array:
+    ) -> np.ndarray:
         """
         Compare features from multiple molecular Comparators. 1 if all molecules are similar, else 0.
 
@@ -972,7 +972,7 @@ class MultipleComparator(Comparator):
             epsilon (float): Small float. Precision bound for numerical inconsistencies. Defaults to 0.0.
 
         Returns:
-            np.array: Array containing comparison results with shape `(1, N)`,
+            np.ndarray: Array containing comparison results with shape `(1, N)`,
                 where `N` is the number of Comparators provided at initialization time.
         """
         features = [

@@ -56,7 +56,7 @@ class HydrogenAcceptorCountFeaturizer(AbstractFeaturizer):
         """
         return ["num_hydrogen_bond_acceptors"]
 
-    def featurize(self, molecule: Molecule) -> np.array:
+    def featurize(self, molecule: Molecule) -> np.ndarray:
         """
         Featurize single molecule instance. Get the number of Hydrogen bond acceptors present in a molecule.
 
@@ -64,7 +64,7 @@ class HydrogenAcceptorCountFeaturizer(AbstractFeaturizer):
             molecule (Molecule): Molecular representation.
 
         Returns:
-            np.array: Number of Hydrogen bond acceptors present in `molecule`.
+            np.ndarray: Number of Hydrogen bond acceptors present in `molecule`.
         """
         return np.array([rdMolDescriptors.CalcNumHBA(molecule.reveal_hydrogens())]).reshape((1, -1))
 
@@ -108,7 +108,7 @@ class HydrogenDonorCountFeaturizer(AbstractFeaturizer):
         """
         return ["num_hydrogen_bond_donors"]
 
-    def featurize(self, molecule: Molecule) -> np.array:
+    def featurize(self, molecule: Molecule) -> np.ndarray:
         """
         Featurize single molecule instance. Get the number of Hydrogen bond donors present in a molecule.
 
@@ -116,7 +116,7 @@ class HydrogenDonorCountFeaturizer(AbstractFeaturizer):
             molecule (Molecule): Molecular representation.
 
         Returns:
-            np.array: Number of Hydrogen bond donors present in `molecule`.
+            np.ndarray: Number of Hydrogen bond donors present in `molecule`.
         """
         return np.array([rdMolDescriptors.CalcNumHBD(molecule.reveal_hydrogens())]).reshape((1, -1))
 
@@ -167,7 +167,7 @@ class ValenceElectronCountFeaturizer(AbstractFeaturizer):
         """
         return ["num_valence_electrons"]
 
-    def featurize(self, molecule: Molecule) -> np.array:
+    def featurize(self, molecule: Molecule) -> np.ndarray:
         """
         Featurize single molecule instance. Extract and return valence electron count for molecular object.
 
@@ -175,7 +175,7 @@ class ValenceElectronCountFeaturizer(AbstractFeaturizer):
             molecule (Molecule): Molecule representation.
 
         Returns:
-            np.array: Array containing number of valence electrons.
+            np.ndarray: Array containing number of valence electrons.
         """
         num_valence_electrons = Descriptors.NumValenceElectrons(molecule.reveal_hydrogens())
 
@@ -222,7 +222,7 @@ class ElectronAffinityFeaturizer(MorfeusFeaturizer):
             },
         ]
 
-    def featurize(self, molecule: Molecule) -> np.array:
+    def featurize(self, molecule: Molecule) -> np.ndarray:
         """
         Featurize single molecule instance.
 
@@ -230,7 +230,7 @@ class ElectronAffinityFeaturizer(MorfeusFeaturizer):
             molecule (Molecule): Molecule representation.
 
         Returns:
-            (np.array): Array containing electron affinity for molecule instance.
+            np.ndarray: Array containing electron affinity for molecule instance.
         """
         if self.qc_optimize:
             molecule = self._generate_conformer(molecule=molecule)
@@ -289,7 +289,7 @@ class IonizationPotentialFeaturizer(MorfeusFeaturizer):
             },
         ]
 
-    def featurize(self, molecule: Molecule) -> np.array:
+    def featurize(self, molecule: Molecule) -> np.ndarray:
         """
         Featurize single molecule instance.
 
@@ -297,7 +297,7 @@ class IonizationPotentialFeaturizer(MorfeusFeaturizer):
             molecule (Molecule): Molecule representation.
 
         Returns:
-            np.array: Array containing ionization potential for molecule instance.
+            np.ndarray: Array containing ionization potential for molecule instance.
         """
         if self.qc_optimize:
             molecule = self._generate_conformer(molecule=molecule)
@@ -356,7 +356,7 @@ class HOMOEnergyFeaturizer(MorfeusFeaturizer):
             },
         ]
 
-    def featurize(self, molecule: Molecule) -> np.array:
+    def featurize(self, molecule: Molecule) -> np.ndarray:
         """
         Featurize single molecule instance.
 
@@ -364,7 +364,7 @@ class HOMOEnergyFeaturizer(MorfeusFeaturizer):
             molecule (Molecule): Molecule representation.
 
         Returns:
-            np.array: Array containing energy of highest occupied molecular orbital for molecule instance.
+            np.ndarray: Array containing energy of highest occupied molecular orbital for molecule instance.
         """
         if self.qc_optimize:
             molecule = self._generate_conformer(molecule=molecule)
@@ -424,7 +424,7 @@ class LUMOEnergyFeaturizer(MorfeusFeaturizer):
             },
         ]
 
-    def featurize(self, molecule: Molecule) -> np.array:
+    def featurize(self, molecule: Molecule) -> np.ndarray:
         """
         Featurize single molecule instance.
 
@@ -432,7 +432,7 @@ class LUMOEnergyFeaturizer(MorfeusFeaturizer):
             molecule (Molecule): Molecule representation.
 
         Returns:
-            np.array: Array containing energy of lowest unoccupied molecular orbital for molecule instance.
+            np.ndarray: Array containing energy of lowest unoccupied molecular orbital for molecule instance.
         """
         if self.qc_optimize:
             molecule = self._generate_conformer(molecule=molecule)
@@ -500,7 +500,7 @@ class AtomChargeFeaturizer(MorfeusFeaturizer):
 
         self.max_index = max_index
 
-    def featurize(self, molecule: Molecule) -> np.array:
+    def featurize(self, molecule: Molecule) -> np.ndarray:
         """
         Featurize single molecule instance.
 
@@ -508,7 +508,7 @@ class AtomChargeFeaturizer(MorfeusFeaturizer):
             molecule (Molecule): Molecule representation.
 
         Returns:
-            (np.array): Array containing charges for atoms in molecule instance.
+            np.ndarray: Array containing charges for atoms in molecule instance.
         """
         if self.qc_optimize:
             molecule = self._generate_conformer(molecule=molecule)
@@ -541,7 +541,7 @@ class AtomChargeFeaturizer(MorfeusFeaturizer):
 
         return np.array(atom_charges).reshape(1, -1)
 
-    def featurize_many(self, molecules: List[Molecule]) -> np.array:
+    def featurize_many(self, molecules: List[Molecule]) -> np.ndarray:
         """
         Featurize a sequence of Molecule objects.
 
@@ -549,7 +549,7 @@ class AtomChargeFeaturizer(MorfeusFeaturizer):
             molecules (List[Molecule]): A sequence of molecule representations.
 
         Returns:
-            (np.array): An array of features for each molecule instance.
+            np.ndarray: An array of features for each molecule instance.
         """
         if self.max_index is None:
             self.max_index = self.fit_on_atom_counts(molecules=molecules)
@@ -629,14 +629,14 @@ class AtomNucleophilicityFeaturizer(MorfeusFeaturizer):
 
         self.max_index = max_index
 
-    def featurize(self, molecule: Molecule) -> np.array:
+    def featurize(self, molecule: Molecule) -> np.ndarray:
         """Featurize single molecule instance.
 
         Args:
             molecule (Molecule): Molecule representation.
 
         Returns:
-            (np.array): Array containing nucleophilicity value for each atom in a molecule instance.
+            np.ndarray: Array containing nucleophilicity value for each atom in a molecule instance.
         """
         if self.qc_optimize:
             molecule = self._generate_conformer(molecule=molecule)
@@ -672,7 +672,7 @@ class AtomNucleophilicityFeaturizer(MorfeusFeaturizer):
 
         return np.array(atom_nucleophilicities).reshape(1, -1)
 
-    def featurize_many(self, molecules: List[Molecule]) -> np.array:
+    def featurize_many(self, molecules: List[Molecule]) -> np.ndarray:
         """
         Featurize a sequence of Molecule objects.
 
@@ -680,7 +680,7 @@ class AtomNucleophilicityFeaturizer(MorfeusFeaturizer):
             molecules (List[Molecule]): A sequence of molecule representations.
 
         Returns:
-            (np.array): An array of features for each molecule instance.
+            np.ndarray: An array of features for each molecule instance.
         """
         if self.max_index is None:
             self.max_index = self.fit_on_atom_counts(molecules=molecules)
@@ -767,14 +767,14 @@ class AtomElectrophilicityFeaturizer(MorfeusFeaturizer):
 
         self.max_index = max_index
 
-    def featurize(self, molecule: Molecule) -> np.array:
+    def featurize(self, molecule: Molecule) -> np.ndarray:
         """Featurize single molecule instance.
 
         Args:
             molecule (Molecule): Molecule representation.
 
         Returns:
-            (np.array): Array containing electrophilicity value for each atom in a molecule instance.
+            np.ndarray: Array containing electrophilicity value for each atom in a molecule instance.
         """
         if self.qc_optimize:
             molecule = self._generate_conformer(molecule=molecule)
@@ -810,7 +810,7 @@ class AtomElectrophilicityFeaturizer(MorfeusFeaturizer):
 
         return np.array(atom_electrophilicities).reshape(1, -1)
 
-    def featurize_many(self, molecules: List[Molecule]) -> np.array:
+    def featurize_many(self, molecules: List[Molecule]) -> np.ndarray:
         """
         Featurize a sequence of Molecule objects.
 
@@ -818,7 +818,7 @@ class AtomElectrophilicityFeaturizer(MorfeusFeaturizer):
             molecules (List[Molecule]): A sequence of molecule representations.
 
         Returns:
-            (np.array): An array of features for each molecule instance.
+            np.ndarray: An array of features for each molecule instance.
         """
         if self.max_index is None:
             self.max_index = self.fit_on_atom_counts(molecules=molecules)
@@ -892,14 +892,14 @@ class MoleculeNucleophilicityFeaturizer(MorfeusFeaturizer):
             },
         ]
 
-    def featurize(self, molecule: Molecule) -> np.array:
+    def featurize(self, molecule: Molecule) -> np.ndarray:
         """Featurize single molecule instance.
 
         Args:
             molecule (Molecule): Molecule representation.
 
         Returns:
-            (np.array): Array containing global nucleophilicity value for the molecule instance.
+            np.ndarray: Array containing global nucleophilicity value for the molecule instance.
         """
         if self.qc_optimize:
             molecule = self._generate_conformer(molecule=molecule)
@@ -964,14 +964,14 @@ class MoleculeElectrophilicityFeaturizer(MorfeusFeaturizer):
             },
         ]
 
-    def featurize(self, molecule: Molecule) -> np.array:
+    def featurize(self, molecule: Molecule) -> np.ndarray:
         """Featurize single molecule instance.
 
         Args:
             molecule (Molecule): Molecule representation.
 
         Returns:
-            (np.array): Array containing global electrophilicity value for the molecule instance.
+            np.ndarray: Array containing global electrophilicity value for the molecule instance.
         """
         if self.qc_optimize:
             molecule = self._generate_conformer(molecule=molecule)
@@ -1036,14 +1036,14 @@ class MoleculeNucleofugalityFeaturizer(MorfeusFeaturizer):
             },
         ]
 
-    def featurize(self, molecule: Molecule) -> np.array:
+    def featurize(self, molecule: Molecule) -> np.ndarray:
         """Featurize single molecule instance.
 
         Args:
             molecule (Molecule): Molecule representation.
 
         Returns:
-            np.array: Array containing global nucleofugality value for the molecule instance.
+            np.ndarray: Array containing global nucleofugality value for the molecule instance.
         """
         if self.qc_optimize:
             molecule = self._generate_conformer(molecule=molecule)
@@ -1108,14 +1108,14 @@ class MoleculeElectrofugalityFeaturizer(MorfeusFeaturizer):
             },
         ]
 
-    def featurize(self, molecule: Molecule) -> np.array:
+    def featurize(self, molecule: Molecule) -> np.ndarray:
         """Featurize single molecule instance.
 
         Args:
             molecule (Molecule): Molecule representation.
 
         Returns:
-            np.array: Array containing global electrofugality value for the molecule instance.
+            np.ndarray: Array containing global electrofugality value for the molecule instance.
         """
         if self.qc_optimize:
             molecule = self._generate_conformer(molecule=molecule)

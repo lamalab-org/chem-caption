@@ -151,7 +151,7 @@ class IsomerismComparator(Comparator):
         featurizer: AbstractFeaturizer,
         molecules: List[Molecule],
         epsilon: float = 0.0,
-    ) -> np.array:
+    ) -> np.ndarray:
         """Return results of feature comparison between molecule instances per featurizer.
 
         Args:
@@ -161,7 +161,7 @@ class IsomerismComparator(Comparator):
             epsilon (float): Small float. Precision bound for numerical inconsistencies. Defaults to 0.0.
 
         Returns:
-            np.array: Comparison results. 1 if all extracted features are equal, else 0.
+            np.ndarray: Comparison results. 1 if all extracted features are equal, else 0.
         """
         result = [self.featurizers[0].featurize(molecule).item() for molecule in molecules]
         return np.array([len(set(result)) == 1], dtype=int).reshape((1, -1))
@@ -191,7 +191,7 @@ class IsomorphismComparator(Comparator):
         featurizer: AbstractFeaturizer,
         molecules: List[Molecule],
         epsilon: float = 0.0,
-    ) -> np.array:
+    ) -> np.ndarray:
         """Return results of molecule feature comparison between molecule instance pairs.
 
         Args:
@@ -201,7 +201,7 @@ class IsomorphismComparator(Comparator):
             epsilon (float): Small float. Precision bound for numerical inconsistencies. Defaults to 0.0.
 
         Returns:
-            np.array: Comparison results. 1 if all extracted features are equal, else 0.
+            np.ndarray: Comparison results. 1 if all extracted features are equal, else 0.
         """
         result = [self.featurizers[0].featurize(molecule).item() for molecule in molecules]
         return np.array([len(set(result)) == 1], dtype=int).reshape((1, -1))
@@ -236,7 +236,7 @@ class IsoelectronicComparator(MultipleComparator):
         self,
         molecules: List[Molecule],
         epsilon: float = 0.0,
-    ) -> np.array:
+    ) -> np.ndarray:
         """
         Compare for isoelectronic status amongst multiple molecular instances. 1 if all molecules are similar, else 0.
 
@@ -245,7 +245,7 @@ class IsoelectronicComparator(MultipleComparator):
             epsilon (float): Small float. Precision bound for numerical inconsistencies. Defaults to 0.0.
 
         Returns:
-            np.array: Comparison results. 1 if molecules are isoelectronic, else 0.
+            np.ndarray: Comparison results. 1 if molecules are isoelectronic, else 0.
         """
         return np.reshape(
             self.featurize(molecules=molecules, epsilon=epsilon).all(), (1, 1)
@@ -281,7 +281,7 @@ class DrugLikenessComparator(MultipleComparator):
         self,
         molecules: List[Molecule],
         epsilon: float = 0.0,
-    ) -> np.array:
+    ) -> np.ndarray:
         """
         Compare multiple molecular instances for drug-likeness status. `1` if all molecules are similar, else `0`.
 
@@ -290,7 +290,7 @@ class DrugLikenessComparator(MultipleComparator):
             epsilon (float): Small float. Precision bound for numerical inconsistencies. Defaults to 0.0.
 
         Returns:
-            (np.array): Comparison results. Array of shape `(1, N)`, where `N` = number of drug-rule comparators.
+            np.ndarray: Comparison results. Array of shape `(1, N)`, where `N` = number of drug-rule comparators.
                 Each column from `0` to`N-1` equals `1` if molecules are similar with respect to drug rule, else `0`.
         """
         results = [
@@ -324,7 +324,7 @@ class BondComparator(Comparator):
         featurizer: AbstractFeaturizer,
         molecules: List[Molecule],
         epsilon: float = 0.0,
-    ) -> np.array:
+    ) -> np.ndarray:
         """Return results of molecule feature comparison between molecule instance pairs.
 
         Args:
@@ -334,7 +334,7 @@ class BondComparator(Comparator):
             epsilon (float): Small float. Precision bound for numerical inconsistencies. Defaults to 0.0.
 
         Returns:
-            np.array: Comparison results. 1 if all extracted features are equal, else 0.
+            np.ndarray: Comparison results. 1 if all extracted features are equal, else 0.
         """
         result = ["_".join(self.featurizers[0]._get_bonds(molecule)) for molecule in molecules]
         return np.array([len(set(result)) == 1], dtype=int).reshape((1, -1))
@@ -343,7 +343,7 @@ class BondComparator(Comparator):
         self,
         molecules: List[Molecule],
         epsilon: float = 0.0,
-    ) -> np.array:
+    ) -> np.ndarray:
         """
         Compare for bond similarity amongst multiple molecular instances.
             1 if all molecules are identical with respect to bonds, else 0.
@@ -353,7 +353,7 @@ class BondComparator(Comparator):
             epsilon (float): Small float. Precision bound for numerical inconsistencies. Defaults to 0.0.
 
         Returns:
-            np.array: Comparison results. 1 if molecules are similar with respect to bonds, else 0.
+            np.ndarray: Comparison results. 1 if molecules are similar with respect to bonds, else 0.
         """
         return np.reshape(
             self.featurize(molecules=molecules, epsilon=epsilon).all(), (1, 1)
@@ -388,7 +388,7 @@ class MoleculeComparator(MultipleComparator):
         self,
         molecules: List[Molecule],
         epsilon: float = 0.0,
-    ) -> np.array:
+    ) -> np.ndarray:
         """
         Compare for molecule identity status amongst multiple molecular instances. 1 if all molecules are identical, else 0.
 
@@ -397,7 +397,7 @@ class MoleculeComparator(MultipleComparator):
             epsilon (float): Small float. Precision bound for numerical inconsistencies. Defaults to 0.0.
 
         Returns:
-            np.array: Comparison results. 1 if molecules are the same, else 0.
+            np.ndarray: Comparison results. 1 if molecules are the same, else 0.
         """
         return np.reshape(
             self.featurize(molecules=molecules, epsilon=epsilon).all(), (1, 1)

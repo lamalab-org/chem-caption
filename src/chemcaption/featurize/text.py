@@ -21,8 +21,8 @@ class Prompt:
 
     completion: Union[str, float, int, bool, List[Union[str, float, int, bool]]]
     representation: Union[str, List[str]]
-    representation_type: Union[str, float, int, bool, np.array]
-    completion_type: Union[str, float, int, bool, np.array]
+    representation_type: Union[str, float, int, bool, np.ndarray]
+    completion_type: Union[str, float, int, bool, np.ndarray]
     completion_names: Union[str, List[str]]
     completion_labels: Union[str, List[str]]
     prompt_template: Optional[str] = None

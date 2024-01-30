@@ -59,7 +59,7 @@ class ChiralCenterCountFeaturizer(AbstractFeaturizer):
 
         return chiral_cc
 
-    def featurize(self, molecule: Molecule) -> np.array:
+    def featurize(self, molecule: Molecule) -> np.ndarray:
         """
         Featurize single molecule instance. Returns number of chiral centers in a molecule.
 
@@ -67,7 +67,7 @@ class ChiralCenterCountFeaturizer(AbstractFeaturizer):
             molecule (Molecule): Molecular representation.
 
         Returns:
-            np.array: number of chiral centers.
+            np.ndarray: number of chiral centers.
         """
         chiral_cc = self._find_chiral_centers(molecule)
         return np.array([len(chiral_cc)]).reshape((1, 1))
