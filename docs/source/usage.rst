@@ -1,8 +1,8 @@
 Usage
 =====
 The main idea of chemcaption is to be able to represent molecules in memory, generate molecular fingerprints from these
-molecules, and store these fingerprints as either tabular data or graph data (i.e., node/edge attributes). In addition,
-we can convert these generated fingerprints as text.
+molecules, and store these fingerprints as tabular data. 
+In addition, to enable the (pre)-training of large-language models (LLMs) we can convert these generated fingerprints into text using text templates and metadata provided via the featurizers.
 
 A basic workflow of how to use *chemcaption* can be seen below:
 
@@ -18,11 +18,11 @@ generating a molecular instance from a SMILES string would proceed like so:
 .. code-block:: python
 
     from chemcaption.molecules import SMILESMolecule
-    molecule_string = "CCCC=C" # Pentane
+    molecule_string = "CCCC=C" # 1-Pentene
     molecule = SMILESMolecule(representation_string=molecule_string)
 ..
 
-Similar can be done for other string systems by replacing **SMILESMolecule** and **molecular_string**
+Similar can be done for other string systems by replacing :py:obj:`chemcaption.molecules.SMILESMolecule` and :code:`molecular_string`
 with the appropriate class and string respectively.
 
 Molecules as Graphs
@@ -64,9 +64,9 @@ generate molecular fingerprints from the molecule.
 
 To do this, the basic steps would be to:
 
-1. Instatiate the molecule(s) of interest.
+1. Instantiate the molecule(s) of interest.
 2. Instantiate the featurizer of interest (with parameters, if required).
-3. Pass the molecule to the **featurize** function.
+3. Pass the molecule to the :py:meth:`~chemcaption.featurize.base.AbstractFeaturizer.featurize` function.
 
 The **featurize** method returns a numpy array containing the feature of interest.
 
@@ -75,7 +75,7 @@ The **featurize** method returns a numpy array containing the feature of interes
     from chemcaption.molecules import SMILESMolecule
     from chemcaption.featurize.composition import MolecularMassFeaturizer
 
-    molecule_string = "CCCC=C" # Pentane
+    molecule_string = "CCCC=C" # 1-Pentene
     molecule = SMILESMolecule(representation_string=molecule_string) # STEP 1
 
     featurizer = MolecularMassFeaturizer() # STEP 2
@@ -83,21 +83,23 @@ The **featurize** method returns a numpy array containing the feature of interes
     feature = featurizer.featurize(molecule = molecule) # STEP 3
 
     print(type(feature))
+    >>> <class 'numpy.ndarray'>
     print(feature)
+    >>> [70.135]
 ..
 
 Molecule Featurization (Batched Molecules)
 ------------------------------------------
-The featurization process is not limited to single molecules alone; featurization can be batched. For this,
-we need a sequence or collection of molecular instances and the **featurize_many** featurizer method.
+The featurization process is not limited to single molecules alone; featurization can be batched. 
+For this, we need a sequence or collection of molecular instances and the **featurize_many** featurizer method.
 
 .. code-block:: python
 
     from chemcaption.molecules import SMILESMolecule
     from chemcaption.featurize.composition import MolecularMassFeaturizer
 
-    molecule_string1 = "CCCC=C"     # Pentane
-    molecule_string2 = "[C-]#[O+]"  # Carbon II Oxide
+    molecule_string1 = "CCCC=C"     # 1-Pentene
+    molecule_string2 = "[C-]#[O+]"  # carbon dioxide
     molecule_string3 = "N#N"        # Nitrogen molecule
 
     molecule1 = SMILESMolecule(representation_string=molecule_string1) # STEP 1
@@ -133,8 +135,8 @@ This is done via a special high-level featurize: **MultipleFeaturizer**.
     from chemcaption.featurize.base import MultipleFeaturizer
     from chemcaption.featurize.composition import MolecularMassFeaturizer, AtomCountFeaturizer
 
-    molecule_string1 = "CCCC=C"     # Pentane
-    molecule_string2 = "[C-]#[O+]"  # Carbon II Oxide
+    molecule_string1 = "CCCC=C"     # 1-Pentene
+    molecule_string2 = "[C-]#[O+]"  # carbon dioxide
     molecule_string3 = "N#N"        # Nitrogen molecule
 
     molecule1 = SMILESMolecule(representation_string=molecule_string1) # STEP 1
@@ -162,16 +164,16 @@ This is done via a special high-level featurize: **MultipleFeaturizer**.
 ..
 
 
-Molecule Featurization (Adapted Featurizers)
+Molecule Featurization (Custom Featurizers)
 --------------------------------------------
 Some projects require some novel featurization, which is embodied by a function.
-This function can be converted into a featurizer of its own by leveraging the **RDKitAdaptor**.
+This function can be converted into a featurizer of its own by leveraging the :py:class:`chemcaption.featurizer.adaptor.RDKitAdaptor`.
 
 Here, as an example, we define a function which:
 
 1. Takes in a molecular instance,
 2. Extracts its molecular string,
-3. Tells the number of occurrences of the character **=**, i.e., the number of double bonds in the molecule.
+3. Tells the number of occurrences of the character :code:`==`, i.e., the number of double bonds in the molecule.
 
 .. code-block:: python
 
@@ -250,8 +252,8 @@ Utilizing a pre-defined comparator is as simple as:
     comparator = AtomCountComparator()
 
     # Generate molecular instances
-    molecule_string1 = "CCCC=C"     # Pentane
-    molecule_string2 = "[C-]#[O+]"  # Carbon II Oxide
+    molecule_string1 = "CCCC=C"     # 1-Pentene
+    molecule_string2 = "[C-]#[O+]"  # Carbon dioxide
     molecule_string3 = "N#N"        # Nitrogen molecule
 
     molecule1 = SMILESMolecule(representation_string=molecule_string1) # STEP 1
@@ -376,8 +378,8 @@ instance, we wish to compare the molecules to see whether or not they have the s
     comparator = MyComparator(featurizers = featurizers, comparison_func = comparison_function)
 
     # Generate molecular instances
-    molecule_string1 = "CCCC=C"     # Pentane
-    molecule_string2 = "[C-]#[O+]"  # Carbon II Oxide
+    molecule_string1 = "CCCC=C"     # 1-Pentene
+    molecule_string2 = "[C-]#[O+]"  # Carbon dioxide
     molecule_string3 = "N#N"        # Nitrogen molecule
 
     molecule1 = SMILESMolecule(representation_string=molecule_string1) # STEP 1
@@ -424,8 +426,8 @@ We can do this by leveraging the **MultipleComparator**:
     mega_comparator = MultipleComparator(featurizers = featurizers)
 
     # Generate molecular instances
-    molecule_string1 = "CCCC=C"     # Pentane
-    molecule_string2 = "[C-]#[O+]"  # Carbon II Oxide
+    molecule_string1 = "CCCC=C"     # 1-Pentene
+    molecule_string2 = "[C-]#[O+]"  # Carbon dioxide
     molecule_string3 = "N#N"        # Nitrogen molecule
 
     molecule1 = SMILESMolecule(representation_string=molecule_string1) # STEP 1
