@@ -396,7 +396,7 @@ class MoleculeComparator(Comparator):
         Returns:
             np.ndarray: Comparison results. 1 if molecules are the same, else 0.
         """
-        results = np.array([len(set([mol.to_smiles() for mol in molecules])) == 1])
+        results = np.array([len(set([mol.preprocess_molecule().to_smiles() for mol in molecules])) == 1])
         return results.reshape(1, -1).astype(int)
 
     def implementors(self) -> List[str]:
