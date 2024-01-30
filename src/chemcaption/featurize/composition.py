@@ -661,7 +661,7 @@ class DegreeOfUnsaturationFeaturizer(AbstractFeaturizer):
         return ["degree_of_unsaturation"]
 
     @staticmethod
-    def _get_degree_of_unsaturation_for_mol(molecule: Molecule):
+    def _get_degree_of_unsaturation_for_mol(molecule: Molecule) -> float:
         """Return the degree of unsaturation for a molecule.
 
         .. math::
