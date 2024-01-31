@@ -877,7 +877,6 @@ class Comparator(AbstractComparator):
             )
         )
 
-    @lru_cache(maxsize=None)
     def featurize(
         self,
         molecules: List[Molecule],

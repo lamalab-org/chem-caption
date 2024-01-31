@@ -204,7 +204,15 @@ This function will then be converted to a featurizer, and the rest of the workfl
     from chemcaption.featurize.adaptor import RDKitAdaptor
 
     # Convert function to featurizer via RDKitAdaptor
-    function_featurizer = RDKitAdaptor(rdkit_function = carbon_atom_counter_in_string)
+    function_featurizer = RDKitAdaptor(
+        rdkit_function=carbon_atom_counter_in_string,
+        labels = ["num_carbon_atoms"],
+        names = [
+            {
+                "noun": "number of carbon atoms"
+            }
+        ]
+    )
 
     # Generate molecule instance
     molecule_string = "N#N"  # Nitrogen molecule
@@ -232,7 +240,15 @@ features as text, leveraging the :py:meth:`~chemcaption.featurize.AbstractFeatur
     from chemcaption.featurize.adaptor import RDKitAdaptor
 
     # Convert function to featurizer via RDKitAdaptor
-    function_featurizer = RDKitAdaptor(rdkit_function = carbon_atom_counter_in_string)
+    function_featurizer = RDKitAdaptor(
+        rdkit_function=carbon_atom_counter_in_string,
+        labels = ["num_carbon_atoms"],
+        names = [
+            {
+                "noun": "number of carbon atoms"
+            }
+        ]
+    )
 
     # Generate molecule instance
     molecule_string = "N#N"  # Nitrogen molecule
@@ -241,10 +257,12 @@ features as text, leveraging the :py:meth:`~chemcaption.featurize.AbstractFeatur
     feature = function_featurizer.text_featurize(molecule = molecule)
 
     print(type(feature))
-    print(feature.shape)
+    >>> <class 'chemcaption.featurize.text.Prompt'>
     print(feature)
+    >>> {'representation': 'N#N', 'representation_type': 'SMILES', 'prompt_template': 'Question: What {VERB} the {PROPERTY_NAME} of the molecule with {REPR_SYSTEM} {REPR_STRING}?', 'completion_template': 'Answer: {COMPLETION}', 'completion': [0], 'completion_names': 'number of carbon atoms', 'completion_labels': ['num_carbon_atoms'], 'constraint': None, 'filled_prompt': 'Question: What is the number of carbon atoms of the molecule with SMILES N#N?', 'filled_completion': 'Answer: 0'}
 ..
 
+As can be seen, the :py:meth:`~chemcaption.featurize.base.AbstractFeaturizer.text_featurize` method returns a :py:meth:`~chemcaption.featurize.text.Prompt` instance.
 
 Molecular Comparison (Single Featurizer)
 --------------------------------------------
@@ -283,8 +301,11 @@ Utilizing a pre-defined comparator is as simple as:
     feature = comparator.compare(molecules = molecules)
 
     print(type(feature))
+    >>> <class 'numpy.ndarray'>
     print(feature.shape)
+    >>> (1, 2)
     print(feature)
+    >>> [[0 0]]
 ..
 
 As can be attested to, calling the Comparator API is just as straightforward as calling the AbstractFeaturizer API;
@@ -332,8 +353,11 @@ In this case, all that is needed is to pass a collection of featurizers to the m
     feature = comparator.compare(molecules = molecules)
 
     print(type(feature))
+    >>> <class 'numpy.ndarray'>
     print(feature.shape)
+    >>> (1, 2)
     print(feature)
+    >>> [[0 0]]
 ..
 
 
@@ -355,7 +379,7 @@ First, we define our comparison function:
 
     def comparison_function(featurizer, molecules, epsilon = .1):
         results = featurizer.featurize_many(molecules = molecules).flatten().tolist()
-        return np.array(len(set(results)) == 1).astype(int)
+        return np.array(len(set(results)) == 1).reshape(1, -1).astype(int)
 ..
 
 We then use this function to generate our comparator:
@@ -410,7 +434,9 @@ instance, we wish to compare the molecules to see whether or not they have the s
     feature = comparator.compare(molecules = molecules)
 
     print(feature.shape)
+    >>> (1, 2)
     print(feature)
+    >>> [[0 0]]
 ..
 
 
@@ -458,5 +484,7 @@ We can do this by leveraging the :py:obj:`~chemcaption.featurize.base.MultipleCo
     feature = mega_comparator.compare(molecules = molecules)
 
     print(feature.shape)
+    >>> (1, 2)
     print(feature)
+    >>> [[0 0]]
 ..
