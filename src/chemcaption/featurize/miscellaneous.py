@@ -5,7 +5,6 @@
 from typing import List, Optional
 
 import numpy as np
-from IPython.display import SVG
 from rdkit import Chem
 from rdkit.Chem.Draw import rdMolDraw2D
 
@@ -73,7 +72,7 @@ class SVGFeaturizer(AbstractFeaturizer):
 
         return molecule_drawer.GetDrawingText()
 
-    def display_molecule(self, molecule: Molecule) -> SVG:
+    def notebook_display_molecule(self, molecule: Molecule):
         """Return SVG image for molecule instance.
 
         Args:
@@ -82,6 +81,8 @@ class SVGFeaturizer(AbstractFeaturizer):
         Return:
             SVG: SVG image.
         """
+        from IPython.display import SVG
+
         svg_string = self._mol_to_svg(molecule=molecule).replace("svg:", "")
         return SVG(svg_string)
 

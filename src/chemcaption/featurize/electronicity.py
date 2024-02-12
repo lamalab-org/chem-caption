@@ -709,7 +709,7 @@ class AtomNucleophilicityFeaturizer(MorfeusFeaturizer):
                 ]
             else:
                 return [
-                    (f"local_nucleophilicity_" if self.local else f"nucleophilicity_")
+                    ("local_nucleophilicity_" if self.local else "nucleophilicity_")
                     + self.aggregation
                 ]
 
@@ -847,7 +847,7 @@ class AtomElectrophilicityFeaturizer(MorfeusFeaturizer):
                 ]
             else:
                 return [
-                    (f"local_electrophilicity_" if self.local else f"electrophilicity_")
+                    ("local_electrophilicity_" if self.local else "electrophilicity_")
                     + self.aggregation
                 ]
 

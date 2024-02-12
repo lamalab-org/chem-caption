@@ -9,10 +9,8 @@ from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
 import numpy as np
 import pandas as pd
 import rdkit
-from colorama import Fore
 from frozendict import frozendict
-from morfeus import SASA, XTB
-from morfeus.conformer import Conformer, ConformerEnsemble
+
 from rdkit import Chem
 from scipy.spatial import distance_matrix
 
@@ -44,8 +42,10 @@ class AbstractFeaturizer(ABC):
 
     def __init__(self):
         """Initialize class. Initialize periodic table."""
-        self.prompt_template = ("Question: What {VERB} the {PROPERTY_NAME} of the molecule with {REPR_SYSTEM} "
-                                "{REPR_STRING}?")
+        self.prompt_template = (
+            "Question: What {VERB} the {PROPERTY_NAME} of the molecule with {REPR_SYSTEM} "
+            "{REPR_STRING}?"
+        )
         self.completion_template = "Answer: {COMPLETION}"
         self._names = []
         self.constraint = None
@@ -377,9 +377,7 @@ class MorfeusFeaturizer(AbstractFeaturizer):
 
         return elements, coordinates
 
-    def _get_morfeus_instance(
-        self, molecule: Molecule, morpheus_instance: str = "xtb"
-    ) -> Union[SASA, XTB]:
+    def _get_morfeus_instance(self, molecule: Molecule, morpheus_instance: str = "xtb"):
         """Return appropriate morfeus instance for feature generation.
 
         Args:
@@ -400,7 +398,7 @@ class MorfeusFeaturizer(AbstractFeaturizer):
             else self._get_xtb_instance(molecule)
         )
 
-    def _get_xtb_instance(self, molecule: Molecule) -> XTB:
+    def _get_xtb_instance(self, molecule: Molecule):
         """Return appropriate morfeus instance for feature generation.
 
         Args:
@@ -411,9 +409,11 @@ class MorfeusFeaturizer(AbstractFeaturizer):
         """
         elements, coordinates = self._get_element_coordinates(molecule)
 
+        from morfeus import XTB
+
         return XTB(elements, coordinates, "1")
 
-    def _get_sasa_instance(self, molecule: Molecule) -> SASA:
+    def _get_sasa_instance(self, molecule: Molecule):
         """Return appropriate morfeus instance for feature generation.
 
         Args:
@@ -422,6 +422,8 @@ class MorfeusFeaturizer(AbstractFeaturizer):
         Returns:
             SASA: Appropriate morfeus SASA instance.
         """
+        from morfeus import SASA
+
         elements, coordinates = self._get_element_coordinates(molecule)
 
         return SASA(elements, coordinates, **self.morfeus_kwargs)
@@ -432,7 +434,7 @@ class MorfeusFeaturizer(AbstractFeaturizer):
         optimization_method: str = "GFN2-xTB",
         procedure: str = "geometric",
         rmsd_method: str = "spyrmsd",
-    ) -> ConformerEnsemble:
+    ):
         """Generate conformers and optimize them in 3D space.
 
         Args:
@@ -444,6 +446,8 @@ class MorfeusFeaturizer(AbstractFeaturizer):
         Returns:
             ConformerEnsemble: An ensemble of generated conformers.
         """
+        from morfeus.conformer import ConformerEnsemble
+
         string = Chem.MolToSmiles(molecule.rdkit_mol)
         # Generate and optimize an ensemble of conformers
         conformer_ensemble = ConformerEnsemble.from_rdkit(string)
@@ -461,7 +465,7 @@ class MorfeusFeaturizer(AbstractFeaturizer):
         optimization_method: str = "GFN2-xTB",
         procedure: str = "geometric",
         rmsd_method: str = "spyrmsd",
-    ) -> List[Conformer]:
+    ):
         """Generate conformers and optimize them in 3D space.
 
         Args:
@@ -513,12 +517,8 @@ class MorfeusFeaturizer(AbstractFeaturizer):
 
         try:
             molecule.rdkit_mol = conformer_ensemble.mol
-        except:
-            print(
-                Fore.RED
-                + "Wholescale conformer embedding failed. Embedding conformers individually...\n"
-                + Fore.RESET
-            )
+        except Exception:
+            print("Wholescale conformer embedding failed. Embedding conformers individually...\n")
             molecule.rdkit_mol = molecule.reveal_hydrogens()
 
             num_embedded = 0
@@ -528,7 +528,7 @@ class MorfeusFeaturizer(AbstractFeaturizer):
                 try:
                     molecule.rdkit_mol.AddConformer(conf)
                     num_embedded += 1
-                except:
+                except Exception:
                     pass
 
             message = f"{num_embedded}/{len(conformers)} conformers embedded successfully!\n"

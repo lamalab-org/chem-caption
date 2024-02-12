@@ -74,7 +74,7 @@ if __name__ == "__main__":
         if v["count"] > 1:
             print(f"{i}. Label : {k}:")
             print(f"     Number of appearances: {v['count']}")
-            print(f"     Appears in:")
+            print("     Appears in:")
             for j, f in enumerate(v["appearance"], 1):
                 print(f"        {j}. {f}")
             print()

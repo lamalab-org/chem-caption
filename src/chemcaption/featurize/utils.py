@@ -5,7 +5,6 @@
 from functools import lru_cache
 
 import numpy as np
-from givemeconformer.api import _get_conformer, get_conformer
 from pymatgen.core import IMolecule  # use immutable for caching
 from pymatgen.symmetry.analyzer import PointGroupAnalyzer
 from rdkit import Chem
@@ -33,6 +32,8 @@ def join_list_elements(elements) -> str:
 
 @lru_cache(maxsize=128)
 def _rdkit_to_pymatgen(mol):
+    from givemeconformer.api import get_conformer
+
     c = get_conformer(Chem.MolToSmiles(mol))[0]
     m = IMolecule(*get_atom_symbols_and_positions(c))
     return m
@@ -53,6 +54,8 @@ def get_atom_symbols_and_positions(conf):
 
 @lru_cache(maxsize=None)
 def cached_conformer(smiles, kwargs):
+    from givemeconformer.api import _get_conformer
+
     mol, conformers = _get_conformer(smiles=smiles, **kwargs)
     for conf in conformers.keys():
         mol.AddConformer(mol.GetConformer(conf))
@@ -76,11 +79,3 @@ def apply_featurizer(featurize_molecule_pair) -> np.array:
         if isinstance(molecule, list)
         else featurizer.featurize(molecule=molecule)
     )
-
-
-@lru_cache(maxsize=None)
-def cached_conformer(smiles, kwargs):
-    mol, conformers = _get_conformer(smiles=smiles, **kwargs)
-    for conf in conformers.keys():
-        mol.AddConformer(mol.GetConformer(conf))
-    return mol

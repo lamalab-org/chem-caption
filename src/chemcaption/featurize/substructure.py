@@ -74,7 +74,9 @@ class FragmentSearchFeaturizer(AbstractFeaturizer):
             noun = "counts"
 
         if self.count:
-            name = f"Question: What {name.lower()} the {noun} of " + join_list_elements(self.smart_names)
+            name = f"Question: What {name.lower()} the {noun} of " + join_list_elements(
+                self.smart_names
+            )
 
         else:
             name = f"Question: {name} " + join_list_elements(self.smart_names)
