@@ -4,12 +4,130 @@
 
 from typing import Dict, List, Tuple, Union
 
-from chemcaption.export.export import FEATURIZER
+
 from chemcaption.featurize.base import MultipleFeaturizer
 
 __all__ = [
     "get_repetitive_labels",
 ]
+
+from chemcaption.featurize.adaptor import ValenceElectronCountAdaptor
+from chemcaption.featurize.base import MultipleFeaturizer
+from chemcaption.featurize.bonds import (
+    BondOrderFeaturizer,
+    BondTypeCountFeaturizer,
+    BondTypeProportionFeaturizer,
+    DipoleMomentsFeaturizer,
+    RotableBondCountFeaturizer,
+    RotableBondProportionFeaturizer,
+)
+from chemcaption.featurize.composition import (
+    AtomCountFeaturizer,
+    DegreeOfUnsaturationFeaturizer,
+    ElementCountFeaturizer,
+    ElementCountProportionFeaturizer,
+    ElementMassFeaturizer,
+    ElementMassProportionFeaturizer,
+    MolecularFormulaFeaturizer,
+    MolecularMassFeaturizer,
+    MonoisotopicMolecularMassFeaturizer,
+)
+from chemcaption.featurize.electronicity import (
+    AtomChargeFeaturizer,
+    AtomElectrophilicityFeaturizer,
+    AtomNucleophilicityFeaturizer,
+    HOMOEnergyFeaturizer,
+    HydrogenAcceptorCountFeaturizer,
+    HydrogenDonorCountFeaturizer,
+    LUMOEnergyFeaturizer,
+    MoleculeElectrofugalityFeaturizer,
+    MoleculeElectrophilicityFeaturizer,
+    MoleculeNucleofugalityFeaturizer,
+    MoleculeNucleophilicityFeaturizer,
+)
+from chemcaption.featurize.miscellaneous import SVGFeaturizer
+from chemcaption.featurize.rules import (
+    GhoseFilterFeaturizer,
+    LeadLikenessFilterFeaturizer,
+    LipinskiFilterFeaturizer,
+)
+
+from chemcaption.featurize.spatial import (
+    AsphericityFeaturizer,
+    EccentricityFeaturizer,
+    InertialShapeFactorFeaturizer,
+    NPRFeaturizer,
+    PMIFeaturizer,
+    RadiusOfGyrationFeaturizer,
+    SpherocityIndexFeaturizer,
+)
+from chemcaption.featurize.stereochemistry import ChiralCenterCountFeaturizer
+from chemcaption.featurize.substructure import (
+    IsomorphismFeaturizer,
+    FragmentSearchFeaturizer,
+    TopologyCountFeaturizer,
+)
+from chemcaption.featurize.symmetry import PointGroupFeaturizer, RotationalSymmetryNumberFeaturizer
+from chemcaption.presets import ALL_SMARTS
+
+
+def get_smarts_featurizers():
+    featurizers = []
+    for name, smarts in ALL_SMARTS.items():
+        featurizers.append(FragmentSearchFeaturizer([smarts], names=[name]))
+    return featurizers
+
+
+FEATURIZER = MultipleFeaturizer(
+    get_smarts_featurizers()
+    + [
+        AtomCountFeaturizer(),
+        ValenceElectronCountAdaptor(),
+        RotableBondCountFeaturizer(),
+        RotableBondProportionFeaturizer(),
+        BondTypeCountFeaturizer(),
+        BondTypeProportionFeaturizer(),
+        DegreeOfUnsaturationFeaturizer(),
+        BondOrderFeaturizer(),
+        RotableBondCountFeaturizer(),
+        DipoleMomentsFeaturizer(),
+        MolecularFormulaFeaturizer(),
+        MonoisotopicMolecularMassFeaturizer(),
+        AtomCountFeaturizer(),
+        MolecularMassFeaturizer(),
+        ElementMassFeaturizer(),
+        ElementCountFeaturizer(),
+        ElementMassProportionFeaturizer(),
+        ElementCountProportionFeaturizer(),
+        HydrogenAcceptorCountFeaturizer(),
+        HydrogenDonorCountFeaturizer(),
+        HOMOEnergyFeaturizer(),
+        LUMOEnergyFeaturizer(),
+        AtomChargeFeaturizer(),
+        AtomNucleophilicityFeaturizer(),
+        AtomElectrophilicityFeaturizer(),
+        MoleculeNucleophilicityFeaturizer(),
+        MoleculeElectrophilicityFeaturizer(),
+        MoleculeNucleofugalityFeaturizer(),
+        MoleculeElectrofugalityFeaturizer(),
+        LipinskiFilterFeaturizer(),
+        GhoseFilterFeaturizer(),
+        LeadLikenessFilterFeaturizer(),
+        EccentricityFeaturizer(),
+        AsphericityFeaturizer(),
+        InertialShapeFactorFeaturizer(),
+        NPRFeaturizer(),
+        PMIFeaturizer(),
+        SpherocityIndexFeaturizer(),
+        RadiusOfGyrationFeaturizer(),
+        ChiralCenterCountFeaturizer(),
+        TopologyCountFeaturizer(reference_atomic_numbers=[6, 8]),
+        IsomorphismFeaturizer(),
+        PointGroupFeaturizer(),
+        RotationalSymmetryNumberFeaturizer(),
+        SVGFeaturizer(),
+    ]
+)
 
 
 def get_repetitive_labels(

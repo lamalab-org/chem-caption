@@ -306,9 +306,7 @@ class MorfeusFeaturizer(AbstractFeaturizer):
             else:
                 as_range = False
                 print(
-                    Fore.RED
-                    + "UserWarning: List of integers passed to `atom_indices` parameter. `as_range` parameter will be refactored to False."
-                    + Fore.RESET
+                    +"UserWarning: List of integers passed to `atom_indices` parameter. `as_range` parameter will be refactored to False."
                 )
 
         else:
