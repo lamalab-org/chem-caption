@@ -25,7 +25,11 @@ class RDKitAdaptor(AbstractFeaturizer):
     """Higher-level featurizer. Returns specific, lower-level featurizers."""
 
     def __init__(
-        self, rdkit_function: Callable, labels: List[str], names: List[Dict[str, str]], **rdkit_function_kwargs: Dict[str, Any]
+        self,
+        rdkit_function: Callable,
+        labels: List[str],
+        names: List[Dict[str, str]],
+        **rdkit_function_kwargs: Dict[str, Any],
     ):
         """Initialize class object.
 
@@ -107,19 +111,18 @@ class ValenceElectronCountAdaptor(RDKitAdaptor):
         super().__init__(
             rdkit_function=Descriptors.NumValenceElectrons,
             labels=["num_valence_electrons"],
+            names=[
+                {
+                    "noun": "number of valence electrons",
+                },
+                {
+                    "noun": "valence electron count",
+                },
+                {
+                    "noun": "count of valence electrons",
+                },
+            ],
         )
-
-        self._names = [
-            {
-                "noun": "number of valence electrons",
-            },
-            {
-                "noun": "valence electron count",
-            },
-            {
-                "noun": "count of valence electrons",
-            },
-        ]
 
     def featurize(self, molecule: Molecule) -> np.array:
         """

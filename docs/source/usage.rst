@@ -196,7 +196,11 @@ Here, as an example, we define a function which:
         return molecule_string.count("=")
 ..
 
-This function will then be converted to a featurizer, and the rest of the workflow continues as normal:
+This function will then be converted to a featurizer, and the rest of the workflow continues as normal. To carry out the function-featurizer conversion, a few things are needed:
+
+* The function,
+* Appropriate labels, and
+* Feature names.
 
 .. code-block:: python
 
@@ -312,7 +316,7 @@ As can be attested to, calling the Comparator API is just as straightforward as 
 just replace the call to the **featurize** method with a call to the :py:meth:`~chemcaption.featurize.base.Comparator.compare` method.
 
 
-Molecular Comparison (Batched Featurizers & Adapted Comparators)
+Molecular Comparison (Batched Featurizers)
 ----------------------------------------------------------------
 In addition to comparison on one featurizer, comparison can be carried out between molecules over multiple featurizers.
 
@@ -361,7 +365,7 @@ In this case, all that is needed is to pass a collection of featurizers to the m
 ..
 
 
-Molecular Comparison (Adapted Comparators)
+Molecular Comparison (Custom Comparators)
 ------------------------------------------------------
 To design a specific comparator, all that is needed is to specify what sort of comparison will be carried out.
 This specification is packaged as a function: **comparison_func**. This method takes in three main inputs:

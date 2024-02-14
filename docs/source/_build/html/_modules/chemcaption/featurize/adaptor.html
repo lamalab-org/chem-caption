@@ -224,7 +224,11 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Higher-level featurizer. Returns specific, lower-level featurizers.&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">rdkit_function</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">labels</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="o">**</span><span class="n">rdkit_function_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">rdkit_function</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span>
+        <span class="n">labels</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]],</span>
+        <span class="o">**</span><span class="n">rdkit_function_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize class object.</span>
 
@@ -232,11 +236,13 @@
 <span class="sd">            rdkit_function (Callable): Molecule descriptor-generating function.</span>
 <span class="sd">                May be obtained from a chemistry featurization package like `rdkit` or custom written.</span>
 <span class="sd">            labels (List[str]): Feature label(s) to assign to extracted feature(s).</span>
+<span class="sd">            names (List[Dict[str, str]]): Names of features.</span>
 <span class="sd">            rdkit_function_kwargs (Dict[str, Any]): Keyword arguments to be parsed by `rdkit_function`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">rdkit_function</span> <span class="o">=</span> <span class="n">rdkit_function</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_label</span> <span class="o">=</span> <span class="n">labels</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_names</span> <span class="o">=</span> <span class="n">names</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">rdkit_function_kwargs</span> <span class="o">=</span> <span class="n">rdkit_function_kwargs</span>
 
 <div class="viewcode-block" id="RDKitAdaptor.featurize">
@@ -256,7 +262,11 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            np.array: Array containing extracted features.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">feature</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rdkit_function</span><span class="p">(</span><span class="n">molecule</span><span class="o">.</span><span class="n">rdkit_mol</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">rdkit_function_kwargs</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">feature</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rdkit_function</span><span class="p">(</span><span class="n">molecule</span><span class="o">.</span><span class="n">rdkit_mol</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">rdkit_function_kwargs</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="n">feature</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rdkit_function</span><span class="p">(</span><span class="n">molecule</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">rdkit_function_kwargs</span><span class="p">)</span>
+
         <span class="n">feature</span> <span class="o">=</span> <span class="p">(</span>
             <span class="p">[</span>
                 <span class="n">feature</span><span class="p">,</span>
@@ -312,19 +322,18 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
             <span class="n">rdkit_function</span><span class="o">=</span><span class="n">Descriptors</span><span class="o">.</span><span class="n">NumValenceElectrons</span><span class="p">,</span>
             <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;num_valence_electrons&quot;</span><span class="p">],</span>
+            <span class="n">names</span><span class="o">=</span><span class="p">[</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;noun&quot;</span><span class="p">:</span> <span class="s2">&quot;number of valence electrons&quot;</span><span class="p">,</span>
+                <span class="p">},</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;noun&quot;</span><span class="p">:</span> <span class="s2">&quot;valence electron count&quot;</span><span class="p">,</span>
+                <span class="p">},</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;noun&quot;</span><span class="p">:</span> <span class="s2">&quot;count of valence electrons&quot;</span><span class="p">,</span>
+                <span class="p">},</span>
+            <span class="p">],</span>
         <span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">_names</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="p">{</span>
-                <span class="s2">&quot;noun&quot;</span><span class="p">:</span> <span class="s2">&quot;number of valence electrons&quot;</span><span class="p">,</span>
-            <span class="p">},</span>
-            <span class="p">{</span>
-                <span class="s2">&quot;noun&quot;</span><span class="p">:</span> <span class="s2">&quot;valence electron count&quot;</span><span class="p">,</span>
-            <span class="p">},</span>
-            <span class="p">{</span>
-                <span class="s2">&quot;noun&quot;</span><span class="p">:</span> <span class="s2">&quot;count of valence electrons&quot;</span><span class="p">,</span>
-            <span class="p">},</span>
-        <span class="p">]</span>
 
 <div class="viewcode-block" id="ValenceElectronCountAdaptor.featurize">
 <a class="viewcode-back" href="../../../api.html#chemcaption.featurize.adaptor.ValenceElectronCountAdaptor.featurize">[docs]</a>

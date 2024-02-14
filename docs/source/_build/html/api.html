@@ -4585,7 +4585,7 @@ Defaults to <cite>None</cite>. If <cite>None</cite>, track atom/bond/molecular d
 <p>Implementations for adaptor-related alternatives for featurizers.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="chemcaption.featurize.adaptor.RDKitAdaptor">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">RDKitAdaptor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rdkit_function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">rdkit_function_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/chemcaption/featurize/adaptor.html#RDKitAdaptor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chemcaption.featurize.adaptor.RDKitAdaptor" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">RDKitAdaptor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rdkit_function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">rdkit_function_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/chemcaption/featurize/adaptor.html#RDKitAdaptor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chemcaption.featurize.adaptor.RDKitAdaptor" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#chemcaption.featurize.base.AbstractFeaturizer" title="chemcaption.featurize.base.AbstractFeaturizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractFeaturizer</span></code></a></p>
 <p>Higher-level featurizer. Returns specific, lower-level featurizers.</p>
 <p>Initialize class object.</p>
@@ -4595,6 +4595,7 @@ Defaults to <cite>None</cite>. If <cite>None</cite>, track atom/bond/molecular d
 <li><p><strong>rdkit_function</strong> (<em>Callable</em>) – Molecule descriptor-generating function.
 May be obtained from a chemistry featurization package like <cite>rdkit</cite> or custom written.</p></li>
 <li><p><strong>labels</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – Feature label(s) to assign to extracted feature(s).</p></li>
+<li><p><strong>names</strong> (<em>List</em><em>[</em><em>Dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>]</em><em>]</em>) – Names of features.</p></li>
 <li><p><strong>rdkit_function_kwargs</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – Keyword arguments to be parsed by <cite>rdkit_function</cite>.</p></li>
 </ul>
 </dd>
