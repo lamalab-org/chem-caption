@@ -188,7 +188,7 @@ def persist_data(chunk_size: int = 30, delete: bool = False) -> None:
 
     # End script run if all strings have been processed
     if start_index >= len(smiles_list):
-        print(f"All SMILES strings processed!")
+        print("All SMILES strings processed!")
         return
 
     # If there are strings to process...

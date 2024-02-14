@@ -16,7 +16,7 @@ from chemcaption.featurize.composition import (
     MolecularMassFeaturizer,
     MonoisotopicMolecularMassFeaturizer,
 )
-from chemcaption.molecules import InChIMolecule, SELFIESMolecule, SMILESMolecule
+from chemcaption.molecules import InChIMolecule, SMILESMolecule
 from tests.conftests import DISPATCH_MAP, PROPERTY_BANK, extract_molecule_properties
 
 KIND = "selfies"
