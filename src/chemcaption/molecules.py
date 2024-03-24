@@ -14,12 +14,12 @@ from typing_extensions import TypeAlias
 # Implemented molecular representation classes.
 
 __all__ = [
-    "Molecule",
-    "MoleculeGraph",
     "AbstractMolecule",
     "SMILESMolecule",
     "SELFIESMolecule",
     "InChIMolecule",
+    "Molecule",
+    "MoleculeGraph",
     "DISPATCH_MAP",
     "PERIODIC_TABLE",
 ]
@@ -38,20 +38,20 @@ PERIODIC_TABLE = rdkit.Chem.GetPeriodicTable()  # Periodic table
 class MoleculeGraph(nx.Graph):
     """Graph representation for molecular instances."""
 
-    def __init__(self, molecule: Chem.Mol):
+    def __init__(self, molecule: Union[Chem.Mol, Molecule]):
         """Initialize instance.
 
         Args:
-            molecule (Chem.Mol): RDKit molecular instance.
+            molecule (Union[Chem.Mol, Molecule]): RDKit molecular instance.
 
         """
         super().__init__()
 
-        self.molecule = molecule
-        self.graph = self.molecule_to_graph()
+        self.molecule = molecule if isinstance(molecule, Chem.Mol) else molecule.reveal_hydrogens()
+        self.graph = self.molecule_to_networkx()
         self._hash = None
 
-    def molecule_to_graph(self) -> nx.Graph:
+    def molecule_to_networkx(self) -> nx.Graph:
         """Convert molecule object to graph representation.
 
         Args:
@@ -191,7 +191,7 @@ class AbstractMolecule(ABC):
         """
         return Chem.rdMolDescriptors.CalcMolFormula(self.rdkit_mol)
 
-    def to_graph(self) -> MoleculeGraph:
+    def to_networkx(self) -> MoleculeGraph:
         """Convert molecule to graph.
 
         Args:

@@ -87,9 +87,8 @@ class FragmentSearchFeaturizer(AbstractFeaturizer):
     def from_preset(cls, preset: str, count: bool = True):
         """
         Args:
-            preset (str): Preset name of the substructures
-                encoded by the SMARTS strings.
-                Predefined presets can be specified as strings, and can be one of:
+            preset (str): Preset name of the substructures encoded by the SMARTS strings.
+            Predefined presets can be specified as strings, and can be one of:
                     - `heterocyclic`,
                     - `rings`,
                     - `amino`,
@@ -97,6 +96,7 @@ class FragmentSearchFeaturizer(AbstractFeaturizer):
                     - `warheads` or
                     - `organic`.
                     - `all`
+
             count (bool): If set to True, count pattern frequency.
         """
         if preset not in SMARTS_MAP:
@@ -116,6 +116,7 @@ class FragmentSearchFeaturizer(AbstractFeaturizer):
         Return integer array representing the:
             - frequency or
             - presence
+
             of molecular patterns in a molecule.
 
         Args:
@@ -212,7 +213,7 @@ class IsomorphismFeaturizer(AbstractFeaturizer):
             np.array: Array containing int representation of isoelectronic status between
                 `self.reference_molecule` and `molecule`.
         """
-        molecule_graph = molecule.to_graph()
+        molecule_graph = molecule.to_networkx()
 
         return np.array(molecule_graph.weisfeiler_lehman_graph_hash()).reshape(1, 1)
 

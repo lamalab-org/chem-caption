@@ -2,6 +2,7 @@
 
 """Featurizers for molecular symmetry."""
 
+from functools import lru_cache
 from typing import List
 
 import numpy as np
@@ -107,6 +108,7 @@ class PointGroupFeaturizer(AbstractFeaturizer):
     # I think we have to, because there are infinitely many
     # and for one-hot encoding we would need to know the
     # possible point groups beforehand
+    @lru_cache(maxsize=None)
     def featurize(self, molecule: Molecule) -> np.array:
         """
         Featurize single molecule instance. Returns the point group of a molecule.

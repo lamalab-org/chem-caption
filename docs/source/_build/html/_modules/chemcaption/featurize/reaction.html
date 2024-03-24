@@ -1,0 +1,554 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../../../">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
+
+    <!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
+        <title>chemcaption.featurize.reaction - chemcaption 0.0.1-dev documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/katex-math.css?v=91adb8b6" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=36a5483c" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #eeffcc;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../../index.html"><div class="brand">chemcaption 0.0.1-dev documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
+  
+  
+  <span class="sidebar-brand-text">chemcaption 0.0.1-dev documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html">API Documentation</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <h1>Source code for chemcaption.featurize.reaction</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="sd">&quot;&quot;&quot;Featurizers for solubility- and reaction-based features.&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">chemcaption.featurize.base</span> <span class="kn">import</span> <span class="n">MorfeusFeaturizer</span>
+<span class="kn">from</span> <span class="nn">chemcaption.molecules</span> <span class="kn">import</span> <span class="n">Molecule</span>
+
+<span class="c1"># Implemented reaction- or solubility-based featurizers</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;SolventAccessibleSurfaceAreaFeaturizer&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;SolventAccessibleVolumeFeaturizer&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;SolventAccessibleAtomAreaFeaturizer&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="SolventAccessibleSurfaceAreaFeaturizer">
+<a class="viewcode-back" href="../../../api.html#chemcaption.featurize.reaction.SolventAccessibleSurfaceAreaFeaturizer">[docs]</a>
+<span class="k">class</span> <span class="nc">SolventAccessibleSurfaceAreaFeaturizer</span><span class="p">(</span><span class="n">MorfeusFeaturizer</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the solvent accessible surface area (SASA) value.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">conformer_generation_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">morfeus_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">qc_optimize</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Instantiate class.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            conformer_generation_kwargs (Optional[Dict[str, Any]]): Configuration for conformer generation.</span>
+<span class="sd">            morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.</span>
+<span class="sd">            qc_optimize (bool): Run QCEngine optimization harness. Defaults to `False`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">conformer_generation_kwargs</span><span class="o">=</span><span class="n">conformer_generation_kwargs</span><span class="p">,</span>
+            <span class="n">morfeus_kwargs</span><span class="o">=</span><span class="n">morfeus_kwargs</span><span class="p">,</span>
+            <span class="n">qc_optimize</span><span class="o">=</span><span class="n">qc_optimize</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_names</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;noun&quot;</span><span class="p">:</span> <span class="s2">&quot;solvent accessible surface area&quot;</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">]</span>
+
+<div class="viewcode-block" id="SolventAccessibleSurfaceAreaFeaturizer.featurize">
+<a class="viewcode-back" href="../../../api.html#chemcaption.featurize.reaction.SolventAccessibleSurfaceAreaFeaturizer.featurize">[docs]</a>
+    <span class="k">def</span> <span class="nf">featurize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">molecule</span><span class="p">:</span> <span class="n">Molecule</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Featurize single molecule instance.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            molecule (Molecule): Molecule representation.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            (np.array): Array containing solvent accessible surface area (SASA) for molecule instance.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">qc_optimize</span><span class="p">:</span>
+            <span class="n">molecule</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_conformer</span><span class="p">(</span><span class="n">molecule</span><span class="o">=</span><span class="n">molecule</span><span class="p">)</span>
+        <span class="n">morfeus_instance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_morfeus_instance</span><span class="p">(</span><span class="n">molecule</span><span class="o">=</span><span class="n">molecule</span><span class="p">,</span> <span class="n">morpheus_instance</span><span class="o">=</span><span class="s2">&quot;sasa&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">morfeus_instance</span><span class="o">.</span><span class="n">area</span><span class="p">])</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SolventAccessibleSurfaceAreaFeaturizer.feature_labels">
+<a class="viewcode-back" href="../../../api.html#chemcaption.featurize.reaction.SolventAccessibleSurfaceAreaFeaturizer.feature_labels">[docs]</a>
+    <span class="k">def</span> <span class="nf">feature_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return feature label(s).</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            None.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            (List[str]): List of labels of extracted features.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;solvent_accessible_solvent_area&quot;</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="SolventAccessibleSurfaceAreaFeaturizer.implementors">
+<a class="viewcode-back" href="../../../api.html#chemcaption.featurize.reaction.SolventAccessibleSurfaceAreaFeaturizer.implementors">[docs]</a>
+    <span class="k">def</span> <span class="nf">implementors</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return list of functionality implementors.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            None.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            (List[str]): List of implementors.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;Benedict Oshomah Emoekabu&quot;</span><span class="p">]</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="SolventAccessibleVolumeFeaturizer">
+<a class="viewcode-back" href="../../../api.html#chemcaption.featurize.reaction.SolventAccessibleVolumeFeaturizer">[docs]</a>
+<span class="k">class</span> <span class="nc">SolventAccessibleVolumeFeaturizer</span><span class="p">(</span><span class="n">MorfeusFeaturizer</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the solvent accessible volume value for a molecule.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">conformer_generation_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">morfeus_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">qc_optimize</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Instantiate class.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            conformer_generation_kwargs (Optional[Dict[str, Any]]): Configuration for conformer generation.</span>
+<span class="sd">            morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.</span>
+<span class="sd">            qc_optimize (bool): Run QCEngine optimization harness. Defaults to `False`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">conformer_generation_kwargs</span><span class="o">=</span><span class="n">conformer_generation_kwargs</span><span class="p">,</span>
+            <span class="n">morfeus_kwargs</span><span class="o">=</span><span class="n">morfeus_kwargs</span><span class="p">,</span>
+            <span class="n">qc_optimize</span><span class="o">=</span><span class="n">qc_optimize</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_names</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;noun&quot;</span><span class="p">:</span> <span class="s2">&quot;solvent accessible volume&quot;</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">]</span>
+
+<div class="viewcode-block" id="SolventAccessibleVolumeFeaturizer.featurize">
+<a class="viewcode-back" href="../../../api.html#chemcaption.featurize.reaction.SolventAccessibleVolumeFeaturizer.featurize">[docs]</a>
+    <span class="k">def</span> <span class="nf">featurize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">molecule</span><span class="p">:</span> <span class="n">Molecule</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Featurize single molecule instance.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            molecule (Molecule): Molecule representation.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            (np.array): Array containing solvent accessible volume for molecule instance.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">qc_optimize</span><span class="p">:</span>
+            <span class="n">molecule</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_conformer</span><span class="p">(</span><span class="n">molecule</span><span class="o">=</span><span class="n">molecule</span><span class="p">)</span>
+        <span class="n">morfeus_instance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_morfeus_instance</span><span class="p">(</span><span class="n">molecule</span><span class="o">=</span><span class="n">molecule</span><span class="p">,</span> <span class="n">morpheus_instance</span><span class="o">=</span><span class="s2">&quot;sasa&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">morfeus_instance</span><span class="o">.</span><span class="n">volume</span><span class="p">])</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SolventAccessibleVolumeFeaturizer.feature_labels">
+<a class="viewcode-back" href="../../../api.html#chemcaption.featurize.reaction.SolventAccessibleVolumeFeaturizer.feature_labels">[docs]</a>
+    <span class="k">def</span> <span class="nf">feature_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return feature label(s).</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            None.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            (List[str]): List of labels of extracted features.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;solvent_accessible_volume&quot;</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="SolventAccessibleVolumeFeaturizer.implementors">
+<a class="viewcode-back" href="../../../api.html#chemcaption.featurize.reaction.SolventAccessibleVolumeFeaturizer.implementors">[docs]</a>
+    <span class="k">def</span> <span class="nf">implementors</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return list of functionality implementors.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            None.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            (List[str]): List of implementors.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;Benedict Oshomah Emoekabu&quot;</span><span class="p">]</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="SolventAccessibleAtomAreaFeaturizer">
+<a class="viewcode-back" href="../../../api.html#chemcaption.featurize.reaction.SolventAccessibleAtomAreaFeaturizer">[docs]</a>
+<span class="k">class</span> <span class="nc">SolventAccessibleAtomAreaFeaturizer</span><span class="p">(</span><span class="n">MorfeusFeaturizer</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the solvent accessible area value for each atom in a molecule.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">conformer_generation_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">morfeus_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">qc_optimize</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">max_index</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">aggregation</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Instantiate class.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            conformer_generation_kwargs (Optional[Dict[str, Any]]): Configuration for conformer generation.</span>
+<span class="sd">            morfeus_kwargs (Optional[Dict[str, Any]]): Keyword arguments for morfeus computation.</span>
+<span class="sd">            qc_optimize (bool): Run QCEngine optimization harness. Defaults to `False`.</span>
+<span class="sd">            max_index (Optional[int]): Maximum number of atoms/bonds to consider for feature generation.</span>
+<span class="sd">                Redundant if `aggregation` is not `None`.</span>
+<span class="sd">            aggregation (Optional[Union[str, List[str]]]): Aggregation to use on generated descriptors.</span>
+<span class="sd">                Defaults to `None`. If `None`, track atom/bond/molecular descriptors and identities.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">conformer_generation_kwargs</span><span class="o">=</span><span class="n">conformer_generation_kwargs</span><span class="p">,</span>
+            <span class="n">morfeus_kwargs</span><span class="o">=</span><span class="n">morfeus_kwargs</span><span class="p">,</span>
+            <span class="n">qc_optimize</span><span class="o">=</span><span class="n">qc_optimize</span><span class="p">,</span>
+            <span class="n">aggregation</span><span class="o">=</span><span class="n">aggregation</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_names</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;noun&quot;</span><span class="p">:</span> <span class="s2">&quot;solvent accessible atom area&quot;</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_index</span> <span class="o">=</span> <span class="n">max_index</span>
+
+<div class="viewcode-block" id="SolventAccessibleAtomAreaFeaturizer.featurize">
+<a class="viewcode-back" href="../../../api.html#chemcaption.featurize.reaction.SolventAccessibleAtomAreaFeaturizer.featurize">[docs]</a>
+    <span class="k">def</span> <span class="nf">featurize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">molecule</span><span class="p">:</span> <span class="n">Molecule</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Featurize single molecule instance.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            molecule (Molecule): Molecule representation.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            (np.array): Array containing solvent accessible atom area for atoms in molecule instance.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">qc_optimize</span><span class="p">:</span>
+            <span class="n">molecule</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_conformer</span><span class="p">(</span><span class="n">molecule</span><span class="o">=</span><span class="n">molecule</span><span class="p">)</span>
+
+        <span class="n">morfeus_instance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_morfeus_instance</span><span class="p">(</span><span class="n">molecule</span><span class="o">=</span><span class="n">molecule</span><span class="p">,</span> <span class="n">morpheus_instance</span><span class="o">=</span><span class="s2">&quot;sasa&quot;</span><span class="p">)</span>
+
+        <span class="n">atom_areas</span> <span class="o">=</span> <span class="n">morfeus_instance</span><span class="o">.</span><span class="n">atom_areas</span>
+        <span class="n">num_atoms</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">atom_areas</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_index</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">max_index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fit_on_atom_counts</span><span class="p">(</span><span class="n">molecules</span><span class="o">=</span><span class="n">molecule</span><span class="p">)</span>
+
+        <span class="n">atom_areas</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span><span class="n">atom_areas</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="n">num_atoms</span> <span class="k">else</span> <span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="p">]</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">aggregation</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># Track atom identities</span>
+            <span class="n">atomic_numbers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_track_atom_identity</span><span class="p">(</span><span class="n">molecule</span><span class="o">=</span><span class="n">molecule</span><span class="p">,</span> <span class="n">max_index</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_index</span><span class="p">)</span>
+
+            <span class="c1"># Combine descriptors with atom identities</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="n">atom_areas</span> <span class="o">+</span> <span class="n">atomic_numbers</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">aggregation</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">,</span> <span class="nb">set</span><span class="p">)):</span>
+                <span class="n">output</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">aggregation_func</span><span class="p">[</span><span class="n">agg</span><span class="p">](</span><span class="n">atom_areas</span><span class="p">)</span> <span class="k">for</span> <span class="n">agg</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">aggregation</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">aggregation_func</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">aggregation</span><span class="p">](</span><span class="n">atom_areas</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">output</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SolventAccessibleAtomAreaFeaturizer.featurize_many">
+<a class="viewcode-back" href="../../../api.html#chemcaption.featurize.reaction.SolventAccessibleAtomAreaFeaturizer.featurize_many">[docs]</a>
+    <span class="k">def</span> <span class="nf">featurize_many</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">molecules</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Molecule</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Featurize a sequence of Molecule objects.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            molecules (List[Molecule]): A sequence of molecule representations.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            (np.array): An array of features for each molecule instance.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_index</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">max_index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fit_on_atom_counts</span><span class="p">(</span><span class="n">molecules</span><span class="o">=</span><span class="n">molecules</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">featurize_many</span><span class="p">(</span><span class="n">molecules</span><span class="o">=</span><span class="n">molecules</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SolventAccessibleAtomAreaFeaturizer.feature_labels">
+<a class="viewcode-back" href="../../../api.html#chemcaption.featurize.reaction.SolventAccessibleAtomAreaFeaturizer.feature_labels">[docs]</a>
+    <span class="k">def</span> <span class="nf">feature_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return feature label(s).</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            None.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            (List[str]): List of labels of extracted features.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">aggregation</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;solvent_accessible_atom_area_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_index</span><span class="p">)]</span> <span class="o">+</span> <span class="p">[</span>
+                <span class="sa">f</span><span class="s2">&quot;atomic_number_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_index</span><span class="p">)</span>
+            <span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">aggregation</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">set</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+                <span class="k">return</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;solvent_accessible_atom_area_</span><span class="si">{</span><span class="n">agg</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">agg</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">aggregation</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;solvent_accessible_atom_area_&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">aggregation</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="SolventAccessibleAtomAreaFeaturizer.implementors">
+<a class="viewcode-back" href="../../../api.html#chemcaption.featurize.reaction.SolventAccessibleAtomAreaFeaturizer.implementors">[docs]</a>
+    <span class="k">def</span> <span class="nf">implementors</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return list of functionality implementors.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            None.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            (List[str]): List of implementors.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;Benedict Oshomah Emoekabu&quot;</span><span class="p">]</span></div>
+</div>
+
+</pre></div>
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2024, Kevin Maik Jablonka and Benedict Oshomah Emoekabu
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
+  </div>
+</div><script src="../../../_static/documentation_options.js?v=03180e26"></script>
+    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/scripts/furo.js?v=32e29ea5"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../_static/katex.min.js?v=48ec3933"></script>
+    <script src="../../../_static/auto-render.min.js?v=8b9f325c"></script>
+    <script src="../../../_static/katex_autorenderer.js?v=bebc588a"></script>
+    </body>
+</html>

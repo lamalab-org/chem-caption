@@ -2,6 +2,7 @@
 
 """Featurizers for 3D (i.e., spatial) features."""
 
+from functools import lru_cache
 from typing import Any, Dict, List, Optional, Union
 
 import numpy as np
@@ -85,6 +86,7 @@ class SpatialFeaturizer(AbstractFeaturizer):
         keys.sort()
         return keys
 
+    @lru_cache(maxsize=None)
     def _measure_all(
         self, *x: Chem.Mol, **y: Dict[str, Union[int, str]]
     ) -> List[Union[int, float]]:
