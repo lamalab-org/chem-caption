@@ -435,7 +435,7 @@
 <span class="sd">            np.array: Array containing int representation of isoelectronic status between</span>
 <span class="sd">                `self.reference_molecule` and `molecule`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">molecule_graph</span> <span class="o">=</span> <span class="n">molecule</span><span class="o">.</span><span class="n">to_graph</span><span class="p">()</span>
+        <span class="n">molecule_graph</span> <span class="o">=</span> <span class="n">molecule</span><span class="o">.</span><span class="n">to_networkx</span><span class="p">()</span>
 
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">molecule_graph</span><span class="o">.</span><span class="n">weisfeiler_lehman_graph_hash</span><span class="p">())</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span></div>
 

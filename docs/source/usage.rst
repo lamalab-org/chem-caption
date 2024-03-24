@@ -1,7 +1,7 @@
 Usage
 =====
 The main idea of chemcaption is to be able to represent molecules in memory, generate molecular fingerprints from these
-molecules, and store these fingerprints as tabular data. 
+molecules, and store these fingerprints as tabular data and/or LIFT-like text corpora.
 In addition, to enable the (pre)-training of large-language models (LLMs) we can convert these generated fingerprints into text using text templates and metadata provided via the featurizers.
 
 A basic workflow of how to use *chemcaption* can be seen below:
@@ -25,11 +25,29 @@ generating a molecular instance from a SMILES string would proceed like so:
 Similar can be done for other string systems by replacing :py:obj:`~chemcaption.molecules.SMILESMolecule` and :code:`molecular_string`
 with the appropriate class and string respectively.
 
+.. code-block:: python
+
+    from chemcaption.molecules import SELFIESMolecule, InchiMolecule
+
+    # Get SELFIES and INCHI strings
+    selfies_string = "[N][C][Branch1][C][N][=O]"
+    inchi_string = "InChI=1S/CH4N2O/c2-1(3)4/h(H4,2,3,4)"
+
+    # Generate molecular instances from respective strings
+    selfies_molecule = SELFIESMolecule(representation_string=selfies_string)
+    inchi_molecule = InchiMolecule(representation_string=inchi_string)
+
+    print(selfies_molecule)
+    >>> SELFIESMolecule(REPRESENTATION = '[N][C][Branch1][C][N][=O]')
+    print(inchi_molecule)
+    >>> InchiMolecule(REPRESENTATION = 'InChI=1S/CH4N2O/c2-1(3)4/h(H4,2,3,4)')
+..
+
 Molecules as Graphs
 -------------------
-Molecules can be modeled as graphs too. To do this, there are multiple approaches. The two easiest approaches would be to either:
+Leveraging the `networkx` library, molecules can be modeled as graphs too. To do this, there are multiple approaches. The two easiest approaches would be to either:
 
-1. Call the specialized :py:meth:`~chemcaption.molecules.AbstractMolecule.to_graph` method designed for this (**RECOMMENDED!**) or
+1. Call the specialized :py:meth:`~chemcaption.molecules.AbstractMolecule.to_networkx` method designed for this (**RECOMMENDED!**) or
 2. Pass the molecule into the :py:obj:`~chemcaption.molecules.MoleculeGraph` class.
 
 Examples:
@@ -40,7 +58,7 @@ Examples:
 
     molecule_string = "CCCC=C" # 1-Pentene
     molecule = SMILESMolecule(representation_string=molecule_string)
-    molecule_graph = molecule.to_graph() # Return molecule as a graph
+    molecule_graph = molecule.to_networkx() # Return molecule as a networkx graph
 ..
 
 The other approach is displayed below:
@@ -169,19 +187,23 @@ This is done via a special high-level featurizer: :py:obj:`~chemcaption.featuriz
 
     featurizer = MultipleFeaturizer(featurizers = featurizers)
 
-    # STEP 4: Pass the molecules to the featurize_many method
+    # STEP 4: Pass the molecules to the `featurize_many` method
     feature = featurizer.featurize_many(molecules = molecules)
 
     print(type(feature))
+    >>> <class 'numpy.ndarray'>
     print(feature.shape)
+    >>> (3, 2)
     print(feature)
 ..
 
+A typical use case for this utility would be the generation of multiple different features for the same set of molecules.
 
 Molecule Featurization (Custom Featurizers)
 --------------------------------------------
 Some projects require some novel featurization, which is embodied by a function.
-This function can be converted into a featurizer of its own by leveraging the :py:class:`~chemcaption.featurizer.adaptor.RDKitAdaptor`.
+This function can be converted into a featurizer of its own by leveraging the
+:py:class:`~chemcaption.featurizer.adaptor.RDKitAdaptor`.
 
 Here, as an example, we define a function which:
 
@@ -192,7 +214,8 @@ Here, as an example, we define a function which:
 .. code-block:: python
 
     def carbon_atom_counter_in_string(molecule):
-        molecule_string = molecule.representation_string # Get string
+         # Get molecule string
+         molecule_string = molecule.representation_string
         return molecule_string.count("=")
 ..
 
@@ -225,17 +248,63 @@ This function will then be converted to a featurizer, and the rest of the workfl
     feature = function_featurizer.featurize(molecule = molecule)
 
     print(type(feature))
+    >>> <class 'numpy.ndarray'>
     print(feature.shape)
+    >>> (1, 1)
     print(feature)
 ..
 
+Similar to regular featurizers, instances of the :py:class:`~chemcaption.featurizer.adaptor.RDKitAdaptor` class can be
+composed with the :py:obj:`~chemcaption.featurize.base.MultipleFeaturizer`:
+
+
+.. code-block:: python
+
+    from chemcaption.molecules import SMILESMolecule
+
+    from chemcaption.featurize.base import MultipleFeaturizer
+    from chemcaption.featurize.composition import MolecularMassFeaturizer, AtomCountFeaturizer
+
+    # STEP 1: Instantiate molecules of interest
+    molecule_string1 = "CCCC=C"     # 1-Pentene
+    molecule_string2 = "[C-]#[O+]"  # carbon dioxide
+    molecule_string3 = "N#N"        # Nitrogen molecule
+
+    molecule1 = SMILESMolecule(representation_string=molecule_string1)
+    molecule2 = SMILESMolecule(representation_string=molecule_string2)
+    molecule3 = SMILESMolecule(representation_string=molecule_string3)
+
+    molecules = [
+        molecule1,
+        molecule2,
+        molecule3,
+    ]
+
+    # STEP 2: Instantiate the featurizers of interest
+    featurizer1 = MolecularMassFeaturizer()
+    featurizer2 = AtomCountFeaturizer()
+
+    # STEP 3: Batch the instantiated featurizers via MultipleFeaturizer
+    featurizers = [featurizer1, featurizer2, function_featurizer]
+
+    featurizer = MultipleFeaturizer(featurizers = featurizers)
+
+    # STEP 4: Pass the molecules to the featurize_many method
+    feature = featurizer.featurize_many(molecules = molecules)
+
+    print(type(feature))
+    >>> <class 'numpy.ndarray'>
+    print(feature.shape)
+    >>> (3, 3)
+    print(feature)
+..
 
 Molecule Featurization (Text)
 -----------------------------
 The above featurization processes are all valid, with the added functionality of being able to generate the features as
 part of text.
 
-Here, for instance, we revisit the example where we convert a function to a featurizer. This time, we generate the
+Here, as an instance, we revisit the example where we convert a function to a featurizer. This time, we generate the
 features as text, leveraging the :py:meth:`~chemcaption.featurize.AbstractFeaturizer.text_featurize`  method.
 
 .. code-block:: python
@@ -264,17 +333,23 @@ features as text, leveraging the :py:meth:`~chemcaption.featurize.AbstractFeatur
     >>> <class 'chemcaption.featurize.text.Prompt'>
     print(feature)
     >>> {'representation': 'N#N', 'representation_type': 'SMILES', 'prompt_template': 'Question: What {VERB} the {PROPERTY_NAME} of the molecule with {REPR_SYSTEM} {REPR_STRING}?', 'completion_template': 'Answer: {COMPLETION}', 'completion': [0], 'completion_names': 'number of carbon atoms', 'completion_labels': ['num_carbon_atoms'], 'constraint': None, 'filled_prompt': 'Question: What is the number of carbon atoms of the molecule with SMILES N#N?', 'filled_completion': 'Answer: 0'}
+    print(feature["representation"])
+    >>> N#N
+    print(feature["representation_type"])
+    >>> SMILES
+    print(feature["filled_prompt"])
+    >>> Question: What is the number of carbon atoms of the molecule with SMILES N#N?
 ..
 
 As can be seen, the :py:meth:`~chemcaption.featurize.base.AbstractFeaturizer.text_featurize` method returns a :py:meth:`~chemcaption.featurize.text.Prompt` instance.
 
 Molecular Comparison (Single Featurizer)
 --------------------------------------------
-One of the driving interests of the **chemcaption** project is to improve on efforts to generate graph data
-for applications in chemistry. In **chemcaption**, the answer to this is the :py:obj:`~chemcaption.featurize.base.Comparator` class.
+One of the driving interests of the chemcaption project is to improve on efforts to generate graph data
+for applications in chemistry. In chemcaption, the answer to this is the :py:obj:`~chemcaption.featurize.base.Comparator` class.
 
 The Comparator class allows the comparison of molecular instances based upon some criteria. Some default
-Comparators are implemented in **chemcaption** at the moment. In addition, the Comparator API makes it easy
+Comparators are implemented in chemcaption at the moment. In addition, the :py:obj:`~chemcaption.featurize.base.Comparator` API makes it easy
 for any user to define their own Comparator instances.
 
 Utilizing a pre-defined comparator is as simple as:
@@ -286,6 +361,61 @@ Utilizing a pre-defined comparator is as simple as:
 
     # Convert function to featurizer via RDKitAdaptor
     comparator = AtomCountComparator()
+
+    # Generate molecular instances
+    molecule_string1 = "CCCC=C"     # 1-Pentene
+    molecule_string2 = "[C-]#[O+]"  # Carbon dioxide
+    molecule_string3 = "N#N"        # Nitrogen molecule
+
+    molecule1 = SMILESMolecule(representation_string=molecule_string1)
+    molecule2 = SMILESMolecule(representation_string=molecule_string2)
+    molecule3 = SMILESMolecule(representation_string=molecule_string3)
+
+    molecules = [
+        molecule1,
+        molecule2,
+        molecule3,
+    ]
+
+    # Compare molecules
+    feature = comparator.compare(molecules = molecules)
+
+    print(type(feature))
+    >>> <class 'numpy.ndarray'>
+    print(feature.shape)
+    >>> (1, 2)
+    print(feature)
+    >>> [[0 0]]
+..
+
+As can be attested to, calling the Comparator API is just as straightforward as calling the AbstractFeaturizer API;
+just replace the call to the **featurize** method with a call to the :py:meth:`~chemcaption.featurize.base.Comparator.compare` method.
+
+
+Molecular Comparison (Batched Featurizers)
+----------------------------------------------------------------
+In addition to comparison on one featurizer, comparison can be carried out between molecules over multiple featurizers.
+This can be of value in situations where molecules need to be compared based on multiple properties.
+
+In this case, all that is needed is to pass a collection of featurizers to the more general :py:obj:`~chemcaption.featurize.base.Comparator` constructor.
+In the example below, multiple molecules will be compared based on their molecular masses and number of atoms:
+
+.. code-block:: python
+
+    from chemcaption.molecules import SMILESMolecule
+
+    from chemcaption.featurize.composition import MolecularMassFeaturizer, AtomCountFeaturizer
+    from chemcaption.featurize.base import Comparator
+
+    # Instantiate featurizers for comparison purposes
+    featurizer1 = MolecularMassFeaturizer()                     # STEP 2
+    featurizer2 = AtomCountFeaturizer()                         # STEP 2
+
+    # Collate featurizers
+    featurizers = [featurizer1, featurizer2]
+
+    # Generate Comparator instance
+    comparator = Comparator(featurizers = featurizers)
 
     # Generate molecular instances
     molecule_string1 = "CCCC=C"     # 1-Pentene
@@ -312,67 +442,22 @@ Utilizing a pre-defined comparator is as simple as:
     >>> [[0 0]]
 ..
 
-As can be attested to, calling the Comparator API is just as straightforward as calling the AbstractFeaturizer API;
-just replace the call to the **featurize** method with a call to the :py:meth:`~chemcaption.featurize.base.Comparator.compare` method.
-
-
-Molecular Comparison (Batched Featurizers)
-----------------------------------------------------------------
-In addition to comparison on one featurizer, comparison can be carried out between molecules over multiple featurizers.
-
-In this case, all that is needed is to pass a collection of featurizers to the more general **Comparator** constructor.
-
-.. code-block:: python
-
-    from chemcaption.molecules import SMILESMolecule
-
-    from chemcaption.featurize.composition import MolecularMassFeaturizer, AtomCountFeaturizer
-    from chemcaption.featurize.base import Comparator
-
-    # Instantiate featurizers for comparison purposes
-    featurizer1 = MolecularMassFeaturizer()                     # STEP 2
-    featurizer2 = AtomCountFeaturizer()                         # STEP 2
-
-    # Collate featurizers
-    featurizers = [featurizer1, featurizer2]
-
-    # Convert function to featurizer via RDKitAdaptor
-    comparator = Comparator(featurizers = featurizers)
-
-    # Generate molecular instances
-    molecule_string1 = "CCCC=C"     # Pentane
-    molecule_string2 = "[C-]#[O+]"  # Carbon II Oxide
-    molecule_string3 = "N#N"        # Nitrogen molecule
-
-    molecule1 = SMILESMolecule(representation_string=molecule_string1) # STEP 1
-    molecule2 = SMILESMolecule(representation_string=molecule_string2) # STEP 1
-    molecule3 = SMILESMolecule(representation_string=molecule_string3) # STEP 1
-
-    molecules = [
-        molecule1,
-        molecule2,
-        molecule3,
-    ]
-
-    feature = comparator.compare(molecules = molecules)
-
-    print(type(feature))
-    >>> <class 'numpy.ndarray'>
-    print(feature.shape)
-    >>> (1, 2)
-    print(feature)
-    >>> [[0 0]]
-..
+As can be seen from the output, the three molecules (1-Pentene, Carbon dioxide, and Nitrogen) are dissimilar based on
+two rubrics: their molecular mass, and their number of atoms.
 
 
 Molecular Comparison (Custom Comparators)
 ------------------------------------------------------
-To design a specific comparator, all that is needed is to specify what sort of comparison will be carried out.
+In order to make **chemcaption** easy to use, a number of Comparators are provided out-of-box. However, the design of a
+custom Comparator is a simple one: To design a specific comparator, all that is needed is to specify what
+sort of comparison will be carried out.
+
 This specification is packaged as a function: **comparison_func**. This method takes in three main inputs:
 
 * The featurizer of interest,
 * The molecules to be compared, and
-* a small float for numerical stability (**OPTIONAL!**).
+* a small float for numerical stability (optional; ignored by non-numerical featurizers like
+:py:obj:`~chemcaption.featurize.stereochemistry.PointGroupFeaturizer`).
 
 As an example, we will define here a comparator which checks if a set of molecules have the same values for the
 same property.
@@ -381,12 +466,13 @@ First, we define our comparison function:
 
 .. code-block:: python
 
-    def comparison_function(featurizer, molecules, epsilon = .1):
+    def comparison_function(featurizer, molecules, epsilon = None):
         results = featurizer.featurize_many(molecules = molecules).flatten().tolist()
         return np.array(len(set(results)) == 1).reshape(1, -1).astype(int)
 ..
 
-We then use this function to generate our comparator:
+Note that in the function prototype above, the `epsilon` parameter is set to `None`, as it is not needed for the
+purpose of our comparison. We then use this function to generate our comparator:
 
 .. code-block:: python
 
@@ -397,7 +483,7 @@ We then use this function to generate our comparator:
             super().__init__(featurizers = featurizers, comparison_func = comparison_func)
 ..
 
-With the Comparator class defined, we can move on to actually generating the molecules and comparing them. In this
+With the custom Comparator class defined, we can move on to actually generating the molecules and comparing them. In this
 instance, we wish to compare the molecules to see whether or not they have the same:
 
 1. Molecular mass, and
@@ -410,13 +496,13 @@ instance, we wish to compare the molecules to see whether or not they have the s
     from chemcaption.featurize.composition import MolecularMassFeaturizer, AtomCountFeaturizer
 
     # Instantiate featurizers for comparison purposes
-    featurizer1 = MolecularMassFeaturizer()                     # STEP 2
-    featurizer2 = AtomCountFeaturizer()                         # STEP 2
+    featurizer1 = MolecularMassFeaturizer()
+    featurizer2 = AtomCountFeaturizer()
 
     # Collate featurizers
     featurizers = [featurizer1, featurizer2]
 
-    #Instantiate comparator instance
+    # Instantiate comparator instance
     comparator = MyComparator(featurizers = featurizers, comparison_func = comparison_function)
 
     # Generate molecular instances
@@ -462,6 +548,55 @@ We can do this by leveraging the :py:obj:`~chemcaption.featurize.base.MultipleCo
     # Instantiate comparators for comparison purposes
     comparator1 = AtomCountComparator()
     comparator2 = ValenceElectronCountComparator()
+
+    # Collate comparators
+    comparators = [comparator1, comparator2]
+
+    # Instantiate comparator instance
+    mega_comparator = MultipleComparator(comparators = comparators)
+
+    # Generate molecular instances
+    molecule_string1 = "CCCC=C"     # 1-Pentene
+    molecule_string2 = "[C-]#[O+]"  # Carbon dioxide
+    molecule_string3 = "N#N"        # Nitrogen molecule
+
+    molecule1 = SMILESMolecule(representation_string=molecule_string1)
+    molecule2 = SMILESMolecule(representation_string=molecule_string2)
+    molecule3 = SMILESMolecule(representation_string=molecule_string3)
+
+    molecules = [
+        molecule1,
+        molecule2,
+        molecule3,
+    ]
+
+    # Compare molecules
+    feature = mega_comparator.compare(molecules = molecules)
+
+    print(feature.shape)
+    >>> (1, 2)
+    print(feature)
+    >>> [[0 0]]
+..
+
+As another example, we aim to compare a set of molecules based on their suitability for drug-related usage.
+There are many rubrics by which this judgement may be made. They include:
+* Lipinski rules.
+* Ghose filter, etcetera.
+
+We can do this by leveraging the :py:obj:`~chemcaption.featurize.base.MultipleComparator` as a means of combining the
+:py:obj:`~chemcaption.featurize.comparator.LipinskiFilterComparator` and :py:obj:`~chemcaption.featurize.comparator.GhoseFilterComparator`:
+
+.. code-block:: python
+
+    from chemcaption.molecules import SMILESMolecule
+
+    from chemcaption.featurize.base import MultipleComparator
+    from chemcaption.featurize.comparator import LipinskiFilterComparator, GhoseFilterComparator
+
+    # Instantiate comparators for comparison purposes
+    comparator1 = LipinskiFilterComparator()
+    comparator2 = GhoseFilterComparator()
 
     # Collate comparators
     comparators = [comparator1, comparator2]

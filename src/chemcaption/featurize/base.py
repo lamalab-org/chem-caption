@@ -778,12 +778,16 @@ class Comparator(AbstractComparator):
     def __init__(
         self,
         featurizers: Optional[List[AbstractFeaturizer]] = None,
-        comparison_func: Callable = None,
+        comparison_func: Optional[Callable] = None,
     ):
         """Instantiate class.
 
         Args:
             featurizers (Optional[List[AbstractFeaturizer]]): List of featurizers to compare over. Defaults to `None`.
+            comparison_func (Optional[Callable]): A function for comparison purposes. Must have three parameters:
+                - `featurizer` (AbstractFeaturizer): Featurizer to compare on,
+                - `molecules` (List[Molecule]): Sequence of molecules to compare, and
+                - `epsilon` (Optional[float]): Numerical float for stability.
 
         """
         super().__init__()

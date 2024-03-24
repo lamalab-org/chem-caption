@@ -213,7 +213,7 @@ class IsomorphismFeaturizer(AbstractFeaturizer):
             np.array: Array containing int representation of isoelectronic status between
                 `self.reference_molecule` and `molecule`.
         """
-        molecule_graph = molecule.to_graph()
+        molecule_graph = molecule.to_networkx()
 
         return np.array(molecule_graph.weisfeiler_lehman_graph_hash()).reshape(1, 1)
 

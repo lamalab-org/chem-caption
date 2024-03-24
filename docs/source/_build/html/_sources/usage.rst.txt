@@ -29,7 +29,7 @@ Molecules as Graphs
 -------------------
 Molecules can be modeled as graphs too. To do this, there are multiple approaches. The two easiest approaches would be to either:
 
-1. Call the specialized :py:meth:`~chemcaption.molecules.AbstractMolecule.to_graph` method designed for this (**RECOMMENDED!**) or
+1. Call the specialized :py:meth:`~chemcaption.molecules.AbstractMolecule.to_networkx` method designed for this (**RECOMMENDED!**) or
 2. Pass the molecule into the :py:obj:`~chemcaption.molecules.MoleculeGraph` class.
 
 Examples:
@@ -40,7 +40,7 @@ Examples:
 
     molecule_string = "CCCC=C" # 1-Pentene
     molecule = SMILESMolecule(representation_string=molecule_string)
-    molecule_graph = molecule.to_graph() # Return molecule as a graph
+    molecule_graph = molecule.to_networkx() # Return molecule as a graph
 ..
 
 The other approach is displayed below:

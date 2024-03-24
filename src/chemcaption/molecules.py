@@ -48,10 +48,10 @@ class MoleculeGraph(nx.Graph):
         super().__init__()
 
         self.molecule = molecule if isinstance(molecule, Chem.Mol) else molecule.reveal_hydrogens()
-        self.graph = self.molecule_to_graph()
+        self.graph = self.molecule_to_networkx()
         self._hash = None
 
-    def molecule_to_graph(self) -> nx.Graph:
+    def molecule_to_networkx(self) -> nx.Graph:
         """Convert molecule object to graph representation.
 
         Args:
@@ -191,7 +191,7 @@ class AbstractMolecule(ABC):
         """
         return Chem.rdMolDescriptors.CalcMolFormula(self.rdkit_mol)
 
-    def to_graph(self) -> MoleculeGraph:
+    def to_networkx(self) -> MoleculeGraph:
         """Convert molecule to graph.
 
         Args:

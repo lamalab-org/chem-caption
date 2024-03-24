@@ -221,7 +221,7 @@ with the appropriate class and string respectively.</p>
 <h2>Molecules as Graphs<a class="headerlink" href="#molecules-as-graphs" title="Link to this heading">#</a></h2>
 <p>Molecules can be modeled as graphs too. To do this, there are multiple approaches. The two easiest approaches would be to either:</p>
 <ol class="arabic simple">
-<li><p>Call the specialized <a class="reference internal" href="api.html#chemcaption.molecules.AbstractMolecule.to_graph" title="chemcaption.molecules.AbstractMolecule.to_graph"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_graph()</span></code></a> method designed for this (<strong>RECOMMENDED!</strong>) or</p></li>
+<li><p>Call the specialized <a class="reference internal" href="api.html#chemcaption.molecules.AbstractMolecule.to_networkx" title="chemcaption.molecules.AbstractMolecule.to_networkx"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_networkx()</span></code></a> method designed for this (<strong>RECOMMENDED!</strong>) or</p></li>
 <li><p>Pass the molecule into the <a class="reference internal" href="api.html#chemcaption.molecules.MoleculeGraph" title="chemcaption.molecules.MoleculeGraph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MoleculeGraph</span></code></a> class.</p></li>
 </ol>
 <p>Examples:</p>
@@ -229,7 +229,7 @@ with the appropriate class and string respectively.</p>
 
 <span class="n">molecule_string</span> <span class="o">=</span> <span class="s2">&quot;CCCC=C&quot;</span> <span class="c1"># 1-Pentene</span>
 <span class="n">molecule</span> <span class="o">=</span> <span class="n">SMILESMolecule</span><span class="p">(</span><span class="n">representation_string</span><span class="o">=</span><span class="n">molecule_string</span><span class="p">)</span>
-<span class="n">molecule_graph</span> <span class="o">=</span> <span class="n">molecule</span><span class="o">.</span><span class="n">to_graph</span><span class="p">()</span> <span class="c1"># Return molecule as a graph</span>
+<span class="n">molecule_graph</span> <span class="o">=</span> <span class="n">molecule</span><span class="o">.</span><span class="n">to_networkx</span><span class="p">()</span> <span class="c1"># Return molecule as a graph</span>
 </pre></div>
 </div>
 <p>The other approach is displayed below:</p>

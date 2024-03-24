@@ -6,7 +6,9 @@ Summary of the package + main selling points.
 Why should one use this package?
 
 When is this the right package to use?
-When is something else better? 
+When is something else better?
+
+Chemcaption is a cheminformatics libary
 
 
 Table of Contents
