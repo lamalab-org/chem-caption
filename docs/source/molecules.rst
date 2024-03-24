@@ -8,9 +8,3 @@ Table of Contents
    SMILESMolecule
    SELFIESMolecule
    InChIMolecule
-
-Indices and Tables
-------------------
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
