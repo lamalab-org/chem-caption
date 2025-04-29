@@ -171,9 +171,11 @@ def inspect_info(info: dict) -> Dict[str, Union[str, List[int], List[float]]]:
         elif isinstance(value, (list, tuple)):
             list_len = len(value)
             value = [
-                str(round(sub_value, new_info["PRECISION"]))
-                if isinstance(sub_value, (int, float))
-                else str(sub_value)
+                (
+                    str(round(sub_value, new_info["PRECISION"]))
+                    if isinstance(sub_value, (int, float))
+                    else str(sub_value)
+                )
                 for sub_value in value
             ]
 

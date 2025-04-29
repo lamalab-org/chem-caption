@@ -25,7 +25,11 @@ class RDKitAdaptor(AbstractFeaturizer):
     """Higher-level featurizer. Returns specific, lower-level featurizers."""
 
     def __init__(
-        self, rdkit_function: Callable, labels: List[str], **rdkit_function_kwargs: Dict[str, Any]
+        self,
+        rdkit_function: Callable,
+        labels: List[str],
+        names: List[Dict[str, str]],
+        **rdkit_function_kwargs: Dict[str, Any],
     ):
         """Initialize class object.
 
@@ -33,11 +37,13 @@ class RDKitAdaptor(AbstractFeaturizer):
             rdkit_function (Callable): Molecule descriptor-generating function.
                 May be obtained from a chemistry featurization package like `rdkit` or custom written.
             labels (List[str]): Feature label(s) to assign to extracted feature(s).
+            names (List[Dict[str, str]]): Names of features.
             rdkit_function_kwargs (Dict[str, Any]): Keyword arguments to be parsed by `rdkit_function`.
         """
         super().__init__()
         self.rdkit_function = rdkit_function
         self._label = labels
+        self._names = names
         self.rdkit_function_kwargs = rdkit_function_kwargs
 
     def featurize(
@@ -55,7 +61,11 @@ class RDKitAdaptor(AbstractFeaturizer):
         Returns:
             np.array: Array containing extracted features.
         """
-        feature = self.rdkit_function(molecule.rdkit_mol, **self.rdkit_function_kwargs)
+        try:
+            feature = self.rdkit_function(molecule.rdkit_mol, **self.rdkit_function_kwargs)
+        except AttributeError:
+            feature = self.rdkit_function(molecule, **self.rdkit_function_kwargs)
+
         feature = (
             [
                 feature,
@@ -101,19 +111,18 @@ class ValenceElectronCountAdaptor(RDKitAdaptor):
         super().__init__(
             rdkit_function=Descriptors.NumValenceElectrons,
             labels=["num_valence_electrons"],
+            names=[
+                {
+                    "noun": "number of valence electrons",
+                },
+                {
+                    "noun": "valence electron count",
+                },
+                {
+                    "noun": "count of valence electrons",
+                },
+            ],
         )
-
-        self._names = [
-            {
-                "noun": "number of valence electrons",
-            },
-            {
-                "noun": "valence electron count",
-            },
-            {
-                "noun": "count of valence electrons",
-            },
-        ]
 
     def featurize(self, molecule: Molecule) -> np.array:
         """

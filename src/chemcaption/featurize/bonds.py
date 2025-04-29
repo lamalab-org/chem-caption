@@ -437,6 +437,7 @@ class BondTypeCountFeaturizer(AbstractFeaturizer):
         Return integer array representing the:
             - frequency or
             - presence
+
             of bond types in a molecule.
 
         Args:
