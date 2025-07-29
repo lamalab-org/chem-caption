@@ -4,7 +4,7 @@
 
 from abc import ABC, abstractmethod
 from concurrent.futures import ProcessPoolExecutor
-from typing import Any, Dict, List, Optional, Sequence, Tuple, Union, override
+from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -677,7 +677,6 @@ class MultipleFeaturizer(AbstractFeaturizer):
 
         return np.array(features).reshape((1, -1))
 
-    @override
     def text_featurize(
         self,
         molecule: Molecule,
