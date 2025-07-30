@@ -63,9 +63,8 @@ def test_solvent_accessible_atom_area_featurizer():
     assert len(results) > 0
     assert len(results[0]) == len(featurizer.feature_labels)
 
-    mean_res = np.mean(results[results>8])
+    mean_res = np.mean(results[results > 8])
 
-    
     featurizer = SolventAccessibleAtomAreaFeaturizer(qc_optimize=True)
     results = featurizer.featurize(molecule)
     assert len(results) > 0
@@ -75,7 +74,7 @@ def test_solvent_accessible_atom_area_featurizer():
     results = featurizer.featurize(molecule)
     assert len(results) > 0
     assert len(results[0]) == len(featurizer.feature_labels)
-    
+
     featurizer = SolventAccessibleAtomAreaFeaturizer(aggregation="mean")
 
     r = featurizer.featurize(molecule)
@@ -88,4 +87,3 @@ def test_solvent_accessible_atom_area_featurizer():
     results = featurizer.featurize_many(mols)
 
     assert len(results) == len(mols)
-

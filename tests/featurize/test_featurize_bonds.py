@@ -10,7 +10,7 @@ from chemcaption.featurize.bonds import (
     RotableBondCountFeaturizer,
     RotableBondProportionFeaturizer,
     DipoleMomentsFeaturizer,
-    BondOrderFeaturizer
+    BondOrderFeaturizer,
 )
 from chemcaption.featurize.text import Prompt
 from chemcaption.molecules import SMILESMolecule
@@ -23,8 +23,9 @@ __all__ = [
     "test_rotable_bond_count_featurizer",
     "test_bond_type_proportion_featurizer",
     "test_dipole_moments_featurizer",
-    "test_bond_order_featurizer"
+    "test_bond_order_featurizer",
 ]
+
 
 def test_bond_type_count_featurizer():
     """Tests the BondTypeCountFeaturizer"""
@@ -69,8 +70,8 @@ def test_bond_type_count_featurizer():
         "integer / boolean indicators i.e., 0 (or False) for absence, 1 (or True) for presence."
     )
 
-    bt = BondTypeCountFeaturizer(bond_type=['single', 'double', 'triple'])
-    
+    bt = BondTypeCountFeaturizer(bond_type=["single", "double", "triple"])
+
     results = bt.featurize(molecule)
 
     assert len(results[0]) == len(bt.feature_labels)
@@ -79,7 +80,7 @@ def test_bond_type_count_featurizer():
     uq = bt._get_unique_bond_types(molecule)
 
     assert len(uq) == 2
-    assert set(uq) == set(['AROMATIC', 'SINGLE'])
+    assert set(uq) == set(["AROMATIC", "SINGLE"])
 
 
 def test_rotable_bond_proportion_featurizer():
@@ -145,9 +146,9 @@ def test_rotable_bond_count_featurizer():
     mols = [SMILESMolecule("C1=CC=CC=C1"), SMILESMolecule("O")]
 
     try:
-        rbcf.text_featurize_many(pos_keys=['hehe'], molecules=mols)
+        rbcf.text_featurize_many(pos_keys=["hehe"], molecules=mols)
         assert False
-    except:
+    except Exception:
         assert True
 
 
@@ -182,6 +183,7 @@ def test_bond_type_proportion_featurizer():
         "0.0, 0.0, 0.0, 0.0, 0.0, 0.0, and 0.0"
     )
 
+
 def test_dipole_moments_featurizer():
     """Tests the DipoleMomentsFeaturizer"""
 
@@ -206,8 +208,8 @@ def test_bond_order_featurizer():
     results = featurizer.featurize(molecule)
 
     assert len(results[0]) == len(featurizer.feature_labels)
-    
+
     names = featurizer.feature_names()
 
     assert isinstance(names, list)
-    assert names[0]['noun'] == 'bond orders'
+    assert names[0]["noun"] == "bond orders"

@@ -12,6 +12,7 @@ __all__ = [
     "test_registry",
 ]
 
+
 def test_registry():
     """Tests the registry functionality."""
 

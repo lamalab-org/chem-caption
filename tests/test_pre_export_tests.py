@@ -6,16 +6,12 @@ from chemcaption.export.pre_export_tests import get_smarts_featurizers, get_repe
 
 from chemcaption.featurize.substructure import FragmentSearchFeaturizer
 
-from chemcaption.featurize.bonds import (
-    BondTypeCountFeaturizer,
-    BondTypeProportionFeaturizer
-)
+from chemcaption.featurize.bonds import BondTypeCountFeaturizer, BondTypeProportionFeaturizer
 
 from chemcaption.featurize.base import MultipleFeaturizer
 
-__all__ = [
-    "test_pre_export_test"
-]
+__all__ = ["test_pre_export_test"]
+
 
 def test_pre_export_test():
     """Tests the pre_export_tests"""
@@ -24,10 +20,7 @@ def test_pre_export_test():
     assert isinstance(smarts, list)
     assert isinstance(smarts[0], FragmentSearchFeaturizer)
 
-    featurizer = MultipleFeaturizer([
-        BondTypeCountFeaturizer(),
-        BondTypeProportionFeaturizer()
-    ])
+    featurizer = MultipleFeaturizer([BondTypeCountFeaturizer(), BondTypeProportionFeaturizer()])
 
     repetitive, _ = get_repetitive_labels(featurizer)
 

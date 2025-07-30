@@ -3,7 +3,7 @@
 """Utility imports."""
 
 from abc import ABC, abstractmethod
-from typing import Union, List, Generator
+from typing import List, Union
 
 import networkx as nx
 import rdkit
@@ -260,7 +260,8 @@ Molecule: TypeAlias = Union[SMILESMolecule, InChIMolecule, SELFIESMolecule]
 
 """Molecule collection."""
 
-class MoleculeCollection():
+
+class MoleculeCollection:
     """Holds a collection of molecules of the same type.
 
     Args:
@@ -268,12 +269,11 @@ class MoleculeCollection():
         representation (Molecule): molecule representation we want to use.
     """
 
-    def __init__(self,
-                molecules:List[str],
-                representation: Molecule) -> None:
+    def __init__(self, molecules: List[str], representation: Molecule) -> None:
+        """Instantiate class."""
+        
         self.molecules = molecules
         self.representation = representation
-
 
     def __iter__(self):
         for m in self.molecules:
