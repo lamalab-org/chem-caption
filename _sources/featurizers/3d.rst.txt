@@ -1,0 +1,7 @@
+3D structure
+============
+
+.. automodule:: chemcaption.featurize.spatial
+   :members:
+   :undoc-members:
+   :show-inheritance:

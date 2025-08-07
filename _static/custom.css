@@ -1,0 +1,19 @@
+.sidebar-brand-text {
+    display: none;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: #A43830;
+}
+
+a:link {
+  color: #A43830 !important;
+}
+
+a:visited {
+  color: #8A2E27 !important;
+}
+
+.theme-toggle svg {
+    color: #A43830 !important;
+}
