@@ -37,7 +37,7 @@ CORE: Dict[str, str] = {
     "geminal_diol": "[CX4](-[O-,OH,OH2+])-[O-,OH,OH2+]",
     "vicinal_diol": "[OH]-[CX4]-[CX4]-[OH]",
     "enol": "[#6]=C-[OH,O-,OH2+]",
-    "ether": "[#6;!$(C#O);!$(C=[C,O,S,N]);!$(C(-[O,S,N,n])-[O,S,N,n]);!$(C#N)]-[OX2;!r3;!$(O1-[#6;X3]~[#6;X3]~[O,S,N]~[#6;X3]~[#6;X3]-1)]-[#6;!$(C#O);!$(C=[C,O,S,N]);!$(C([O,S,N,n])-[O,S,N,n]);!$(C#N)]", # excludes enol ethers, ynol ethers, epoxides, acetals, esters, anhydrides, oxines, cyanates
+    "ether": "[#6;!$(C#C);!$(C=[C,O,S,N]);!$(C(-[O,S,N,n])-[O,S,N,n]);!$(C#N)]-[OX2;!r3;!$(O1-[#6;X3]~[#6;X3]~[O,S,N]~[#6;X3]~[#6;X3]-1)]-[#6;!$(C#C);!$(C=[C,O,S,N]);!$(C([O,S,N,n])-[O,S,N,n]);!$(C#N)]", # excludes enol ethers, ynol ethers, epoxides, acetals, esters, anhydrides, oxines, cyanates
     "enol_ether": "[CX3;$(C=C);!$(C(O)O)]-O-[#6;!$(C=[O,S,N]);!$(C#N)]",
     "ynol_ether": "[CX2;$(C#C)]-O-[#6;!$(C=[O,S,N]);!$(C#N)]",
     "aldehyde": "[#6]-[CH](=O)",
@@ -45,7 +45,7 @@ CORE: Dict[str, str] = {
     "ketene": "C=C=O",
     "conjugated_carbonyl": "O=[C;$(C-C=C)]", # 'O=C-C=C' is not used; it would double count the carbonyl if it's conjugated on both sides
     "oxonium": "[!#1]-[OX3+](-[!#1])-[!#1]",
-    "acetyl": "[#6;!$([CH2](-C(=O)-[CH3])-C=O)]-C(=O)-[CH3]", # excludes acetoxy, acetoacetyl
+    "acetyl": "[!$([CH2](-C(=O)-[CH3])-C=O)]-C(=O)-[CH3]", # excludes acetoxy, acetoacetyl
     "other_acyl": "[#6,#1]-C(=O)-[!$([#6,F,Cl,Br,I]);!$(O-[#6,#7,#8]);!$(S-[#6]);!$([#7;X3]);!$(N=C)]",
     ## 2x O
     "methylenedioxy": "[*]-O-[CH2;!$([CX4]1Oc2ccccc2O1)]-O-[*]", # excludes benzodioxoles
@@ -166,7 +166,7 @@ CORE: Dict[str, str] = {
     "nitro": "[NX3+](=O)([O-])-[!O;!N;!$([cH0]1[cH0]c(-[N+](=O)[O-])[cH]c(-[N+](=O)[O-])[cH]1);!$([cH0]1[cH]c(-[N+](=O)[O-])[cH0]c(-[N+](=O)[O-])[cH]1)]",
     "nitrite": "[*]-O-[NX2]=O",
     "nitrosamine": "[#7]-[NX2]=O",
-    "imide": "[$(C(=O)-[#6,#1])]-N(-[!$(C=[O,S,N])])-[$(C(=O)-[#6,#1])]",
+    "imide": "[$(C(=O)-[#6,#1])]-N(-[!$(C=O)])-[$(C(=O)-[#6,#1])]",
     "urea": "[#7X3,$([NX2]=[CX3])]-C(=[O;!$(O=C1[#7]~[#6]C(=O)N1)])-[NX3,$([NX2]=C)]", # excludes hydantoin
     "isourea": "[NX3]-C(=[NX2,NX3H+])-O-[#6,#14,#1]",
     "carbamate": "[#6]-O-C(=O)-[NX3]",
@@ -251,6 +251,7 @@ BRANCHES: Dict[str, str] = {
     "p-tolyl": "[!$([$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])])]-[cH0]1:[cH]:[cH]:[cH0](-[CH3]):[cH]:[cH]:1", # excludes tosyl
     "vanillyl": "[C;!$(C=O)]-[cH0]1:[cH]:[cH0](-O-[CH3]):[cH0](-[OH]):[cH]:[cH]:1",
     "vanilloyl": "[*]-C(=O)-[cH0]1:[cH]:[cH0](-O-[CH3]):[cH0](-[OH]):[cH]:[cH]:1",
+    "galloyl": "[*]-C(=O)-[cH0]1:[cH]:[cH0](-O):[cH0](-O):[cH0](-O):[cH]:1",
     "mesityl": "[*]-[cH0]1:[cH0](-[CH3]):[cH]:[cH0](-[CH3]):[cH]:[cH0](-[CH3]):1",
     "2,6-diisopropylphenyl": "[*]-[cH0]1:[cH0](-[CH](-[CH3])-[CH3]):[cH]:[cH]:[cH]:[cH0](-[CH](-[CH3])-[CH3]):1",
     "2,4,6-triisopropylphenyl": "[*]-[cH0]1:[cH0](-[CH](-[CH3])-[CH3]):[cH]:[cH0](-[CH](-[CH3])-[CH3]):[cH]:[cH0](-[CH](-[CH3])-[CH3]):1",
@@ -350,7 +351,7 @@ MAIN_GROUP: Dict[str, str] = {
     ### PR2X
     "phosphinite": "[PX3](-[#6,#1])(-[#6,#1])-O-[#6,#14]",
     "thiophosphinite": "[PX3](-[#6,#1])(-[#6,#1])-[SX2]-[#6]",
-    "phosphinamidite": "[PX3](-[#6,#1])(-[#6,#1])-[#7X3,$([NX2]=[CX3])]",
+    "aminophosphine": "[PX3](-[#6,#1])(-[#6,#1])-[#7X3,$([NX2]=[CX3])]",
     "halophosphine": "[PX3](-[#6,#1])(-[#6,#1])-[F,Cl,Br,IX1]",
     ### PRX2
     "phosphonite": "[PX3](-[#6,#1])(-O-[#6,#14])-O-[#6,#14]",
@@ -366,7 +367,7 @@ MAIN_GROUP: Dict[str, str] = {
     "trithiophosphite": "[PX3](-[SX2]-[#6])(-[SX2]-[#6])-[SX2]-[#6]",
     "phosphoramidite": "[PX3](-O-[#6,#14])(-O-[#6,#14])-[#7X3,$([NX2]=[CX3])]",
     "phosphorodiamidite": "[PX3](-O-[#6,#14])(-[#7X3,$([NX2]=[CX3])])-[#7X3,$([NX2]=[CX3])]",
-    "phosphi": "[PX3](-[#7X3,$([NX2]=[CX3])])(-[#7X3,$([NX2]=[CX3])])-[#7X3,$([NX2]=[CX3])]",
+    "triaminophosphine": "[PX3](-[#7X3,$([NX2]=[CX3])])(-[#7X3,$([NX2]=[CX3])])-[#7X3,$([NX2]=[CX3])]",
     "thiophosphoramidite": "[PX3](-O-[#6,#14])(-[SX2]-[#6])-[#7X3,$([NX2]=[CX3])]",
     "dithiophosphoramidite": "[PX3](-[SX2]-[#6])(-[SX2]-[#6])-[#7X3,$([NX2]=[CX3])]",
     ## C=P(VI)
@@ -707,6 +708,14 @@ MAIN_GROUP: Dict[str, str] = {
     "arsine_oxide": "[#6,#14,#1]-[$([AsX4]=O),$([AsX4+]-[O-])](-[#6,#14,#1])-[#6,#14,#1]",
     "arsonium": "[AsX4+;!$([As+]-[O-]);!$([P+]-[C-])]",
     "arsonium_ylide": "[$([AsX4+]-[C-;X3,X2]),$([AsX4]=[C;X3,X2])]",
+    "arsinite": "[#6,#14,#1]-[AsX3](-[#6,#14,#1])-O",
+    "thioarsinite": "[#6,#14,#1]-[AsX3](-[#6,#14,#1])-[SX2,SX1-]",
+    "arsonite": "[#6,#14,#1]-[AsX3](-O)-O",
+    "monothio_arsonite": "[#6,#14,#1]-[AsX3](-O)-[SX2,SX1-]",
+    "dithio_arsonite": "[#6,#14,#1]-[AsX3](-[SX2,SX1-])-[SX2,SX1-]",
+    "aminoarsine": "[#6,#14,#1]-[AsX3](-[#6,#14,#1])-[#7X3,$([NX2]=[CX3])]",
+    "diaminoarsine": "[#6,#14,#1]-[AsX3](-[#7X3,$([NX2]=[CX3])])-[#7X3,$([NX2]=[CX3])]",
+    "triaminoarsine": "[#7X3,$([NX2]=[CX3])]-[AsX3](-[#7X3,$([NX2]=[CX3])])-[#7X3,$([NX2]=[CX3])]",
     "arsinic_acid": "[#6]-[$([AsX4]=O),$([AsX4+]-[O-])](-[#6])-[O-,OH,OH2+]",
     "arsinyl_halide": "[#6]-[$([AsX4]=O),$([AsX4+]-[O-])](-[#6])-[F,Cl,Br,IX1]",
     "arsinate_ester": "[#6]-[$([AsX4]=O),$([AsX4+]-[O-])](-[#6])-O-[#6,#14]",
@@ -715,12 +724,18 @@ MAIN_GROUP: Dict[str, str] = {
     "arsonate_mono_ester": "[#6]-[$([AsX4]=O),$([AsX4+]-[O-])](-[O-,OH,OH2+])-O-[#6,#14]",
     "arsonate_di_ester": "[#6]-[$([AsX4]=O),$([AsX4+]-[O-])](-O-[#6,#14])-O-[#6,#14]",
     "arsenite": "O-[AsX3](-O)-O",
-    "trithioarsenite": "[SX2,SX1-]-[AsX3](-[SX2,SX1-])-[SX2,SX1-]",
+    "monothio_arsenite": "O-[AsX3](-O)-[SX2,SX1-]",
+    "dithio_arsenite": "O-[AsX3](-[SX2,SX1-])-[SX2,SX1-]",
+    "trithio_arsenite": "[SX2,SX1-]-[AsX3](-[SX2,SX1-])-[SX2,SX1-]",
     "arsenic_acid": "[O-,OH,OH2+]-[$([AsX4]=O),$([AsX4+]-[O-])](-[O-,OH,OH2+])-[O-,OH,OH2+]",
     "arsenate_mono_ester": "[O-,OH,OH2+]-[$([AsX4]=O),$([AsX4+]-[O-])](-[O-,OH,OH2+])-O-[#6,#14]",
     "arsenate_di_ester": "[O-,OH,OH2+]-[$([AsX4]=O),$([AsX4+]-[O-])](-O-[#6,#14])-O-[#6,#14]",
     "arsenate_tri_ester": "[#6,#14]-O-[$([AsX4]=O),$([AsX4+]-[O-])](-O-[#6,#14])-O-[#6,#14]",
-    "thioarsenate": "O-[$([AsX4]=[SX1]),$([AsX4+]-[SX1-])](-O)-O",
+    "thiono_arsenate": "[$([AsX4]=[SX1]),$([AsX4+]-[SX1-])](-O)(-O)-O",
+    "monothio_arsenate": "[$([AsX4]=O),$([AsX4+]-[O-])](-O)(-O)-[SX2,SX1-]",
+    "dithio_arsenate": "[$([AsX4]=O),$([AsX4+]-[O-])](-O)(-[SX2,SX1-])-[SX2,SX1-]",
+    "trithio_arsenate": "[$([AsX4]=O),$([AsX4+]-[O-])](-[SX2,SX1-])(-[SX2,SX1-])(-[SX2,SX1-])",
+    "tetrathio_arsenate": "[$([AsX4]=[SX1]),$([AsX4+]-[SX1-])](-[SX2,SX1-])(-[SX2,SX1-])-[SX2,SX1-]",
 
     # Selenium
     "selenoether": "[#6;!$(C#N)]-[SeX2;!r3]-[#6;!$(C#N)]",
