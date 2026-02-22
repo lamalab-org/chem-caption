@@ -23,7 +23,7 @@ CORE: Dict[str, str] = {
     "heteroconjugated_C=C": "[*]~[C;!$([#6;X3]1~[#6;X3]~[#6;X3]~[#6;X3]~[#7,#8,#16]~1)](~[*])=[C;!$([#6;X3]1~[#6;X3]~[#6;X3]~[#6;X3]~[#7,#8,#16]~1)](~[*])-[$([C,O,N,S]=,#[C,O,N,S]);!$(C=,#C)]",
     "conjugated_C#C": "[*]~C(~[*])#C(~[*])-[$(C=,#C)]",
     "terminal_alkyne": "[CH0]#[CH]",
-    "nonterminal_alkyne": "[CH0]#[CH0]",
+    "internal_alkyne": "[CH0]#[CH0]",
     "allene": "[CX3]=C=[CX3]",
     "enyne": "[!$(C#C)]-C(-[!$(C#C)])=C(-[!$(C#C)])-C#C",
     "enediyne": "C#C-C(-[!$(C#C)])=C(-[!$(C#C)])-C#C",
@@ -61,14 +61,15 @@ CORE: Dict[str, str] = {
     "acetylenediolate": "[!#1]-O-C#C-O-[!#1]",
     ### common diacyls
     "oxalyl": "[!#6;!#1]-C(=O)-C(=O)-[!#6;!#1]",
-    "acetylenedicarboxoyl": "[!#6;!#1]-C(=O)-C#C-C(=O)-[!#6;!#1]",
+    "pyruvyl": "[CH3]-C(=O)-C(=O)-[!#6;!#1]",
     "malonyl": "[!#6;!#1]-C(=O)-[CX4]-C(=O)-[!#6;!#1]",
     "acetoacetyl": "[CH3]-C(=O)-[CX4]-C(=O)-[!#6;!#1]",
-    "pyruvyl": "[CH3]-C(=O)-C(=O)-[!#6;!#1]",
     "succinyl": "[$(C(=O)-[!#6;!#1])]-[C;!$(C-N)]-[C;!$(C-N)]-[$(C(=O)-[!#6;!#1])]", # excludes aspartate
     "glutaryl": "[$(C(=O)-[!#6;!#1])]-[C;!$(C-N)]-C-[C;!$(C-N)]-[$(C(=O)-[!#6;!#1])]", # excludes glutamate
     "adipoyl": "[$(C(=O)-[!#6;!#1])]-C-C-C-C-[$(C(=O)-[!#6;!#1])]",
     "maleoyl": "[$(C(=O)-[!#6;!#1])]-\[CX3]=[CX3]/-[$(C(=O)-[!#6;!#1])]",
+    "fumaroyl": "[$(C(=O)-[!#6;!#1])]-/[CX3]=[CX3]/-[$(C(=O)-[!#6;!#1])]",
+    "acetylenedicarboxoyl": "[!#6;!#1]-C(=O)-C#C-C(=O)-[!#6;!#1]",
     "phthaloyl": "[$(C(=O)-[!#6;!#1])]-c1ccccc1-C(=O)-[$(C(=O)-[!#6;!#1])]",
     "isophthaloyl": "[$(C(=O)-[!#6;!#1])]-c1cc-[$(C(=O)-[!#6;!#1])]ccc1",
     "terephthaloyl": "[$(C(=O)-[!#6;!#1])]-c1ccc-[$(C(=O)-[!#6;!#1])]cc1",
@@ -194,7 +195,7 @@ BRANCHES: Dict[str, str] = {
     # non-branched aliphatic chains are also allowed to be connected a to a quaternary carbon 
     # [!#1] is used because explicit hydrogens are added to the SMILES prior to counting
     ## saturated
-    "methyl": "[CH3]-[!#1;!O;!C,$([C;!X4,R,X4H0;!$(C(=O));!$(C(-[CH3])(-[CH3])(-[CH3,$([CH2]-[CH3])]));!$(C(-[CH3])(-[CH3])=[CH]-[CH2]);!$(C(-[CH3])(-[CH2]-[CH2]-[CH]=C(-[CH3])-[CH3])=[CH]-[CH2])]);!$([cH0]1[cH][cH][cH][cH][cH0]1);!$([cH0]1[cH][cH][cH0][cH][cH]1);!$([cH0]1[cH][cH0][cH][cH][cH]1);!$([cH0]1[cH0]c([CH3])[cH]c([CH3])[cH]1);!$([cH0]1[cH]c([CH3])[cH0]c([CH3])[cH]1);!$([SX4](=O)(=O));!$([SX4+](-[O-])(=O));!$([SX4+2](-[O-])(-[O-]));!$([Si]([CH3])([CH3])[CH3]);!$([Si]([CH3])([CH3])C([CH3])([CH3])[CH3]);!$([Si]([CH3])([CH3])[CH]([CH3])[CH3]);!$([Si]([CH3])([CH3])[cH0]1[cH][cH][cH][cH][cH]1)]",
+    "methyl": "[CH3]-[!#1;!O;!C,$([C;!X4,R,X4H0;!$(C(=O));!$(C(-[CH3])(-[CH3])(-[CH3,$([CH2]-[CH3]),$([CH]([CH3])[CH3])]));!$(C(-[CH3])(-[CH3])=[CH]-[CH2]);!$(C(-[CH3])(-[CH2]-[CH2]-[CH]=C(-[CH3])-[CH3])=[CH]-[CH2])]);!$([cH0]1[cH][cH][cH][cH][cH0]1);!$([cH0]1[cH][cH][cH0][cH][cH]1);!$([cH0]1[cH][cH0][cH][cH][cH]1);!$([cH0]1[cH0]c([CH3])[cH]c([CH3])[cH]1);!$([cH0]1[cH]c([CH3])[cH0]c([CH3])[cH]1);!$([SX4](=O)(=O));!$([SX4+](-[O-])(=O));!$([SX4+2](-[O-])(-[O-]));!$([Si]([CH3])([CH3])[CH3]);!$([Si]([CH3])([CH3])C([CH3])([CH3])[CH3]);!$([Si]([CH3])([CH3])[CH]([CH3])[CH3]);!$([Si]([CH3])([CH3])[cH0]1[cH][cH][cH][cH][cH]1)]",
     ##!! "methyl" excludes: methoxy; methoxymethyl; acetoxy; acetyl; methyls on t-butyl, t-pentyl, neopentyl, thexyl, prenyl, geranyl; tolyls; mesyl; mesityl; methyls on TMS, TBDMS, etc.;
     "methoxy": "[CH3]-[O;!$(O(-[CH2])-[CH3])]-[!$(C=O)]", # excludes methoxymethyl, methoxycarbonyl
     "methoxymethyl": "[CH3]-O-[CH2]-[!C,$([C;!X4,R,X4H0]);!#1]",
@@ -204,7 +205,7 @@ BRANCHES: Dict[str, str] = {
     "carboethoxy": "[CH3]-[CH2]-O-C(=O)-[*]",
     "n-propyl": "[CH3]-[CH2]-[CH2]-[!C,$([C;!X4,R,X4H0]);!O;!#1]", # excludes propoxy
     "propoxy": "[CH3]-[CH2]-[CH2]-O-[*]",
-    "isopropyl": "[CH3]-[CH](-[CH3])-[!C,$([C;!X4,R,X4H0]);!O;!#1;!$([Si]([CH]([CH3])[CH3])([CH]([CH3])[CH3])([CH]([CH3])[CH3]));!$([Si]([CH]([CH3])[CH3])([CH3])([CH3]));!$([cH0]1[cH0]c(-[CH]([CH3])[CH3])[cH]c(-[$([CH]([CH3])[CH3]),#1])[cH]1);!$([cH0]1[cH]c(-[CH]([CH3])[CH3])[cH0]c(-[CH]([CH3])[CH3])[cH]1)]", # excludes isopropoxy, 2,6-di and 2,4,6-triisopropylphenyl, isopropyls on common silyls
+    "isopropyl": "[CH3]-[CH](-[CH3])-[!C,$([C;!X4,R,X4H0]);!O;!#1;!$(C(-[CH3])-[CH3]);!$([Si]([CH]([CH3])[CH3])([CH]([CH3])[CH3])([CH]([CH3])[CH3]));!$([Si]([CH]([CH3])[CH3])([CH3])([CH3]));!$([cH0]1[cH0]c(-[CH]([CH3])[CH3])[cH]c(-[$([CH]([CH3])[CH3]),#1])[cH]1);!$([cH0]1[cH]c(-[CH]([CH3])[CH3])[cH0]c(-[CH]([CH3])[CH3])[cH]1)]", # excludes the isopropyl on thexyl; isopropoxy; 2,6-di and 2,4,6-triisopropylphenyl; isopropyls on common silyls
     "isopropoxy": "[CH3]-[CH](-[CH3])-O-[*]",
     "n-butyl": "[CH3]-[CH2]-[CH2]-[CH2]-[!C,$([C;!X4,R,X4H0]);!#1]",
     "isobutyl": "[CH3]-[CH](-[CH3])-[CH2]-[!C,$([C;!X4,R]);!#1]",
