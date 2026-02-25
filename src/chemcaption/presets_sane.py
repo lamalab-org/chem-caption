@@ -31,8 +31,9 @@ CORE: Dict[str, str] = {
     # Oxygen
     ## 1x O
     "primary_alcohol": "[CX4;H2]-[O-,OH,OH2+]",
-    "secondary_alcohol": "[CX4;H;!$(C(O)(O))](-[O-,OH,OH2+])",
-    "tertiary_alcohol": "[CX4;H0;!$(C(O)(O))](-[O-,OH,OH2+])",
+    "secondary_alcohol": "[CX4;H;!$(C(O)(O))]-[O-,OH,OH2+]",
+    "tertiary_alcohol": "[CX4;H0;!$(C(O)(O))]-[O-,OH,OH2+]",
+    "allylic_hydroxy": "[O-,OH,OH2+]-[$([CX4;!$(C(O)(O))]-C=C)]",
     "aromatic_hydroxy": "[cX3H0]-[O-,OH,OH2+]", 
     "geminal_diol": "[CX4](-[O-,OH,OH2+])-[O-,OH,OH2+]",
     "vicinal_diol": "[OH]-[CX4]-[CX4]-[OH]",
@@ -150,8 +151,8 @@ CORE: Dict[str, str] = {
     "fulminate": "[*]-O-[NX2+]#[CX1-]",
     "cyanate": "[*]-O-C#N",
     "isocyanate": "[*]-[NX2]=C=O",
-    "primary_amide": "[#6,#1]-C(=O)-[NH2]",
-    "secondary_amide": "[#6,#1]-C(=O)-[NH]-[#6,#14;!$(C=[O,S])]",
+    "primary_amide": "[#6,#1]-C(=O)-[NX3H2]",
+    "secondary_amide": "[#6,#1]-C(=O)-[NX3H]-[#6,#14;!$(C=[O,S])]",
     "tertiary_amide": "[#6,#1]-C(=O)-[#7;X3]([#6,#14;!$(C=[O,S])])[#6,#14;!$(C=[O,S])]", # includes pyrrolide amides
     "acyl_imine": "[#6,#1]-C(=O)-[NX2]=[#6]",
     "imidate": "[#6,#1]-C(=[NX2,NX3H+]-[!#8;!#7])-O-[*]",
@@ -170,7 +171,7 @@ CORE: Dict[str, str] = {
     "nitrosamine": "[#7]-[NX2]=O",
     "imide": "[$(C(=O)-[#6,#1])]-N(-[!$(C=O)])-[$(C(=O)-[#6,#1])]",
     "urea": "[#7X3,$([NX2]=[CX3,PX4])]-C(=[O;!$(O=C1[#7]~[#6]C(=O)N1)])-[#7X3,$([NX2]=[CX3,PX4])]", # excludes hydantoin
-    "isourea": "[NX3]-C(=[NX2,NX3H+])-O-[#6,#14,#1]",
+    "isourea": "[NX3]-C(=[NX2,NX3+])-O-[*]",
     "carbamate": "[#6]-O-C(=O)-[NX3]",
     "imidocarbonate": "[!#1]-O-C(=[NX2,NX3H+])-O-[!#1]",
     "N-amino_imidate": "[#6,#1]-C(=[NX2,NX3H+;!$([NX2+]=[NX1-])]-[NX3,NX4+])-O-[*]",
@@ -197,8 +198,8 @@ BRANCHES: Dict[str, str] = {
     # exception: t-butyl and thexyl are allowed to be connected to carbon atoms with any number of hydrogen atoms
     # [!#1] is used because explicit hydrogens are added to the SMILES prior to counting
     ## saturated
-    "methyl": "[CH3]-[!#1;!O;!C,$([C;!X4,R,X4H0;!$(C(=O))]),$([CH;X4;!$([CH]([#1])([CH3])([CH3,$([CH2][CH3])])-[!C,$([C;!X4,R,X4H0]);!#1]);!$([CH]([#1])([CH3])([CH3])[CH2]-[!C,$([C;!X4,R,X4H0]);!#1]);!$([CH]([#1])([CH3])([CH3])[CH2][CH2]-[!C,$([C;!X4,R,X4H0]);!#1])]);!$(C(-[CH3])(-[CH3])(-[CH3,$([CH2]-[CH3]),$([CH]([CH3])[CH3])]));!$(C(-[CH3])(-[CH3])=[CH]-[CH2]);!$(C(-[CH3])(-[CH2]-[CH2]-[CH]=C(-[CH3])-[CH3])=[CH]-[CH2]);!$([cH0]1[cH][cH][cH][cH][cH0]1);!$([cH0]1[cH][cH][cH0][cH][cH]1);!$([cH0]1[cH][cH0][cH][cH][cH]1);!$([cH0]1[cH0]c([CH3])[cH]c([CH3])[cH]1);!$([cH0]1[cH]c([CH3])[cH0]c([CH3])[cH]1);!$([SX4](=O)(=O));!$([SX4+](-[O-])(=O));!$([SX4+2](-[O-])(-[O-]));!$([Si]([CH3])([CH3])[CH3]);!$([Si]([CH3])([CH3])C([CH3])([CH3])[CH3]);!$([Si]([CH3])([CH3])[CH]([CH3])[CH3]);!$([Si]([CH3])([CH3])[cH0]1[cH][cH][cH][cH][cH]1)]",
-    ##!! "methyl" excludes: methoxy; methoxymethyl; acetoxy; acetyl; methyls on t-butyl, t-pentyl, neopentyl, thexyl, prenyl, geranyl; tolyls; mesyl; mesityl; methyls on TMS, TBDMS, etc.;
+    "methyl": "[CH3]-[!#1;!O;!C,$([C;!X4,R,X4H0;!$(C(=O))]),$([CH;X4;!$([CH]([#1])([CH3])([CH3,$([CH2][CH3])])-[!C,$([C;!X4,R,X4H0]);!#1]);!$([CH]([#1])([CH3])([CH3])[CH2]-[!C,$([C;!X4,R,X4H0]);!#1]);!$([CH]([#1])([CH3])([CH3])[CH2][CH2]-[!C,$([C;!X4,R,X4H0]);!#1])]);!$(C(-[CH3])(-[CH3])(-[CH3,$([CH2]-[CH3]),$([CH]([CH3])[CH3])]));!$(C(-[CH3])(-[CH3])=[CH]-[CH2]);!$([cH0]1[cH][cH][cH][cH][cH0]1);!$([cH0]1[cH][cH][cH0][cH][cH]1);!$([cH0]1[cH][cH0][cH][cH][cH]1);!$([cH0]1[cH0]c([CH3])[cH]c([CH3])[cH]1);!$([cH0]1[cH]c([CH3])[cH0]c([CH3])[cH]1);!$([SX4](=O)(=O));!$([SX4+](-[O-])(=O));!$([SX4+2](-[O-])(-[O-]));!$([Si]([CH3])([CH3])[CH3]);!$([Si]([CH3])([CH3])C([CH3])([CH3])[CH3]);!$([Si]([CH3])([CH3])[CH]([CH3])[CH3]);!$([Si]([CH3])([CH3])[cH0]1[cH][cH][cH][cH][cH]1)]",
+    ##!! "methyl" excludes: methoxy; methoxymethyl; acetoxy; acetyl; methyls on t-butyl, t-pentyl, neopentyl, thexyl, prenyl; tolyls; mesyl; mesityl; methyls on TMS, TBDMS, etc.;
     "methoxy": "[CH3]-[O;!$(O(-[CH2])-[CH3])]-[!$(C=O)]", # excludes methoxymethyl, carbomethoxy
     "methoxymethyl": "[CH3]-O-[CH2]-[!C,$([C;!X4,R,X4H0]);!#1]",
     "carbomethoxy": "[CH3]-O-C(=O)-[*]",
@@ -233,16 +234,11 @@ BRANCHES: Dict[str, str] = {
     "cyclohexyl":  "[!#1]-[CX4;H1]1-[CH2]-[CH2]-[CH2]-[CH2]-[CH2]-1",
     "1-adamantyl": "[!#1]-[CX4;H0]1(-[CH2]2)-[CH2]-[CH](-[CH2]3)-[CH2]-[CH](-[CH2]-1)-[CH2]-[CH]-2-3",
     "2-adamantyl": "[CH]1(-[CH2]2)-[CX4;H1](-[!#1])-[CH](-[CH2]3)-[CH2]-[CH](-[CH2]-1)-[CH2]-[CH]-2-3",
-    ## unsaturated / isoprenoid
+    ## unsaturated
     "vinyl": "[CH2]=[CH]-[!C,$([C;R]);!#1]",
     "vinylidene": "[CH2]=[CX3H0]",
     "allyl": "[CH2]=[CH]-[CH2]-[!C,$([C;R]);!#1]",
     "propargyl": "[CH]#C-[CH2]-[!C,$([C;R]);!#1]",
-    "prenyl": "[CH3]-C(-[CH3])=[CH]-[CH2;!$(C-[CH2]-C(-[CH3])=[CH]-[CH2])]", # excludes geranyl
-    "geranyl": "[CH3]-C(-[CH3])=[CH]-[CH2]-[CH2]-C(-[CH3])=[CH]-[CH2;!$(C-[CH2]-C(-[CH3])=[CH]-[CH2])]", # excludes farnesyl
-    "farnesyl": "[CH3]-C(-[CH3])=[CH]-[CH2]-[CH2]-C(-[CH3])=[CH]-[CH2]-[CH2]-C(-[CH3])=[CH]-[CH2;!$(C-[CH2]-C(-[CH3])=[CH]-[CH2])]", # excludes geranylgeranyl
-    "geranylgeranyl": "[CH3]-C(-[CH3])=[CH]-[CH2]-[CH2]-C(-[CH3])=[CH]-[CH2]-[CH2]-C(-[CH3])=[CH]-[CH2]-[CH2]-C(-[CH3])=[CH]-[CH2]",
-    "phytanyl": "[CH3]-[CH](-[CH3])-[CH2]-[CH2]-[CH2]-[CH](-[CH3])-[CH2]-[CH2]-[CH2]-[CH](-[CH3])-[CH2]-[CH2]-[CH2]-[CH](-[CH3])-[CH2]-[CH2]-[!C,$([C;!X4,R,X4H0]);!#1]",
     # aromatic
     "phenyl": "[!O;!$(C=O);!C,$([C;!H2]),$([CH2]-[C;!$(C@*)]);!$([Si](-[cH0]1[cH][cH][cH][cH][cH]1)([CH3])[CH3]);!$([Si](-[cH0]1[cH][cH][cH][cH][cH]1)(-[cH0]1[cH][cH][cH][cH][cH]1)-[$([cH0]1[cH][cH][cH][cH][cH]1),$(C([CH3])([CH3])[CH3])])]-[cH0]1:[cH]:[cH]:[cH]:[cH]:[cH]:1", # excludes benzyl and phenoxy
     "phenoxy": "[*]-O-[cH0]1:[cH]:[cH]:[cH]:[cH]:[cH]:1",
@@ -416,9 +412,9 @@ MAIN_GROUP: Dict[str, str] = {
     "phosphonamidic_halide": "[$([PX4]=O),$([PX4+]-[O-])](-[#6,#1])(-[#7X3,$([NX2]=[CX3])])-[F,Cl,Br,IX1]",
     "phosphonic_dihalide": "[$([PX4]=O),$([PX4+]-[O-])](-[#6,#1])(-[F,Cl,Br,IX1])-[F,Cl,Br,IX1]",
     ### O=PX3
-    "phosphate_mono_ester": "[$([PX4]=O),$([PX4+]-[O-])](-[OH,O-,OH2+])(-[OH,O-,OH2+])-O-[!#1]",
-    "phosphate_di_ester": "[$([PX4]=O),$([PX4+]-[O-])](-[OH,O-,OH2+])(-O-[!#1])-O-[!#1]",
-    "phosphate_tri_ester": "[$([PX4]=O),$([PX4+]-[O-])](-O-[!#1])(-O-[!#1])-O-[!#1]",
+    "phosphate_mono_ester": "[$([PX4]=O),$([PX4+]-[O-])](-[OH,O-,OH2+])(-[OH,O-,OH2+])-O-[!#1;!P]",
+    "phosphate_di_ester": "[$([PX4]=O),$([PX4+]-[O-])](-[OH,O-,OH2+])(-O-[!#1;!P])-O-[!#1;!P]",
+    "phosphate_tri_ester": "[$([PX4]=O),$([PX4+]-[O-])](-O-[!#1])(-O-[!#1;!P])-O-[!#1;!P]",
     "thiophosphate_mono_thioester": "[$([PX4]=O),$([PX4+]-[O-])](-[OH,O-,OH2+])(-[OH,O-,OH2+])-[SX2]-[!#1]",
     "thiophosphate_di_ester": "[$([PX4](=O)(-[SX2H,SX1-])),$([PX4](-[OH,O-,OH2+])(=S)),$([PX4+](-[OH,O-,OH2+])(-[SX1-])),$([PX4+](-[O-])(-[SX2H]))](-O-[!#1])-O-[!#1]",
     "thiophosphate_mono_ester_mono_thioester": "[$([PX4]=O),$([PX4+]-[O-])](-[OH,O-,OH2+])(-O-[!#1])-[SX2]-[#6]",
@@ -436,8 +432,8 @@ MAIN_GROUP: Dict[str, str] = {
     "phosphorodiamidic_halide": "[$([PX4]=O),$([PX4+]-[O-])](-[#7X3,$([NX2]=[CX3])])(-[#7X3,$([NX2]=[CX3])])-[F,Cl,Br,IX1]",
     "dihalophosphate": "[$([PX4]=O),$([PX4+]-[O-])](-[O-,OX2])(-[F,Cl,Br,IX1])-[F,Cl,Br,IX1]",
     "phosphoramidic_dihalide": "[$([PX4]=O),$([PX4+]-[O-])](-[#7X3,$([NX2]=[CX3])])(-[F,Cl,Br,IX1])-[F,Cl,Br,IX1]",
-    "diphosphate": "[$([PX4]=O),$([PX4+]-[O-])](-[O-,OX2])(-[O-,OX2])-O-P(-[O-,OX2])(-[O-,OX2])=O",
-    "triphosphate": "[$([PX4]=O),$([PX4+]-[O-])](-[O-,OX2])(-[O-,OX2])-O-P(=O)(-[O-,OX2])-O-P(-[O-,OX2])(-[O-,OX2])=O",
+    "diphosphate": "[$([PX4]=O),$([PX4+]-[O-])](-[O-,OX2])(-[O-,OX2])-O-[$([PX4]=O),$([PX4+]-[O-])](-[O-,OX2])(-[O-,OX2])",
+    "triphosphate": "[$([PX4]=O),$([PX4+]-[O-])](-[O-,OX2])(-[O-,OX2])-O-[$([PX4]=O),$([PX4+]-[O-])](-[O-,OX2])-O-[$([PX4]=O),$([PX4+]-[O-])](-[O-,OX2])(-[O-,OX2])",
     
     ## S=P(VI)
     ### S=PR3
@@ -1769,7 +1765,8 @@ OXO_RINGS: Dict[str, str] = {
     "1,3-thiazin-6-one": "O=c1:s:c:n:c:c:1",
     "1,4-thiazin-2-one": "O=c1:s:c:c:n:c:1",
     "barbiturate": "[OX1,OH]~[#6;X3H0]1~N~[#6;X3H0](~[OX1,OH])~N~[#6;X3H0](~[OX1,OH])-[CX4]-1",
-
+    "thiobarbiturate": "[OX1,OH]~[#6;X3H0]1~N~[#6;X3H0](~[SX1,SH])~N~[#6;X3H0](~[OX1,OH])-[CX4]-1",
+    
     # quinolizins
     "quinolizin-2-one": "c12:c:c(=O):c:c:n:1:c:c:c:c:2",
     "quinolizin-4-one": "c12:c:c:c:c(=O):n:1:c:c:c:c:2",
@@ -1861,9 +1858,15 @@ BIOMOLECULES: Dict[str, str] = {
     ## pyrimidine bases
     "cytosine":    "[OX1,OH]~[cX3H0]1:n:[cX3H0](~N):[c;!$(c1ncnc1);!$(c1nccnc1)]:[c;!$(c1ncnc1);!$(c1nccnc1);!$(c~O)]:n:1", # many tautomers, excludes purines, isopterin
     "isocytosine": "[OX1,OH]~[cX3H0]1:n:[cX3H0](~N):n:[c;!$(c1ncnc1);!$(c1nccnc1);!$(c1NCCNc1)]:[c;!$(c1ncnc1);!$(c1nccnc1);!$(c1NCCNc1)]:1", # many tautomers, excludes purines, pterin
-    "uracil": "[OX1,OH]~[cX3H0]1:n:[cX3H0;!$(c1nccnc1)](~[OX1,OH]):[c;!$(c-C);!$(c1ncnc1);!$(c1nccnc1);!$(c1NccNc1)]:[c;!$(c~O);!$(c1ncnc1)]:n:1", # many tautomers, excludes purines, pteridines
+    "uracil": "[OX1,OH]~[cX3H0]1:n:[cX3H0;!$(c1nccnc1)](~[OX1,OH]):[c;!$(c-C);!$(c1ncnc1);!$(c1nccnc1);!$(c1NccNc1)]:[c;!$(c~[O,S]);!$(c1ncnc1)]:n:1", # many tautomers, excludes purines, pteridines
     "thymine": "[OX1,OH]~[cX3H0]1:n:[cX3H0](~[OX1,OH]):c(-C):c:n:1", # many tautomers 
-
+    ## thio analogues
+    "thioguanine": "[SX1,SH]~[cX3H0]1:n:[cX3H0](~N):n:[cX3H0]2:n:c:n:[cX3H0]:1:2", # many tautomers 
+    "thiocytosine":    "[SX1,SH]~[cX3H0]1:n:[cX3H0](~N):[c;!$(c1ncnc1);!$(c1nccnc1)]:[c;!$(c1ncnc1);!$(c1nccnc1);!$(c~O)]:n:1", # many tautomers, excludes purines, isopterin
+    "2-thiouracil": "[SX1,SH]~[cX3H0]1:n:[cX3H0;!$(c1nccnc1)](~[OX1,OH]):[c;!$(c1ncnc1);!$(c1nccnc1);!$(c1NccNc1)]:[c;!$(c~[O,S]);!$(c1ncnc1)]:n:1", # many tautomers, excludes purines, pteridines
+    "4-thiouracil": "[OX1,OH]~[cX3H0]1:n:[cX3H0;!$(c1nccnc1)](~[SX1,SH]):[c;!$(c1ncnc1);!$(c1nccnc1);!$(c1NccNc1)]:[c;!$(c~[O,S]);!$(c1ncnc1)]:n:1", # many tautomers, excludes purines, pteridines
+    "dithiouracil": "[SX1,SH]~[cX3H0]1:n:[cX3H0;!$(c1nccnc1)](~[SX1,SH]):[c;!$(c1ncnc1);!$(c1nccnc1);!$(c1NccNc1)]:[c;!$(c~[O,S]);!$(c1ncnc1)]:n:1", # many tautomers, excludes purines, pteridines
+    
     # monosaccharides & related
     ## triose
     "glyceraldehyde": "O-[CH2]-[CH](-O)-[CH]=O",
@@ -1930,6 +1933,13 @@ BIOMOLECULES: Dict[str, str] = {
     "vaccenoyl": "[*]-C(=O)-[CH2]-[CH2]-[CH2]-[CH2]-[CH2]-[CH2]-[CH2]-[CH2]-[CH2]/[CH]=[CH]/[CH2]-[CH2]-[CH2]-[CH2]-[CH2]-[CH3]", # trans 18:1 omega-7
     "rumenoyl": r"[*]-C(=O)-[CH2]-[CH2]-[CH2]-[CH2]-[CH2]-[CH2]-[CH2]\[CH]=[CH]//[CH]=[CH]/-[CH2]-[CH2]-[CH2]-[CH2]-[CH2]-[CH3]", # trans11 18:2 omega-7
     "linoleladoyl": "[*]-C(=O)-[CH2]-[CH2]-[CH2]-[CH2]-[CH2]-[CH2]-[CH2]/[CH]=[CH]/[CH2]/[CH]=[CH]/[CH2]-[CH2]-[CH2]-[CH2]-[CH3]", # trans,trans 18:2 omega-6
+    
+    # isoprenoid chains
+    "prenyl": "[CH3]-C(-[CH3])=[CH]-[CH2;!$(C-C-C(-[CH3])=C-C)]", # excludes geranyl
+    "geranyl": "[CH3]-C(-[CH3])=C-C-C-C(-[CH3])=C-[CX4;!$(C-C-C(-[CH3])=C-C)]", # excludes farnesyl
+    "farnesyl": "[CH3]-C(-[CH3])=C-C-C-C(-[CH3])=C-C-C-C(-[CH3])=C-[CX4;!$(C-C-C(-[CH3])=C-C)]", # excludes geranylgeranyl
+    "geranylgeranyl": "[CH3]-C(-[CH3])=C-C-C-C(-[CH3])C-C-C-C(-[CH3])=C-C-C-C(-[CH3])=C-[CX4]",
+    "phytanyl": "[CH3]-[CH](-[CH3])-[CH2]-[CH2]-[CH2]-[CH](-[CH3])-[CH2]-[CH2]-[CH2]-[CH](-[CH3])-[CH2]-[CH2]-[CH2]-[CH](-[CH3])-[CH2]-[CH2]-[!#1]",
     
     # alkaloid/privileged scaffolds
     "phenethylamine": "[N;!$(N1ccCC1);!$(N1CccCC1);!$(N1~C~CC2ccCC(C2)1);!$(N1~C~C~C~C2~C1~C-c3cnc4cccc-2c34)]-[C;!$([CH](N)(C(=O)-[!#6;!#1])-[CH2]-c1ccccc1)]-C-c1ccccc1", # excludes phenylalanine, tyrosine, indoline, tetrahydroisoquinoline, 6,7-benzomorphan, ergoline
