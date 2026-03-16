@@ -12,6 +12,7 @@ __all__ = [
     "ALIPHATIC_RINGS",
     "HETEROALIPHATIC_RINGS",
     "OXO_RINGS",
+    "THIOXO_RINGS",
     "MAIN_GROUP",
     "BIOMOLECULES",
 ]
@@ -38,50 +39,27 @@ CORE: Dict[str, str] = {
     "geminal_diol": "[CX4](-[O-,OH,OH2+])-[O-,OH,OH2+]",
     "vicinal_diol": "[OH]-[CX4]-[CX4]-[OH]",
     "enol": "[#6]=C-[OH,O-,OH2+]",
-    "ether": "[#6;!$(C#C);!$(C=[C,O,S,N]);!$(C(-[O,S,N,n])-[O,S,N,n]);!$(C#N)]-[OX2;!r3;!$(O1-[#6;X3]~[#6;X3]~[O,S,N]~[#6;X3]~[#6;X3]-1)]-[#6;!$(C#C);!$(C=[C,O,S,N]);!$(C([O,S,N,n])-[O,S,N,n]);!$(C#N)]", # excludes enol ethers, ynol ethers, epoxides, acetals, esters, anhydrides, oxines, cyanates
+    "ether": "[#6;!$(C#C);!$(C=[C,O,S,N]);!$(C#N)]-[OX2;!r3;!$(O1-[#6;X3]~[#6;X3]~[O,S,N]~[#6;X3]~[#6;X3]-1)]-[#6;!$(C#C);!$(C=[C,O,S,N]);!$(C#N)]", # excludes enol ethers, ynol ethers, epoxides, esters, anhydrides, oxines, cyanates
     "enol_ether": "[CX3;$(C=C);!$(C(O)O)]-O-[#6;!$(C=[O,S,N]);!$(C#N)]",
     "ynol_ether": "[CX2;$(C#C)]-O-[#6;!$(C=[O,S,N]);!$(C#N)]",
     "aldehyde": "[#6]-[CH](=O)",
-    "ketone": "[#6]-C(=O)-[#6]",
+    "ketone": "[#6;!$(C#N)]-C(=O)-[#6;!$(C#N)]", # excludes acyl cyanides
     "ketene": "C=C=O",
     "conjugated_carbonyl": "O=[C;$(C-C=C)]", # 'O=C-C=C' is not used; it would double count the carbonyl if it's conjugated on both sides
     "oxonium": "[!#1]-[OX3+](-[!#1])-[!#1]",
-    "formyl": "[#1]-C(=O)-[!O;!#6]",
-    "formoxy": "[#1]-C(=O)-O",
-    "acetyl": "[!O;!C]-C(=O)-[CH3]", # excludes acetoxy, acetoacetyl
-    "glycolyl": "[!C]-C(=O)-[CH2]-[OH]",
-    "lactyl": "[!C]-C(=O)-[CH](O)-[CH3]",
-    "acryloyl": "[!C]-C(=O)-[CH]=[CH2]",
-    "methacryloyl": "[!C]-C(=O)-C([CH3])=[CH2]",
-    "other_acyl": "[#6,#1]-C(=O)-[!$([#1,#6,F,Cl,Br,I]);!$(O-[#6,#7,#8]);!$(S-[#6]);!$([#7;X3]);!$(N=C)]",
+
     ## 2x O
     "methylenedioxy": "[*]-O-[CH2;!$([CX4]1Oc2ccccc2O1)]-O-[*]", # excludes benzodioxoles
-    "peroxide": "[!#1][#8][#8][!#1]",
-    "hydroperoxy": "[!#1]-O-[O-,OH,OH2+]",
+    "peroxide": "[!#1;!$(C=O)][#8][#8][!#1;!$(C=O)]", # excludes mono- and diacyl peroxides
+    "hydroperoxy": "[!#1;!$(C=O)]-O-[O-,OH,OH2+]", # excludes peracids
     "aliphatic_carboxylic_acid": "C-C(=O)-[OH,O-,OH2+]",
     "aromatic_carboxylic_acid": "c-C(=O)-[OH,O-,OH2+]",
-    "carboxylate_ester": "[#1,#6]-C(=O)-!@O-[#6;!$(C=[O,S])]",
-    "lactone": "[#6]-C(=O)@O-[#6;!$(C=[O,S])]",
+    "carboxylate_ester": "[#1,#6]-C(=O)-[O;!$(O1[#6](=O)[#6]1);!$(O1[#6](=O)[#6]~[#6]1);!$(O1[#6](=O)[#6]~[#6]~[#6]1);!$(O1[#6](=O)[#6]~[#6]~[#6]~[#6]1)]-[#6;!$(C=[O,S])]", # excludes lactones upto delta
     "hemiacetal": "[O-,OH,OH2+]-[CX4;!$(C(O)(O)[O,S,N,n])]-O-[!#1;!$(C=O)]", # including hemiketals
     "acetal": "[!#1;!$(C=O)]-O-[CX4;!$(C(O)(O)([O,S,N,n]));!H2;!$([CX4]1Oc2ccccc2O1)]-O-[!#1;!$(C=O)]", # including ketals, excluding acylals, methylenedioxy
     "ketene_acetal": "C=C(-O)-O",
-    "acetoxy": "[CH3]-C(=O)-O-[!#1]",
     "acetylenediolate": "[!#1]-O-C#C-O-[!#1]",
-    ### common diacyls
-    "oxalyl": "[!#6;!#1]-C(=O)-C(=O)-[!#6;!#1]",
-    "pyruvyl": "[CH3]-C(=O)-C(=O)-[!#6;!#1]",
-    "malonyl": "[!#6;!#1]-C(=O)-[CX4]-C(=O)-[!#6;!#1]",
-    "acetoacetyl": "[CH3]-C(=O)-[CX4]-C(=O)-[!#6;!#1]",
-    "succinyl": "[$(C(=O)-[!#6;!#1])]-[C;!$(C-N)]-[C;!$(C-N)]-[$(C(=O)-[!#6;!#1])]", # excludes aspartate
-    "glutaryl": "[$(C(=O)-[!#6;!#1])]-[C;!$(C-N)]-C-[C;!$(C-N)]-[$(C(=O)-[!#6;!#1])]", # excludes glutamate
-    "adipoyl": "[$(C(=O)-[!#6;!#1])]-C-C-C-C-[$(C(=O)-[!#6;!#1])]",
-    "maleoyl_acyclic": r"[!#6;!#1]-C(=O)\C=C/C(=O)-[!#6;!#1]",
-    "maleoyl_cyclic": r"[$([#6](=O)[!#6;!#1])]@[#6X3;!$(c1ccccc1)]@[#6X3;!$(c1ccccc1)]@[$([#6](=O)[!#6;!#1])]",
-    "fumaroyl": "[$(C(=O)-[!#6;!#1])]/C=C/[$(C(=O)-[!#6;!#1])]",
-    "acetylenedicarboxoyl": "[!#6;!#1]-C(=O)-C#C-C(=O)-[!#6;!#1]",
-    "phthaloyl": "[$([#6](=O)[!#6;!#1])]c1ccccc1[$([#6](=O)[!#6;!#1])]",
-    "isophthaloyl": "[!#6;!#1]-C(=O)-c1cc(-C(=O)-[!#6;!#1])ccc1",
-    "terephthaloyl": "[!#6;!#1]-C(=O)-c1ccc(-C(=O)-[!#6;!#1])cc1",
+
     ## 3x O
     "percarboxylic_acid": "[#6]-C(=O)-O-[O-,OH,OH2+]",
     "percarboxylate_ester": "[#6]-C(=O)-O-O-[#6;!$(C=O)]",
@@ -99,7 +77,7 @@ CORE: Dict[str, str] = {
     "deltate": "O=c1c(O)c1(O)",
     "squarate": "O=c1c(=O)c(O)c1O",
     ## 4+ O
-    "diacyl_peroxide": "[#6][#6](=O)[#8][#8][#6](=O)[#6]",
+    "diacyl_peroxide": "[#6](=O)[#8][#8][#6](=O)",
     "orthocarbonate": "O-[CX4](-O)(-O)-O",
     "monothio_orthocarbonate": "O-[CX4](-O)(-O)-[SX2]",
     "dithio_orthocarbonate": "O-[CX4](-O)(-[SX2])-[SX2]",
@@ -113,18 +91,18 @@ CORE: Dict[str, str] = {
     "aryl_amine": "[$(N-[c;!r3;!r4](:[!$(c=O)]):[!$(c=O)]);!$(N=[O,S,N,P])]",
     "secondary_amine": "[#6;!$(C=[O,S,N])]-[NX3H,NX4H2+;!r3;!$(N1~[#6;X3]~[#6;X3]~[O,S]~[#6;X3]~[#6;X3]-1)]-[#6;!$(C=[O,S,N])]", # excludes amides, aziridines, oxazines, thiazines
     "tertiary_amine": "[#6;!$(C=[O,S,N])]-[NX3H0,NX4H+;!r3;!$(N1~[#6;X3]~[#6;X3]~[O,S]~[#6;X3]~[#6;X3]-1)](-[#6;!$(C=[O,S,N])])-[#6;!$(C=[O,S,N])]", # excludes amides, aziridines, oxazines, thiazines
-    "quaternary_ammonium": "[!$([#6,#8;-])]-[NX4H0+](-[!$([#6,#8;-])])(-[!$([#6,#8;-])])-[!$([#6,#8;-])]", # excludes N-oxides and ammonium ylides
+    "quaternary_ammonium": "[!$([#6,#8,#5;-])]-[NX4H0+](-[!$([#6,#8,#5;-])])(-[!$([#6,#8,#5;-])])-[!$([#6,#8,#5;-])]", # excludes N-oxides; ammonium ylides; R3N->B
     "ammonium_ylide": "[#6-]-[NX4H0+](-[#6;!-])(-[#6;!-])-[#6;!-]",
     "imine": "[#6,#1]-C(=[NX2,NH2+,NX3H+;!$(N-[O,SX2,N]);!r3])-[#6,#1]", # excludes azirines, amidines, guanidines, carbodiimides, isoureas
     "ketenimine": "[#6,#1]-C(=C=[NX2,NH2+,NX3H+])-[#6,#1]",
-    "iminium": "[CX3]=[NX3+;H0;!$([NX3+](-[O-])-[#6,O]);!$([NX3+](-[NX2-]));!$([NX3+]-[C-])]", # excludes nitrones, nitronates, azomethine ylides, azomethine imides
+    "iminium": "[CX3;!$([CX3](-[#7]))]=[NX3+;H0;!$([NX3+](-[O-])-[#6,O]);!$([NX3+](-[NX2-]));!$([NX3+]-[C-])]", # excludes nitrones, nitronates, azomethine ylides, azomethine imides
     "enamine": "C=[C;!$(C(-N)-N)]-[NX3,NX4H+,NX4H2+,NH3+;!$(N1~[#6;X3]~[#6;X3]~[O,S]~[#6;X3]~[#6;X3]-1)](-[#6,#1;!$(C=[O,S,N])])-[#6,#1;!$(C=[O,S,N])]", # excludes enediamines, oxazines, thiazines
-    "nitrile": "[#6,#1]-[CX2]#[NX1H0,NX2H+]", # excludes cyanates, cyanamides
-    "isonitrile": "[#6,#1]-[NX2H0+]#[CX1-]",
+    "nitrile": "[#6,#1;!$(C=O)]-[CX2]#[NX1H0,NX2H+]", # excludes cyanates, cyanamides, acyl cyanide
+    "acyl_cyanide": "O=C-[CX2]#[NX1H0,NX2H+]",
     "azomethine_ylide": "[CX3-]-[NX3+](-[!#1])=[CX3]",
     ## 2x N
-    "hydrazine": "[!$(C=[O,N])]-[NX3,NX4H+,NX4H2+,NH3+](-[!$(C=[O,N])])-[NX3,NX4H+,NX4H2+,NH3+](-[!$(C=[O,N])])-[!$(C=[O,N])]",
-    "hydrazone": "[#6,#1]-C(=[NX2,NX3H+;!r5]-[NX3,NX4+])-[!#7;!#8]", # excludes pyrazolines, amidrazones, N-amino imidates
+    "hydrazine": "[!$(C=[O,N])]-[NX3,NX4+,NX4H2+,NH3+](-[!$(C=[O,N])])-[NX3,NX4+,NX4H2+,NH3+](-[!$(C=[O,N])])-[!$(C=[O,N])]",
+    "hydrazone": "[#6,#1]-C(=[NX2,NX3H+;!r5]-[NX3,NX4+,$([NX2]=[P,S])])-[!#7;!#8]", # excludes pyrazolines, amidrazones, N-amino imidates
     "aldazine": "[CX3H]=[NX2,NX3H+]-[NX2,NX3H+]=[CX3H]",
     "ketazine": "[CX3H0]=[NX2,NX3H+]-[NX2,NX3H+]=[CX3H0]",
     "azine_N-oxide": "[CX3]=[NX3+](-[O-])-[NX2]=[CX3]",
@@ -132,15 +110,18 @@ CORE: Dict[str, str] = {
     "diazo": "C=[NX2+]=[NX1-]",
     "diazonium": "[#6]-[NX2+]#[NX1]",
     "azomethine_imide": "[CX3]-,=[NX3+;$(N(=C)(-[N-])),$(N(-[C-])=N)](-[*])-,=[NX2]",
-    "amidine": "[#6,#1]-C(=[NX2,NX3H+]-[!O;!N])-[NX3](-[!N])-[!N]",
+    "amidine": "[#6,#1]-C(=[NX2,NX3H+]-[!O;!N])-[#7X3]([!N])[!N]",
+    "amidinium": "[#6,#1]-C(=[NX3H0+]-[!O;!N])-[#7X3]([!N])[!N]",
     "aminal": "[#7]-[CX4;!$(C(N)(N)[O,S,N])]-[#7]",
     "ketene_aminal": "C=C(-[NX3,NX4+])-[NX3,NX4+]",
     "carbodiimide": "[*]-[NX2,NX3H+]=C=[NX2,NX3H+]-[*]",
     "cyanamide": "[#7;!X4]-[CX2]#[NX1H0,NX2H+]",
     ## 3+ N
-    "azide": "[!#7]-[$([NX2]=[NX2+]=[NX1-]),$([NX2-]-[NX2+]#[NX1])]",
+    "azide": "[!$(C=O)]-[$([NX2]=[NX2+]=[NX1-]),$([NX2-]-[NX2+]#[NX1])]",
+    "acyl_azide": "O=C-[$([NX2]=[NX2+]=[NX1-]),$([NX2-]-[NX2+]#[NX1])]",
     "triazene": "[#6,#14,#1]-N=N-N(-[#6,#14,#1])-[#6,#14,#1]",
     "guanidine": "[NX3]-C(=[NX2,NX3H+,NH2+])-[NX3]",
+    "guanidinium": "[NX3]-C(=[NX3H0+])-[NX3]",
     "amidrazone": "[#6,#1]-[CX3](-,=N-[NX3])-,=N",
     "orthoamide": "[#6,#1]-C(-[#7])(-[#7])-[#7]",
     "tetraamino_methane": "[#7]-[CX4](-[#7])(-[#7])-[#7]",
@@ -181,14 +162,15 @@ CORE: Dict[str, str] = {
     "O-acyl_hydroxylamine": "[*]-C(=O)-O-[NX3,NX4H+,NX4H2+,NH3+](-[#6,#1;!$(C=[O,S,N])])-[#6,#1;!$(C=[O,S,N])]",
     "amidoxime": "[#6,#1]-C(=[NX2,NX3H+]-O)-[NX3]",
     "hydroxamic_acid": "[#6,#1]-C(=O)-[NX3](-[OH,O-,OH2+])-[#6,#14,#1;!$(C=[O,S,N])]",
-    "hydroxamate": "[#6,#1]-C(=O)-[NH]-O-[!#1]",
+    "hydroxamate": "[#6,#1]-C(=O)-[NH]-O-[!$(C=O)]",
     "Weinreb_amide": "[#6,#1]-C(=O)-[NX3](-[#6;!$(C=[S,O,N])])-O-[#6;!$(C=[S,O,N])]",
-    "hydrazide": "C(=O)-[NX3]-[#7X3,$([NX2]=[CX3,PX4])]",
+    "hydrazide": "C(=O)-[NX3;!$(N(C=O)C=O)]-[NX4+,#7X3,$([NX2]=[CX3,PX4])]",
     "nitro": "[NX3+](=O)([O-])-[!O;!N;!$([cH0]1[cH0]c(-[N+](=O)[O-])[cH]c(-[N+](=O)[O-])[cH]1);!$([cH0]1[cH]c(-[N+](=O)[O-])[cH0]c(-[N+](=O)[O-])[cH]1);!$([cH0]1[cH][cH][cH][cH][cH0]1-[$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])]);!$([cH0]1[cH][cH][cH0](-[$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])])[cH][cH]1)]", # excludes nitrate, N-nitro, picryl, nosyls
     "nitrite": "[*]-O-[NX2]=O",
     "nitrosamine": "[#7]-[NX2]=O",
-    "imide": "[$(C(=O)-[#6,#1])]-N(-[!$(C=O)])-[$(C(=O)-[#6,#1])]",
-    "urea": "[#7X3,$([NX2]=[CX3,PX4])]-C(=[O;!$(O=C1[#7]~[#6]C(=O)N1)])-[#7X3,$([NX2]=[CX3,PX4])]", # excludes hydantoin
+    "imide": "[$(C(=O)-[#6,#1])]-N(-[!O;!#7;!$(C=O)])-[$(C(=O)-[#6,#1])]",
+    "urea": "[#7X3,$([NX2]=[CX3,PX4]);!$(N-[$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])]-[#6])]-C(=[O;!$(O=C1[#7]~[#6]C(=O)N1)])-[#7X3,$([NX2]=[CX3,PX4]);!$(N-[$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])]-[#6])]", # excludes hydantoin, sulfonylurea
+    "sulfonylurea": "[#7X3,$([NX2]=[CX3,PX4])]-C(=O)-N-[$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])]-[#6]",
     "isourea": "[NX3]-C(=[NX2,NX3+])-O-[*]",
     "carbamate": "O-C(=O)-[NX3]",
     "imidocarbonate": "[!#1]-O-C(=[NX2,NX3H+])-O-[!#1]",
@@ -208,7 +190,11 @@ CORE: Dict[str, str] = {
     "urea_thioacetal": "[#7]-[CX4](-[#7])(-[SX2])-[SX2]",
     "O,N,N,N-carbon": "[#7]-[CX4](-[#7])(-[#7])-O",
     "S,N,N,N-carbon": "[#7]-[CX4](-[#7])(-[#7])-S",
-    "acyl_hydroxamate": "[#6,#1]-C(=O)-[NX3]-O-C(=O)-[#6,#1]",
+    "O-acyl_hydroxamate": "[#6,#1]-C(=O)-[NX3;!$(N(C=O)C=O)]-O-C(=O)",
+    "N-amino_imide": "[#6,#1]-C(=O)-[NX3](-C(=O)-[#6,#1])-[#7]",
+    "N-oxy_imide": "[#6,#1]-C(=O)-[NX3](-C(=O)-[#6,#1])-[O;!$(O-C(=O)-[#6,#1])]", # excludes N-acloxy imide
+    "N-acyloxy_imide": "[#6,#1]-C(=O)-[NX3;!$(N1C(=O)-C-C-C1(=O))](-C(=O)-[#6,#1])-O-C(=O)-[#6,#1]", # excludes NHS ester
+    "NHS_ester": "[#6,#1]-C(=O)-O-N1C(=O)-C-C-C1(=O)",
     "nitramine": "[#7]-[NX3+](=O)[O-]",
     "nitrate": "[*]-O-[NX3+](=O)[O-]",
     "azodioxy": "[#6]-[N+]([O-])=[N+]([O-])-[#6]",
@@ -225,16 +211,14 @@ BRANCHES: Dict[str, str] = {
     # exception: t-butyl and thexyl are allowed to be connected to carbon atoms with any number of hydrogen atoms
     # [!#1] is used because explicit hydrogens are added to the SMILES prior to counting
     ## saturated
-    "methyl": "[CH3]-[!#1;!O;!C,$([C;!X4,R,X4H0;!$(C(=O))]),$([CH;X4;!$([CH]([#1])([CH3])([CH3,$([CH2][CH3])])-[!C,$([C;!X4,R,X4H0]);!#1]);!$([CH]([#1])([CH3])([CH3])[CH2]-[!C,$([C;!X4,R,X4H0]);!#1]);!$([CH]([#1])([CH3])([CH3])[CH2][CH2]-[!C,$([C;!X4,R,X4H0]);!#1]);!$([CH]([#1])(O)C=O);!$([CH]([#1])([CH](N)C=O)[$([CH3]),$([CH2][CH3])]);!$([CH]([#1])([CH3])[CH2][CH](N)C=O)]);!$(C(-[CH3])(-[CH3])(-[CH3,$([CH2]-[CH3]),$([CH]([CH3])[CH3])])[!C,$([C;!X4,R,X4H0]);!#1]);!$(C(-[CH3])(-[CH3])(-[CH3])[CH2][!C,$([C;!X4,R,X4H0]);!#1]);!$(C(-[CH3])(-[CH3])=[CH]-[CH2]);!$(C(=[CH2])([CH3])C=O);!$([cH0]1[cH][cH][cH][cH][cH0]1);!$([cH0]1[cH][cH][cH0][cH][cH]1);!$([cH0]1[cH][cH0][cH][cH][cH]1);!$([cH0]1[cH0]c([CH3])[cH]c([CH3])[cH]1);!$([cH0]1[cH]c([CH3])[cH0]c([CH3])[cH]1);!$([SX4](=O)(=O));!$([SX4+](-[O-])(=O));!$([SX4+2](-[O-])(-[O-]));!$([Si]([CH3])([CH3])[CH3]);!$([Si]([CH3])([CH3])C([CH3])([CH3])[CH3]);!$([Si]([CH3])([CH3])[CH]([CH3])[CH3]);!$([Si]([CH3])([CH3])[cH0]1[cH][cH][cH][cH][cH]1)]",
+    "methyl": "[CH3]-[!#1;!O;!C,$([C;!X4,R,X4H0;!$(C(=O))]),$([CH;X4;!$([CH]([#1])([CH3])([CH3,$([CH2][CH3])])-[!C,$([C;!X4,R,X4H0]);!#1]);!$([CH]([#1])([CH3])([CH3])[CH2]-[!C,$([C;!X4,R,X4H0]);!#1]);!$([CH]([#1])([CH3])([CH3])[CH2][CH2]-[!C,$([C;!X4,R,X4H0]);!#1]);!$([CH]([#1])(O)C=O);!$([CH]([#1])([CH](N)C=O)[$([CH3]),$([CH2][CH3])]);!$([CH]([#1])([CH3])[CH2][CH](N)C=O)]);!$(C(-[CH3])(-[CH3])(-[CH3,$([CH2]-[CH3]),$([CH]([CH3])[CH3])])[!C,$([C;!X4,R,X4H0]);!#1]);!$(C(-[CH3])(-[CH3])(-[CH3])[CH2][!C,$([C;!X4,R,X4H0]);!#1]);!$(C(-[CH3])(-[CH3])=[CH]-[CH2]);!$(C(-[CH3])(=[CH2])[CH2][CH2][!C,$([C;!X4,R,X4H0]);!#1]);!$(C(=[CH2])([CH3])C=O);!$([cH0]1[cH][cH][cH][cH][cH0]1);!$([cH0]1[cH][cH][cH0][cH][cH]1);!$([cH0]1[cH][cH0][cH][cH][cH]1);!$([cH0]1[cH0]c([CH3])[cH]c([CH3])[cH]1);!$([cH0]1[cH]c([CH3])[cH0]c([CH3])[cH]1);!$([SX4](=O)(=O));!$([SX4+](-[O-])(=O));!$([SX4+2](-[O-])(-[O-]));!$([Si]([CH3])([CH3])[CH3]);!$([Si]([CH3])([CH3])C([CH3])([CH3])[CH3]);!$([Si]([CH3])([CH3])[CH]([CH3])[CH3]);!$([Si]([CH3])([CH3])[cH0]1[cH][cH][cH][cH][cH]1)]",
     ##!! "methyl" excludes: methoxy; methoxymethyl; acetoxy; acetyl; methyls on t-butyl, t-pentyl, neopentyl, thexyl, prenyl; tolyls; mesyl; mesityl; methyls on TMS, TBDMS, etc.;
-    "methoxy": "[CH3]-[O;!$(O(-[CH2]-[!C,$([C;!X4,R]);!#1])-[CH3])]-[!$(C=O)]", # excludes methoxymethyl, carbomethoxy
+    "methoxy": "[CH3]-[O;!$(O(-[CH2]-[!C,$([C;!X4,R]);!#1])-[CH3])]-[!$(C=O);!$([cH0]1[cH0][cH][cH][cH][cH]1);!$([cH0]1[cH][cH0][cH][cH][cH]1);!$([cH0]1[cH][cH][cH0][cH][cH]1);!$([cH0]1[cH0]([$(O[CH3]),$([OH])])[cH][cH0][cH][cH]1);!$([cH0]1[cH0]([$(O[CH3]),$([OH])])[cH][cH][cH0][cH]1)]", # excludes methoxymethyl, carbomethoxy, methoxyphenyls
     "methoxymethyl": "[CH3]-O-[CH2]-[!C,$([C;!X4,R]);!#1]",
-    "carbomethoxy": "[CH3]-O-C(=O)-[*]",
     "ethyl": "[CH3]-[CH2]-[!C,$([C;!X4,R,X4H0;!$(C(-[CH3])(-[CH3]))]);!$([Si]([CH2][CH3])([CH2][CH3])[CH2][CH3]);!O;!#1]", # excludes ethoxy, ethyls on TES and the ethyl on t-pentyl
     "ethoxy": "[CH3]-[CH2]-O-[!$(C=O)]", # excludes carboethoxy
-    "carboethoxy": "[CH3]-[CH2]-O-C(=O)-[*]",
     "n-propyl": "[CH3]-[CH2]-[CH2]-[!C,$([C;!X4,R,X4H0]);!O;!#1]", # excludes propoxy
-    "propoxy": "[CH3]-[CH2]-[CH2]-O-[*]",
+    "n-propoxy": "[CH3]-[CH2]-[CH2]-O-[*]",
     "isopropyl": "[CH3]-[CH](-[CH3])-[!C,$([C;!X4,R,X4H0]);!O;!#1;!$(C(-[CH3])-[CH3]);!$([Si]([CH]([CH3])[CH3])([CH]([CH3])[CH3])([CH]([CH3])[CH3]));!$([Si]([CH]([CH3])[CH3])([CH3])([CH3]));!$([cH0]1[cH0]c(-[CH]([CH3])[CH3])[cH]c(-[$([CH]([CH3])[CH3]),#1])[cH]1);!$([cH0]1[cH]c(-[CH]([CH3])[CH3])[cH0]c(-[CH]([CH3])[CH3])[cH]1)]", # excludes the isopropyl on thexyl; isopropoxy; 2,6-di and 2,4,6-triisopropylphenyl; isopropyls on common silyls
     "isopropoxy": "[CH3]-[CH](-[CH3])-O-[*]",
     "n-butyl": "[CH3]-[CH2]-[CH2]-[CH2]-[!C,$([C;!X4,R,X4H0]);!#1]",
@@ -242,8 +226,6 @@ BRANCHES: Dict[str, str] = {
     "s-butyl": "[CH3]-[CH2]-[CH](-[CH3])-[!C,$([C;!X4,R,X4H0]);!#1]",
     "t-butyl": "[CH3]-C(-[CH3])(-[CH3])-[!O;!#1;!$([CH2]([!C,$([C;!X4,R,X4H0])])C([CH3])([CH3])[CH3]);!$([Si]([CH3])([CH3])C([CH3])([CH3])[CH3]);!$([Si]([cH0]1[cH][cH][cH][cH][cH]1)([cH0]1[cH][cH][cH][cH][cH]1)C([CH3])([CH3])[CH3]);!$([cH0]1[cH0]c(-C([CH3])([CH3])[CH3])[cH]c(-[$(C([CH3])([CH3])[CH3]),#1])[cH]1);!$([cH0]1[cH]c(-C([CH3])([CH3])[CH3])[cH0]c(-C([CH3])([CH3])[CH3])[cH]1)]", # excludes neopentyl, t-butoxy, t-Boc, t-butyls on TBDMS and TBDPS, 2,6-di and 2,4,6-tri-tert-butylphenyl
     "t-butoxy": "[CH3]-C(-[CH3])(-[CH3])-O-[!$(C(=O)(O)[!#6])]", # excludes tBoc
-    "t-Boc": "[CH3]-C(-[CH3])(-[CH3])-O-C(=O)-[!#6]",
-    "Fmoc": "[cH0]12[cH][cH][cH][cH][cH0]2-[cH0]2[cH][cH][cH][cH][cH0]2-[CH]1-[CH2]-O-C(=O)-[!#6]",
     "n-pentyl": "[CH3]-[CH2]-[CH2]-[CH2]-[CH2]-[!C,$([C;!X4,R,X4H0]);!#1]",
     "t-pentyl": "[CH3]-[CH2]-C(-[CH3])(-[CH3])-[!C,$([C;!X4,R,X4H0]);!#1]",
     "isoamyl": "[CH3]-[CH](-[CH3])-[CH2]-[CH2]-[!C,$([C;!X4,R,X4H0]);!#1]",
@@ -256,6 +238,8 @@ BRANCHES: Dict[str, str] = {
     "stearyl": "[CH3]-[CH2]-[CH2]-[CH2]-[CH2]-[CH2]-[CH2]-[CH2]-[CH2]-[CH2]-[CH2]-[CH2]-[CH2]-[CH2]-[CH2]-[CH2]-[CH2]-[CH2]-[!C,$([C;!X4,R,X4H0]);!#1]", # octadecyl
     # cyclic
     "cyclopropyl": "[!#1]-[CX4;H1]1-[CH2]-[CH2]-1",
+    "cyclopropylidene": "[!O;!S]=[CX3]1-[CH2]-[CH2]-1",
+    "1,1-cyclopropandiyl": "[*]-[CH0](-[*])1-[CH2]-[CH2]-1",
     "cyclobutyl":  "[!#1]-[CX4;H1]1-[CH2]-[CH2]-[CH2]-1",
     "cyclopentyl":  "[!#1]-[CX4;H1]1-[CH2]-[CH2]-[CH2]-[CH2]-1",
     "cyclohexyl":  "[!#1]-[CX4;H1]1-[CH2]-[CH2]-[CH2]-[CH2]-[CH2]-1",
@@ -263,24 +247,53 @@ BRANCHES: Dict[str, str] = {
     "2-adamantyl": "[CH]1(-[CH2]2)-[CX4;H1](-[!#1])-[CH](-[CH2]3)-[CH2]-[CH](-[CH2]-1)-[CH2]-[CH]-2-3",
     ## unsaturated
     "vinyl": "[CH2]=[CH]-[!$([CH2]);!$(C=O);!#1]", # excludes acryloyl
-    "methylidene": "[CH2;!$([CH2]=[CH]);!$([CH2]=C([CH3])C=O)]=[*]", # excludes vinyl, methacryloyl
+    "methylidene": "[CH2;!$([CH2]=C=[*]);!$([CH2]=[CH]);!$([CH2]=C([CH3])C=O);!$([CH2]=C(-[CH3])[CH2][CH2][!C,$([C;!X4,R,X4H0]);!#1])]=[*]", # excludes vinyl, methacryloyl, isopentenyl, vinylidene
+    "vinylidene": "[CH2]=C=[*]",
     "allyl": "[CH2]=[CH]-[CH2]-[!C,$([C;R]);!#1]",
     "propargyl": "[CH]#C-[CH2]-[!C,$([C;R]);!#1]",
+    # acyls
+    "formyl": "[#1]-C(=O)-[!O;!#6]",
+    "formoxy": "[#1]-C(=O)-O",
+    "acetyl": "[!O;!C]-C(=O)-[CH3]", # excludes acetoxy, acetoacetyl
+    "acetoxy": "[CH3]-C(=O)-O-[!#1]",
+    "glycolyl": "[!C;!#1]-C(=O)-[CH2]-O",
+    "lactyl": "[!C;!#1]-C(=O)-[CH](O)-[CH3]",
+    "acryloyl": "[!C;!#1]-C(=O)-[CH]=[CH2]",
+    "methacryloyl": "[!C;!#1]-C(=O)-C([CH3])=[CH2]",
+    "carbomethoxy": "[CH3]-O-C(=O)-[!#1]",
+    "carboethoxy": "[CH3]-[CH2]-O-C(=O)-[!#1]",
+    "t-Boc": "[CH3]-C(-[CH3])(-[CH3])-O-C(=O)-[!#1;!#6]",
+    "Fmoc": "[cH0]12[cH][cH][cH][cH][cH0]2-[cH0]2[cH][cH][cH][cH][cH0]2-[CH]1-[CH2]-O-C(=O)-[!#1;!#6]",
+    # common diacyls
+    "oxalyl": "[!#6;!#1]-C(=O)-C(=O)-[!#6;!#1]",
+    "pyruvyl": "[CH3]-C(=O)-C(=O)-[!#6;!#1]",
+    "malonyl": "[!#6;!#1]-C(=O)-[CX4]-C(=O)-[!#6;!#1]",
+    "acetoacetyl": "[CH3]-C(=O)-[CX4]-C(=O)-[!#6;!#1]",
+    "succinyl": "[$(C(=O)-[!#6;!#1])]-[C;!$(C-N)]-[C;!$(C-N)]-[$(C(=O)-[!#6;!#1])]", # excludes aspartate
+    "glutaryl": "[$(C(=O)-[!#6;!#1])]-[C;!$(C-N)]-C-[C;!$(C-N)]-[$(C(=O)-[!#6;!#1])]", # excludes glutamate
+    "adipoyl": "[$(C(=O)-[!#6;!#1])]-C-C-C-C-[$(C(=O)-[!#6;!#1])]",
+    "maleoyl_acyclic": r"[!#6;!#1]-C(=O)\C=C/C(=O)-[!#6;!#1]",
+    "maleoyl_cyclic": r"[$([#6](=O)[!#6;!#1])]@[#6X3;!$(c1ccccc1)]@[#6X3;!$(c1ccccc1)]@[$([#6](=O)[!#6;!#1])]",
+    "fumaroyl": "[$(C(=O)-[!#6;!#1])]/C=C/[$(C(=O)-[!#6;!#1])]",
+    "acetylenedicarboxoyl": "[!#6;!#1]-C(=O)-C#C-C(=O)-[!#6;!#1]",
+    "phthaloyl": "[$([#6](=O)[!#6;!#1])]c1ccccc1[$([#6](=O)[!#6;!#1])]",
+    "isophthaloyl": "[!#6;!#1]-C(=O)-c1cc(-C(=O)-[!#6;!#1])ccc1",
+    "terephthaloyl": "[!#6;!#1]-C(=O)-c1ccc(-C(=O)-[!#6;!#1])cc1",
     # aromatic
-    "phenyl": "[!O;!$(C=O);!C,$([C;!H2]),$([CH2]-[C;!$(C@*)]);!$([Si](-[cH0]1[cH][cH][cH][cH][cH]1)([CH3])[CH3]);!$([Si](-[cH0]1[cH][cH][cH][cH][cH]1)(-[cH0]1[cH][cH][cH][cH][cH]1)-[$([cH0]1[cH][cH][cH][cH][cH]1),$(C([CH3])([CH3])[CH3])])]-[cH0]1:[cH]:[cH]:[cH]:[cH]:[cH]:1", # excludes benzyl and phenoxy
+    "phenyl": "[!O;!$(C=O);!C,$([C;!H2]),$([CH2]-[C;!$(C@*)]);!$([CH]=[CH]-[CH2,$(C=O)]);!$([Si](-[cH0]1[cH][cH][cH][cH][cH]1)([CH3])[CH3]);!$([Si](-[cH0]1[cH][cH][cH][cH][cH]1)(-[cH0]1[cH][cH][cH][cH][cH]1)-[$([cH0]1[cH][cH][cH][cH][cH]1),$(C([CH3])([CH3])[CH3])])]-[cH0]1:[cH]:[cH]:[cH]:[cH]:[cH]:1", # excludes benzyl, phenoxy, cinnamyl, cinnamoyl
     "phenoxy": "[*]-O-[cH0]1:[cH]:[cH]:[cH]:[cH]:[cH]:1",
     "benzyl": "[!C,$([C;!X4,R,X4H0]);!#1;!O]-[CH2]-[cH0]1:[cH]:[cH]:[cH]:[cH]:[cH]:1", # excludes benzoxy
     "benzoxy": "[*]-O-[CH2]-[cH0]1:[cH]:[cH]:[cH]:[cH]:[cH]:1",
-    "benzoyl": "[*]-C(=O)-[cH0]1:[cH]:[cH]:[cH]:[cH]:[cH]:1",
+    "benzoyl": "[!O]-C(=O)-[cH0]1:[cH]:[cH]:[cH]:[cH]:[cH]:1",
+    "benzoate": "[*]-O-C(=O)-[cH0]1:[cH]:[cH]:[cH]:[cH]:[cH]:1",
     "o-tolyl": "[!$([$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])])]-[cH0]1:[cH0](-[CH3]):[cH]:[cH]:[cH]:[cH]:1", # excludes o-tosyl
     "m-tolyl": "[*]-[cH0]1:[cH]:[cH0](-[CH3]):[cH]:[cH]:[cH]:1",
     "p-tolyl": "[!$([$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])])]-[cH0]1:[cH]:[cH]:[cH0](-[CH3]):[cH]:[cH]:1", # excludes p-tosyl
     "2-pyridyl": "[*]-[cH0]1:n:[cH]:[cH]:[cH]:[cH]:1",
     "3-pyridyl": "[*]-[cH0]1:[cH]:n:[cH]:[cH]:[cH]:1",
     "4-pyridyl": "[*]-[cH0]1:[cH]:[cH]:n:[cH]:[cH]:1",
-    "vanillyl": "[C;!$(C=O)]-[cH0]1:[cH]:[cH0](-O-[CH3]):[cH0](-[OH]):[cH]:[cH]:1",
-    "vanilloyl": "[*]-C(=O)-[cH0]1:[cH]:[cH0](-O-[CH3]):[cH0](-[OH]):[cH]:[cH]:1",
-    "galloyl": "[*]-C(=O)-[cH0]1:[cH]:[cH0](-O):[cH0](-O):[cH0](-O):[cH]:1",
+    "cinnamyl": "[!#1]-[CH2]-[CH]=[CH]-[cH0]1:[cH]:[cH]:[cH]:[cH]:[cH]:1",
+    "cinnamoyl": "[*]-C(=O)-[CH]=[CH]-[cH0]1:[cH]:[cH]:[cH]:[cH]:[cH]:1",
     "mesityl": "[*]-[cH0]1:[cH0](-[CH3]):[cH]:[cH0](-[CH3]):[cH]:[cH0](-[CH3]):1",
     "2,6-diisopropylphenyl": "[*]-[cH0]1:[cH0](-[CH](-[CH3])-[CH3]):[cH]:[cH]:[cH]:[cH0](-[CH](-[CH3])-[CH3]):1",
     "2,4,6-triisopropylphenyl": "[*]-[cH0]1:[cH0](-[CH](-[CH3])-[CH3]):[cH]:[cH0](-[CH](-[CH3])-[CH3]):[cH]:[cH0](-[CH](-[CH3])-[CH3]):1",
@@ -288,17 +301,52 @@ BRANCHES: Dict[str, str] = {
     "2,4,6-tri-tert-butylphenyl": "[*]-[cH0]1:[cH0](-C(-[CH3])(-[CH3])-[CH3]):[cH]:[cH0](-C(-[CH3])(-[CH3])-[CH3]):[cH]:[cH0](-C(-[CH3])(-[CH3])-[CH3]):1",
     "picryl": "[*]-[cH0]1:[cH0](-[N+](=O)-[O-]):[cH]:[cH0](-[N+](=O)-[O-]):[cH]:[cH0](-[N+](=O)-[O-]):1",
     "trityl": "[*]-[CX4H0](-[cH0]1:[cH]:[cH]:[cH]:[cH]:[cH]:1)(-[cH0]1:[cH]:[cH]:[cH]:[cH]:[cH]:1)(-[cH0]1:[cH]:[cH]:[cH]:[cH]:[cH]:1)",
+    # hydroxyphenyls and related
+    ## mono-sub
+    "o-hydroxyphenyl": "[!#1]-[cH0]1:[cH0](-[OH]):[cH]:[cH]:[cH]:[cH]:1",
+    "m-hydroxyphenyl": "[!#1]-[cH0]1:[cH]:[cH0](-[OH]):[cH]:[cH]:[cH]:1",
+    "p-hydroxyphenyl": "[!$([CH]=[CH]-C=O)]-[cH0]1:[cH]:[cH]:[cH0](-[OH]):[cH]:[cH]:1", # excludes coumaroyl
+    "coumaroyl":"[*]-C(=O)-[CH]=[CH]-[cH0]1:[cH]:[cH]:[cH0](-O):[cH]:[cH]:1",
+    "o-methoxyphenyl": "[!#1]-[cH0]1:[cH0](-O-[CH3]):[cH]:[cH]:[cH]:[cH]:1",
+    "m-methoxyphenyl": "[!#1]-[cH0]1:[cH]:[cH0](-O-[CH3]):[cH]:[cH]:[cH]:1",
+    "p-methoxyphenyl": "[!#1]-[cH0]1:[cH]:[cH]:[cH0](-O-[CH3]):[cH]:[cH]:1",
+    ## di-sub
+    "2,3-dihydroxyphenyl": "[!#1]-[cH0]1:[cH0](-[OH]):[cH0](-[OH]):[cH]:[cH]:[cH]:1",
+    "2,4-dihydroxyphenyl": "[!#1]-[cH0]1:[cH0](-[OH]):[cH]:[cH0](-[OH]):[cH]:[cH]:1",
+    "2,5-dihydroxyphenyl": "[!#1]-[cH0]1:[cH0](-[OH]):[cH]:[cH]:[cH0](-[OH]):[cH]:1",
+    "2,6-dihydroxyphenyl": "[!#1]-[cH0]1:[cH0](-[OH]):[cH]:[cH]:[cH]:[cH0](-[OH]):1",
+    "3,4-dihydroxyphenyl": "[!#1]-[cH0]1:[cH]:[cH0](-[OH]):[cH0](-[OH]):[cH]:[cH]:1",
+    "3,5-dihydroxyphenyl": "[!#1]-[cH0]1:[cH]:[cH0](-[OH]):[cH]:[cH0](-[OH]):[cH]:1",
+    "3-methoxy-4-hydroxyphenyl": "[!$([CH2]);!$(C=O);!$([CH]=[CH]-C=O)]-[cH0]1:[cH]:[cH0](-O-[CH3]):[cH0](-[OH]):[cH]:[cH]:1", # excludes vanillyl, vanilloyl, feruloyl
+    "3-hydroxy-4-methoxyphenyl": "[!$([CH2]);!$(C=O)]-[cH0]1:[cH]:[cH0](-[OH]):[cH0](-O-[CH3]):[cH]:[cH]:1", # excludes isovanillyl, isovanilloyl
+    "3,4-dimethoxyphenyl": "[!$([CH2]);!$(C=O)]-[cH0]1:[cH]:[cH0](-O-[CH3]):[cH0](-O-[CH3]):[cH]:[cH]:1", # excludes veratryl, veratroyl
+    "vanillyl": "[!#1]-[CH2]-[cH0]1:[cH]:[cH0](-O-[CH3]):[cH0](-[OH]):[cH]:[cH]:1",
+    "isovanillyl": "[!#1]-[CH2]-[cH0]1:[cH]:[cH0](-[OH]):[cH0](-O-[CH3]):[cH]:[cH]:1",
+    "vanilloyl": "[*]-C(=O)-[cH0]1:[cH]:[cH0](-O-[CH3]):[cH0](-[OH]):[cH]:[cH]:1",
+    "isovanilloyl": "[*]-C(=O)-[cH0]1:[cH]:[cH0](-[OH]):[cH0](-O-[CH3]):[cH]:[cH]:1",
+    "feruloyl": "[*]-C(=O)-[CH]=[CH]-[cH0]1:[cH]:[cH0](-O-[CH3]):[cH0](-[OH]):[cH]:[cH]:1",
+    "veratryl": "[!#1]-[CH2]-[cH0]1:[cH]:[cH0](-O-[CH3]):[cH0](-O-[CH3]):[cH]:[cH]:1",
+    "veratroyl": "[*]-C(=O)-[cH0]1:[cH]:[cH0](-O-[CH3]):[cH0](-O-[CH3]):[cH]:[cH]:1",
+    ### tri-sub
+    "pyrogallol": "O-[cH0]1:[cH0](-O):[cH0](-O):[cH]:[cH]:[cH]:1", 
+    "3,4,5-trioxyphenyl": "O-[cH0]1:[cH0](-O):[cH0](-O):[cH]:[cH0;!$([cH0]1(-[$(C=O),$([CH2])])[cH][cH0](-O[CH3])[cH0](-[OH])[cH0](-O[CH3])[cH]1)](-[!#1;!$(C=O)]):[cH]:1", # excludes galloyl, syringyl, syringoyl
+    "phloroglucinol": "O-[cH0]1:[cH]:[cH0](-O):[cH]:[cH0](-O):[cH]:1", 
+    "2,4,6-trioxyphenyl": "O-[cH0]1:[cH0](-[!#1;!$(C=O)]):[cH0](-O):[cH]:[cH0](-O):[cH]:1", 
+    "galloyl": "[*]-C(=O)-[cH0]1:[cH]:[cH0](-O):[cH0](-O):[cH0](-O):[cH]:1",
+    "syringyl": "[!#1]-[CH2]-[cH0]1:[cH]:[cH0](-O-[CH3]):[cH0](-[OH]):[cH0](-O-[CH3]):[cH]:1",
+    "syringoyl": "[!#1]-C(=O)-[cH0]1:[cH]:[cH0](-O-[CH3]):[cH0](-[OH]):[cH0](-O-[CH3]):[cH]:1",
 }
 
 MAIN_GROUP: Dict[str, str] = {
     # Organometallics
     "organo_lithium": "[#6]-[Li]",
-    "Gringard": "[#6]-[Mg]-[Cl,Br,IX1]",
+    "Grignard": "[#6]-[Mg]-[Cl,Br,IX1]",
+    "organo_aluminum": "[#6]-[Al]",
     "organo_mercury": "[#6]-[Hg]",
     "organo_zinc": "[#6]-[Zn]",
     "stannane": "[#6]-[SnX4](-[#6])(-[#6])-[#6]",
-    "triorganotin_hydride": "[#1]-[SnX4](-[#6])(-[#6])-[#6]",
-    "triorganotin_halide": "[F,Cl,Br,IX1]-[SnX4](-[#6])(-[#6])-[#1]",
+    "stannyl_monohydride": "[#1]-[SnX4](-[#6])(-[#6])-[#6]",
+    "stannyl_monohalide": "[F,Cl,Br,IX1]-[SnX4](-[#6])(-[#6])-[#1]",
     "tributyl_stannyl": "[*]-[SnX4](-[CH2]-[CH2]-[CH2]-[CH3])(-[CH2]-[CH2]-[CH2]-[CH3])-[CH2]-[CH2]-[CH2]-[CH3]",
     
     # Boron
@@ -314,30 +362,44 @@ MAIN_GROUP: Dict[str, str] = {
     "trihydro_borate": "[!#1]-[BX4-;H3]",
     "dihydro_borate": "[!#1]-[BX4-;H2]-[!#1]",
     "monohydro_borate": "[!#1]-[BX4-;H1](-[!#1])-[!#1]",
-    "borate": "[BX4-;H0;!$([BX4-]1-[#6;X3]=,:[#6;X3]-,:[#6;X3]=,:[#6;X3]-1)]", # excludes borolate
+    "borate": "[BX4-;H0]",
     "borolate": "[BX4-]1-[#6;X3]=,:[#6;X3]-,:[#6;X3]=,:[#6;X3]-1",
     ## B-O
+    "boranate": "[#6]-[BX4-](-O)(-[#6])[#6]",
     "borinic_acid": "[#6,#1]-[BX3](-[OH,OH2+])-[#6,#1]",
-    "borinate": "[#6,#1]-[BX3](-O-[!#1])-[#6,#1]",
+    "borinic_ester": "[#6,#1]-[BX3;!$([#5]1-,:[#8]-,:[#6;X3]=,:[#6;X3]-,:[#6;X3]=,:[#6;X3]-,:1)](-O-[!#1])-[#6,#1]", # excludes 1,2-oxaborine
+    "borinate": "[#6]-[BX4-](-O)(-O)-[#6]",
     "boronic_acid": "[#6,#1]-[BX3](-[OH,OH2+])-[OH,OH2+]",
-    "boronate_mono_substituted": "[#6,#1]-[BX3](-[O-,OH,OH2+])-O-[!#1]",
-    "boronate_di_substituted": "[#6,#1]-[BX3](-O-[!#1])-O-[!#1]",
+    "boronic_mono_ester": "[#6,#1]-[BX3;!$([#5]1-,:[#8]-,:[#6;X3]=,:[#6;X3]-,:[#6;X3]=,:[#6;X3]-,:1)](-[O-,OH,OH2+])-O-[!#1]", # excludes 1,2-oxaborine
+    "boronic_di_ester": "[#6,#1]-[BX3;!$(B1OBOBO1);!$([#5]1-,:[#8]-,:[#6;X3]=,:[#6;X3]-,:[#6;X3]=,:[#6;X3]-,:1)](-O-[!#1])-O-[!#1]", # excludes boroxine, 1,2-oxaborine
+    "boronate": "[#6]-[BX4-](-O)(-O)-O",
     "catecholborane": "[*]-[BX3]1-O-c2ccccc2-O-1",
     "pinnacolborane": "[*]-[BX3]1-O-C([CH3])([CH3])-C1([CH3])[CH3]",
-    "orthoborate_mono_ester": "[#6,#14,#1]-O-[BX3](-[O-,OH,OH2+])-[O-,OH,OH2+]",
-    "orthoborate_di_ester": "[#6,#14,#1]-O-[BX3](-[O-,OH,OH2+])-O-[#6,#14,#1]",
-    "orthoborate_tri_ester": "[#6,#14,#1]-O-[BX3](-O-[#6,#14,#1])-O-[#6,#14,#1]",
+    "orthoboric_mono_ester": "[!#1]-O-[BX3](-[O-,OH,OH2+])-[O-,OH,OH2+]",
+    "orthoboric_di_ester": "[!#1]-O-[BX3](-[O-,OH,OH2+])-O-[!#1]",
+    "orthoboric_tri_ester": "[!#1]-O-[BX3](-O-[!#1])-O-[!#1]",
+    "orthoboric_monoamide": "O-[BX3](-O)-[#7]",
+    "orthoboric_diamide": "O-[BX3](-[#7])-[#7]",
+    "triamino_borane": "[#7]-[BX3](-[#7])-[#7]",
     "boroxine": "B1-O-B-O-B-O1",
+    "1,2-oxaborine": "[#5]1-,:[#8]-,:[#6;X3]=,:[#6;X3]-,:[#6;X3]=,:[#6;X3]-,:1",
     ## B-N
+    "borinic_amide": "[#6,#1]-[BX3,BX4-;!$([#5]1-,:[#7]-,:[#6;X3]=,:[#6;X3]-,:[#6;X3]=,:[#6;X3]-,:1)](-[#7])-[#6,#1]",
+    "boronic_monoamide": "[#6,#1]-[BX3,BX4-;!$([#5]1-,:[#7]-,:[#6;X3]=,:[#6;X3]-,:[#6;X3]=,:[#6;X3]-,:1);!$([#5]1-,:[#8]-,:[#6;X3]=,:[#6;X3]-,:[#6;X3]=,:[#6;X3]-,:1);!$([BX4-](-O)(-O)(-[#7]))](-[#7])-O", # excludes 1,2-azaborine, 1,2-oxaborine, boronamidate
+    "boronamide": "[#6,#1]-[BX3,BX4-;!$([#5]1-,:[#7]-,:[#6;X3]=,:[#6;X3]-,:[#6;X3]=,:[#6;X3]-,:1)](-[#7])-[#7]",
+    "boronamidate": "[#6,#1]-[BX4-](-O)(-O)-[NX4+,#7X3+]",
     "BODIPY": "[BX4-]1-[#7;X3]2~[#6;X3]~[#6;X3]~[#6;X3]~[#6;X3]~2~[#6;X3]~[#6;X3]3~[#6;X3]~[#6;X3]~[#6;X3]~[#7;X3]~3-1",
     "trispyrazolylborate": "[BX4-](n1cccn1)(n2cccn2)n3cccn3",
     "borazine": "[bX3-]1[nX3+][bX3-][nX3+][bX3-][nX3+]1",
     "carborazine": "[bX3-]1[nX3+]c[nX3+][bX3-]c1",
-    "1,2-azaborine": "[bX3-]1[nX3+]cccc1",
-    "1,3-azaborine": "[bX3-]1c[nX3+]ccc1",
-    "1,4-azaborine": "[bX3-]1cc[nX3+]cc1",
+    "1,2-azaborine": "[#5]1-,:[#7]-,:[#6;X3]=,:[#6;X3]-,:[#6;X3]=,:[#6;X3]-,:1",
+    "1,3-azaborine": "[#5]1-,:[#6;X3]-,:[#7]=,:[#6;X3]-,:[#6;X3]=,:[#6;X3]-,:1",
+    "1,4-azaborine": "[#5]1-,:[#6;X3]-,:[#6;X3]=,:[#7]-,:[#6;X3]=,:[#6;X3]-,:1",
+    "oxazaborolidine": "B1NCCO1",
+    "benzoxaborole": "B1OCc2ccccc21",
     ## B-F
-    "trifluoroborate": "[#6]-[BX4-](F)(F)F",
+    "difluoroborate": "[*]-[BX4-](F)(F)-[*]",
+    "trifluoroborate": "[*]-[BX4-](F)(F)F",
 
     # Silicon
     ## Si-H
@@ -378,6 +440,7 @@ MAIN_GROUP: Dict[str, str] = {
     "phosphonium": "[PX4+;!$([P+]-[O-]);!$([P+]-[C-])]",
     "diphosphine": "[PX3]-[PX3]",
     "phosphaalkyne": "[#6]-[CX2]#[PX1]",
+    "phosphino_borane": "[BX4-]-[PX4+]",
     ### PR2X
     "phosphinite": "[PX3](-[#6,#1])(-[#6,#1])-O-[!#1]",
     "thiophosphinite": "[PX3](-[#6,#1])(-[#6,#1])-[SX2]-[#6]",
@@ -464,7 +527,7 @@ MAIN_GROUP: Dict[str, str] = {
     
     ## S=P(VI)
     ### S=PR3
-    "phoshphine_sulfide": "[$([PX4]=[SX1]),$([PX4+]-[SX1-])](-[#6,#1])(-[#6,#1])-[#6,#1]",
+    "phosphine_sulfide": "[$([PX4]=[SX1]),$([PX4+]-[SX1-])](-[#6,#1])(-[#6,#1])-[#6,#1]",
     ### S=PR2X
     "thiophosphinate_ester": "[$([PX4]=[SX1]),$([PX4+]-[SX1-])](-[#6])(-[#6])-O-[!#1]",
     "dithiophosphinate_thioester": "[$([PX4]=[SX1]),$([PX4+]-[SX1-])](-[#6])(-[#6])-[SX2]-[#6]",
@@ -505,7 +568,9 @@ MAIN_GROUP: Dict[str, str] = {
     ## RN=P(VI)
     ### RN=PR3
     "iminophosphorane": "[$([PX4]=[NX2]),$([PX4+]-[NX2-])](-[#6,#1])(-[#6,#1])-[#6,#1]",
+    "N-acyl_iminophosphorane": "O=C-[$([NX2]=[PX4]),$([NX2-]-[PX4+])]",
     "N-amino_iminophosphorane": "[#7]-[$([NX2]=[PX4]),$([NX2-]-[PX4+])]",
+    "N-oxy_iminophosphorane": "O-[$([NX2]=[PX4]),$([NX2-]-[PX4+])]",
     ### RN=PR2X
     "iminophosphinate": "[$([PX4]=[NX2]),$([PX4+]-[NX2-])](-[#6,#1])(-[#6,#1])-O-[!#1]",
     "imino-thiophosphinate": "[$([PX4]=[NX2]),$([PX4+]-[NX2-])](-[#6,#1])(-[#6,#1])-[SX2]-[!#1]",
@@ -545,24 +610,26 @@ MAIN_GROUP: Dict[str, str] = {
     ## S-C, S=C
     "aliphatic_thiol": "[CX4]-[SX2H,SX1-]",
     "aromatic_thiol": "[cX3]-[SX2H,SX1-]",
-    "thioether": "[#6;!$(C=[O,S,N]);!$(C(-[O,S,N,n])-[O,S,N,n]);!$(C#N)]-[SX2;!r3;!$(S1-[#6;X3]~[#6;X3]~[O,S,N]~[#6;X3]~[#6;X3]-1)]-[#6;!$(C=[O,S,N]);!$(C([O,S,N,n])-[O,S,N,n]);!$(C#N)]", # excludes episulfides, thioesters, thioacetals, thioxines, thiocyanates
+    "thioether": "[#6;!$(C=[O,S,N]);!$(C#N)]-[SX2;!$([SX2]1-[#6;X3]=,:[#6;X3]-[SX2]-C-1=C2-[SX2]-[#6;X3]=,:[#6;X3]-[SX2]-2);!r3;!$(S1-[#6;X3]~[#6;X3]~[O,S,N]~[#6;X3]~[#6;X3]-1)]-[#6;!$(C=[O,S,N]);!$(C#N)]", # excludes episulfides, thioesters, thioxines, thiocyanates, tetrathiafulvalene
     "O,S-acetal": "[SX2]-[CX4;!$(C(S)(O)[O,S,N,n])]-O", 
     "thioacetal": "[SX2]-[CX4;!$(C(S)(S)[O,S,N,n])]-[SX2]",
     "thioaminal": "[SX2]-[CX4;!$(C(S)(N)[O,S,N,n])]-[#7]", 
     "ketene_O,S-acetal": "C=C(-[SX2H0])-[OX2H0]",
-    "ketene_thioacetal": "C=C(-[SX2H0])-[SX2H0]",
+    "ketene_thioacetal": "[C;!$(C1(-[SX2]-[#6;X3]=,:[#6;X3]-[SX2]-1)=C2-[SX2]-[#6;X3]=,:[#6;X3]-[SX2]-2)]=C(-[SX2H0])-[SX2H0]", # excludes tetrathiafulvalene
+    "tetrathiafulvalene": "C1(-[SX2]-[#6;X3]=,:[#6;X3]-[SX2]-1)=C2-[SX2]-[#6;X3]=,:[#6;X3]-[SX2]-2",
     "ketene_thioaminal": "C=C(-[SX2H0])-N",
     "thioaldehyde": "[#6]-[CH](=[SX1])",
     "thioketone": "[#6]-C(=[SX1])-[#6]",
     "thioketene": "C=C=[SX1]",
     "thionium": "[CX3]=[SX2+]-[!$([#6;-])]",
-    "carboxylate_thioester":  "[#6,#1]-C(=O)-[SX2]-[!$(C=[O,S])]",
-    "thionoester": "[#6,#1]-C(=[SX1])-O-[!$(C=[O,S])]",
-    "dithioester": "[#6,#1]-C(=[SX1])-[SX2]-[!$(C=[O,S])]",
-    "thioamide": "[#6,#1]-C(=[SX1])-[#7X3,$([NX2]=[CX3,PX4]);!$(N-[#7]);!$(N-[OH]);!$(N-O-C=O)]",
-    "thiohydrazide": "[!#7]-C(=[SX1])-[#7X3,$([NX2]=[CX3,PX4])]-[#7X3,$([NX2]=[CX3,PX4])]",
+    "carboxylate_thioester":  "[#6,#1]-C(=O)-[SX2;!$([SX2]1[#6](=O)[#6]1);!$([SX2]1[#6](=O)[#6]~[#6]1);!$([SX2]1[#6](=O)[#6]~[#6]~[#6]1);!$([SX2]1[#6](=O)[#6]~[#6]~[#6]~[#6]1)]-[#6;!$(C=[O,S])]",
+    "thionoester": "[#6,#1]-C(=[SX1])-[O;!$(O1[#6](=S)[#6]1);!$(O1[#6](=S)[#6]~[#6]1);!$(O1[#6](=S)[#6]~[#6]~[#6]1);!$(O1[#6](=S)[#6]~[#6]~[#6]~[#6]1)]-[!$(C=[O,S])]",
+    "dithioester": "[#6,#1]-C(=[SX1])-[SX2;!$([SX2]1[#6](=S)[#6]1);!$([SX2]1[#6](=S)[#6][#6]1);!$([SX2]1[#6](=S)[#6][#6][#6]1);!$([SX2]1[#6](=S)[#6][#6][#6][#6]1)]-[!$(C=[O,S])]",
+    "thioamide": "[#6,#1;!$(C(=S)[#7])]-C(=[SX1])-[#7X3,$([NX2]=[CX3,PX4]);!$(N1[#6](=S)[#6]1);!$(N1[#6](=S)[#6]~[#6]1);!$(N1[#6](=S)[#6]~[#6]~[#6]1);!$(N1[#6](=S)[#6]~[#6]~[#6]~[#6]1);!$(N-[#7]);!$(N-[OH]);!$(N-O-C=O)]", # excludes dithioxamide
+    "dithioxamide": "[#7]-C(=S)-C(=S)-[#7]",
+    "thiohydrazide": "[!#7]-C(=[SX1])-[NX4+,#7X3,$([NX2]=[CX3,PX4])]-[#7X3,$([NX2]=[CX3,PX4])]",
     "thiohydroxamic_acid": "[#6,#1]-C(=[SX1])-[NX3]-[OH]",
-    "thiohydroxamate_ester": "[#6,#1]-C(=[SX1])-[NX3]-O-[#6,#14;!$(C=O)]",
+    "thiohydroxamate": "[#6,#1]-C(=[SX1])-[NX3]-O-[!$(C=O)]",
     "O-acyl_thiohydroxamate": "[#6,#1]-C(=[SX1])-[NX3]-O-C(=O)",
     "thiourea": "[#7X3,$([NX2]=[CX3,PX4])]-C(=[SX1])-[#7X3,$([NX2]=[CX3,PX4])]",
     "isothiourea": "[NX2,NX3H+]=C(-[SX2]-[#6,#14,#1])-[#7X3,$([NX2]=[CX3,PX4])]",
@@ -593,12 +660,12 @@ MAIN_GROUP: Dict[str, str] = {
     "disulfide": "[!S]-[SX2]-[SX2]-[!S]",
     "trisulfide": "[SX2]-[SX2]-[SX2]",
     "sulfenic_acid": "[#6]-[SX2]-[OH,O-,OH2+]",
-    "sulfenate_ester": "[#6]-[SX2]-O-[!#1]",
+    "sulfenate": "[#6]-[SX2]-O-[!#1]",
     "sulfenyl_halide": "[#6]-[SX2]-[F,Cl,Br,IX1]",
-    "sulfoxylate_mono_ester": "O-[SX2]-O",
+    "sulfoxylate": "O-[SX2]-O",
     "sulfenamide": "[#6]-[SX2]-[NX3]",
     "thioxime": "[#6,#1]-C(=[NX2,NX3H+]-[SX2]-[#6,#14,#1])-[#6,#1]",
-    "thiocyanate": "[*]-[SX2]-C#N",
+    "thiocyanate": "[*]-[SX2]-C#[NX1]",
     "isothiocyanate": "[*]-[NX2]=C=[SX1]",
     "thiocarbonyl_S-oxide": "C=[$([SX2]=[OX1]),$([SX2+]-[O-])]",
     "thiocarbonyl_S-imide": "C=[$([SX2]=[OX1]),$([SX2+]-[O-])]",
@@ -633,7 +700,7 @@ MAIN_GROUP: Dict[str, str] = {
     "sulfonate": "[#6]-[$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])]-O-[!#1;!#7]",
     "sulfonyl_halide": "[#6]-[$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])]-[F,Cl,Br,IX1]",
     "thiosulfonate": "[#6]-[$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])]-[SX2]",
-    "sulfonamide": "[#6]-[$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])]-[#7X3;!$([#7]([$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])])-[$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])])]", # exclides sulfonimide
+    "sulfonamide": "[#6]-[$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])]-[#7X3;!$(NC(=O)N);!$([#7]([$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])])-[$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])])]", # excludes sulfonimide, sulfonylurea
     "N-sulfonyl_imine": "[#6]-[$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])]-[NX2]=[CX3]",
     "N-sulfonyl_iminophosphorane": "[#6]-[$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])]-[NX2]=[PX4]",
     "N-sulfonate": "[#6]-[$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])]-O-[#7]",
@@ -644,7 +711,8 @@ MAIN_GROUP: Dict[str, str] = {
     "sulfamoyl_halide": "[#7X3,$([NX2]=[CX3,PX4])]-[$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])]-[F,Cl,Br,IX1]",
     "sulfate_mono_substituted": "[OH,O-,OH2+]-[$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])]-O-[!#1]",
     "sulfate_di_substituted": "[!#1]-O-[$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])]-O-[!#1]",
-    "halosulfate": "[F,Cl,Br,IX1]-[$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])]-O-[!#1]",
+    "fluorosulfate": "F-[$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])]-O-[!#1]",
+    "halosulfate": "[Cl,Br,IX1]-[$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])]-O-[!#1]",
     "Bunte_salt": "[OH,O-,OH2+]-[$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])]-[SX2]-[!#1]",
     "sulfoximine": "[#6]-[$([SX4](=O)=[NX2]),$([SX4+](=O)-[NX2-]),$([SX4+](-[O-])=[NX2]),$([SX4+2](-[O-])-[NX2-])]-[#6]",
     "sulfonimidic_acid": "[#6]-[$([SX4](=O)=[NX2]),$([SX4+](=O)-[NX2-]),$([SX4+](-[O-])=[NX2]),$([SX4+2](-[O-])-[NX2-])]-[O-,OH,OH2+]",
@@ -667,6 +735,7 @@ MAIN_GROUP: Dict[str, str] = {
     "nonaflyl": "[*]-[$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])]-C(F)(F)-C(F)(F)-C(F)(F)-C(F)(F)F", # C4F9
     ### hexavalent
     "λ6-sulfane": "[SX6]",
+    "pentafluorosulfanyl": "[*]-S(F)(F)(F)(F)F",
 
     # Halogens
     ## C(sp3)-X
@@ -715,8 +784,9 @@ MAIN_GROUP: Dict[str, str] = {
     "alkynyl_iodide": "C#[CX2]-[IX1]",
     ## 2+ X
     "dihalo_methylidene": "[F,Cl,Br,IX1]-[CX3](-[F,Cl,Br,IX1])=[*]",
-    "geminal_dihalide": "[!$([F,Cl,Br,I])]-[CX4;!$(C(F)(F)-C(F)(F))](-[F,Cl,Br,IX1])(-[F,Cl,Br,IX1])-[!$([F,Cl,Br,I])]",
+    "geminal_dihalide": "[!$([F,Cl,Br,I])]-[CX4;!$(C(F)(F)-C(F)(F));!$([CH](F)F)](-[F,Cl,Br,IX1])(-[F,Cl,Br,IX1])-[!$([F,Cl,Br,I])]",
     "vicinal_dihalide": "[F,Cl,Br,IX1]-[CX4](-[!$([F,Cl,Br,I])])(-[!$([F,Cl,Br,I])])-[CX4](-[!$([F,Cl,Br,I])])(-[!$([F,Cl,Br,I])])-[F,Cl,Br,IX1]",
+    "difluoromethyl": "[*]-[CH]([#1])(F)F",
     "trifluoromethyl": "[!$([cH0]1[cH][cH0](-C(F)(F)F)[cH][cH0][cH]1);!$([cH0]1[cH0]c(-C(F)(F)F)[cH]c(-C(F)(F)F)[cH]1);!$([cH0]1[cH]c(-C(F)(F)F)[cH0]c(-C(F)(F)F)[cH]1);!$(C(F)(F));!$(C(=O)O);!$([$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])])]-C(F)(F)F",
     "trifluoroacetoxy": "FC(F)(F)-C(=O)-O-[!#1]",
     "trihalomethyl": "[*]-[C;!$(C(F)(F)F)](-[F,Cl,Br,IX1])(-[F,Cl,Br,IX1])-[F,Cl,Br,IX1]", # excluding trifluoromethyl
@@ -806,6 +876,7 @@ MAIN_GROUP: Dict[str, str] = {
     "selenoether": "[#6;!$(C#N)]-[SeX2;!r3]-[#6;!$(C#N)]",
     "selenophene": "[#34;X2]1:c:c:c:c1",
     "diselenide": "[SeX2]-[SeX2]",
+    "selenosulfide": "[SeX2]-[SX2]",
     "selenol": "[#6;!$(C=[O,S,N])]-[SeX2H]",
     "selenamide": "[*]-[SeX2]-[#7]",
     "selenoester": "[#6,#1]-C(=O)-[SeX2]",
@@ -820,6 +891,7 @@ MAIN_GROUP: Dict[str, str] = {
     "selenocyanate": "[*]-[SeX2]-[CX2]#[NX1]",
     "isoselenocyanate": "[*]-[NX2]=[CX2]=[SeX1]",
     "λ4-selenane": "[SeX4](-[*])(-[*])(-[*])-[*]", 
+    "λ6-selenane": "[SeX4](-[*])(-[*])(-[*])(-[*])-[*]", 
 
 
 }
@@ -839,40 +911,69 @@ HOMOAROMATICS: Dict[str, str] = {
     "cyclopentadienide": "[c-]1cccc1",
     ## 6+ membered 
     "benzenoid_ring": "[cX3]1~[cX3]~[cX3]~[cX3]~[cX3]~[cX3]~1",
-    "o-phenylene": "[!$([CH3])]-[cH0;!$(c1([N+](=O)[O-])ccccc1-[$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])])]1:[cH0;!$(c1([N+](=O)[O-])ccccc1-[$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])])](-[!$([CH3])]):[cH]:[cH]:[cH]:[cH]:1", # excludes o-tolyl, o-tosyl, o-nosyl
-    "m-phenylene": "[!$([CH3])]-[cH0]1:[cH]:[cH0](-[!$([CH3])]):[cH]:[cH]:[cH]:1", # excludes m-tolyl
-    "p-phenylene": "[!$([CH3])]-[cH0;!$(c1([N+](=O)[O-])ccc(-[$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])])cc1)]1:[cH]:[cH]:[cH0;!$(c1([N+](=O)[O-])ccc(-[$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])])cc1)](-[!$([CH3])]):[cH]:[cH]:1", # excludes p-tolyl, p-tosyl, p-nosyl
-    "biphenyl": "[c;!$(c-!@c2ccccc2);!$(c(:a)(:a)(:a))]1:[c;!$(c-!@c2ccccc2);!$(c(:a)(:a)(:a))]:[c;!$(c-!@c2ccccc2);!$(c(:a)(:a)(:a))]:[c;!$(c-!@c2ccccc2);!$(c(:a)(:a)(:a))]:[c;!$(c-!@c2ccccc2);!$(c(:a)(:a)(:a))]:c:1-!@c1:[c;!$(c-!@c2ccccc2);!$(c(:a)(:a)(:a))]:[c;!$(c-!@c2ccccc2);!$(c(:a)(:a)(:a))]:[c;!$(c-!@c2ccccc2);!$(c(:a)(:a)(:a))]:[c;!$(c-!@c2ccccc2);!$(c(:a)(:a)(:a))]:[c;!$(c-!@c2ccccc2);!$(c(:a)(:a)(:a))]:1", # excludes terphenyls biphenylene, fluorene, etc.
-    "biaryl": "[c;!$([c;!$(c(:a)(:a)(:a))]1[c;!$(c(:a)(:a)(:a))][c;!$(c(:a)(:a)(:a))][c;!$(c(:a)(:a)(:a))][c;!$(c(:a)(:a)(:a))][c;!$(c(:a)(:a)(:a))]1)]-!@c",
-    "o-terphenyl": "c1ccccc1-!@c1c(-!@c2ccccc2)cccc1",
-    "m-terphenyl": "c1ccccc1-!@c1cc(-!@c2ccccc2)ccc1",
-    "p-terphenyl": "c1ccccc1-!@c1ccc(-!@c2ccccc2)cc1",
+    "o-phenylene": "[!$([CH3]);!$([OH]);!$(O[CH3])]-[cH0;!$(c12ccccc1-ccc-2);!$(c1([N+](=O)[O-])ccccc1-[$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])])]1:[cH0;!$(c1([N+](=O)[O-])ccccc1-[$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])])](-[!$([CH3]);!$([OH]);!$(O[CH3])]):[cH]:[cH]:[cH]:[cH]:1", # excludes o-tolyl, o-tosyl, o-nosyl, o-hydroxyphenyl, fluoranthene
+    "m-phenylene": "[!$([CH3]);!$([OH]);!$(O[CH3])]-[cH0]1:[cH]:[cH0](-[!$([CH3]);!$([OH]);!$(O[CH3])]):[cH]:[cH]:[cH]:1", # excludes m-tolyl
+    "p-phenylene": "[!$([CH3]);!$([OH]);!$(O[CH3])]-[cH0;!$(c1([N+](=O)[O-])ccc(-[$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])])cc1)]1:[cH]:[cH]:[cH0;!$(c1([N+](=O)[O-])ccc(-[$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])])cc1)](-[!$([CH3]);!$([OH]);!$(O[CH3])]):[cH]:[cH]:1", # excludes p-tolyl, p-tosyl, p-nosyl
+    "biphenyl": "[c;!$(c~c1ccccc1);!$(c(:a)(:a):a)]1[c;!$(c~c1ccccc1);!$(c(:a)(:a):a)][c;!$(c~c1ccccc1);!$(c(:a)(:a):a)][c;!$(c~c1ccccc1);!$(c(:a)(:a):a)][c;!$(c~c1ccccc1);!$(c(:a)(:a):a)][cX3H0;!$(c1cc~[#6]~c1);!$(c1c-cc-1)]1-[cX3H0;!$(c1cc~[#6]~c1);!$(c1c-cc-1)]1[c;!$(c~c1ccccc1);!$(c(:a)(:a):a)][c;!$(c~c1ccccc1);!$(c(:a)(:a):a)][c;!$(c~c1ccccc1);!$(c(:a)(:a):a)][c;!$(c~c1ccccc1);!$(c(:a)(:a):a)][c;!$(c~c1ccccc1);!$(c(:a)(:a):a)]1", # excludes terphenyls, biphenylene, fluorene, etc.
+    "biaryl": "[cX3H0;!$(c1cc~[#6]~c1);!$(c1c-cc-1);!$([cX3H0]1[c;!$(c~c1ccccc1);!$(c(:a)(:a):a)][c;!$(c~c1ccccc1);!$(c(:a)(:a):a)][c;!$(c~c1ccccc1);!$(c(:a)(:a):a)][c;!$(c~c1ccccc1);!$(c(:a)(:a):a)][c;!$(c~c1ccccc1);!$(c(:a)(:a):a)]1)]-[cX3H0,nX3+;!$(c1cc~[#6]~c1);!$(c1c-cc-1)]",
+    "o-terphenyl": "c1cccc[c;!$(c1cc~[#6]~c1);!$(c1c-cc-1)]1-[c;!$(c1cc~[#6]~c1);!$(c1c-cc-1)]1[c;!$(c1cc~[#6]~c1);!$(c1c-cc-1)](-[c;!$(c1cc~[#6]~c1);!$(c1c-cc-1)]2ccccc2)cccc1",
+    "m-terphenyl": "c1cccc[c;!$(c1cc~[#6]~c1);!$(c1c-cc-1)]1-[c;!$(c1cc~[#6]~c1);!$(c1c-cc-1)]1c[c;!$(c1cc~[#6]~c1);!$(c1c-cc-1)](-[c;!$(c1cc~[#6]~c1);!$(c1c-cc-1)]2ccccc2)ccc1",
+    "p-terphenyl": "c1cccc[c;!$(c1cc~[#6]~c1);!$(c1c-cc-1)]1-[c;!$(c1cc~[#6]~c1);!$(c1c-cc-1)]1cc[c;!$(c1cc~[#6]~c1);!$(c1c-cc-1)](-[c;!$(c1cc~[#6]~c1);!$(c1c-cc-1)]2ccccc2)cc1",
     "benzyne": "c1#ccccc1",
     "tropylium": "[c+]1cccccc1",
 
-    # !$(c1:c~[#6;X3]~[#6;X3]~c:1) prevents 5-membered all-sp2 rings at bridgeheads. Used to exclude acenaphthylene and fluoranthene.
+    # !$(c1:c~[#6;X3]=,:[#6;X3]~c:1) prevents 5-membered all-sp2 rings at bridgeheads. Used to exclude acenaphthylene and fluoranthene.
     # !$([cR2;r6]) prevents fusing with 6-membered rings but allows fusing with 5-membered rings.
-
+    # !$(c12c3cccc1ccc(c24)cccc4cc3) prevents a pyrene-type fusin on two adjacent bridgeheads
     # 2 rings
     "indene": "[CX4]1C=C[cX3H0]2:c:c:c:c:[cX3H0]:2-1",
-    "naphthalene": "[c;!$([cR2;r6](:a)(:a)(:a))]1:[c;!$([cR2;r6](:a)(:a)(:a))]:[c;!$([cR2;r6](:a)(:a)(:a))]:[c;!$([cR2;r6](:a)(:a)(:a))]:[cX3H0;!$(c1:c~[#6;X3]~[#6;X3]~c:1)]2:[c;!$([cR2;r6](:a)(:a)(:a))]:[c;!$([cR2;r6](:a)(:a)(:a))]:[c;!$([cR2;r6](:a)(:a)(:a))]:[c;!$([cR2;r6](:a)(:a)(:a))]:[cX3H0;!$(c1:c~[#6;X3]~[#6;X3]~c:1)]:1:2",
+    "naphthalene": "[c;!$([cR2;r6](:a)(:a)(:a));!$(c1c~c2cccc3cccc1c32)]1:[c;!$([cR2;r6](:a)(:a)(:a));!$(c1c~c2cccc3cccc1c32)]:[c;!$([cR2;r6](:a)(:a)(:a));!$(c1c~c2cccc3cccc1c32)]:[c;!$([cR2;r6](:a)(:a)(:a));!$(c1c~c2cccc3cccc1c32)]:[cX3H0;!$(c1:c~[#6]~[#6]~c:1)]2:[c;!$([cR2;r6](:a)(:a)(:a));!$(c1c~c2cccc3cccc1c32)]:[c;!$([cR2;r6](:a)(:a)(:a));!$(c1c~c2cccc3cccc1c32)]:[c;!$([cR2;r6](:a)(:a)(:a));!$(c1c~c2cccc3cccc1c32)]:[c;!$([cR2;r6](:a)(:a)(:a));!$(c1c~c2cccc3cccc1c32)]:[cX3H0;!$(c1:c~[#6]~[#6]~c:1)]:1:2", # excludes acenaphthene, acenaphthylene, benzofluoranthenes
     "azulene": "c1:c:c:c2:c:c:c:c:c:c:1-2",
     # 3 rings
-    "anthracene": "[c;!$([cR2;r6](:a)(:a)(:a))]1:[c;!$([cR2;r6](:a)(:a)(:a))]:[c;!$([cR2;r6](:a)(:a)(:a))]:[c;!$([cR2;r6](:a)(:a)(:a))]:[cX3H0]2:[c;!$(c(:a)(:a)(:a))]:[cX3H0]3:[c;!$([cR2;r6](:a)(:a)(:a))]:[c;!$([cR2;r6](:a)(:a)(:a))]:[c;!$([cR2;r6](:a)(:a)(:a))]:[c;!$([cR2;r6](:a)(:a)(:a))]:[cX3H0]:3:[c;!$(c(:a)(:a)(:a))]:[cX3H0]:1:2",
-    "phenanthrene": "[c;!$([cR2;r6](:a)(:a)(:a))]1:[c;!$([cR2;r6](:a)(:a)(:a))]:[c;!$([cR2;r6](:a)(:a)(:a))]:[c;!$([cR2;r6](:a)(:a)(:a))]:[cX3H0]2:[cX3H0]3:[c;!$([cR2;r6](:a)(:a)(:a))]:[c;!$([cR2;r6](:a)(:a)(:a))]:[c;!$([cR2;r6](:a)(:a)(:a))]:[c;!$([cR2;r6](:a)(:a)(:a))]:[cX3H0;!$(c1:c~[#6;X3]~[#6;X3]~c:1)]:3:[c;!$([cR2;r6](:a)(:a)(:a))]:[c;!$([cR2;r6](:a)(:a)(:a))]:[cX3H0;!$(c1:c~[#6;X3]~[#6;X3]~c:1)]:1:2",   
+    "anthracene": "[c;!$(c12ccccc2cccc1)]1:[c;!$(c12ccccc2cccc1)]:[c;!$(c12ccccc2cccc1)]:[c;!$(c12ccccc2cccc1)]:[cX3H0;!$(c1:c~[#6;X3]=,:[#6;X3]~c:1)]2:[c;!$(c(:a)(:a)(:a))]:[cX3H0;!$(c1:c~[#6;X3]=,:[#6;X3]~c:1)]3:[c;!$(c12ccccc2cccc1)]:[c;!$(c12ccccc2cccc1)]:[c;!$(c12ccccc2cccc1)]:[c;!$(c12ccccc2cccc1)]:[cX3H0;!$(c1:c~[#6;X3]=,:[#6;X3]~c:1)]:3:[c;!$(c(:a)(:a)(:a))]:[cX3H0;!$(c1:c~[#6;X3]=,:[#6;X3]~c:1)]:1:2",
+    "phenanthrene": "[c;!$(c12ccccc2cccc1)]1:[c;!$(c12ccccc2cccc1)]:[c;!$(c12ccccc2cccc1)]:[c;!$(c12ccccc2cccc1)]:[cX3H0]2:[cX3H0]3:[c;!$(c12ccccc2cccc1)]:[c;!$(c12ccccc2cccc1)]:[c;!$(c12ccccc2cccc1)]:[c;!$(c12ccccc2cccc1)]:[cX3H0;!$(c1:c~[#6;X3]=,:[#6;X3]~c:1)]:3:[c;!$(c12ccccc2cccc1)]:[c;!$(c12ccccc2cccc1)]:[cX3H0;!$(c1:c~[#6;X3]=,:[#6;X3]~c:1)]:1:2",   
     "biphenylene": "c1:c:c:c:[cX3H0]2-[cX3H0]3:c:c:c:c:[cX3H0]:3-[cX3H0]:1:2",
     "fluorene": "c1:c:c:c:[cX3H0]2-[cX3H0]3:c:c:c:c:[cX3H0]:3-[CX4;!$([CH]-[CH2]-O-[$(C(=O)(O)[!#6])])]-[cX3H0]:1:2",
-    "acenaphthylene": "c1:c:c:[cX3H0](-[#6;X3]~[#6;X3;!$(c1ccccc1)]3):[cX3H0]2:[cX3H0]-3:c:c:c:[cX3H0]:1:2", # excludes fluoranthene
+    "acenaphthylene": "c1:c:c:[cX3H0](-[#6;X3]=,:[#6;X3;!$(c1ccccc1)]3):[cX3H0]2:[cX3H0]-3:c:c:c:[cX3H0;!$(c12c3cccc1ccc(c24)cccc4cc3)]:1:2", # excludes fluoranthene
+    "acenaphthene": "c1:c:c:[cX3H0](-[#6]-[#6]3):[cX3H0]2:[cX3H0]-3:c:c:c:[cX3H0;!$(c12c3cccc1ccc(c24)cccc4cc3)]:1:2",
     # 4 rings
-    "tetracene":  "[c;!$([cR2;r6](:a)(:a)(:a))]1:[c;!$([cR2;r6](:a)(:a)(:a))]:[c;!$([cR2;r6](:a)(:a)(:a))]:[c;!$([cR2;r6](:a)(:a)(:a))]:[cX3H0]2:[c;!$(c(:a)(:a)(:a))]:[cX3H0]3:[c;!$(c(:a)(:a)(:a))]:[cX3H0]4:[c;!$([cR2;r6](:a)(:a)(:a))]:[c;!$([cR2;r6](:a)(:a)(:a))]:[c;!$([cR2;r6](:a)(:a)(:a))]:[c;!$([cR2;r6](:a)(:a)(:a))]:[cX3H0]:4:[c;!$(c(:a)(:a)(:a))]:[cX3H0]:3:[c;!$(c(:a)(:a)(:a))]:[cX3H0]:1:2",
-    "tetraphene": "[c;!$([cR2;r6](:a)(:a)(:a))]1:[c;!$([cR2;r6]c(:a)(:a)(:a))]:[c;!$([cR2;r6](:a)(:a)(:a))]:[c;!$([cR2;r6](:a)(:a)(:a))]:[cX3H0]2:[c;!$(c(:a)(:a)(:a))]:[cX3H0]3:[cX3H0]4:[c;!$([cR2;r6](:a)(:a)(:a))]:[c;!$([cR2;r6](:a)(:a)(:a))]:[c;!$([cR2;r6](:a)(:a)(:a))]:[c;!$([cR2;r6](:a)(:a)(:a))]:[cX3H0]:4:[c;!$([cR2;r6](:a)(:a)(:a))]:[c;!$([cR2;r6](:a)(:a)(:a))]:[cX3H0]:3:[c;!$(c(:a)(:a)(:a))]:[cX3H0]:1:2",
-    "chrysene":   "[c;!$([cR2;r6](:a)(:a)(:a))]1:[c;!$([cR2;r6](:a)(:a)(:a))]:[c;!$([cR2;r6](:a)(:a)(:a))]:[c;!$([cR2;r6](:a)(:a)(:a))]:[cX3H0]2:[cX3H0]3:[c;!$([cR2;r6](:a)(:a)(:a))]:[c;!$([cR2;r6](:a)(:a)(:a))]:[cX3H0]4:[c;!$([cR2;r6](:a)(:a)(:a))]:[c;!$([cR2;r6](:a)(:a)(:a))]:[c;!$([cR2;r6](:a)(:a)(:a))]:[c;!$([cR2;r6](:a)(:a)(:a))]:[cX3H0]:4:[cX3H0]:3:[c;!$([cR2;r6](:a)(:a)(:a))]:[c;!$([cR2;r6](:a)(:a)(:a))]:[cX3H0]:1:2",
-    "benzo[c]phenanthrene": "[c;!$([cR2;r6](:a)(:a)(:a))]1:[c;!$([cR2;r6](:a)(:a)(:a))]:[c;!$([cR2;r6](:a)(:a)(:a))]:[c;!$([cR2;r6](:a)(:a)(:a))]:[cX3H0]2:[c;!$([cR2;r6](:a)(:a)(:a))]:[c;!$([cR2;r6](:a)(:a)(:a))]:[cX3H0]3:[c;!$([cR2;r6](:a)(:a)(:a))]:[c;!$([cR2;r6](:a)(:a)(:a))]:[cX3H0]4:[c;!$([cR2;r6](:a)(:a)(:a))]:[c;!$([cR2;r6](:a)(:a)(:a))]:[c;!$([cR2;r6](:a)(:a)(:a))]:[c;!$([cR2;r6](:a)(:a)(:a))]:[cX3H0]:4:[cX3H0]:3:[cX3H0]:1:2",
-    "pyrene": "c1:c:c:[cX3H0](:[cX3H0]2:[cX3H0]34):c:c:[cX3H0]:4:c:c:c:[cX3H0]:3:c:c:[cX3H0]:1:2",   
-    "triphenylene": "c1:c:c:c:[cX3H0]2:[cX3H0]3:c:c:c:c:[cX3H0]:3:[cX3H0]4:c:c:c:c:[cX3H0]:4:[cX3H0]:1:2",   
-    "fluoranthene": "c1:c:c:[cX3H0](-[cX3H0]4:c:c:c:c:[cX3H0]5:4):[cX3H0]2:[cX3H0]-5:c:c:c:[cX3H0]:1:2",
+    "tetracene":  "[c;!$(c12ccccc2cccc1)]1:[c;!$(c12ccccc2cccc1)]:[c;!$(c12ccccc2cccc1)]:[c;!$(c12ccccc2cccc1)]:[cX3H0]2:c:[cX3H0]3:c:[cX3H0]4:[c;!$(c12ccccc2cccc1)]:[c;!$(c12ccccc2cccc1)]:[c;!$(c12ccccc2cccc1)]:[c;!$(c12ccccc2cccc1)]:[cX3H0]:4:c:[cX3H0]:3:c:[cX3H0]:1:2",
+    "tetraphene": "[c;!$(c12ccccc2cccc1)]1:[c;!$(c12ccccc2cccc1)]:[c;!$(c12ccccc2cccc1)]:[c;!$(c12ccccc2cccc1)]:[cX3H0]2:c:[cX3H0;!$(c12c3cccc1ccc(c24)cccc4cc3)]3:[cX3H0;!$(c12c3cccc1ccc(c24)cccc4cc3)]4:[c;!$(c12ccccc2cccc1)]:[c;!$(c12ccccc2cccc1)]:[c;!$(c12ccccc2cccc1)]:[c;!$(c12ccccc2cccc1)]:[cX3H0]:4:[c;!$(c12ccccc2cccc1)]:[c;!$(c12ccccc2cccc1)]:[cX3H0]:3:c:[cX3H0]:1:2",
+    "chrysene":   "[c;!$(c12ccccc2cccc1)]1:[c;!$(c12ccccc2cccc1)]:[c;!$(c12ccccc2cccc1)]:[c;!$(c12ccccc2cccc1)]:[cX3H0;!$(c12c3cccc1ccc(c24)cccc4cc3)]2:[cX3H0;!$(c12c3cccc1ccc(c24)cccc4cc3)]3:[c;!$(c12ccccc2cccc1)]:[c;!$(c12ccccc2cccc1)]:[cX3H0]4:[c;!$(c12ccccc2cccc1)]:[c;!$(c12ccccc2cccc1)]:[c;!$(c12ccccc2cccc1)]:[c;!$(c12ccccc2cccc1)]:[cX3H0;!$(c12c3cccc1ccc(c24)cccc4cc3)]:4:[cX3H0;!$(c12c3cccc1ccc(c24)cccc4cc3)]:3:[c;!$(c12ccccc2cccc1)]:[c;!$(c12ccccc2cccc1)]:[cX3H0]:1:2",
+    "benzo[c]phenanthrene": "[c;!$(c12ccccc2cccc1)]1:[c;!$(c12ccccc2cccc1)]:[c;!$(c12ccccc2cccc1)]:[c;!$(c12ccccc2cccc1)]:[cX3H0]2:[c;!$(c12ccccc2cccc1)]:[c;!$(c12ccccc2cccc1)]:[cX3H0]3:[c;!$(c12ccccc2cccc1)]:[c;!$(c12ccccc2cccc1)]:[cX3H0]4:[c;!$(c12ccccc2cccc1)]:[c;!$(c12ccccc2cccc1)]:[c;!$(c12ccccc2cccc1)]:[c;!$(c12ccccc2cccc1)]:[cX3H0]:4:[cX3H0;!$(c1:c:c-C-c:c:1);!$(c1:c:c-c:c:1)]:3:[cX3H0]:1:2",
+    "pyrene": "[c;!$(c12ccccc2cccc1)]1:[c;!$(c12ccccc2cccc1)]:[c;!$(c12ccccc2cccc1)]:[cX3H0;!$(c1:c~[#6]~[#6]~c:1)](:[cX3H0]2:[cX3H0]34):[c;!$(c12ccccc2cccc1)]:[c;!$(c12ccccc2cccc1)]:[cX3H0;!$(c1:c~[#6]~[#6]~c:1)]:4:[c;!$(c12ccccc2cccc1)]:[c;!$(c12ccccc2cccc1)]:[c;!$(c12ccccc2cccc1)]:[cX3H0;!$(c1:c~[#6]~[#6]~c:1)]:3:[c;!$(c12ccccc2cccc1)]:[c;!$(c12ccccc2cccc1)]:[cX3H0;!$(c1:c~[#6]~[#6]~c:1)]:1:2",   
+    "triphenylene": "[c;!$(c12ccccc2cccc1)]1:[c;!$(c12ccccc2cccc1)]:[c;!$(c12ccccc2cccc1)]:[c;!$(c12ccccc2cccc1)]:[cX3H0;!$(c12c3cccc1ccc(c24)cccc4cc3)]2:[cX3H0;!$(c12c3cccc1ccc(c24)cccc4cc3)]3:[c;!$(c12ccccc2cccc1)]:[c;!$(c12ccccc2cccc1)]:[c;!$(c12ccccc2cccc1)]:[c;!$(c12ccccc2cccc1)]:[cX3H0;!$(c12c3cccc1ccc(c24)cccc4cc3)]:3:[cX3H0;!$(c12c3cccc1ccc(c24)cccc4cc3)]4:[c;!$(c12ccccc2cccc1)]:[c;!$(c12ccccc2cccc1)]:[c;!$(c12ccccc2cccc1)]:[c;!$(c12ccccc2cccc1)]:[cX3H0;!$(c12c3cccc1ccc(c24)cccc4cc3)]:4:[cX3H0;!$(c12c3cccc1ccc(c24)cccc4cc3)]:1:2",   
+    "fluoranthene": "[c;!$(c12ccccc2cccc1)]1:[c;!$(c12ccccc2cccc1)]:[c;!$(c12ccccc2cccc1)]:[cX3H0](-[cX3H0]4:[c;!$(c12ccccc2cccc1)]:[c;!$(c12ccccc2cccc1)]:[c;!$(c12ccccc2cccc1)]:[c;!$(c12ccccc2cccc1)]:[cX3H0]5:4):[cX3H0]2:[cX3H0]-5:[c;!$(c12ccccc2cccc1)]:[c;!$(c12ccccc2cccc1)]:[c;!$(c12ccccc2cccc1)]:[cX3H0]:1:2",
     # 5 rings
+    "pentacene": "c1:c:c:c:[cX3H0]2:c:[cX3H0]3:c:[cX3H0]4:c:[cX3H0]5:c:c:c:c:[cX3H0]:5:c:[cX3H0]:4:c:[cX3H0]:3:c:[cX3H0]:1:2",
+    "pentaphene": "c1:c:c:c:[cX3H0]2:c:[cX3H0]3:[cX3H0]4:c:[cX3H0]5:c:c:c:c:[cX3H0]:5:c:[cX3H0]:4:c:c:[cX3H0]:3:c:[cX3H0]:1:2",
+    "pentahelicene": "[c;!$(c12ccccc2cccc1)]1:[c;!$(c12ccccc2cccc1)]:c:c:[cX3H0]2:c:c:[cX3H0]3:c:c:[cX3H0]4:c:c:[cX3H0]5:c:c:[c;!$(c12ccccc2cccc1)]:[c;!$(c12ccccc2cccc1)]:[cX3H0]:5:[cX3H0]:4:[cX3H0]:3:[cX3H0]:1:2",
+    "picene": "c1:c:c:c:[cX3H0]2:c:c:[cX3H0]3:[cX3H0]4:c:c:[cX3H0]5:c:c:c:c:[cX3H0]:5:[cX3H0]:4:c:c:[cX3H0]3:[cX3H0]:1:2",
     "perylene": "[cX3H0]12:[cX3H0]3:c:c:c:[cX3H0]:1:c:c:c:[cX3H0]:2:[cX3H0]4:c:c:c:[cX3H0]5:c:c:c:[cX3H0]:3:[cX3H0]:4:5",
+    "benzo[a]tetracene": "c1:c:c:c:[cX3H0]2:c:[cX3H0]3:c:[cX3H0]4:[cX3H0]5:c:c:c:c:[cX3H0]:5:c:c:[cX3H0]:4:c:[cX3H0]:3:c:[cX3H0]:1:2",
+    "benzo[a]pyrene": "c1:[cX3H0]5:c:c:c:c:[cX3H0]:5:[cX3H0](:[cX3H0]2:[cX3H0]34):c:c:[cX3H0]:4:c:c:c:[cX3H0]:3:c:c:[cX3H0]:1:2",  
+    "benzo[e]pyrene": "c1:c:c:[cX3H0](:[cX3H0]2:[cX3H0]34):[cX3H0]5:c:c:c:c:[cX3H0]:5:[cX3H0]:4:c:c:c:[cX3H0]:3:c:c:[cX3H0]:1:2",  
+    "benzo[b]chrysene": "[cX3H0]12:c:c:c:c:[cX3H0]:2:c:c:[cX3H0]3:[cX3H0]4:c:[cX3H0]5:c:c:c:c:[cX3H0]:5:c:[cX3H0]:4:c:c:[cX3H0]:3:1",
+    "benzo[c]chrysene": "c1:c:c:c:[cX3H0]2:c:c:[cX3H0]3:[cX3H0]4:[cX3H0]5:c:c:c:c:[cX3H0]:5:c:c:[cX3H0]:4:c:c:[cX3H0]:3:[cX3H0]:1:2",
+    "benzo[g]chrysene": "c1:c:c:c:[cX3H0]2:c:c:[cX3H0]3:[cX3H0]4:c:c:c:c:[cX3H0]:4:[cX3H0]5:c:c:c:c:[cX3H0]:5:[cX3H0]:3:[cX3H0]:1:2",
+    "benzo[b]triphenylene" : "c1:c:c:c:[cX3H0]2:c:[cX3H0]3:[cX3H0]4:c:c:c:c:[cX3H0]:4:[cX3H0]5:c:c:c:c:[cX3H0]:5:[cX3H0]:3:c:[cX3H0]:1:2",
+    "dibenz[a,h]anthracene": "c1:c:c:c:[cX3H0]2:c:c:[cX3H0]3:c:[cX3H0]4:[cX3H0]5:c:c:c:c:[cX3H0]:5:c:c:[cX3H0]:4:c:[cX3H0]:3:[cX3H0]:1:2",
+    "dibenz[a,j]anthracene": "c1:c:c:c:[cX3H0]2:c:c:[cX3H0]3:c:[cX3H0]4:c:c:[cX3H0]5:c:c:c:c:[cX3H0]:5:[cX3H0]:4:c:[cX3H0]:3:[cX3H0]:1:2",
+    "dibenzo[b,g]phenanthrene": "c1:c:c:c:[cX3H0]2:c:c:[cX3H0]3:c:c:[cX3H0]4:c:[cX3H0]5:c:c:c:c:[cX3H0]:5:c:[cX3H0]:4:[cX3H0]:3:[cX3H0]:1:2",
+    "benzo[a]fluoranthene": "c1:[cX3H0]2:c:c:c:c:[cX3H0]:2:[cX3H0](-[cX3H0]4:c:c:c:c:[cX3H0]5:4):[cX3H0]2:[cX3H0]-5:c:c:c:[cX3H0]:1:2",
+    "benzo[b]fluoranthene": "[cX3H0;!$(c12c3cccc1ccc(c24)cccc4cc3)]12:c:c:c:c:[cX3H0]:2:c:[cX3H0](-[cX3H0]4:c:c:c:c:[cX3H0]5:4):[cX3H0]2:[cX3H0]-5:c:c:c:[cX3H0;!$(c12c3cccc1ccc(c24)cccc4cc3)]:1:2",
+    "benzo[j]fluoranthene": "c1:c:c:[cX3H0](-[cX3H0]4:[cX3H0]5:c:c:c:c:[cX3H0]:5:c:c:[cX3H0]6:4):[cX3H0]2:[cX3H0]-6:c:c:c:[cX3H0]:1:2",
+    "benzo[k]fluoranthene": "c1:c:c:[cX3H0](-[cX3H0]4:c:[cX3H0]5:c:c:c:c:[cX3H0]:5:c:[cX3H0]6:4):[cX3H0]2:[cX3H0]-6:c:c:c:[cX3H0]:1:2",
+    "benzo[ghi]fluoranthene": "[cX3H0]12:c:c:c:[cX3H0]3:c:c:[cX3H0]4:c:c:[cX3H0]5:c:c:c:[cX3H0]-2:[cX3H0]:5:[cX3H0]:4:[cX3H0]:3:1",
+    "cyclopenta[cd]pyrene": "c1:c:[cX3H0](-[#6;!$(c1ccccc1)]~[#6;!$(c1ccccc1)]5):[cX3H0](:[cX3H0]2:[cX3H0]34):[cX3H0]-5:c:[cX3H0]:4:c:c:c:[cX3H0]:3:c:c:[cX3H0]:1:2",   
+    "olympicene": "c15:c:c:c:[cX3H0]2:c:c:[cX3H0]3:c:c:[cX3H0]4:c:c:c:c(-C-5):[cX3H0]:4:[cX3H0]:3:[cX3H0]:1:2",
+    # 6+ rings
+    "hexahelicene": "c1:c:c:c:[cX3H0]2:c:c:[cX3H0]3:c:c:[cX3H0]4:c:c:[cX3H0]5:c:c:[cX3H0]6:c:c:c:c:[cX3H0]:6:[cX3H0]:5:[cX3H0]:4:[cX3H0]:3:[cX3H0]:1:2",
+    "indeno[cd]pyrene": "c1:c:[cX3H0](-c5:c:c:c:c:c6:5):[cX3H0](:[cX3H0]2:[cX3H0]34):[cX3H0]-6:c:[cX3H0]:4:c:c:c:[cX3H0]:3:c:c:[cX3H0]:1:2", 
+    "benzo[ghi]perylene": "[cX3H0]12:c:c:c:[cX3H0]3:c:c:[cX3H0]4:c:c:[cX3H0]5:c:c:[cX3H0]6:c:c:c:[cX3H0]:2:[cX3H0]:6:[cX3H0]:5:[cX3H0]:4:[cX3H0]:1:3",
+    "coronene": "[cX3H0]1:c:[cX3H0]2:c:c:[cX3H0]3:c:c:[cX3H0]4:c:c:[cX3H0]5:c:c:[cX3H0]6:c:c:[cX3H0]:1:[cX3H0]7:[cX3H0]:2:[cX3H0]:3:[cX3H0]:4:[cX3H0]:5:[cX3H0]:6:7",
+    "corannulene": "c1:c:[cX3H0]2:c:c:[cX3H0]3:c:c:[cX3H0]4:c:c:[cX3H0]5:c:c:[cX3H0]:1:[cX3H0]6:[cX3H0]:2:[cX3H0]:3:[cX3H0]:4:[cX3H0]:5:6",
+
 }
 
 HETEROAROMATICS: Dict[str, str] = {
@@ -899,8 +1000,8 @@ HETEROAROMATICS: Dict[str, str] = {
     "oxazole": "[oX2]1:[c;!$(c(:a)(:a)(:a))]:[nX2,nX3+]:[c;!$(c(:a)(:a)(:a))]:[c;!$(c(:a)(:a)(:a))]:1",
     "thiazole": "[sX2]1:[c;!$(c(:a)(:a)(:a))]:[nX2,nX3+]:[c;!$(c(:a)(:a)(:a))]:[c;!$(c(:a)(:a)(:a))]:1",
     ## 3 hetero atoms
-    "1,2,3-triazole": "n1:n:n:[c;!$(c1ccccc1);!$(c1ncccc1);!$(c1cnccc1)]:[c;!$(c1ccccc1);!$(c1ncccc1);!$(c1cnccc1)]:1", # either tautomer
-    "1,2,4-triazole": "n1:n:[c;!$(c(:a)(:a)(:a));!$(c=O)]:n:[c;!$(c(:a)(:a)(:a));!$(c=O)]:1", # either tautomer
+    "1,2,3-triazole": "n1:n:n:[c;!$(c1ccccc1);!$(c1ncccc1);!$(c1cnccc1);!$(c1ncncc1)]:[c;!$(c1ccccc1);!$(c1ncccc1);!$(c1cnccc1);!$(c1ncncc1)]:1", # either tautomer
+    "1,2,4-triazole": "n1:n:[c;!$(c(:a)(:a)(:a));!$(c=[O,S])]:n:[c;!$(c(:a)(:a)(:a));!$(c=[O,S])]:1", # either tautomer
     "1,2,3-oxadiazole": "[oX2]1:[nX2,nX3+]:[nX2,nX3+]:[c;!$(c(:a)(:a)(:a))]:[c;!$(c(:a)(:a)(:a))]:1",
     "1,2,4-oxadiazole": "[oX2]1:[nX2,nX3+]:[c;!$(c(:a)(:a)(:a))]:[nX2,nX3+]:[c;!$(c(:a)(:a)(:a))]:1",
     "1,2,5-oxadiazole": "[oX2]1:[nX2,nX3+]:[c;!$(c(:a)(:a)(:a))]:[c;!$(c(:a)(:a)(:a))]:[nX2,nX3+]:1",
@@ -1241,6 +1342,8 @@ HETEROAROMATICS: Dict[str, str] = {
     "imidazo[1,5-a]-1,3,5-triazine": "c1:[nX2,nX3+]:c:n2:c:[nX2,nX3+]:c:[nX2,nX3+]:c:1:2",
     "pyrazolo[1,5-a]-1,3,5-triazine": "c1:c:[nX2,nX3+]:n2:c:[nX2,nX3+]:c:[nX2,nX3+]:c:1:2",
     "5-aza-purine": "[nX2,nX3+]1:c:[nX2,nX3+]:n2:c:[nX2,nX3+]:c:[nX2,nX3+]:c:1:2",
+    ### misc
+    "triazolopyrimidine": "[nX3,nX2-]1:[nX2,nX3+]:[nX2,nX3+]:[cX3H0]2:[nX2,nX3,nX3+]:c:[nX2,nX3,nX3+]:c:[cX3H0]:1:2",
 
 
     # 6-6 bicyclic
@@ -1421,6 +1524,22 @@ HETEROAROMATICS: Dict[str, str] = {
     "pyrrolo[2,3-g]indolizine": "[nX3,nX2-]1:c:c:[cX3H0]2:[cX3H0]3:c:c:c:[nX3]:3:c:c:[cX3H0]:1:2",
     "pyrrolo[3,2-g]indolizine": "c1:c:[nX3,nX2-]:[cX3H0]2:[cX3H0]3:c:c:c:[nX3]:3:c:c:[cX3H0]:1:2",
     "pyrrolo[3,4-g]indolizine": "c1:[nX3,nX2-]:c:[cX3H0]2:[cX3H0]3:c:c:c:[nX3]:3:c:c:[cX3H0]:1:2",
+    "furo[2,3-e]indolizine": "o1:c:c:[cX3H0]2:c:c:[cX3H0]3:c:c:c:[nX3]:3:[cX3H0]:1:2",
+    "furo[3,2-e]indolizine": "c1:c:o:[cX3H0]2:c:c:[cX3H0]3:c:c:c:[nX3]:3:[cX3H0]:1:2",
+    "furo[3,4-e]indolizine": "c1:o:c:[cX3H0]2:c:c:[cX3H0]3:c:c:c:[nX3]:3:[cX3H0]:1:2",
+    "furo[2,3-f]indolizine": "o1:c:c:[cX3H0]2:c:[cX3H0]3:c:c:c:[nX3]:3:c:[cX3H0]:1:2",
+    "furo[3,2-f]indolizine": "c1:c:o:[cX3H0]2:c:[cX3H0]3:c:c:c:[nX3]:3:c:[cX3H0]:1:2",
+    "furo[2,3-g]indolizine": "o1:c:c:[cX3H0]2:[cX3H0]3:c:c:c:[nX3]:3:c:c:[cX3H0]:1:2",
+    "furo[3,2-g]indolizine": "c1:c:o:[cX3H0]2:[cX3H0]3:c:c:c:[nX3]:3:c:c:[cX3H0]:1:2",
+    "furo[3,4-g]indolizine": "c1:o:c:[cX3H0]2:[cX3H0]3:c:c:c:[nX3]:3:c:c:[cX3H0]:1:2",
+    "thieno[2,3-e]indolizine": "[sX2]1:c:c:[cX3H0]2:c:c:[cX3H0]3:c:c:c:[nX3]:3:[cX3H0]:1:2",
+    "thieno[3,2-e]indolizine": "c1:c:[sX2]:[cX3H0]2:c:c:[cX3H0]3:c:c:c:[nX3]:3:[cX3H0]:1:2",
+    "thieno[3,4-e]indolizine": "c1:[sX2]:c:[cX3H0]2:c:c:[cX3H0]3:c:c:c:[nX3]:3:[cX3H0]:1:2",
+    "thieno[2,3-f]indolizine": "[sX2]1:c:c:[cX3H0]2:c:[cX3H0]3:c:c:c:[nX3]:3:c:[cX3H0]:1:2",
+    "thieno[3,2-f]indolizine": "c1:c:[sX2]:[cX3H0]2:c:[cX3H0]3:c:c:c:[nX3]:3:c:[cX3H0]:1:2",
+    "thieno[2,3-g]indolizine": "[sX2]1:c:c:[cX3H0]2:[cX3H0]3:c:c:c:[nX3]:3:c:c:[cX3H0]:1:2",
+    "thieno[3,2-g]indolizine": "c1:c:[sX2]:[cX3H0]2:[cX3H0]3:c:c:c:[nX3]:3:c:c:[cX3H0]:1:2",
+    "thieno[3,4-g]indolizine": "c1:[sX2]:c:[cX3H0]2:[cX3H0]3:c:c:c:[nX3]:3:c:c:[cX3H0]:1:2",
     
     # 6-5-6 tricyclic
     ## 1 hetero atom
@@ -1593,9 +1712,14 @@ HETEROAROMATICS: Dict[str, str] = {
     "5-aza-cycl[2.2.3]azine": "c1:c:[cX3H0]2:c:c:[cX3H0]3:[nX2,nX3,nX3+]:c:c:[cX3H0]:1:[nX3]:2:3",
     "6-aza-cycl[2.2.3]azine": "c1:c:[cX3H0]2:c:c:[cX3H0]3:c:[nX2,nX3,nX3+]:c:[cX3H0]:1:[nX3]:2:3",
 
-    # miscellaneous
-    "porphyrin": "[#6;X3H0]12~[#6]~[#6]~[#6;X3H0](~[#7]~2)~[#6;X3]~[#6;X3H0]3~[#6]~[#6]~[#6;X3H0](~[#7]~3)~[#6;X3]~[#6;X3H0]4~[#6]~[#6]~[#6;X3H0](~[#7]~4)~[#6;X3]~[#6;X3H0]5~[#6]~[#6]~[#6;X3H0](~[#7]~5)~[#6;X3]~1", # including chlorin, bacteriochlorin, and other partial saturations
-    "corrin": "[#6]12~[#6]~[#6]~[#6;X3H0](~[#7]~2)~[#6;X3]~[#6;X3H0]3~[#6]~[#6]~[#6;X3H0](~[#7]~3)~[#6;X3]~[#6;X3H0]4~[#6]~[#6]~[#6;X3H0](~[#7]~4)~[#6;X3]~[#6;X3H0]5~[#6]~[#6]~[#6](~[#7]~5)~1", # including corrole, etc. 
+    # porphyrinoids
+    "porphyrin": "[#6;X3H0]12~[#6;X3]=,:[#6;X3]~[#6;X3H0](~[#7]~2)~[#6;X3]~[#6;X3H0]3~[#6;X3]=,:[#6;X3]~[#6;X3H0](~[#7]~3)~[#6;X3]~[#6;X3H0]4~[#6;X3]=,:[#6;X3]~[#6;X3H0](~[#7]~4)~[#6;X3]~[#6;X3H0]5~[#6;X3]=,:[#6;X3]~[#6;X3H0](~[#7]~5)~[#6;X3]~1",
+    "chlorin": "[#6;X3H0]12-C-C-[#6;X3H0](~[#7]~2)~[#6;X3]~[#6;X3H0]3~[#6;X3]=,:[#6;X3]~[#6;X3H0](~[#7]~3)~[#6;X3]~[#6;X3H0]4~[#6;X3]=,:[#6;X3]~[#6;X3H0](~[#7]~4)~[#6;X3]~[#6;X3H0]5~[#6;X3]=,:[#6;X3]~[#6;X3H0](~[#7]~5)~[#6;X3]~1",
+    "bacteriochlorin": "[#6;X3H0]12-C-C-[#6;X3H0](~[#7]~2)~[#6;X3]~[#6;X3H0]3~[#6;X3]=,:[#6;X3]~[#6;X3H0](~[#7]~3)~[#6;X3]~[#6;X3H0]4-C-C-[#6;X3H0](~[#7]~4)~[#6;X3]~[#6;X3H0]5~[#6;X3]=,:[#6;X3]~[#6;X3H0](~[#7]~5)~[#6;X3]~1",
+    "isobacteriochlorin": "[#6;X3H0]12-C-C-[#6;X3H0](~[#7]~2)~[#6;X3]~[#6;X3H0]3-C-C-[#6;X3H0](~[#7]~3)~[#6;X3]~[#6;X3H0]4~[#6;X3]=,:[#6;X3]~[#6;X3H0](~[#7]~4)~[#6;X3]~[#6;X3H0]5~[#6;X3]=,:[#6;X3]~[#6;X3H0](~[#7]~5)~[#6;X3]~1",
+    "corrole": "[#6;X3H0]12~[#6;X3]=,:[#6;X3]~[#6;X3H0](~[#7]~2)~[#6;X3H0]3~[#6;X3]=,:[#6;X3]~[#6;X3H0](~[#7]~3)~[#6;X3]~[#6;X3H0]4~[#6;X3]=,:[#6;X3]~[#6;X3H0](~[#7]~4)~[#6;X3]~[#6;X3H0]5~[#6;X3]=,:[#6;X3]~[#6;X3H0](~[#7]~5)~[#6;X3]~1",
+    "norcorrole": "[#6;X3H0]12~[#6;X3]=,:[#6;X3]~[#6;X3H0](~[#7]~2)~[#6;X3H0]3~[#6;X3]=,:[#6;X3]~[#6;X3H0](~[#7]~3)~[#6;X3]~[#6;X3H0]4~[#6;X3]=,:[#6;X3]~[#6;X3H0](~[#7]~4)~[#6;X3H0]5~[#6;X3]=,:[#6;X3]~[#6;X3H0](~[#7]~5)~[#6;X3]~1",
+    "corrin": "[#6;X3H0]12-C-C-C(~[#7]~2)-C3-C-C-[#6;X3H0](~[#7]~3)~[#6;X3]~[#6;X3H0]4-C-C-[#6;X3H0](~[#7]~4)~[#6;X3]~[#6;X3H0]5-C-C-[#6;X3H0](~[#7]~5)~[#6;X3]~1",
     "porphycene": "[#6;X3H0]12~[#6]~[#6]~[#6;X3H0](~[#7]~2)~[#6;X3]~[#6;X3]~[#6;X3H0]3~[#6]~[#6]~[#6;X3H0](~[#7]~3)~[#6;X3H0]4~[#6]~[#6]~[#6;X3H0](~[#7]~4)~[#6;X3]~[#6;X3]~[#6;X3H0]5~[#6]~[#6]~[#6;X3H0](~[#7]~5)~1", # including partial saturations,
     "porphyrazine": "[#6;X3H0]12~[#6]~[#6]~[#6;X3H0](~[#7]~2)~[#7;X2,X3+]~[#6;X3H0]3~[#6]~[#6]~[#6;X3H0](~[#7]~3)~[#7;X2,X3+]~[#6;X3H0]4~[#6]~[#6]~[#6;X3H0](~[#7]~4)~[#7;X2,X3+]~[#6;X3H0]5~[#6]~[#6]~[#6;X3H0](~[#7]~5)~[#7;X2,X3+]~1", # includin phthalocyanin
 
@@ -1604,20 +1728,24 @@ HETEROAROMATICS: Dict[str, str] = {
 ALIPHATIC_RINGS: Dict[str, str]= {
     # saturated
     "cyclopropane": "C1-C-C-1",
-    "cyclobutane":  "[C;!$([C;R2]12CC@2C1)]1-[C;!$([C;R2]12CC@2C1)]-[C;!$([C;R2]12CC@2C1)]-[C;!$([C;R2]12CC@2C1)]-1",
+    "cyclobutane":  "[C;!$(C12C3C4C1C5C2C3C45);!$([C;R2]12CC@2C1)]1-[C;!$(C12C3C4C1C5C2C3C45);!$([C;R2]12CC@2C1)]-[C;!$(C12C3C4C1C5C2C3C45);!$([C;R2]12CC@2C1)]-[C;!$(C12C3C4C1C5C2C3C45);!$([C;R2]12CC@2C1)]-1", # excludes cubane
     "cyclopentane": "[C;!$([C;R2]12CC@2CC1)]1-[C;!$([C;R2]12CC@2CC1)]-[C;!$([C;R2]12CC@2CC1)]-[C;!$([C;R2]12CC@2CC1)]-[C;!$([C;R2]12CC@2CC1)]-1",
-    "cyclohexane":  "[C;!$([C;R2]12CC@2CCC1);!$([C;R2]12CCC@2CC1)]1-[C;!$([C;R2]12CC@2CCC1);!$([C;R2]12CCC@2CC1)]-[C;!$([C;R2]12CC@2CCC1);!$([C;R2]12CCC@2CC1)]-[C;!$([C;R2]12CC@2CCC1);!$([C;R2]12CCC@2CC1)]-[C;!$([C;R2]12CC@2CCC1);!$([C;R2]12CCC@2CC1)]-[C;!$([C;R2]12CC@2CCC1);!$([C;R2]12CCC@2CC1)]1",
+    "cyclohexane":  "[C;!$(C12CCC(CC1)CC2);!$(C12C3C4C1C5C2C3C45);!$([C;R2]12CC@2CCC1);!$([C;R2]12CCC@2CC1)]1-[C;!$(C12CCC(CC1)CC2);!$(C12C3C4C1C5C2C3C45);!$([C;R2]12CC@2CCC1);!$([C;R2]12CCC@2CC1)]-[C;!$(C12CCC(CC1)CC2);!$(C12C3C4C1C5C2C3C45);!$([C;R2]12CC@2CCC1);!$([C;R2]12CCC@2CC1)]-[C;!$(C12CCC(CC1)CC2);!$(C12C3C4C1C5C2C3C45);!$([C;R2]12CC@2CCC1);!$([C;R2]12CCC@2CC1)]-[C;!$(C12CCC(CC1)CC2);!$(C12C3C4C1C5C2C3C45);!$([C;R2]12CC@2CCC1);!$([C;R2]12CCC@2CC1)]-[C;!$(C12CCC(CC1)CC2);!$(C12C3C4C1C5C2C3C45);!$([C;R2]12CC@2CCC1);!$([C;R2]12CCC@2CC1)]1", # excludes cubane
     "cycloheptane": "[C;!$([C;R2]12CC@2CCCC1);!$([C;R2]12CCC@2CCC1)]1-[C;!$([C;R2]12CC@2CCCC1);!$([C;R2]12CCC@2CCC1)]-[C;!$([C;R2]12CC@2CCCC1);!$([C;R2]12CCC@2CCC1)]-[C;!$([C;R2]12CC@2CCCC1);!$([C;R2]12CCC@2CCC1)]-[C;!$([C;R2]12CC@2CCCC1);!$([C;R2]12CCC@2CCC1)]-[C;!$([C;R2]12CC@2CCCC1);!$([C;R2]12CCC@2CCC1)]-[C;!$([C;R2]12CC@2CCCC1);!$([C;R2]12CCC@2CCC1)]-1",
-    "cyclooctane":  "[C;!$([C;R2]12CC@2CCCCC1);!$([C;R2]12CCC@2CCCC1);!$([C;R2]12CCCC@2CCC1)]1-[C;!$([C;R2]12CC@2CCCCC1);!$([C;R2]12CCC@2CCCC1);!$([C;R2]12CCCC@2CCC1)]-[C;!$([C;R2]12CC@2CCCCC1);!$([C;R2]12CCC@2CCCC1);!$([C;R2]12CCCC@2CCC1)]-[C;!$([C;R2]12CC@2CCCCC1);!$([C;R2]12CCC@2CCCC1);!$([C;R2]12CCCC@2CCC1)]-[C;!$([C;R2]12CC@2CCCCC1);!$([C;R2]12CCC@2CCCC1);!$([C;R2]12CCCC@2CCC1)]-[C;!$([C;R2]12CC@2CCCCC1);!$([C;R2]12CCC@2CCCC1);!$([C;R2]12CCCC@2CCC1)]-[C;!$([C;R2]12CC@2CCCCC1);!$([C;R2]12CCC@2CCCC1);!$([C;R2]12CCCC@2CCC1)]-[C;!$([C;R2]12CC@2CCCCC1);!$([C;R2]12CCC@2CCCC1);!$([C;R2]12CCCC@2CCC1)]-1",
+    "cyclooctane":  "[C;!$(C12C3C4C1C5C2C3C45);!$([C;R2]12CC@2CCCCC1);!$([C;R2]12CCC@2CCCC1);!$([C;R2]12CCCC@2CCC1)]1-[C;!$(C12C3C4C1C5C2C3C45);!$([C;R2]12CC@2CCCCC1);!$([C;R2]12CCC@2CCCC1);!$([C;R2]12CCCC@2CCC1)]-[C;!$(C12C3C4C1C5C2C3C45);!$([C;R2]12CC@2CCCCC1);!$([C;R2]12CCC@2CCCC1);!$([C;R2]12CCCC@2CCC1)]-[C;!$(C12C3C4C1C5C2C3C45);!$([C;R2]12CC@2CCCCC1);!$([C;R2]12CCC@2CCCC1);!$([C;R2]12CCCC@2CCC1)]-[C;!$(C12C3C4C1C5C2C3C45);!$([C;R2]12CC@2CCCCC1);!$([C;R2]12CCC@2CCCC1);!$([C;R2]12CCCC@2CCC1)]-[C;!$(C12C3C4C1C5C2C3C45);!$([C;R2]12CC@2CCCCC1);!$([C;R2]12CCC@2CCCC1);!$([C;R2]12CCCC@2CCC1)]-[C;!$(C12C3C4C1C5C2C3C45);!$([C;R2]12CC@2CCCCC1);!$([C;R2]12CCC@2CCCC1);!$([C;R2]12CCCC@2CCC1)]-[C;!$(C12C3C4C1C5C2C3C45);!$([C;R2]12CC@2CCCCC1);!$([C;R2]12CCC@2CCCC1);!$([C;R2]12CCCC@2CCC1)]-1", # excludes cubane
 
     # mono unsaturated
     "cyclopropene":  "[CX3]1=[CX3]-C-1",
-    "cyclobutene":   "[C;!$([C;R2]12@C@C@2@C@1)]1=[C;!$([C;R2]12@C@C@2@C@1)]-[C;!$([C;R2]12@C@C@2@C@1)]-[C;!$([C;R2]12@C@C@2@C@1)]-1",
+    "cyclobutene":   "[#6;!$([C;R2]12@C@C@2@C@1)]1=,:[#6;!$([C;R2]12@C@C@2@C@1)]-[C;!$([C;R2]12@C@C@2@C@1)]-[C;!$([C;R2]12@C@C@2@C@1)]-1",
     "cyclopentene":  "[C;!$([C;R2]12@C@C@2@C@C@1)]1=[C;!$([C;R2]12@C@C@2@C@C@1)]-[C;!$([C;R2]12@C@C@2@C@C@1)]-[C;!$([C;R2]12@C@C@2@C@C@1)]-[C;!$([C;R2]12@C@C@2@C@C@1)]-1",
     "cyclohexene":   "[C;!$([C;R2]12@C@C@2@C@C@C@1);!$([C;R2]12@C@C@C@2@C@C@1)]1=[C;!$([C;R2]12@C@C@2@C@C@C@1);!$([C;R2]12@C@C@C@2@C@C@1)]-[C;!$([C;R2]12@C@C@2@C@C@C@1);!$([C;R2]12@C@C@C@2@C@C@1)]-[C;!$([C;R2]12@C@C@2@C@C@C@1);!$([C;R2]12@C@C@C@2@C@C@1)]-[C;!$([C;R2]12@C@C@2@C@C@C@1);!$([C;R2]12@C@C@C@2@C@C@1)]-[C;!$([C;R2]12@C@C@2@C@C@C@1);!$([C;R2]12@C@C@C@2@C@C@1)]-1",
     "cycloheptene":  "[#6;X3;!$([C;R2]12@C@C@2@C@C@C@C@1);!$([C;R2]12@C@C@C@2@C@C@C@1)]1=,:[#6;X3;!$([C;R2]12@C@C@2@C@C@C@C@1);!$([C;R2]12@C@C@C@2@C@C@C@1)]-[C;!$([C;R2]12@C@C@2@C@C@C@C@1);!$([C;R2]12@C@C@C@2@C@C@C@1)]-[C;!$([C;R2]12@C@C@2@C@C@C@C@1);!$([C;R2]12@C@C@C@2@C@C@C@1)]-[C;!$([C;R2]12@C@C@2@C@C@C@C@1);!$([C;R2]12@C@C@C@2@C@C@C@1)]-[C;!$([C;R2]12@C@C@2@C@C@C@C@1);!$([C;R2]12@C@C@C@2@C@C@C@1)]-[C;!$([C;R2]12@C@C@2@C@C@C@C@1);!$([C;R2]12@C@C@C@2@C@C@C@1)]-1",
     "cyclooctene":   "[#6;X3;!$([C;R2]12@C@C@2@C@C@C@C@C@1);!$([C;R2]12@C@C@C@2@C@C@C@C@1);!$([C;R2]12@C@C@C@C@2@C@C@C@1)]1=,:[#6;X3;!$([C;R2]12@C@C@2@C@C@C@C@C@1);!$([C;R2]12@C@C@C@2@C@C@C@C@1);!$([C;R2]12@C@C@C@C@2@C@C@C@1)]-[C;!$([C;R2]12@C@C@2@C@C@C@C@C@1);!$([C;R2]12@C@C@C@2@C@C@C@C@1);!$([C;R2]12@C@C@C@C@2@C@C@C@1)]-[C;!$([C;R2]12@C@C@2@C@C@C@C@C@1);!$([C;R2]12@C@C@C@2@C@C@C@C@1);!$([C;R2]12@C@C@C@C@2@C@C@C@1)]-[C;!$([C;R2]12@C@C@2@C@C@C@C@C@1);!$([C;R2]12@C@C@C@2@C@C@C@C@1);!$([C;R2]12@C@C@C@C@2@C@C@C@1)]-[C;!$([C;R2]12@C@C@2@C@C@C@C@C@1);!$([C;R2]12@C@C@C@2@C@C@C@C@1);!$([C;R2]12@C@C@C@C@2@C@C@C@1)]-[C;!$([C;R2]12@C@C@2@C@C@C@C@C@1);!$([C;R2]12@C@C@C@2@C@C@C@C@1);!$([C;R2]12@C@C@C@C@2@C@C@C@1)]-[C;!$([C;R2]12@C@C@2@C@C@C@C@C@1);!$([C;R2]12@C@C@C@2@C@C@C@C@1);!$([C;R2]12@C@C@C@C@2@C@C@C@1)]-1",
-
+    ## cyclooctynes and related
+    "cyclooctyne":   "[CX2]1#[CX2]-[C;!$([C;R2]12@C@C@2@C@C@C@C@C@1);!$([C;R2]12@C@C@C@2@C@C@C@C@1);!$([C;R2]12@C@C@C@C@2@C@C@C@1)]-[C;!$([C;R2]12@C@C@2@C@C@C@C@C@1);!$([C;R2]12@C@C@C@2@C@C@C@C@1);!$([C;R2]12@C@C@C@C@2@C@C@C@1)]-[C;!$([C;R2]12@C@C@2@C@C@C@C@C@1);!$([C;R2]12@C@C@C@2@C@C@C@C@1);!$([C;R2]12@C@C@C@C@2@C@C@C@1)]-[C;!$([C;R2]12@C@C@2@C@C@C@C@C@1);!$([C;R2]12@C@C@C@2@C@C@C@C@1);!$([C;R2]12@C@C@C@C@2@C@C@C@1)]-[C;!$([C;R2]12@C@C@2@C@C@C@C@C@1);!$([C;R2]12@C@C@C@2@C@C@C@C@1);!$([C;R2]12@C@C@C@C@2@C@C@C@1)]-[C;!$([C;R2]12@C@C@2@C@C@C@C@C@1);!$([C;R2]12@C@C@C@2@C@C@C@C@1);!$([C;R2]12@C@C@C@C@2@C@C@C@1)]-1",
+    "benzocyclooctyne": "[CX2]1#[CX2]-c2ccccc2-[C;!$([C;R2]12@C@C@2@C@C@C@C@C@1);!$([C;R2]12@C@C@C@2@C@C@C@C@1);!$([C;R2]12@C@C@C@C@2@C@C@C@1)]-[C;!$([C;R2]12@C@C@2@C@C@C@C@C@1);!$([C;R2]12@C@C@C@2@C@C@C@C@1);!$([C;R2]12@C@C@C@C@2@C@C@C@1)]-[C;!$([C;R2]12@C@C@2@C@C@C@C@C@1);!$([C;R2]12@C@C@C@2@C@C@C@C@1);!$([C;R2]12@C@C@C@C@2@C@C@C@1)]-[C;!$([C;R2]12@C@C@2@C@C@C@C@C@1);!$([C;R2]12@C@C@C@2@C@C@C@C@1);!$([C;R2]12@C@C@C@C@2@C@C@C@1)]-1",
+    "dibenzocyclooctyne": "[CX2]1#[CX2]-c2ccccc2-CC-c2ccccc21",
+    'aza-dibenzocyclooctyne': "[CX2]1#[CX2]-c2ccccc2-NC-c2ccccc21",
     # di unsaturated
     "cyclopentadiene": "[CX3;!$([C;R2]12@C@C@C@2@C@1)]1=[CX3;!$([C;R2]12@C@C@C@2@C@1)]-[CX3;!$([C;R2]12@C@C@C@2@C@1)]=[CX3;!$([C;R2]12@C@C@C@2@C@1)]-[C;!$([C;R2]12@C@C@C@2@C@1)]-1",
     "1,3-cyclohexadiene": "[CX3;!$([C;R2]12C@C@2@C@C@C@1);!$([C;R2]12@C@C@C@2@C@C@1)]1=[CX3;!$([C;R2]12C@C@2@C@C@C@1);!$([C;R2]12@C@C@C@2@C@C@1)]-[CX3;!$([C;R2]12C@C@2@C@C@C@1);!$([C;R2]12@C@C@C@2@C@C@1)]=[CX3;!$([C;R2]12C@C@2@C@C@C@1);!$([C;R2]12@C@C@C@2@C@C@1)]-[CX4;!$([C;R2]12C@C@2@C@C@C@1);!$([C;R2]12@C@C@C@2@C@C@1)]-[C;!$([C;R2]12C@C@2@C@C@C@1);!$([C;R2]12@C@C@C@2@C@C@1)]1", # excludes quinones
@@ -1639,17 +1767,18 @@ ALIPHATIC_RINGS: Dict[str, str]= {
     # bicyclic
     "spiro_carbon": "[CD4;R2;x4]",
     "indane": "c1:c:c:c:[cX3H0]2-[C;!$([C;R2]12CC@2cc1)]-[C;!$([C;R2]12CC@2cc1)]-[C;!$([C;R2]12CC@2cc1)]-[cX3H0]:1:2",
-    "tetralin": "c1:c:c:c:[cX3H0]2-CCCC-[cX3H0]:1:2",
-    "decalin": "C1CCCC2CCCCC12",
+    "tetralin": "c1:c:c:c:[cX3H0]2-[C;!$(C12-cc-C2CC1);!$(C12-cc-CC2C1);!$(C1-cc-C2CC21)]CCC-[cX3H0]:1:2",
+    "decalin": "[C;!$(C12C3CCC3C2CCCC1);!$(C12C3CC3CC2CCCC1);!$(C123CC3CCC2CCCC1)]12CCC[C;!$(C12C3CC3CC2CCCC1);!$(C123CC3CCC2CCCC1)]2CCCC1",
     "norbornane": "C12CCC(C1)CC2",
     "norbornene": "C12[#6;X3]=,:[#6;X3]C(C1)CC2",
     "norbornadiene": "C12[#6;X3]=,:[#6;X3]C(C1)[#6;X3]=,:[#6;X3]2",
-    "norpinane": "C12CCCC(C1)C2",
-    "2-norpinene": "C12[#6;X3]=,:[#6;X3]CC(C1)C2",
+    "norpinane": "[C;!$(C12C3C4C1C5C2C3C45)]12CCC[C;!$(C12C3C4C1C5C2C3C45)]([C;!$(C12C3C4C1C5C2C3C45)]1)[C;!$(C12C3C4C1C5C2C3C45)]2", # excludes cubane
+    "bicyclo[2.2.2]octane": "[C;!$(C12CCC(CC13)CC32)]12CC[C;!$(C12CCC(CC13)CC32)](CC1)CC2",
 
     # 3+ rings
+    "cubane": 'C12C3C4C1C5C2C3C45',
     "adamantane": "C12CC(C3)CC(C2)CC3C1",
-    "steroid_rings": "[#6]1~[#6]~[#6]~[#6,#7]~[#6]2~[#6]~[#6]~[#6]3~[#6]4~[#6]~[#6]~[#6]~[#6]~4~[#6]~[#6]~[#6]~3~[#6]~2~1", # including 4-aza steroids
+    "steroid_rings": "[#6]1~[#6]~[#6]~[#6]~[#6]2~[#6]~[#6]~[#6]3~[#6]4~[#6]~[#6]~[#6]~[#6]~4~[#6]~[#6]~[#6]~3~[#6]~2~1",
 }
 
 HETEROALIPHATIC_RINGS: Dict[str, str] = {
@@ -1667,15 +1796,15 @@ HETEROALIPHATIC_RINGS: Dict[str, str] = {
     # 4-membered
     "azetidine": "N1-[C;!$(C=O)]-C-[C;!$(C=O)]-1", # excludes beta-lactams
     "azetine": "N1[#6;X3]=,:[#6;X3]-C-1",
-    "oxetane": "O1-C-C-C-1",
+    "oxetane": "O1-[C;!$(C=[O,S])]-C-[C;!$(C=[O,S])]-1", # excludes beta-lactones
     "oxetine": "O1[#6;X3]=,:[#6;X3]-C-1",
     "1,3-dioxetane": "O1-C-O-C-1",
-    "thietane": "S1-C-C-C-1",
+    "thietane": "S1-[C;!$(C=[O,S])]-C-[C;!$(C=[O,S])]-1", # excludes beta-thiolactones
     "1,2-dithietane": "S1-S-C-C-1",
     "1,3-dithietane": "S1-C-S-C-1",
 
     # 5-membered
-    "pyrrolidine": "[N;!$(N12[#6]~[#6]~[#6]C2~[#6]~[#6]~[#6]~1);!$(N12[#6]~[#6]~[#6]C2~[#6]~[#6]~[#6]~[#6]~1)]1-[C;!$(C=[N,O,S])]-C-C-[C;!$(C=[N,O,S])]-1", # excludes pyrrolizidine, indolizidine
+    "pyrrolidine": "[N;!$(N12[#6]~[#6]~[#6]C2~[#6]~[#6]~[#6]~1);!$(N12[#6]~[#6]~[#6]C2~[#6]~[#6]~[#6]~[#6]~1)]1-[C;!$(C=[N,O,S])]-C-C-[C;!$(C=[N,O,S])]-1", # excludes gamma-lactams, pyrrolizidine, indolizidine
     "1-pyrroline": "N1=[CX3]-C-C-[C;!$(C=O)]-1",
     "2-pyrroline": "N1-[CX3]=[CX3]-C-[C;!$(C=O)]-1", # excludes indoline
     "3-pyrroline": "N1-[C;!$(C=O)]-[CX3]=[CX3]-[C;!$(C=O)]-1",
@@ -1685,12 +1814,12 @@ HETEROALIPHATIC_RINGS: Dict[str, str] = {
     "imidazolidine": "N1-[C;!$(C=O)]-N-C-[C;!$(C=O)]-1",
     "3-imidazoline": "N1-[C;!$(C=O)]-[NX2,NX3+]=[CX3]-[C;!$(C=O)]-1",
     "4-imidazoline": "N1-[CX4;!$(C=O)]-N-[CX3]=[CX3]-1",
-    "oxolane": "O1-[C;!$(C=[O,S])]-C-C-[C;!$(C=[O,S])]-1",
+    "oxolane": "O1-[C;!$(C=[O,S])]-C-C-[C;!$(C=[O,S])]-1", # excludes gamma-lactones
     "benzo[b]oxolane": "O1-c2ccccc2-[CX4]-[CX4]-1",
     "benzo[c]oxolane": "O1-[CX4]-c2ccccc2-[CX4]-1",
     "2-oxolene": "O1-[CX3]=[CX3]-C-[C;!$(C=[O,S])]-1",
     "3-oxolene": "O1-[C;!$(C=[O,S])]-[CX3]=[CX3]-[C;!$(C=[O,S])]-1",
-    "thiolane": "[SX2]1-[C;!$(C=[O,S])]-C-C-[C;!$(C=[O,S])]-1",
+    "thiolane": "[SX2]1-[C;!$(C=[O,S])]-C-C-[C;!$(C=[O,S])]-1", # excludes gamma-thiolactones
     "benzo[b]thiolane": "[SX2]1-c2ccccc2-[CX4]-[CX4]-1",
     "benzo[c]thiolane": "[SX2]1-[CX4]-c2ccccc2-[CX4]-1",
     "2-thiolene": "[SX2]1-[CX3]=[CX3]-C-[C;!$(C=[O,S])]-1",
@@ -1703,40 +1832,55 @@ HETEROALIPHATIC_RINGS: Dict[str, str] = {
     "1,2-dithiolane": "[SX2]1-[SX2]-C-C-[C;!$(C=[O,S])]-1",
     "1,3-dithiolane": "[SX2]1-[C;!$(C=[O,S])]-[SX2]-C-[C;!$(C=[O,S])]-1",
     "1,2-dithiole": "[SX2]1-[SX2]-[C;!$(C=[O,S])]-[CX3]=[CX3]-1",
-    "1,3-dithiole": "[SX2]1-[C;!$(C=[O,S])]-[SX2]-[CX3]=[CX3]-1",
+    "1,3-dithiole": "[SX2;!$([SX2]1-[#6;X3]=,:[#6;X3]-[SX2]-C-1=C2-[SX2]-[#6;X3]=,:[#6;X3]-[SX2]-2)]1-[C;!$(C=[O,S])]-[SX2]-[CX3]=[CX3]-1", # excludes tetrathiafulvalene
     "1,3-oxathiolane": "[SX2]1-[C;!$(C=[O,S])]-O-C-[C;!$(C=[O,S])]-1",
     "1,3-oxathiole": "[SX2]1-[C;!$(C=[O,S])]-O-[CX3]=[CX3]-1",
-    "oxazolidine": "N1-[C;!$(C=[O,S])]-O-C-[C;!$(C=[O,S])]-1",
+    "1,3-oxazolidine": "N1-[C;!$(C=[O,S])]-O-C-[C;!$(C=[O,S])]-1",
     "2-oxazoline": "[NX2,NX3+]1=[CX3]-O-[C;!$(C=[O,S])]-[C;!$(C=[O,S])]-1",
     "3-oxazoline": "N1-[C;!$(C=[O,S])]-O-[C;!$(C=[O,S])]-[CX3]=1",
     "4-oxazoline": "N1-[C;!$(C=[O,S])]-O-[CX3]=[CX3]-1",
 
     # 6-membered
-    "piperidine": "[#7;!$(N12C[#6]~[#6]([#6]~[#6]2)[#6]~[#6]1);!$(N12[#6]~[#6]~[#6]~[#6]C2~[#6]~[#6]~[#6]~1);!$(N12[#6]~[#6]~[#6]~[#6]C2~[#6]~[#6]~[#6]~[#6]~1);!$([#7]1-C2-[#6]~[#6]-C(-[#6]~1)-[#6]~[#6]-2)]1-,:[#6]-C-C-C-[#6]-,:1", # excludes quinuclidine, isoquinuclidine, indolizidine, quinolizidine
-    "piperazine": "[#7]1-,:[#6]-,:[#6]-[N;!$(N12-[#6]~[#6]-N(-[#6]~[#6]-2)-[#6]~[#6]-1)]-C-C-1",
+    "piperidine": "[#7;!$(N12C[#6]~[#6]([#6]~[#6]2)[#6]~[#6]1);!$(N12[#6]~[#6]~[#6]~[#6]C2~[#6]~[#6]~[#6]~1);!$(N12[#6]~[#6]~[#6]~[#6]C2~[#6]~[#6]~[#6]~[#6]~1);!$([#7]1-C2-[#6]~[#6]-C(-[#6]~1)-[#6]~[#6]-2)]1-,:[#6;!$(C=[O,S])]-C-C-C-[#6;!$(C=[O,S])]-,:1", # excludes delta-lactams, squinuclidine, isoquinuclidine, indolizidine, quinolizidine
+    "piperazine": "[#7;!$([#7]1C(=O)[#6][#7]C(=O)[#6]1)]1-,:[#6]-,:[#6]-[N;!$([#7]1C(=O)[#6][#7]C(=O)[#6]1);!$(N12-[#6]~[#6]-N(-[#6]~[#6]-2)-[#6]~[#6]-1)]-C-C-1", # excludes diketopiperazine
     "1,4-dihydropyridine": "[#7]1-[#6]=,:[#6]-[CX4]-[#6]=,:[#6]-1",
-    "oxane": "O1-[C;!$(C=[O,S])]-C-C-C-[C;!$(C=[O,S])]-1",
+    "oxane": "O1-[C;!$(C=[O,S])]-C-C-C-[C;!$(C=[O,S])]-1", # excludes delta-lactones
     "1,2-dioxane": "O1-O-[C;!$(C=[O,S])]-C-C-[C;!$(C=[O,S])]-1",
     "1,3-dioxane": "O1-[C;!$(C=[O,S])]-O-[C;!$(C=[O,S])]-C-[C;!$(C=[O,S])]-1",
     "1,4-dioxane": "O1-[C;!$(C=[O,S])]-[C;!$(C=[O,S])]-O-[C;!$(C=[O,S])]-[C;!$(C=[O,S])]-1",
-    "thiane": "[SX2]1-[C;!$(C=[O,S])]-C-C-C-[C;!$(C=[O,S])]-1",
+    "thiane": "[SX2]1-[C;!$(C=[O,S])]-C-C-C-[C;!$(C=[O,S])]-1", # excludes delta-thiolactones
     "1,2-dithiane": "[SX2]1[SX2]-[C;!$(C=[O,S])]-C-C-[C;!$(C=[O,S])]-1",
     "1,3-dithiane": "[SX2]1-[C;!$(C=[O,S])]-[SX2]-[C;!$(C=[O,S])]-C-[C;!$(C=[O,S])]-1",
     "1,4-dithiane": "[SX2]1-[C;!$(C=[O,S])]-[C;!$(C=[O,S])]-[SX2]-[C;!$(C=[O,S])]-[C;!$(C=[O,S])]-1",
-    "morpholine": "O1-[C;!$(C=[O,S])]-[C;!$(C=[N,O,S])]-[#7]-,:[#6;!$(C=[N,O,S])]-,:[#6;!$(C=[O,S])]-1",
-    "thiomorpholine": "[SX2]1-[C;!$(C=[O,S])]-[C;!$(C=[N,O,S])]-[#7]-,:[#6;!$(C=[N,O,S])]-,:[#6;!$(C=[O,S])]-1",
+    "morpholine": "O1-[#6]-,:[#6]-[#7]-,:[#6]-,:[#6]-1",
+    "thiomorpholine": "[SX2]1-[#6]-,:[#6]-[#7]-,:[#6]-,:[#6]-1",
+    "chromane": "O1CCCc2ccccc12",
+    "isochromane": "C1OCCc2ccccc12",
+    "thiochromane": "S1CCCc2ccccc12",
+    "isothiochromane": "C1SCCc2ccccc12",
 }
 
 OXO_RINGS: Dict[str, str] = {
 
     # 3-membered
     "cyclopropenone": "O=[c;!$(c1c([O,N])c([O,N])1)]1cc1",
+    "α-lactone": "O=C1-O-[#6;!$(C=[O,S])]-1",
+    "α-lactam": "O=C1-N-[#6;!$(C=[O,S])]-1",
+    "α-thiolactone": "O=C1-[SX2]-[#6;!$(C=[O,S])]-1",
     
     # 4-membered
     "cyclobutenedione": "O=[c;!$(c1cc([O,N,S])c([O,N,S])1)]1c(=O)cc1",
-    "β-lactam": "O=C1-N-[#6;!$(C=O)]~[#6]-1",
+    "β-lactone": "O=C1-O-[#6;!$(C=[O,S])]~[#6]-1",
+    "β-lactam": "O=C1-N-[#6;!$(C=[O,S])]~[#6]-1",
+    "β-thiolactone": "O=C1-[SX2]-[#6;!$(C=[O,S])]~[#6]-1",
 
     # 5-membered
+    "γ-lactone": "O=C1-O-[#6;!$(C=[O,S])]~[#6]-[#6]-1", # excludes butenolide
+    "butenolide": "O=C1-O-[#6;!$(C=[O,S])]~[#6]=,:[#6]-1",
+    "γ-lactam": "O=C1-N-[#6;!$(C=[O,S])]~[#6]~[#6]-1",
+    "γ-thiolactone": "O=C1-[SX2]-[#6;!$(C=[O,S])]~[#6]~[#6]-1",
+    "tetronic_acid": "O=C1-O-[C;!$(C=[O,S,N])]-C(-O)=C-1",
+    "tetramic_acid": "O=C1-N-[C;!$(C=[O,S,N])]-C(-O)=C-1",
     "cyclopentadienone": "O=C1C=CC=C1",
     "indenone": "O=C1-[#6;X3;!$(c1ccccc1)]~[#6;X3;!$(c1ccccc1)]-[cX3H0]2:c:c:c:c:[cX3H0]:2-1",
     "fluorenone": "O=C1-[cX3H0]2:c:c:c:c:[cX3H0]:2-[cX3H0]3:c:c:c:c:[cX3H0]:3-1",
@@ -1748,14 +1892,25 @@ OXO_RINGS: Dict[str, str] = {
     "4-imidazolinone": "O=c1n[c;!$(c1ccccc1)][c;!$(c1ccccc1)]n1",
     "benzimidazolinone": "O=c1nc(cccc2)c2n1",
     "hydantoin": "O=C1-N-C(=O)-[#7]~[#6;!$(C=O)]1",
-    "oxazolidinone": "O=C1N[CX4][CX4]O1",
+    "oxazolone": "O=c1occn1",
+    "2-oxazolidinone": "O=C1N[CX4][CX4]O1",
+    "2-thiazolone": "O=c1[sX2]ccn1",
+    "isoxazolinone": "O=c1nocc1",
+    "isothiazolinone": "O=c1n[sX2]cc1",
+    "isoxazolidinone": "O=C1NOCC1",
+    "isothiazolidinone": "O=C1N[SX2]CC1",
     "oxazolidinedione": "O=C1NC(=O)[CX4]O1",
     "2-thiazolidinone": "O=C1N[CX4][CX4][SX2]1",
     "4-thiazolidinone": "O=C1N[CX4][SX2][CX4]1",
     "thiazolidindione": "O=C1NC(=O)[CX4][SX2]1",
+    "1,2,4-triazolinone": "O=c1ncnn1",
+    "1,2,4-triazolidinone": "O=C1NCNN1",
     "1,2,4-triazolidinedione": "O=c1nc(=O)nn1",
 
     # 6-membered
+    "δ-lactone": "O=C1-O-[#6;!$(C=[O,S])]~[#6]~[#6]~[#6]-1",
+    "δ-lactam": "O=C1-N-[#6;!$(C=[O,S])]~[#6]~[#6]~[#6]-1",
+    "δ-thiolactone": "O=C1-[SX2]-[#6;!$(C=[O,S])]~[#6]~[#6]~[#6]-1",
     "1,2-benzoquinone": "O=C1-C(=O)-[#6;X3]=,:[#6;X3]-,:[#6;X3]=,:[#6;X3]-1",
     "1,4-benzoquinone": "O=C1-[#6;X3]=,:[#6;X3]-C(=O)-[#6;X3]=,:[#6;X3]-1",
     "1,2-quinone_methide": "[O;!$(O=C1-[#6;X3]=,:[#6;X3]-,:[#6;X3]=[#6;X3]2-[#6;X3]=,:[#6;X3]-C(=O)-[#6;X3]=[#6;X3]12);!$(O=C1-[#6;X3]=,:[#6;X3]-,:[#6;X3]=[#6;X3]2-C(=O)-[#6;X3]=,:[#6;X3]-,:[#6;X3]=[#6;X3]12)]=C1-C(=C)-[#6;X3]=,:[#6;X3]-,:[#6;X3]=,:[#6;X3]-1", # excludes naphthoquinones
@@ -1789,6 +1944,7 @@ OXO_RINGS: Dict[str, str] = {
     "pyridazine-3,6-dione": "O=c1:n:n:c(=O):c:c:1",
     "pyrazinone": "O=c1:[n;!$(n12c(=O)cncc1cccc2)]:c:c:n:[c;!$(c=O)]:1", # excludes pyrazinedione
     "pyrazine-2,3-dione": "O=c1:n:c:c:n:c(=O):1", 
+    "2,5-diketopiperazine": "O=C1[#7]-,:[#6]C(=O)[#7]-,:[#6]1",
     "1,2-oxazin-4-one": "O=c1:c:n:o:c:c:1",
     "1,2-oxazin-6-one": "O=c1:o:n:c:c:c:1",
     "1,3-oxazin-2-one": "O=c1:o:c:c:c:n:1",
@@ -1801,7 +1957,7 @@ OXO_RINGS: Dict[str, str] = {
     "1,3-thiazin-4-one": "O=c1:c:c:s:c:n:1",
     "1,3-thiazin-6-one": "O=c1:s:c:n:c:c:1",
     "1,4-thiazin-2-one": "O=c1:s:c:c:n:c:1",
-    "barbiturate": "[OX1,OH]~[#6;X3H0]1~N~[#6;X3H0](~[OX1,OH])~N~[#6;X3H0](~[OX1,OH])-[CX4]-1",
+    "barbiturate": "[OX1,OH]~[#6;X3H0]1~N~[#6;X3H0](~[OX1,OH])~N~[#6;X3H0](~[OX1,OH])-C-1",
     "quinazolin-2-one":  "O=c1:n:c:c2ccccc:2:n:1",
     "quinazolin-4-one":  "O=c1:n:c:n:c2ccccc:1:2",
     "ammelide": "O~c1:n:c(~O):n:c(~N):n:1",
@@ -1856,8 +2012,19 @@ THIOXO_RINGS: Dict[str, str] = {
 
     # 3-membered
     "cyclopropenthione": "[SX1]=[c;!$(c1c([O,N])c([O,N])1)]1cc1",
-
+    "α-thionolactone": "[SX1]=C1-O-[#6;!$(C=[O,S])]-1",
+    "α-thiolactam": "[SX1]=C1-N-[#6;!$(C=[O,S])]-1",
+    "α-dithiolactone": "[SX1]=C1-[SX2]-[#6;!$(C=[O,S])]-1",
+    
+    # 4-membered
+    "β-thionolactone": "[SX1]=C1-O-[#6;!$(C=[O,S])]~[#6]-1",
+    "β-thiolactam": "[SX1]=C1-N-[#6;!$(C=[O,S])]~[#6]-1",
+    "β-dithiolactone": "[SX1]=C1-[SX2]-[#6;!$(C=[O,S])]~[#6]-1",
+    
     # 5-membered
+    "γ-thionolactone": "[SX1]=C1-O-[#6;!$(C=[O,S])]~[#6]~[#6]-1",
+    "γ-thiolactam": "[SX1]=C1-N-[#6;!$(C=[O,S])]~[#6]~[#6]-1",
+    "γ-dithiolactone": "[SX1]=C1-[SX2]-[#6;!$(C=[O,S])]~[#6]~[#6]-1",
     "thiofluorenone": "[SX1]=C1-[cX3H0]2:c:c:c:c:[cX3H0]:2-[cX3H0]3:c:c:c:c:[cX3H0]:3-1",
     "2-pyrroline-4-thione": "[SX1]=C1[CX4]N[#6;X3]~[#6;X3]1",
     "2-pyrroline-5-thione": "[SX1]=C1-N[#6;X3;!$(c1ccccc1)]~[#6;X3;!$(c1ccccc1)][CX4]1", # excludes indolethione
@@ -1868,15 +2035,20 @@ THIOXO_RINGS: Dict[str, str] = {
     "4-oxazoline-2-thione": "[SX1]=c1ncco1",
     "4-thiazoline-2-thione": "[SX1]=c1nccs1",
     "1,3-dithiole-2-thione": "[SX1]=c1sccs1",
-    "1,2,4-triazole-3-thione": "[SX1]=c1nncn1",
+    "1,2,4-triazolidine-3-thione": "[SX1]=c1nn[c;!$(c=[O,S])]n1",
+    "3-thioxo-1,2,4-triazolidinone": "[SX1]=c1nnc(=O)n1",
+    "1,2,4-triazolidinedithione": "[SX1]=c1nnc(=[SX1])n1",
     "1,3,4-oxadiazole-2-thione": "[SX1]=c1nnco1",
     "1,3,4-thiadiazole-2-thione": "[SX1]=c1nncs1",
     "2-thiohydantoin": "O=C1-N-C(=[SX1])-[#7]~[#6;!$(C=O)]1",
     "4-thiohydantoin": "[SX1]=C1-N-C(=O)-[#7]~[#6;!$(C=O)]1",
     "dithiohydantoin": "[SX1]=C1-N-C(=[SX1])-[#7]~[#6;!$(C=O)]1",
-    "rhodanine": "[SX1]=C1[SX2][CX4]C(=O)N1",
+    "rhodanine": "[SX1]=C1[SX2]CC(=O)N1",
 
     # 6-membered
+    "δ-thionolactone": "[SX1]=C1-O-[#6;!$(C=[O,S])]~[#6]~[#6]~[#6]-1",
+    "δ-thiolactam": "[SX1]=C1-N-[#6;!$(C=[O,S])]~[#6]~[#6]~[#6]-1",
+    "δ-dithiolactone": "[SX1]=C1-[SX2]-[#6;!$(C=[O,S])]~[#6]~[#6]~[#6]-1",
     "thio-1,2-benzoquinone": "[SX1]=C1-C(=O)-[#6;X3]=,:[#6;X3]-,:[#6;X3]=,:[#6;X3]-1",
     "dithio-1,2-benzoquinone": "[SX1]=C1-C(=[SX1])-[#6;X3]=,:[#6;X3]-,:[#6;X3]=,:[#6;X3]-1",
     "thio-1,4-benzoquinone": "[SX1]=C1-[#6;X3]=,:[#6;X3]-C(=O)-[#6;X3]=,:[#6;X3]-1",
@@ -1892,11 +2064,11 @@ THIOXO_RINGS: Dict[str, str] = {
     "pyridazin-3-thione": "[SX1]=c1:n:n:c:c:c:1",
     "pyridazin-5-thione": "[SX1]=c1:c:n:n:c:c:1",
     "pyrazinethione": "[SX1]=c1:n:c:c:n:c:1",
-    "2-thiobarbiturate": "[OX1,OH]~[#6;X3H0]1~N~[#6;X3H0](~[SX1,SH])~N~[#6;X3H0](~[OX1,OH])-[CX4]-1",
-    "4-thiobarbiturate": "[SX1,SH]~[#6;X3H0]1~N~[#6;X3H0](~[OX1,OH])~N~[#6;X3H0](~[OX1,OH])-[CX4]-1",
-    "2,4-dithiobarbiturate": "[SX1,SH]~[#6;X3H0]1~N~[#6;X3H0](~[SX1,SH])~N~[#6;X3H0](~[OX1,OH])-[CX4]-1",
-    "4,6-dithiobarbiturate": "[SX1,SH]~[#6;X3H0]1~N~[#6;X3H0](~[OX1,OH])~N~[#6;X3H0](~[SX1,SH])-[CX4]-1",
-    "trithiobarbiturate": "[SX1,SH]~[#6;X3H0]1~N~[#6;X3H0](~[SX1,SH])~N~[#6;X3H0](~[SX1,SH])-[CX4]-1",
+    "2-thiobarbiturate": "[OX1,OH]~[#6;X3H0]1~N~[#6;X3H0](~[SX1,SH])~N~[#6;X3H0](~[OX1,OH])-C-1",
+    "4-thiobarbiturate": "[SX1,SH]~[#6;X3H0]1~N~[#6;X3H0](~[OX1,OH])~N~[#6;X3H0](~[OX1,OH])-C-1",
+    "2,4-dithiobarbiturate": "[SX1,SH]~[#6;X3H0]1~N~[#6;X3H0](~[SX1,SH])~N~[#6;X3H0](~[OX1,OH])-C-1",
+    "4,6-dithiobarbiturate": "[SX1,SH]~[#6;X3H0]1~N~[#6;X3H0](~[OX1,OH])~N~[#6;X3H0](~[SX1,SH])-C-1",
+    "trithiobarbiturate": "[SX1,SH]~[#6;X3H0]1~N~[#6;X3H0](~[SX1,SH])~N~[#6;X3H0](~[SX1,SH])-C-1",
     "thioammelide": "O~c1:n:c(~S):n:c(~N):n:1",
     "dithioammelide": "S~c1:n:c(~S):n:c(~N):n:1",
     "thioammeline": "S~c1:n:c(~N):n:c(~N):n:1",
@@ -1912,8 +2084,8 @@ THIOXO_RINGS: Dict[str, str] = {
 BIOMOLECULES: Dict[str, str] = {
     # amino acids
     # N-terminus can be attached to anything, C-terminus cannot be aldehydes or ketones
-    ## proteinogenic 
-    "glycine": "N-[CH2]-C(=[O;!$(O=C1NC(=O)NC1)])-[!$([#6,#1])]", # excludes hydantoin
+    ## genetically encoded
+    "glycine": "N-[CH2;!$(C1NC(=O)CNC(=O)1)]-C=[O;!$(O=C1NC(=O)NC1)]-[!$([#6,#1])]", # excludes hydantoin, diketopiperazine
     "alanine": "N-[CH](-[CH3])-C(=O)-[!$([#6,#1])]",
     "serine": "N-[CH](-[CH2]O)-C(=O)-[!$([#6,#1])]",
     "cysteine": "N-[CH](-[CH2]S)-C(=O)-[!$([#6,#1])]",
@@ -1931,11 +2103,14 @@ BIOMOLECULES: Dict[str, str] = {
     "asparagine": "N-[CH](-[CH2][C](=O)N)-C(=O)-[!$([#6,#1])]",
     "glutamic_acid": "N-[CH](-[CH2][CH2][C](=O)O)-C(=O)-[!$([#6,#1])]",
     "glutamine": "N-[CH](-[CH2][CH2][C](=O)N)-C(=O)-[!$([#6,#1])]",
-    "lysine": "N-[CH](-[CH2][CH2][CH2][CH2][#7])-C(=O)-[!$([#6,#1])]",
+    "lysine": "N-[CH](-[CH2][CH2][CH2][CH2][#7;!$(NC(=O)[CH]1[CH]([CH3])[CH2][CH]=N1)])-C(=O)-[!$([#6,#1])]", # excludes pyrrolysine
+    "pyrrolysine": "N-[CH](-[CH2][CH2][CH2][CH2]NC(=O)[CH]1[CH]([CH3])[CH2][CH]=N1)-C(=O)-[!$([#6,#1])]",
     "arginine": "N-[CH](-[CH2][CH2][CH2]N~[CX3H0](~N)~N)-C(=O)-[!$([#6,#1])]",
     "proline":  "N1-[CH](-[CH2][CH2][CH2]1)-C(=O)-[!$([#6,#1])]",
+    ## not genetically encoded
     "4-hydroxyproline": "N1-[CH](-[CH2][CH](-O)[CH2]1)-C(=O)-[!$([#6,#1])]",
-    ## non-proteinogenic
+    "5-hydroxylysine": "N-[CH](-[CH2][CH2][CH](-O)[CH2][#7])-C(=O)-[!$([#6,#1])]",
+    "pyroglutamic_acid": "N1-[CH](-[CH2][CH2][C](=O)1)-C(=O)-[!$([#6,#1])]",
     "homoalanine": "N-[CH](-[CH2][CH3])-C(=O)-[!$([#6,#1])]",
     "norvaline": "N-[CH](-[CH2][CH2][CH3])-C(=O)-[!$([#6,#1])]",
     "homoserine": "N-[CH](-[CH2][CH2]O)-C(=O)-[!$([#6,#1])]",
@@ -1952,7 +2127,7 @@ BIOMOLECULES: Dict[str, str] = {
     "isoguanine": "N~[cX3H0]1:n:[cX3H0](~O):n:[cX3H0]2:n:c:n:[cX3H0]:1:2", # many tautomers
     "hypoxanthine": "O~[cX3H0]1:n:[c;!$(c~[O,N])]:n:[cX3H0]2:n:c:n:[cX3H0]:1:2", # many tautomers, excludes guanine and xanthine
     "xanthine": "O~[cX3H0]1:n:c(~O):n:[cX3H0]2:n:[c;!$(c~O)]:n:[cX3H0]:1:2", # many tautomers
-    "uric acid": "O~[cX3H0]1:n:c(~O):n:[cX3H0]2:n:c(~O):n:[cX3H0]:1:2", # many tautomers
+    "uric_acid": "O~[cX3H0]1:n:c(~O):n:[cX3H0]2:n:c(~O):n:[cX3H0]:1:2", # many tautomers
     ## pyrimidine bases
     "cytosine":    "[OX1,OH]~[cX3H0]1:n:[cX3H0](~N):[c;!$(c1ncnc1);!$(c1nccnc1)]:[c;!$(c1ncnc1);!$(c1nccnc1);!$(c~O)]:n:1", # many tautomers, excludes purines, isopterin
     "isocytosine": "[OX1,OH]~[cX3H0]1:n:[cX3H0](~N):n:[c;!$(c1ncnc1);!$(c1nccnc1);!$(c1NCCNc1)]:[c;!$(c1ncnc1);!$(c1nccnc1);!$(c1NCCNc1)]:1", # many tautomers, excludes purines, pterin
@@ -1965,51 +2140,53 @@ BIOMOLECULES: Dict[str, str] = {
     "4-thiouracil": "[OX1,OH]~[cX3H0]1:n:[cX3H0;!$(c1nccnc1)](~[SX1,SH]):[c;!$(c1ncnc1);!$(c1nccnc1);!$(c1NccNc1)]:[c;!$(c~[O,S]);!$(c1ncnc1)]:n:1", # many tautomers, excludes purines, pteridines
     "dithiouracil": "[SX1,SH]~[cX3H0]1:n:[cX3H0;!$(c1nccnc1)](~[SX1,SH]):[c;!$(c1ncnc1);!$(c1nccnc1);!$(c1NccNc1)]:[c;!$(c~[O,S]);!$(c1ncnc1)]:n:1", # many tautomers, excludes purines, pteridines
     
+
     # monosaccharides & related
     ## triose
-    "glyceraldehyde": "O-[CH2]-[CH](-O)-[CH]=O",
+    "glyceraldehyde": "O-[CH2]-[CH](-O)-[CH]=[O,N]",
     "glycerol": "O-[CH2]-[CH](-O)-[CH2]-O",
-    "glyceric_acid": "O-[CH2]-[CH](-O)-C(=O)-O",
+    "glyceric_acid": "O-[CH2]-[CH](-O)-C(=O)-[!#1;!#6]",
     ## tetrose
-    "aldotetrose": "[$([CH]=O),$([CH](-[O,S,N,n])-[O,S,N,n])][CH](O)[CH](O)[CH2](O)", #including hemiacetal, acetal, etc. and cyclic forms
-    "ketotetrose": "O[CH2][$(C=O),$(C(-[O,S,N,n])-[O,S,N,n])][CH](O)[CH2](O)", #including hemiketal, ketal, etc, and cyclic forms
+    "aldotetrose": "[$([CH]=[O,N]),$([CH](-[O,S,N,n])-[O,S,N,n])][CH](O)[CH](O)[CH2](O)", #including hemiacetal, acetal, etc. and cyclic forms
+    "ketotetrose": "O[CH2][$(C=[O,N]),$(C(-[O,S,N,n])-[O,S,N,n])][CH](O)[CH2](O)", #including hemiketal, ketal, etc, and cyclic forms
     "tetritol": "O-[CH2]-[CH](-O)-[CH](-O)-[CH2]-O",
-    "tetro_aldonic_acid": "O-C(=O)-[CH](O)[CH](O)[CH2](O)",
-    "tetro_uronic_acid": "[$([CH]=O),$([CH](-[O,S,N,n])-[O,S,N,n])][CH](O)[CH](O)-C(=O)-O",
-    "tartaric_acid": "O-C(=O)-[CH](O)[CH](O)-C(=O)-O",
+    "tetro_aldonic_acid": "[!#1;!#6]-C(=O)-[CH](O)[CH](O)[CH2](O)",
+    "tetro_uronic_acid": "[$([CH]=[O,N]),$([CH](-[O,S,N,n])-[O,S,N,n])][CH](O)[CH](O)-C(=O)-[!#1;!#6]",
+    "tartaric_acid": "[!#1;!#6]-C(=O)-[CH](O)[CH](O)-C(=O)-[!#1;!#6]",
     ## pentose
-    "aldopentose": "[$([CH]=O),$([CH](-[O,S,N,n])-[O,S,N,n])][CH](O)[CH](O)[CH](O)[CH2](O)", #including hemiacetal, acetal, etc. and cyclic forms
-    "ketopentose": "O[CH2][$(C=O),$(C(-[O,S,N,n])-[O,S,N,n])][CH](O)[CH](O)[CH2](O)", #including hemiketal, ketal, etc, and cyclic forms
+    "aldopentose": "[$([CH]=[O,N]),$([CH](-[O,S,N,n])-[O,S,N,n])][CH](O)[CH](O)[CH](O)[CH2](O)", #including hemiacetal, acetal, etc. and cyclic forms
+    "ketopentose": "O[CH2][$(C=[O,N]),$(C(-[O,S,N,n])-[O,S,N,n])][CH](O)[CH](O)[CH2](O)", #including hemiketal, ketal, etc, and cyclic forms
     "pentitol": "O-[CH2]-[CH](-O)-[CH](-O)-[CH](-O)-[CH2]-O",
-    "pento_aldonic_acid": "O-C(=O)-[CH](O)[CH](O)[CH](O)[CH2](O)",
-    "penturonic_acid": "[$([CH]=O),$([CH](-[O,S,N,n])-[O,S,N,n])][CH](O)[CH](O)[CH](O)-C(=O)-O",
-    "pentulosonic_acid": "O-C(=O)-[$(C=O),$(C(-[O,S,N,n])-[O,S,N,n])][CH](O)[CH](O)[CH2](O)",
-    "pentaric_acid": "O-C(=O)-[CH](O)[CH](O)[CH](O)-C(=O)-O",
+    "pento_aldonic_acid": "[!#1;!#6]-C(=O)-[CH](O)[CH](O)[CH](O)[CH2](O)",
+    "penturonic_acid": "[$([CH]=O),$([CH](-[O,S,N,n])-[O,S,N,n])][CH](O)[CH](O)[CH](O)-C(=O)-[!#1;!#6]",
+    "pentulosonic_acid": "[!#1;!#6]-C(=O)-[$(C=[O,N]),$(C(-[O,S,N,n])-[O,S,N,n])][CH](O)[CH](O)[CH2](O)",
+    "pentaric_acid": "[!#1;!#6]-C(=O)-[CH](O)[CH](O)[CH](O)-C(=O)-[!#1;!#6]",
     ## hexose
-    "aldohexose": "[$([CH]=O),$([CH](-[O,S,N,n])-[O,S,N,n])][CH](O)[CH](O)[CH](O)[CH](O)[CH2](O)", #including hemiacetal, acetal, etc. and cyclic forms
-    "ketohexose": "O[CH2][$(C=O),$(C(-[O,S,N,n])-[O,S,N,n])][CH](O)[CH](O)[CH](O)[CH2](O)", #including hemiketal, ketal, etc. and cyclic forms
+    "aldohexose": "[$([CH]=[O,N]),$([CH](-[O,S,N,n])-[O,S,N,n])][CH](O)[CH](O)[CH](O)[CH](O)[CH2](O)", #including hemiacetal, acetal, etc. and cyclic forms
+    "ketohexose": "O[CH2][$(C=[O,N]),$(C(-[O,S,N,n])-[O,S,N,n])][CH](O)[CH](O)[CH](O)[CH2](O)", #including hemiketal, ketal, etc. and cyclic forms
     "hexitol": "O-[CH2]-[CH](-O)-[CH](-O)-[CH](-O)-[CH](-O)-[CH2]-O",
     "inositol": "O-[CH]1-[CH](-O)-[CH](-O)-[CH](-O)-[CH](-O)-[CH]1(-O)",
-    "hexo_aldonic_acid": "O-C(=O)-[CH](O)[CH](O)[CH](O)[CH](O)[CH2](O)",
-    "hexuronic_acid": "[$([CH]=O),$([CH](-[O,S,N,n])-[O,S,N,n])][CH](O)[CH](O)[CH](O)[CH](O)-C(=O)-O",
-    "hexulosonic_acid": "O-C(=O)-[$(C=O),$(C(-[O,S,N,n])-[O,S,N,n])][CH](O)[CH](O)[CH](O)[CH2](O)",
-    "hexaric_acid": "O-C(=O)-[CH](O)[CH](O)[CH](O)[CH](O)-C(=O)-O",
+    "hexo_aldonic_acid": "[!#1;!#6]-C(=O)-[CH](O)[CH](O)[CH](O)[CH](O)[CH2](O)",
+    "hexuronic_acid": "[$([CH]=O),$([CH](-[O,S,N,n])-[O,S,N,n])][CH](O)[CH](O)[CH](O)[CH](O)-C(=O)-[!#1;!#6]",
+    "hexulosonic_acid": "[!#1;!#6]-C(=O)-[$(C=[N,O]),$(C(-[O,S,N,n])-[O,S,N,n])][CH](O)[CH](O)[CH](O)[CH2](O)",
+    "hexaric_acid": "[!#1;!#6]-C(=O)-[CH](O)[CH](O)[CH](O)[CH](O)-C(=O)-[!#1;!#6]",
     ## heptose
-    "aldoheptose": "[$([CH]=O),$([CH](-[O,S,N,n])-[O,S,N,n])][CH](O)[CH](O)[CH](O)[CH](O)[CH](O)[CH2](O)", #including hemiacetal, acetal, etc. and cyclic forms
-    "ketoheptose": "O[CH2][$(C=O),$(C(-[O,S,N,n])-[O,S,N,n])][CH](O)[CH](O)[CH](O)[CH](O)[CH2](O)", #including hemiketal, ketal, etc. and cyclic forms
+    "aldoheptose": "[$([CH]=[O,N]),$([CH](-[O,S,N,n])-[O,S,N,n])][CH](O)[CH](O)[CH](O)[CH](O)[CH](O)[CH2](O)", #including hemiacetal, acetal, etc. and cyclic forms
+    "ketoheptose": "O[CH2][$(C=[O,N]),$(C(-[O,S,N,n])-[O,S,N,n])][CH](O)[CH](O)[CH](O)[CH](O)[CH2](O)", #including hemiketal, ketal, etc. and cyclic forms
     "heptitol": "O-[CH2]-[CH](-O)-[CH](-O)-[CH](-O)-[CH](-O)-[CH](-O)-[CH2]-O",
-    "hepto_aldonic_acid": "O-C(=O)-[CH](O)[CH](O)[CH](O)[CH](O)[CH](O)[CH2](O)",
-    "hepturonic_acid": "[$([CH]=O),$([CH](-[O,S,N,n])-[O,S,N,n])][CH](O)[CH](O)[CH](O)[CH](O)[CH](O)-C(=O)-O",
-    "heptulosonic_acid": "O-C(=O)-[$(C=O),$(C(-[O,S,N,n])-[O,S,N,n])][CH](O)[CH](O)[CH](O)[CH](O)[CH2](O)",
-    "heptaric_acid": "O-C(=O)-[CH](O)[CH](O)[CH](O)[CH](O)[CH](O)-C(=O)-O",
+    "hepto_aldonic_acid": "[!#1;!#6]-C(=O)-[CH](O)[CH](O)[CH](O)[CH](O)[CH](O)[CH2](O)",
+    "hepturonic_acid": "[$([CH]=O),$([CH](-[O,S,N,n])-[O,S,N,n])][CH](O)[CH](O)[CH](O)[CH](O)[CH](O)-C(=O)-[!#1;!#6]",
+    "heptulosonic_acid": "[!#1;!#6]-C(=O)-[$(C=[O,N]),$(C(-[O,S,N,n])-[O,S,N,n])][CH](O)[CH](O)[CH](O)[CH](O)[CH2](O)",
+    "heptaric_acid": "[!#1;!#6]-C(=O)-[CH](O)[CH](O)[CH](O)[CH](O)[CH](O)-C(=O)-[!#1;!#6]",
     ## deoxysugars / aminosugars 
     "2-deoxy-aldopentose": "[$([CH]=O),$([CH](-[O,S,N,n])-[O,S,N,n])][CH2][CH](O)[CH](O)[CH2]O",
     "6-deoxy-aldohexose":   "[$([CH]=O),$([CH](-[O,S,N,n])-[O,S,N,n])][CH](O)[CH](O)[CH](O)[CH](O)[CH3]",
-    "aldohexos-2-amine": "[$([CH]=O),$([CH](-[O,S,N,n])-[O,S,N,n])][CH](N)[CH](O)[CH](O)[CH](O)[CH2](O)",
-    "6-deoxy-aldohexos-2-amine": "[$([CH]=O),$([CH](-[O,S,N,n])-[O,S,N,n])][CH](N)[CH](O)[CH](O)[CH](O)[CH3]",
-    "3-deoxy-octulosonic_acid": "O-C(=O)-[$([CH]=O),$([CH](-[O,S,N,n])-[O,S,N,n])][CH2][CH](O)[CH](O)[CH](O)[CH](O)[CH2](O)",
-    "neuraminic_acid": "O-C(=O)-[$([CH]=O),$([CH](-[O,S,N,n])-[O,S,N,n])][CH2][CH](O)[CH](N)[CH](O)[CH](O)[CH](O)[CH2](O)",
+    "hexosamine": "[$([CH]=O),$([CH](-[O,S,N,n])-[O,S,N,n])][CH](N)[CH](O)[CH](O)[CH](O)[CH2](O)",
+    "6-deoxy-hexosamine": "[$([CH]=O),$([CH](-[O,S,N,n])-[O,S,N,n])][CH](N)[CH](O)[CH](O)[CH](O)[CH3]",
+    "3-deoxy-octulosonic_acid": "[!#1;!#6]-C(=O)-[$(C=[O,N]),$(C(-[O,S,N,n])-[O,S,N,n])][CH2][CH](O)[CH](O)[CH](O)[CH](O)[CH2](O)",
+    "neuraminic_acid": "[!#1;!#6]-C(=O)-[$(C=[O,N]),$(C(-[O,S,N,n])-[O,S,N,n])][CH2][CH](O)[CH](N)[CH](O)[CH](O)[CH](O)[CH2](O)",
     
+
     # fats
     ## lipids
     "1-monoglyceride": "[O-,OH,OH2+]-[CH2]-[CH](-[O-,OH,OH2+])-[CH2]-O-C(=O)-[#6]",
@@ -2052,17 +2229,113 @@ BIOMOLECULES: Dict[str, str] = {
     "trans-palmitoleoyl": "[*]-C(=O)-[CH2]-[CH2]-[CH2]-[CH2]-[CH2]-[CH2]-[CH2]/[CH]=[CH]/[CH2]-[CH2]-[CH2]-[CH2]-[CH2]-[CH3]", # trans 16:1 omega-7
     "elaidoyl": "[*]-C(=O)-[CH2]-[CH2]-[CH2]-[CH2]-[CH2]-[CH2]-[CH2]/[CH]=[CH]/[CH2]-[CH2]-[CH2]-[CH2]-[CH2]-[CH2]-[CH2]-[CH3]", # trans 18:1 omega-9
     "vaccenoyl": "[*]-C(=O)-[CH2]-[CH2]-[CH2]-[CH2]-[CH2]-[CH2]-[CH2]-[CH2]-[CH2]/[CH]=[CH]/[CH2]-[CH2]-[CH2]-[CH2]-[CH2]-[CH3]", # trans 18:1 omega-7
-    "rumenoyl": r"[*]-C(=O)-[CH2]-[CH2]-[CH2]-[CH2]-[CH2]-[CH2]-[CH2]\[CH]=[CH]//[CH]=[CH]/-[CH2]-[CH2]-[CH2]-[CH2]-[CH2]-[CH3]", # trans11 18:2 omega-7
+    "rumenoyl": r"[*]-C(=O)-[CH2]-[CH2]-[CH2]-[CH2]-[CH2]-[CH2]-[CH2]\[CH]=[CH]/[CH]=[CH]/-[CH2]-[CH2]-[CH2]-[CH2]-[CH2]-[CH3]", # trans11 18:2 omega-7
     "linoleladoyl": "[*]-C(=O)-[CH2]-[CH2]-[CH2]-[CH2]-[CH2]-[CH2]-[CH2]/[CH]=[CH]/[CH2]/[CH]=[CH]/[CH2]-[CH2]-[CH2]-[CH2]-[CH3]", # trans,trans 18:2 omega-6
     
-    # isoprenoid chains
-    "prenyl": "[CH3]-C(-[CH3])=[CH]-[CH2;!$(C-C-C(-[CH3])=C-C)]", # excludes geranyl
-    "geranyl": "[CH3]-C(-[CH3])=C-C-C-C(-[CH3])=C-[CX4;!$(C-C-C(-[CH3])=C-C)]", # excludes farnesyl
-    "farnesyl": "[CH3]-C(-[CH3])=C-C-C-C(-[CH3])=C-C-C-C(-[CH3])=C-[CX4;!$(C-C-C(-[CH3])=C-C)]", # excludes geranylgeranyl
-    "geranylgeranyl": "[CH3]-C(-[CH3])=C-C-C-C(-[CH3])C-C-C-C(-[CH3])=C-C-C-C(-[CH3])=C-[CX4]",
+
+    # terpenoids & flavonoids
+    ## flavonoids
+    "flavan_core": "[#8]1~c2ccccc2~[#6]~[#6]~[#6]~1~c2ccccc2",
+    "isoflavan_core": "[#8]1~c2ccccc2~[#6]~[#6](~c2ccccc2)~[#6]~1",
+    "neoflavan_core": "[#8]1~c2ccccc2~[#6](~c2ccccc2)~[#6]~[#6]~1",
+    "chalcone_core": "c1ccccc1-C(=O)-[C;!$([#6]1~[*]~c2ccccc2~[#6](=O)1)]=[C;!$([#6]1~[*]~c2cccccc2~[#6](=O)~[#6]=1)]-c1ccccc1", # excludes flavan and aurone
+    "aurone_core": "O1-c2ccccc2-C(=O)-C1=C-c2ccccc2",
+    ## isoprenoid chains
+    "prenyl":   "[CH3]-C(-[CH3])=[CH]-[CH2;!$([CH2]-[CH2]-C(-[CH3])=[CH]-C)]", # excludes geranyl
+    "isopentenyl": "[CH2]=C(-[CH3])-[CH2]-[CH2]-[!C,$([C;!X4,R,X4H0,X4H1]);!#1]",
+    "geranyl":  "[CH3]-C(-[CH3])=[CH]-[CH2]-[CH2]-C(-[CH3])=[CH]-[C;!$([CH2]-[CH2]-C(-[CH3])=[CH]-C)]", # excludes farnesyl
+    "linanyl": "[CH3]-C(-[CH3])=[CH]-[CH2]-[CH2]-[CH0](-[*])(-[CH3])-[CH]=[CH2]",
+    "farnesyl": "[CH3]-C(-[CH3])=[CH]-[CH2]-[CH2]-C(-[CH3])=[CH]-[CH2]-[CH2]-C(-[CH3])=[CH]-[C;!$([CH2]-[CH2]-C(-[CH3])=[CH]-C)]", # excludes geranylgeranyl
+    "nerolidyl": "[CH3]-C(-[CH3])=[CH]-[CH2]-[CH2]-C(-[CH3])=[CH]-[CH2]-[CH2]-[CH0](-[*])(-[CH3])-[CH]=[CH2]",
+    "geranylgeranyl": "[CH3]-C(-[CH3])=[CH]-[CH2]-[CH2]-C(-[CH3])=[CH]-[CH2]-[CH2]-C(-[CH3])=[CH]-[CH2]-[CH2]-C(-[CH3])=[CH]-C",
+    "phytyl": "[CH3]-[CH](-[CH3])-[CH2]-[CH2]-[CH2]-[CH](-[CH3])-[CH2]-[CH2]-[CH2]-[CH](-[CH3])-[CH2]-[CH2]-[CH2]-C(-[CH3])=[CH]-[CH2]-[!#1]",
     "phytanyl": "[CH3]-[CH](-[CH3])-[CH2]-[CH2]-[CH2]-[CH](-[CH3])-[CH2]-[CH2]-[CH2]-[CH](-[CH3])-[CH2]-[CH2]-[CH2]-[CH](-[CH3])-[CH2]-[CH2]-[!#1]",
-    
-    # alkaloid/privileged scaffolds
+    ## monoterpenoids (C10)
+    ### mono- or acyclic
+    "myrcane_terpenoid": "[#6;!$([#6](~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])~[#6])]",
+    "p-menthane_terpenoid": "[#6;!$([#6](~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]1~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~1", 
+    ### bicyclic
+    "bornane_terpenoid": "[#6;!$([#6](~[#6])~[#6])]~[#6]12~[#6](~[#6;!$([#6](~[#6])~[#6])])(~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~1)~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~2",   
+    "pinane_terpenoid": "[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]12~[#6](~[#6;!$([#6](~[#6])~[#6])])(~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])(~[#6])~[#6])]~1)~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~2",   
+    "carane_terpenoid": "[#6;!$([#6](~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]1~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]2~[#6](~[#6;!$([#6](~[#6])~[#6])])(~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]~2~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~1",
+    "iridane_terpenoid": "[#6;!$([#6](~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]1~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~1",
+    "secoiridane_terpenoid": "[#6;!$([#6](~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])~[#6])]",
+    "thujane_terpenoid": "[#6;!$([#6](~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]1~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]2~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6]~2(~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~1",
+    "fenchane_terpenoid": "[#6;!$([#6](~[#6])~[#6])]~[#6]12~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])(~[#6])~[#6])]~1)~[#6](~[#6;!$([#6](~[#6])~[#6])])(~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~2",
+    ## sesquiterpenoids (C15)
+    ### mono- or acyclic
+    "farnesane_terpenoid": "[#6;!$([#6](~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])~[#6])]",
+    "germacrane_terpenoid": "[#6;!$([#6](~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]1~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~1",
+    "bisabolane_terpenoid": "[#6;!$([#6](~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]1~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~1", 
+    "humulane_terpenoid": "[#6;!$([#6](~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]1~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6](~[#6;!$([#6](~[#6])~[#6])])(~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~1",
+    "elemane_terpenoid": "[#6;!$([#6](~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6]1(~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~1",
+    ### bicyclic
+    "eudesmane_terpenoid": "[#6;!$([#6](~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]1~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6]2(~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]~2~[#6;!$([#6](~[#6])(~[#6])~[#6])]~1",
+    "guaiane_terpenoid": "[#6;!$([#6](~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]1~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]2~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]~2~[#6;!$([#6](~[#6])(~[#6])~[#6])]~1",
+    "pseudoguaiane_terpenoid": "[#6;!$([#6](~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]1~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]2~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6](~[#6;!$([#6](~[#6])~[#6])])~2~[#6;!$([#6](~[#6])(~[#6])~[#6])]~1",
+    "drimane_terpenoid": "[#6;!$([#6](~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]1~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6]2(~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6](~[#6;!$([#6](~[#6])~[#6])])(~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]~2~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~1",
+    "caryophyllane_terpenoid": "[#6;!$([#6](~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]1~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]2~[#6](~[#6;!$([#6](~[#6])~[#6])])(~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]~2~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~1",
+    "cadinane_terpenoid": "[#6;!$([#6](~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]1~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]2~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]~1~2",
+    "eremophilane_terpenoid": "[#6;!$([#6](~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]1~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]2~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6](~[#6;!$([#6](~[#6])~[#6])])~1~2",
+    "daucane_terpenoid": "[#6;!$([#6](~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]1~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]2~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6](~[#6;!$([#6](~[#6])~[#6])])~2~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~1",
+    "oplopane_terpenoid": "[#6;!$([#6](~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]1~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]2~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]~1~2",
+    "acorane_terpenoid": "[#6;!$([#6](~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]1~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6]2(~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])~[#6])])~2)~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~1",
+    "tremulane_terpenoid": "[#6;!$([#6](~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]1~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]2~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6](~[#6;!$([#6](~[#6])~[#6])])(~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]~1~2",
+    ### tricyclic
+    "aristolane_terpenoid": "[#6;!$([#6](~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]1~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]2~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]3~[#6](~[#6;!$([#6](~[#6])~[#6])])(~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]~3~[#6](~[#6;!$([#6](~[#6])~[#6])])~1~2",
+    "lindenane_terpenoid": "[#6;!$([#6](~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]1~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6]2(~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]3~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]~3~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]~2~[#6;!$([#6](~[#6])(~[#6])~[#6])]~1",
+    "cedrane_terpenoid": "[#6;!$([#6](~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]1~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6]23~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]~2~[#6](~[#6;!$([#6](~[#6])~[#6])])(~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]~1~[#6;!$([#6](~[#6])(~[#6])~[#6])]~3",
+    "aromadendrane_terpenoid": "[#6;!$([#6](~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]1~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]2~[#6](~[#6;!$([#6](~[#6])~[#6])])(~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]~2~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]3~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]~3~1",
+    "chamigrane_terpenoid": "[#6;!$([#6](~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]1~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6]2(~[#6](~[#6;!$([#6](~[#6])~[#6])])(~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~2)~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~1",
+    "illudane_terpenoid": "[#6;!$([#6](~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]1~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]2~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6](~[#6;!$([#6](~[#6])~[#6])])(~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]~2~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6]3(~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~3)~1",
+    "protoilludane_terpenoid": "[#6;!$([#6](~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]1~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]2~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6](~[#6;!$([#6](~[#6])~[#6])])(~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]~2~[#6]3(~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]~3~1",
+    "hirsutane_terpenoid": "[#6;!$([#6](~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]1~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]2~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]3~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6](~[#6;!$([#6](~[#6])~[#6])])(~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]~3~[#6](~[#6;!$([#6](~[#6])~[#6])])~1~2",
+    "patchoulane_terpenoid": "[#6;!$([#6](~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]1~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]2~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]3~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6](~[#6](~[#6;!$([#6](~[#6])~[#6])])(~[#6;!$([#6](~[#6])~[#6])])~2)~3~1",
+    ##diterpenoids (C20)
+    ### mono- or acyclic
+    "phytane_terpenoid": "[#6;!$([#6](~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])~[#6])]",
+    "cembrane_terpenoid": "[#6;!$([#6](~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]1~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~1",
+    "retinoid_terpenoid": "[#6;!$([#6](~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]1~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6](~[#6;!$([#6](~[#6])~[#6])])(~[#6;!$([#6](~[#6])~[#6])])~1",
+    ### bicyclic
+    "labdane_terpenoid": "[#6;!$([#6](~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]1~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]2~[#6](~[#6;!$([#6](~[#6])~[#6])])(~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6](~[#6;!$([#6](~[#6])~[#6])])~2~1",
+    "clerodane_terpenoid": "[#6;!$([#6](~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6]1(~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6]2(~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]~2~1",
+    "halimane_terpenoid": "[#6;!$([#6](~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6](~[#6;!$([#6](~[#6])~[#6])])1~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]2~[#6](~[#6;!$([#6](~[#6])~[#6])])(~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]~2~1",
+    "dolabellane_terpenoid": "[#6;!$([#6](~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]1~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6]2(~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]~2~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~1",
+    ### tricyclic
+    "abietane_terpenoid": "[#6;!$([#6](~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]1~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]2~[#6]3(~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6](~[#6;!$([#6](~[#6])~[#6])])(~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]~3~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]~2~[#6;!$([#6](~[#6])(~[#6])~[#6])]~1",
+    "pimarane_terpenoid": "[#6;!$([#6](~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6]1(~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]2~[#6]3(~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6](~[#6;!$([#6](~[#6])~[#6])])(~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]~3~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]~2~[#6;!$([#6](~[#6])(~[#6])~[#6])]~1",
+    "taxane_terpenoid": "[#6;!$([#6](~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]1~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]2~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]3~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6](~[#6;!$([#6](~[#6])~[#6])])~3~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6](~[#6;!$([#6](~[#6])~[#6])])(~[#6;!$([#6](~[#6])~[#6])])~2)~1",
+    "cassane_terpenoid": "[#6;!$([#6](~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]1~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]2~[#6]3(~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6](~[#6;!$([#6](~[#6])~[#6])])(~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]~3~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]~2~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~1",
+    "daphnane_terpenoid": "[#6;!$([#6](~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]1~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]2~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]~2~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]3~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]~3~[#6;!$([#6](~[#6])(~[#6])~[#6])]~1",
+    ### tetracyclic
+    "kaurane_terpenoid": "[#6;!$([#6](~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]1~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]2~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]3~[#6]4(~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6](~[#6;!$([#6](~[#6])~[#6])])(~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]~4~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6](~[#6;!$([#6](~[#6])(~[#6])~[#6])]~2)~3~[#6;!$([#6](~[#6])(~[#6])~[#6])]~1",
+    "beyerane_terpenoid": "[#6;!$([#6](~[#6])~[#6])]~[#6]12~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]3~[#6]4(~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6](~[#6;!$([#6](~[#6])~[#6])])(~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]~4~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6](~[#6;!$([#6](~[#6])(~[#6])~[#6])]~2)~3~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~1",
+    "atisane_terpenoid": "[#6;!$([#6](~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]1~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]2~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]3~[#6]4(~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6](~[#6;!$([#6](~[#6])~[#6])])(~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]~4~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6](~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~2)~3~[#6;!$([#6](~[#6])(~[#6])~[#6])]~1",
+    ### pentacyclic
+    "trachylobane_terpenoid": "[#6;!$([#6](~[#6])~[#6])]~[#6]15~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]2~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]3~[#6]4(~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6](~[#6;!$([#6](~[#6])~[#6])])(~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]~4~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6](~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]~2~5)~3~[#6;!$([#6](~[#6])(~[#6])~[#6])]~1",
+    ## sesterterpenoids (C25)
+    "scalarane_terpenoid": "[#6;!$([#6](~[#6])(~[#6])~[#6])]1~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6](~[#6;!$([#6](~[#6])~[#6])])(~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]2~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6]3(~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]4~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6](~[#6;!$([#6](~[#6])~[#6])])~4~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]~3~[#6](~[#6;!$([#6](~[#6])~[#6])])~1~2",
+    "ophiobolane_terpenoid": "[#6;!$([#6](~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]1~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6]2(~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]3~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]~3~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]~1~2",
+    "cheilanthane_terpenoid": "[#6;!$([#6](~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]1~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]2~[#6]3(~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6](~[#6;!$([#6](~[#6])~[#6])])(~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]~3~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6](~[#6;!$([#6](~[#6])~[#6])])~2~1",
+    ## triterpenoids (C30)
+    ### acyclic
+    "squalane_terpenoid": "[#6;!$([#6](~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])~[#6])]",
+    ### tetracyclic
+    "lanostane_terpenoid": "[#6;!$([#6](~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]1~[#6]2(~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]3~[#6]4(~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6](~[#6;!$([#6](~[#6])~[#6])])(~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]~4~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]~3~[#6](~[#6;!$([#6](~[#6])~[#6])])~2~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~1",
+    "dammarane_terpenoid": "[#6;!$([#6](~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]1~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]2~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]3~[#6]4(~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6](~[#6;!$([#6](~[#6])~[#6])])(~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]~4~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6](~[#6;!$([#6](~[#6])~[#6])])~3~[#6](~[#6;!$([#6](~[#6])~[#6])])~2~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~1",
+    "cucurbitane_terpenoid": "[#6;!$([#6](~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]1~[#6]2(~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6]3(~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]4~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6](~[#6;!$([#6](~[#6])~[#6])])(~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]~4~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]~3~[#6](~[#6;!$([#6](~[#6])~[#6])])~2~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~1",
+    ### pentacyclic
+    "cycloartane_terpenoid": "[#6;!$([#6](~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]1~[#6]2(~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6]3(~[#6;!$([#6](~[#6])(~[#6])~[#6])]5)~[#6]4~5~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6](~[#6;!$([#6](~[#6])~[#6])])(~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]~4~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]~3~[#6](~[#6;!$([#6](~[#6])~[#6])])~2~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~1",
+    "oleanane_terpenoid": "[#6;!$([#6](~[#6])(~[#6])~[#6])]1~[#6](~[#6;!$([#6](~[#6])~[#6])])(~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]2~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]3~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]4~[#6]5(~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6](~[#6;!$([#6](~[#6])~[#6])])(~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]~5~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6](~[#6;!$([#6](~[#6])~[#6])])~4~[#6](~[#6;!$([#6](~[#6])~[#6])])~3~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6](~[#6;!$([#6](~[#6])~[#6])])~2~[#6;!$([#6](~[#6])(~[#6])~[#6])]~1",
+    "ursane_terpenoid": "[#6;!$([#6](~[#6])(~[#6])~[#6])]1~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]2~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]3~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]4~[#6]5(~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6](~[#6;!$([#6](~[#6])~[#6])])(~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]~5~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6](~[#6;!$([#6](~[#6])~[#6])])~4~[#6](~[#6;!$([#6](~[#6])~[#6])])~3~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6](~[#6;!$([#6](~[#6])~[#6])])~2~[#6;!$([#6](~[#6])(~[#6])~[#6])]~1",
+    "lupane_terpenoid": "[#6;!$([#6](~[#6])(~[#6])~[#6])]1~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]2~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]3~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]4~[#6]5(~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6](~[#6;!$([#6](~[#6])~[#6])])(~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]~5~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6](~[#6;!$([#6](~[#6])~[#6])])~4~[#6](~[#6;!$([#6](~[#6])~[#6])])~3~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6](~[#6;!$([#6](~[#6])~[#6])])~2~[#6;!$([#6](~[#6])(~[#6])~[#6])]~1",
+    "friedelane_terpenoid": "[#6;!$([#6](~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]1~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]2~[#6]3(~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6]4(~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]5~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6](~[#6;!$([#6](~[#6])~[#6])])(~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6](~[#6;!$([#6](~[#6])~[#6])])~5~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6](~[#6;!$([#6](~[#6])~[#6])])~4~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]~3~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6](~[#6;!$([#6](~[#6])~[#6])])~2~1",
+    "hopane_terpenoid": "[#6;!$([#6](~[#6])(~[#6])~[#6])]1~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6](~[#6;!$([#6](~[#6])~[#6])])2~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]3~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]4~[#6]5(~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6](~[#6;!$([#6](~[#6])~[#6])])(~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]~5~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6](~[#6;!$([#6](~[#6])~[#6])])~4~[#6](~[#6;!$([#6](~[#6])~[#6])])~3~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]~2~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])~[#6])])~1",
+    ## tetraterpenoids (C40)
+    "lycopane_terpenoid": "[#6;!$([#6](~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])~[#6])]",
+    "carotane_terpenoid": "[#6;!$([#6](~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]1~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6](~[#6;!$([#6](~[#6])~[#6])])(~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]~1~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])]2~[#6;!$([#6](~[#6])(~[#6])(~[#6])~[#6])](~[#6;!$([#6](~[#6])~[#6])])~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6;!$([#6](~[#6])(~[#6])~[#6])]~[#6](~[#6;!$([#6](~[#6])~[#6])])(~[#6;!$([#6](~[#6])~[#6])])~2",
+
+    # alkaloids / privileged scaffolds
     "phenethylamine": "[N;!$(N1ccCC1);!$(N1CccCC1);!$(N1~C~CC2ccCC(C2)1);!$(N1~C~C~C~C2~C1~C-c3cnc4cccc-2c34)]-[C;!$(C=O);!$([CH](N)(C(=O)-[!#6;!#1])-[CH2]-c1ccccc1)]-C-c1ccccc1", # excludes phenylalanine, tyrosine, indoline, tetrahydroisoquinoline, 6,7-benzomorphan, ergoline
     "tryptamine": "[N;!$(N1~C~C~C~C2~C1~C-c3cnc4cccc-2c34);!$(N1~C~C-c2c3ccccc3nc2-C~C~1)]-[C;!$([CH](N)(C(=O)-[!#6;!#1])-[CH2]-c1c2ccccc2nc1)]-C-c1c2ccccc2nc1", # excludes tryptophan, ergoline, ibogalog
     "indoline": "N1-[C;!$(C=O)]-C-c2ccccc2-1", # excludes oxindole, cyclotryptamine
@@ -2088,10 +2361,12 @@ BIOMOLECULES: Dict[str, str] = {
     "benzodiazepine": "[#7]1-c2ccccc2-[#6]~[#7]~[#6]~[#6]~1",
     "thienodiazepine": "[#7]1-c2sccc2-[#6]~[#7]~[#6]~[#6]~1",
     "benzothiazepine": "[#7]1-c2ccccc2-S-[#6]~[#6]~[#6]~1",
-
+    "4-aza-steroid": "[#6]1~[#6]~[#6]~[#7]~[#6]2~[#6]~[#6]~[#6]3~[#6]4~[#6]~[#6]~[#6]~[#6]~4~[#6]~[#6]~[#6]~3~[#6]~2~1",
+    
     # misc
     "choline": "O-[CH2]-[CH2]-[N+](-[CH3])(-[CH3])-[CH3]",
     "taurine": "O-[$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])]-[CH2]-[CH2]-N",
+    "carnithine": "O-C(=O)-[CH2]-[CH](-O)-[CH2]-[N+](-[CH3])(-[CH3])-[CH3]"
 
 }
 
