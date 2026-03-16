@@ -1040,7 +1040,7 @@ HETEROAROMATICS: Dict[str, str] = {
     "1,2,3-triazine": "[nX2,nX3+]1:[nX2,nX3+]:[nX2,nX3+]:c:c:c:1",
     "1,2,4-triazine": "[nX2,nX3+]1:[nX2,nX3+]:c:[nX2,nX3+]:c:c:1",
     "1,3,5-triazine": "[nX2,nX3+]1:[c;!$(c1(~[O,N])nc(~[O,N])nc(~[O,N])n1)]:[nX2,nX3+]:[c;!$(c1(~[O,N])nc(~[O,N])nc(~[O,N])n1)]:[nX2,nX3+]:[c;!$(c1(~[O,N])nc(~[O,N])nc(~[O,N])n1)]:1",
-    "melamine": "N-c1:n:c(-N):n:c(-N):n:1",
+    "melamine": "N~c1:n:c(~N):n:c(~N):n:1",
 
     # RDKit doesn't consider these to be aromatic (which is correct)
     "1,2,3-oxadiazine":  "O1-[#7;X3]-[#7;!X4]=,:[#6;X3]-,:[#6;X3]=,:[#6;X3]-1",
