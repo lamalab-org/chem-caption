@@ -254,7 +254,7 @@ BRANCHES: Dict[str, str] = {
     "stearyl": "[CH3]-[CH2]-[CH2]-[CH2]-[CH2]-[CH2]-[CH2]-[CH2]-[CH2]-[CH2]-[CH2]-[CH2]-[CH2]-[CH2]-[CH2]-[CH2]-[CH2]-[CH2]-[!C,$([C;!X4,R,X4H0]);!#1]", # octadecyl
     # cyclic
     "cyclopropyl": "[!#1]-[CX4;H1]1-[CH2]-[CH2]-1",
-    "cyclopropylidene": "[!O;!S]=[CX3]1-[CH2]-[CH2]-1",
+    "cyclopropylidene": "[!O;!S]=[CX3]1-[CX4]-[CX4]-1",
     "1,1-cyclopropandiyl": "[*]-[CH0](-[*])1-[CH2]-[CH2]-1",
     "cyclobutyl":  "[!#1]-[CX4;H1]1-[CH2]-[CH2]-[CH2]-1",
     "cyclopentyl":  "[!#1]-[CX4;H1]1-[CH2]-[CH2]-[CH2]-[CH2]-1",
