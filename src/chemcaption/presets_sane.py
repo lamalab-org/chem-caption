@@ -686,8 +686,8 @@ MAIN_GROUP: Dict[str, Dict] = {
         "thiocarbonyl_ylide": "[$([SX2+](=[CX3])-[CX3-]),$([SX2](-[CX3+])-[CX3-]),$([SX2](=[CX2])(=[CX2]))]",
         ## S-S, S-O, S-N
         ### divalent
-        "disulfide": "[!#16]-[#16;X2]-[#16;X2]-[!#16]",
-        "trisulfide": "[#16;X2]-[#16;X2]-[#16;X2]",
+        "disulfide": "[!#16]~[#16;X2]-,:[#16;X2]~[!#16]",
+        "trisulfide": "[#16;X2]-,:[#16;X2]-,:[#16;X2]",
         "sulfenic_acid": "[#6]-[SX2]-[OH,O-,OH2+]",
         "sulfenate": "[#6]-[SX2]-O-[!#1]",
         "sulfenyl_halide": "[#6]-[SX2]-[F,Cl,Br,IX1]",
@@ -936,8 +936,8 @@ MAIN_GROUP: Dict[str, Dict] = {
     "Selenium": {
         "selenoether": "[#6;!$(C#N)]-[SeX2;!r3]-[#6;!$(C#N)]",
         "selenophene": "[#34;X2]1:c:c:c:c1",
-        "diselenide": "[#34;X2]-[#34;X2]",
-        "selenosulfide": "[#34;X2]-[#16;X2]",
+        "diselenide": "[#34;X2]-,:[#34;X2]",
+        "selenosulfide": "[#34;X2]-,:[#16;X2]",
         "selenol": "[#6;!$(C=[O,S,N])]-[SeX2H]",
         "selenamide": "[*]-[SeX2]-[#7]",
         "selenoester": "[#6,#1]-C(=O)-[SeX2]",
