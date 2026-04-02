@@ -2274,7 +2274,7 @@ BIOMOLECULES: Dict[str, str] = {
         "Thio": {
             ## thio analogues
             "thioguanine": "[SX1,SH]~[cX3H0]1:n:[cX3H0](~N):n:[cX3H0]2:n:c:n:[cX3H0]:1:2", # many tautomers 
-            "thiocytosine":    "[SX1,SH]~[cX3H0]1:n:[cX3H0](~N):[c;!$(c1ncnc1);!$(c1nccnc1)]:[c;!$(c1ncnc1);!$(c1nccnc1);!$(c~O)]:n:1", # many tautomers, excludes purines, isopterin
+            "thiocytosine": "[SX1,SH]~[cX3H0]1:n:[cX3H0](~N):[c;!$(c1ncnc1);!$(c1nccnc1)]:[c;!$(c1ncnc1);!$(c1nccnc1);!$(c~O)]:n:1", # many tautomers, excludes purines, isopterin
             "2-thiouracil": "[SX1,SH]~[cX3H0]1:n:[cX3H0;!$(c1nccnc1)](~[OX1,OH]):[c;!$(c1ncnc1);!$(c1nccnc1);!$(c1NccNc1)]:[c;!$(c~[O,S]);!$(c1ncnc1)]:n:1", # many tautomers, excludes purines, pteridines
             "4-thiouracil": "[OX1,OH]~[cX3H0]1:n:[cX3H0;!$(c1nccnc1)](~[SX1,SH]):[c;!$(c1ncnc1);!$(c1nccnc1);!$(c1NccNc1)]:[c;!$(c~[O,S]);!$(c1ncnc1)]:n:1", # many tautomers, excludes purines, pteridines
             "dithiouracil": "[SX1,SH]~[cX3H0]1:n:[cX3H0;!$(c1nccnc1)](~[SX1,SH]):[c;!$(c1ncnc1);!$(c1nccnc1);!$(c1NccNc1)]:[c;!$(c~[O,S]);!$(c1ncnc1)]:n:1", # many tautomers, excludes purines, pteridines
@@ -2283,10 +2283,10 @@ BIOMOLECULES: Dict[str, str] = {
     },
     "Sugar": {
         "Glycoside":{
-            "pyranoside": "[!#1,!#6]-[CH]1-O-[$([CH2]),$([CH][CH2]O)]-[CH](-O)-[CH](-O)-[CH]1-O",
-            "furanoside": "[!#1,!#6]-[CH]1-O-[CH](-[$([CH2]O),$([CH](O)[CH2]O)])-[CH](-O)-[CH]1-O",
+            "pyranoside": "[!#1;!#6]-[CH]1-O-[$([CH2]),$([CH][CH2]O)]-[CH](-O)-[CH](-O)-[CH]1-O",
+            "furanoside": "[!#1;!#6]-[CH]1-O-[CH](-[$([CH2]O),$([CH](O)[CH2]O)])-[CH](-O)-[CH]1-O",
             "C-pyranoside": "[#6]-[CH]1-O-[CH](-[CH2]O)-[CH](-O)-[CH](-O)-[CH]1-O",
-            "C-furanoside": "[#6]-[CH]1-O-[CH](-[$([CH2]O),$([CH](O)[CH2]O)]-[CH](-O)-[CH]1-O",
+            "C-furanoside": "[#6]-[CH]1-O-[CH](-[$([CH2]O),$([CH](O)[CH2]O)])-[CH](-O)-[CH]1-O",
         },
         "C3": {
             ## triose
