@@ -2054,8 +2054,8 @@ OXO_RINGS: Dict[str, str] = {
         "4-quinolone":    "n1:[c;!$(c1ccccc1)]:[c;!$(c1ccccc1)]:c(=O):[cX3H0]2:c:c:c:c:[cX3H0]:1:2",
         "acridone":       "n1:[cX3H0]2:c:c:c:c:[cX3H0]:2:c(=O):[cX3H0]3:c:c:c:c:[cX3H0]:1:3",
         "phenanthridone": "n1:c(=O):[cX3H0]2:c:c:c:c:[cX3H0]:2:[cX3H0]3:c:c:c:c:[cX3H0]:1:3",
-        "2-pyrimidone": "O=c1:[n;!$(n12c(=O)nccc1cccc2)]:[c;!$(c~[O,N]);!$(c1ccccc1)]:[c;!$(c1ncnc1);!$(c1ccccc1)]:[c;!$(c~[O,N]);!$(c1ncnc1);!$(c1ccccc1)]:[n;!$(n12c(=O)nccc1cccc2)]:1", # excludes nucleobases, quinazolin-2-one, 3-aza-quinolizin-4-one
-        "4-pyrimidone": "O=c1:[n;!$(n12c(=O)ccnc1cccc2)]:[c;!$(c~[O,N])]:[n;!$(n12ccc(=O)nc1cccc2);!$(n12cnc(=O)cc1cccc2)]:[c;!$(c1ncnc1);!$(c1ccccc1)]:[c;!$(c1ncnc1);!$(c1ccccc1)]:1", # excludes nucleobases, quinazolin-4-one, aza-quinolizinones
+        "2-pyrimidone": "O=[c;!$(c1nc(~S)ccn1)]1:[n;!$(n12c(=O)nccc1cccc2)]:[c;!$(c~[O,N]);!$(c1ccccc1)]:[c;!$(c1ncnc1);!$(c1ccccc1)]:[c;!$(c~[O,N]);!$(c1ncnc1);!$(c1ccccc1)]:[n;!$(n12c(=O)nccc1cccc2)]:1", # excludes nucleobases, quinazolin-2-one, 3-aza-quinolizin-4-one, 4-thiouracil
+        "4-pyrimidone": "O=[c;!$(c1nc(~S)ncc1)]1:[n;!$(n12c(=O)ccnc1cccc2)]:[c;!$(c~[O,N])]:[n;!$(n12ccc(=O)nc1cccc2);!$(n12cnc(=O)cc1cccc2)]:[c;!$(c1ncnc1);!$(c1ccccc1)]:[c;!$(c1ncnc1);!$(c1ccccc1)]:1", # excludes nucleobases, quinazolin-4-one, aza-quinolizinones, 2-thiouracil
         "pyridazin-3-one": "O=c1:n:n:[c;!$(c=O)]:c:c:1", # excludes pyridazinedione
         "pyridazin-5-one": "O=c1:c:n:[n;!$(n12ncc(=O)cc1cccc2)]:c:c:1",
         "pyridazine-3,6-dione": "O=c1:n:n:c(=O):c:c:1",
@@ -2181,8 +2181,8 @@ THIOXO_RINGS: Dict[str, str] = {
         "thiopyran-4-thione": "[SX1]=c1:c:c:s:c:c1",
         "pyridine-2-thione": "[SX1]=c1:c:c:c:c:n1",
         "pyridine-4-thione": "[SX1]=c1:c:c:n:c:c1",
-        "pyrimidine-2-thione": "[SX1]=c1:n:c:c:c:n1",
-        "pyrimidine-4-thione": "[SX1]=c1:n:c:n:c:c1",
+        "pyrimidine-2-thione": "[SX1]=[c;!$(c1nc(~[O,N,S])ccn1)]1:n:c:c:c:n1", # excludes thiocytosine, 2-thiouracil, dithiouracil
+        "pyrimidine-4-thione": "[SX1]=[c;!$(c1nc(~[O,S])ncc1);!$(c1nc(N)nc2ncnc12)]1:n:c:n:c:c1", # excludes 4-thiouracil, dithiouracil, thioguanine
         "pyridazin-3-thione": "[SX1]=c1:n:n:c:c:c:1",
         "pyridazin-5-thione": "[SX1]=c1:c:n:n:c:c:1",
         "pyrazinethione": "[SX1]=c1:n:c:c:n:c:1",
