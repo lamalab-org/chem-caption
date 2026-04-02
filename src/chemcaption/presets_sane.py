@@ -2282,6 +2282,12 @@ BIOMOLECULES: Dict[str, str] = {
 
     },
     "Sugar": {
+        "Glycoside":{
+            "pyranoside": "[!#1,!#6]-[CH]1-O-[$([CH2]),$([CH][CH2]O)]-[CH](-O)-[CH](-O)-[CH]1-O",
+            "furanoside": "[!#1,!#6]-[CH]1-O-[CH](-[$([CH2]O),$([CH](O)[CH2]O)])-[CH](-O)-[CH]1-O",
+            "C-pyranoside": "[#6]-[CH]1-O-[CH](-[CH2]O)-[CH](-O)-[CH](-O)-[CH]1-O",
+            "C-furanoside": "[#6]-[CH]1-O-[CH](-[$([CH2]O),$([CH](O)[CH2]O)]-[CH](-O)-[CH]1-O",
+        },
         "C3": {
             ## triose
             "glyceraldehyde": "O-[CH2]-[CH](-O)-[CH]=[O,N]",
@@ -2317,6 +2323,7 @@ BIOMOLECULES: Dict[str, str] = {
             "hexuronic_acid": "[$([CH]=O),$([CH](-[O,S,N,n])-[O,S,N,n])][CH](O)[CH](O)[CH](O)[CH](O)-C(=O)-[!#1;!#6]",
             "hexulosonic_acid": "[!#1;!#6]-C(=O)-[$(C=[N,O]),$(C(-[O,S,N,n])-[O,S,N,n])][CH](O)[CH](O)[CH](O)[CH2](O)",
             "hexaric_acid": "[!#1;!#6]-C(=O)-[CH](O)[CH](O)[CH](O)[CH](O)-C(=O)-[!#1;!#6]",
+            "glycal": "O1-C=C-[CH](O)-[CH](O)-[CH]1-[CH]O",
         },
         "C7": {
             ## heptose
