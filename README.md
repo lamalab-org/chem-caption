@@ -65,6 +65,32 @@ Answer: 6, 4, 0, and 2
 
 For more details and all other available featurizers please visit the [documentation]().
 
+## Reinforcement learning environment
+
+ChemCaption can also expose featurizer outputs through a Gymnasium-shaped RL
+environment. The raw featurizer return value is available in `info` as
+`raw_featurizer_output`, and the flattened reward target is available as
+`target`.
+
+```python
+from chemcaption.featurize.composition import AtomCountFeaturizer
+from chemcaption.rl import ChemCaptionEnv
+
+env = ChemCaptionEnv(["O", "CCO"], featurizer=AtomCountFeaturizer())
+
+observation, info = env.reset()
+target = info["target"]
+labels = info["target_labels"]
+raw = info["raw_featurizer_output"]
+
+# A policy should predict values in target_labels order.
+action = target
+observation, reward, terminated, truncated, info = env.step(action)
+```
+
+See the RL API docs for examples with mapping actions, custom rewards, and
+combined package featurizers.
+
 ## 🚀 Installation
 
 The most recent release can be installed from PyPI with:

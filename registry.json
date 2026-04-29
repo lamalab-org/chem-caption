@@ -1,0 +1,461 @@
+[
+  {
+    "prefix": "/p/largedata2/datasets/molecularminds/hard_chemistry/ChemFM__MolLangData_transformed",
+    "dataset": "/p/scratch/molecularminds/ChemFM__MolLangData_transformed_merged_wl6xqc4q/merged_configs",
+    "n_sequences": 2829,
+    "n_tokens": 92697131,
+    "seq_len": 32768,
+    "size_gb": 0.3708,
+    "updated_at": "2026-04-28T13:52:48.943639+00:00"
+  },
+  {
+    "prefix": "/p/largedata2/datasets/molecularminds/hard_chemistry/exercise-A1",
+    "dataset": "/p/project1/molecularminds/final_datasets/exercise-A1/default-split",
+    "n_sequences": 39588,
+    "n_tokens": 1297230467,
+    "seq_len": 32768,
+    "size_gb": 5.189,
+    "updated_at": "2026-04-28T19:40:18.980877+00:00"
+  },
+  {
+    "prefix": "/p/largedata2/datasets/molecularminds/hard_chemistry/exercise-A10",
+    "dataset": "/p/scratch/molecularminds/final_datasets/exercise-A10/default-split",
+    "n_sequences": 40362,
+    "n_tokens": 1322598136,
+    "seq_len": 32768,
+    "size_gb": 5.2905,
+    "updated_at": "2026-04-28T17:30:55.027719+00:00"
+  },
+  {
+    "prefix": "/p/largedata2/datasets/molecularminds/hard_chemistry/exercise-A12",
+    "dataset": "/p/scratch/molecularminds/final_datasets/exercise-A12/default-split",
+    "n_sequences": 41130,
+    "n_tokens": 1347756802,
+    "seq_len": 32768,
+    "size_gb": 5.3912,
+    "updated_at": "2026-04-28T17:39:05.366827+00:00"
+  },
+  {
+    "prefix": "/p/largedata2/datasets/molecularminds/hard_chemistry/exercise-A14",
+    "dataset": "/p/scratch/molecularminds/final_datasets/exercise-A14/default-split",
+    "n_sequences": 44746,
+    "n_tokens": 1466263126,
+    "seq_len": 32768,
+    "size_gb": 5.8651,
+    "updated_at": "2026-04-28T17:48:14.065587+00:00"
+  },
+  {
+    "prefix": "/p/largedata2/datasets/molecularminds/hard_chemistry/exercise-A15",
+    "dataset": "/p/scratch/molecularminds/final_datasets/exercise-A15/default-split",
+    "n_sequences": 41507,
+    "n_tokens": 1360138725,
+    "seq_len": 32768,
+    "size_gb": 5.4406,
+    "updated_at": "2026-04-28T17:56:22.586493+00:00"
+  },
+  {
+    "prefix": "/p/largedata2/datasets/molecularminds/hard_chemistry/exercise-A16",
+    "dataset": "/p/scratch/molecularminds/final_datasets/exercise-A16/default-split",
+    "n_sequences": 40213,
+    "n_tokens": 1317715538,
+    "seq_len": 32768,
+    "size_gb": 5.271,
+    "updated_at": "2026-04-28T18:05:13.740601+00:00"
+  },
+  {
+    "prefix": "/p/largedata2/datasets/molecularminds/hard_chemistry/exercise-A17",
+    "dataset": "/p/scratch/molecularminds/final_datasets/exercise-A17/default-split",
+    "n_sequences": 42590,
+    "n_tokens": 1395613789,
+    "seq_len": 32768,
+    "size_gb": 5.5825,
+    "updated_at": "2026-04-28T18:14:32.929306+00:00"
+  },
+  {
+    "prefix": "/p/largedata2/datasets/molecularminds/hard_chemistry/exercise-A18",
+    "dataset": "/p/scratch/molecularminds/final_datasets/exercise-A18/default-split",
+    "n_sequences": 37724,
+    "n_tokens": 1236169515,
+    "seq_len": 32768,
+    "size_gb": 4.9447,
+    "updated_at": "2026-04-28T18:22:36.895225+00:00"
+  },
+  {
+    "prefix": "/p/largedata2/datasets/molecularminds/hard_chemistry/exercise-A19",
+    "dataset": "/p/scratch/molecularminds/final_datasets/exercise-A19/default-split",
+    "n_sequences": 40114,
+    "n_tokens": 1314490248,
+    "seq_len": 32768,
+    "size_gb": 5.258,
+    "updated_at": "2026-04-28T18:30:52.117400+00:00"
+  },
+  {
+    "prefix": "/p/largedata2/datasets/molecularminds/hard_chemistry/exercise-A2",
+    "dataset": "/p/project1/molecularminds/final_datasets/exercise-A2/default-split",
+    "n_sequences": 46392,
+    "n_tokens": 1520195007,
+    "seq_len": 32768,
+    "size_gb": 6.0809,
+    "updated_at": "2026-04-28T20:11:51.334836+00:00"
+  },
+  {
+    "prefix": "/p/largedata2/datasets/molecularminds/hard_chemistry/exercise-A20",
+    "dataset": "/p/scratch/molecularminds/final_datasets/exercise-A20/default-split",
+    "n_sequences": 45514,
+    "n_tokens": 1491434267,
+    "seq_len": 32768,
+    "size_gb": 5.9658,
+    "updated_at": "2026-04-28T18:39:37.110321+00:00"
+  },
+  {
+    "prefix": "/p/largedata2/datasets/molecularminds/hard_chemistry/exercise-A21",
+    "dataset": "/p/scratch/molecularminds/final_datasets/exercise-A21/default-split",
+    "n_sequences": 49339,
+    "n_tokens": 1616770068,
+    "seq_len": 32768,
+    "size_gb": 6.4672,
+    "updated_at": "2026-04-28T18:49:28.229222+00:00"
+  },
+  {
+    "prefix": "/p/largedata2/datasets/molecularminds/hard_chemistry/exercise-A22",
+    "dataset": "/p/scratch/molecularminds/final_datasets/exercise-A22/default-split",
+    "n_sequences": 37921,
+    "n_tokens": 1242613590,
+    "seq_len": 32768,
+    "size_gb": 4.9705,
+    "updated_at": "2026-04-28T18:57:30.188891+00:00"
+  },
+  {
+    "prefix": "/p/largedata2/datasets/molecularminds/hard_chemistry/exercise-A3",
+    "dataset": "/p/project1/molecularminds/final_datasets/exercise-A3/default-split",
+    "n_sequences": 41329,
+    "n_tokens": 1354288314,
+    "seq_len": 32768,
+    "size_gb": 5.4172,
+    "updated_at": "2026-04-28T20:26:45.054939+00:00"
+  },
+  {
+    "prefix": "/p/largedata2/datasets/molecularminds/hard_chemistry/exercise-A5",
+    "dataset": "/p/project1/molecularminds/final_datasets/exercise-A5/default-split",
+    "n_sequences": 46943,
+    "n_tokens": 1538274250,
+    "seq_len": 32768,
+    "size_gb": 6.1531,
+    "updated_at": "2026-04-28T20:41:25.362606+00:00"
+  },
+  {
+    "prefix": "/p/largedata2/datasets/molecularminds/hard_chemistry/exercise-A6",
+    "dataset": "/p/project1/molecularminds/final_datasets/exercise-A6/default-split",
+    "n_sequences": 46771,
+    "n_tokens": 1532623741,
+    "seq_len": 32768,
+    "size_gb": 6.1306,
+    "updated_at": "2026-04-28T20:58:31.336241+00:00"
+  },
+  {
+    "prefix": "/p/largedata2/datasets/molecularminds/hard_chemistry/exercise-A8",
+    "dataset": "/p/scratch/molecularminds/final_datasets/exercise-A8/default-split",
+    "n_sequences": 47382,
+    "n_tokens": 1552649330,
+    "seq_len": 32768,
+    "size_gb": 6.2106,
+    "updated_at": "2026-04-28T19:09:44.428647+00:00"
+  },
+  {
+    "prefix": "/p/largedata2/datasets/molecularminds/hard_chemistry/exercise-A9",
+    "dataset": "/p/scratch/molecularminds/final_datasets/exercise-A9/default-split",
+    "n_sequences": 40295,
+    "n_tokens": 1320397698,
+    "seq_len": 32768,
+    "size_gb": 5.2817,
+    "updated_at": "2026-04-28T19:20:04.124541+00:00"
+  },
+  {
+    "prefix": "/p/largedata2/datasets/molecularminds/hard_chemistry/exercise-B1",
+    "dataset": "/p/project1/molecularminds/final_datasets/exercise-B1/default-split",
+    "n_sequences": 708,
+    "n_tokens": 23194012,
+    "seq_len": 32768,
+    "size_gb": 0.0928,
+    "updated_at": "2026-04-28T20:58:58.184456+00:00"
+  },
+  {
+    "prefix": "/p/largedata2/datasets/molecularminds/hard_chemistry/exercise-B2",
+    "dataset": "/p/project1/molecularminds/final_datasets/exercise-B2/default-split",
+    "n_sequences": 709,
+    "n_tokens": 23210509,
+    "seq_len": 32768,
+    "size_gb": 0.0929,
+    "updated_at": "2026-04-28T20:59:21.635871+00:00"
+  },
+  {
+    "prefix": "/p/largedata2/datasets/molecularminds/hard_chemistry/exercise-B3",
+    "dataset": "/p/project1/molecularminds/final_datasets/exercise-B3/default-split",
+    "n_sequences": 975,
+    "n_tokens": 31931069,
+    "seq_len": 32768,
+    "size_gb": 0.1278,
+    "updated_at": "2026-04-28T20:59:48.724746+00:00"
+  },
+  {
+    "prefix": "/p/largedata2/datasets/molecularminds/hard_chemistry/exercise-B4",
+    "dataset": "/p/project1/molecularminds/final_datasets/exercise-B4/default-split",
+    "n_sequences": 748,
+    "n_tokens": 24506353,
+    "seq_len": 32768,
+    "size_gb": 0.098,
+    "updated_at": "2026-04-28T21:00:14.964989+00:00"
+  },
+  {
+    "prefix": "/p/largedata2/datasets/molecularminds/hard_chemistry/exercise-B5",
+    "dataset": "/p/project1/molecularminds/final_datasets/exercise-B5/default-split",
+    "n_sequences": 701,
+    "n_tokens": 22966207,
+    "seq_len": 32768,
+    "size_gb": 0.0919,
+    "updated_at": "2026-04-28T21:00:38.898747+00:00"
+  },
+  {
+    "prefix": "/p/largedata2/datasets/molecularminds/hard_chemistry/exercise-B6",
+    "dataset": "/p/project1/molecularminds/final_datasets/exercise-B6/default-split",
+    "n_sequences": 487,
+    "n_tokens": 15928196,
+    "seq_len": 32768,
+    "size_gb": 0.0638,
+    "updated_at": "2026-04-28T21:01:01.476142+00:00"
+  },
+  {
+    "prefix": "/p/largedata2/datasets/molecularminds/hard_chemistry/exercise-C1",
+    "dataset": "/p/scratch/molecularminds/final_datasets/exercise-C1/default-split",
+    "n_sequences": 25194,
+    "n_tokens": 825549689,
+    "seq_len": 32768,
+    "size_gb": 3.3023,
+    "updated_at": "2026-04-28T19:25:54.668380+00:00"
+  },
+  {
+    "prefix": "/p/largedata2/datasets/molecularminds/hard_chemistry/exercise-D2",
+    "dataset": "/p/project1/molecularminds/final_datasets/exercise-D2/default-split",
+    "n_sequences": 4435,
+    "n_tokens": 145328121,
+    "seq_len": 32768,
+    "size_gb": 0.5813,
+    "updated_at": "2026-04-28T21:02:34.465986+00:00"
+  },
+  {
+    "prefix": "/p/largedata2/datasets/molecularminds/hard_chemistry/exercise-D3",
+    "dataset": "/p/project1/molecularminds/final_datasets/exercise-D3/default-split",
+    "n_sequences": 736,
+    "n_tokens": 24100598,
+    "seq_len": 32768,
+    "size_gb": 0.0965,
+    "updated_at": "2026-04-28T21:02:57.243590+00:00"
+  },
+  {
+    "prefix": "/p/largedata2/datasets/molecularminds/hard_chemistry/exercise-D5",
+    "dataset": "/p/project1/molecularminds/final_datasets/exercise-D5/default-split",
+    "n_sequences": 5109,
+    "n_tokens": 167389236,
+    "seq_len": 32768,
+    "size_gb": 0.6697,
+    "updated_at": "2026-04-28T21:04:41.146246+00:00"
+  },
+  {
+    "prefix": "/p/largedata2/datasets/molecularminds/hard_chemistry/exercise-D6",
+    "dataset": "/p/project1/molecularminds/final_datasets/exercise-D6/default-split",
+    "n_sequences": 618,
+    "n_tokens": 20223463,
+    "seq_len": 32768,
+    "size_gb": 0.081,
+    "updated_at": "2026-04-28T21:05:04.100186+00:00"
+  },
+  {
+    "prefix": "/p/largedata2/datasets/molecularminds/hard_chemistry/exercise-D8",
+    "dataset": "/p/project1/molecularminds/final_datasets/exercise-D8/default-split",
+    "n_sequences": 12987,
+    "n_tokens": 425568017,
+    "seq_len": 32768,
+    "size_gb": 1.7023,
+    "updated_at": "2026-04-28T21:09:27.233906+00:00"
+  },
+  {
+    "prefix": "/p/largedata2/datasets/molecularminds/hard_chemistry/exercise-E4",
+    "dataset": "/p/scratch/molecularminds/final_datasets/exercise-E4/default-split",
+    "n_sequences": 697,
+    "n_tokens": 22811271,
+    "seq_len": 32768,
+    "size_gb": 0.0914,
+    "updated_at": "2026-04-28T19:26:20.518409+00:00"
+  },
+  {
+    "prefix": "/p/largedata2/datasets/molecularminds/soft_chemistry/chemistry_stackexchange-blog_post",
+    "dataset": "/p/scratch/molecularminds/hf_downloads/chemistry_stackexchange-blog_post",
+    "n_sequences": 254,
+    "n_tokens": 8315751,
+    "seq_len": 32768,
+    "size_gb": 0.0333,
+    "updated_at": "2026-04-29T11:47:44.570860+00:00"
+  },
+  {
+    "prefix": "/p/largedata2/datasets/molecularminds/soft_chemistry/chemistry_stackexchange-lecture_notes",
+    "dataset": "/p/scratch/molecularminds/hf_downloads/chemistry_stackexchange-lecture_notes",
+    "n_sequences": 294,
+    "n_tokens": 9633520,
+    "seq_len": 32768,
+    "size_gb": 0.0385,
+    "updated_at": "2026-04-29T11:48:30.496178+00:00"
+  },
+  {
+    "prefix": "/p/largedata2/datasets/molecularminds/soft_chemistry/chemistry_stackexchange-textbook",
+    "dataset": "/p/scratch/molecularminds/hf_downloads/chemistry_stackexchange-textbook",
+    "n_sequences": 297,
+    "n_tokens": 9731614,
+    "seq_len": 32768,
+    "size_gb": 0.0389,
+    "updated_at": "2026-04-29T11:48:49.949522+00:00"
+  },
+  {
+    "prefix": "/p/largedata2/datasets/molecularminds/soft_chemistry/chemistry_stackexchange-wikipedia",
+    "dataset": "/p/scratch/molecularminds/hf_downloads/chemistry_stackexchange-wikipedia",
+    "n_sequences": 245,
+    "n_tokens": 8012396,
+    "seq_len": 32768,
+    "size_gb": 0.0321,
+    "updated_at": "2026-04-29T11:49:08.591321+00:00"
+  },
+  {
+    "prefix": "/p/largedata2/datasets/molecularminds/soft_chemistry/dataset_hf_datasets_saved_blog_post_test_train_validation",
+    "dataset": "/p/project1/molecularminds/fixed_datasets/dataset_hf_datasets_saved_blog_post_test_train_validation",
+    "n_sequences": 66536,
+    "n_tokens": 2180316833,
+    "seq_len": 32768,
+    "size_gb": 8.7213,
+    "updated_at": "2026-04-28T14:31:36.115590+00:00"
+  },
+  {
+    "prefix": "/p/largedata2/datasets/molecularminds/soft_chemistry/dataset_hf_datasets_saved_lecture_notes_test_train_validation",
+    "dataset": "/p/project1/molecularminds/fixed_datasets/dataset_hf_datasets_saved_lecture_notes_test_train_validation",
+    "n_sequences": 105381,
+    "n_tokens": 3453202878,
+    "seq_len": 32768,
+    "size_gb": 13.8129,
+    "updated_at": "2026-04-29T09:53:42.890039+00:00"
+  },
+  {
+    "prefix": "/p/largedata2/datasets/molecularminds/soft_chemistry/dataset_hf_datasets_saved_textbook_test_train_validation",
+    "dataset": "/p/project1/molecularminds/fixed_datasets/dataset_hf_datasets_saved_textbook_test_train_validation",
+    "n_sequences": 118246,
+    "n_tokens": 3874779280,
+    "seq_len": 32768,
+    "size_gb": 15.4992,
+    "updated_at": "2026-04-29T10:25:11.273692+00:00"
+  },
+  {
+    "prefix": "/p/largedata2/datasets/molecularminds/soft_chemistry/dataset_hf_datasets_saved_tutorial_test_train_validation",
+    "dataset": "/p/project1/molecularminds/fixed_datasets/dataset_hf_datasets_saved_tutorial_test_train_validation",
+    "n_sequences": 108168,
+    "n_tokens": 3544550831,
+    "seq_len": 32768,
+    "size_gb": 14.1782,
+    "updated_at": "2026-04-29T09:21:04.410067+00:00"
+  },
+  {
+    "prefix": "/p/largedata2/datasets/molecularminds/soft_chemistry/dataset_hf_datasets_saved_wikipedia_test_train_validation",
+    "dataset": "/p/project1/molecularminds/fixed_datasets/dataset_hf_datasets_saved_wikipedia_test_train_validation",
+    "n_sequences": 92282,
+    "n_tokens": 3023981046,
+    "seq_len": 32768,
+    "size_gb": 12.096,
+    "updated_at": "2026-04-29T10:55:13.162059+00:00"
+  },
+  {
+    "prefix": "/p/largedata2/datasets/molecularminds/soft_chemistry/mattermodeling_stackexchange-blog_post",
+    "dataset": "/p/scratch/molecularminds/hf_downloads/mattermodeling_stackexchange-blog_post",
+    "n_sequences": 27,
+    "n_tokens": 868442,
+    "seq_len": 32768,
+    "size_gb": 0.0035,
+    "updated_at": "2026-04-29T11:49:22.518776+00:00"
+  },
+  {
+    "prefix": "/p/largedata2/datasets/molecularminds/soft_chemistry/mattermodeling_stackexchange-lecture_notes",
+    "dataset": "/p/scratch/molecularminds/hf_downloads/mattermodeling_stackexchange-lecture_notes",
+    "n_sequences": 29,
+    "n_tokens": 946675,
+    "seq_len": 32768,
+    "size_gb": 0.0038,
+    "updated_at": "2026-04-29T11:49:36.069628+00:00"
+  },
+  {
+    "prefix": "/p/largedata2/datasets/molecularminds/soft_chemistry/mattermodeling_stackexchange-textbook",
+    "dataset": "/p/scratch/molecularminds/hf_downloads/mattermodeling_stackexchange-textbook",
+    "n_sequences": 38,
+    "n_tokens": 1226724,
+    "seq_len": 32768,
+    "size_gb": 0.005,
+    "updated_at": "2026-04-29T11:49:50.386973+00:00"
+  },
+  {
+    "prefix": "/p/largedata2/datasets/molecularminds/soft_chemistry/mattermodeling_stackexchange-tutorial",
+    "dataset": "/p/scratch/molecularminds/hf_downloads/mattermodeling_stackexchange-tutorial",
+    "n_sequences": 52,
+    "n_tokens": 1695377,
+    "seq_len": 32768,
+    "size_gb": 0.0068,
+    "updated_at": "2026-04-29T11:50:04.481231+00:00"
+  },
+  {
+    "prefix": "/p/largedata2/datasets/molecularminds/soft_chemistry/mattermodeling_stackexchange-wikipedia",
+    "dataset": "/p/scratch/molecularminds/hf_downloads/mattermodeling_stackexchange-wikipedia",
+    "n_sequences": 40,
+    "n_tokens": 1294295,
+    "seq_len": 32768,
+    "size_gb": 0.0052,
+    "updated_at": "2026-04-29T11:50:18.318738+00:00"
+  },
+  {
+    "prefix": "/p/largedata2/datasets/molecularminds/soft_chemistry/physics_stackexchange-blog_post",
+    "dataset": "/p/scratch/molecularminds/hf_downloads/physics_stackexchange-blog_post",
+    "n_sequences": 438,
+    "n_tokens": 14337451,
+    "seq_len": 32768,
+    "size_gb": 0.0574,
+    "updated_at": "2026-04-29T11:50:38.133225+00:00"
+  },
+  {
+    "prefix": "/p/largedata2/datasets/molecularminds/soft_chemistry/physics_stackexchange-lecture_notes",
+    "dataset": "/p/scratch/molecularminds/hf_downloads/physics_stackexchange-lecture_notes",
+    "n_sequences": 522,
+    "n_tokens": 17087304,
+    "seq_len": 32768,
+    "size_gb": 0.0684,
+    "updated_at": "2026-04-29T11:50:59.554534+00:00"
+  },
+  {
+    "prefix": "/p/largedata2/datasets/molecularminds/soft_chemistry/physics_stackexchange-textbook",
+    "dataset": "/p/scratch/molecularminds/hf_downloads/physics_stackexchange-textbook",
+    "n_sequences": 522,
+    "n_tokens": 17090708,
+    "seq_len": 32768,
+    "size_gb": 0.0684,
+    "updated_at": "2026-04-29T11:51:21.405445+00:00"
+  },
+  {
+    "prefix": "/p/largedata2/datasets/molecularminds/soft_chemistry/physics_stackexchange-tutorial",
+    "dataset": "/p/scratch/molecularminds/hf_downloads/physics_stackexchange-tutorial",
+    "n_sequences": 556,
+    "n_tokens": 18188388,
+    "seq_len": 32768,
+    "size_gb": 0.0729,
+    "updated_at": "2026-04-29T11:51:43.152945+00:00"
+  },
+  {
+    "prefix": "/p/largedata2/datasets/molecularminds/soft_chemistry/physics_stackexchange-wikipedia",
+    "dataset": "/p/scratch/molecularminds/hf_downloads/physics_stackexchange-wikipedia",
+    "n_sequences": 410,
+    "n_tokens": 13421278,
+    "seq_len": 32768,
+    "size_gb": 0.0537,
+    "updated_at": "2026-04-29T11:52:03.311359+00:00"
+  }
+]
