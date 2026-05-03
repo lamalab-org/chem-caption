@@ -22,6 +22,7 @@ and extension with additional featurizers.
 
    installation
    tutorial
+   rephrasing
    howto
    api
 

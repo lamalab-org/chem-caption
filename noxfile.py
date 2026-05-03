@@ -21,9 +21,10 @@ def lint(session):
     session.install("black[jupyter]")
     session.install("isort")
     session.install("nbqa")
-    session.run("black", ".")
-    session.run("isort", ".")
-    session.run("nbqa", "isort", ".")
+    session.run("black", "./src/")
+    session.run("isort", "./src")
+    session.run("nbqa", "isort", "./src/")
+
 
 
 # manifest
@@ -108,7 +109,8 @@ def doctest(session):
         "-W",
         "-b",
         "coverage",
-        "-d" "tmp/build/doctrees",
+        "-d",
+        "tmp/build/doctrees",
         "tmp/source",
         "tmp/build/coverage",
     )
@@ -117,7 +119,7 @@ def doctest(session):
 
 
 # py
-@nox.session(venv_backend="conda", python=["3.12"])
+@nox.session(venv_backend="conda", python="3.12")
 def test(session):
     session.install("setuptools<80")
     session.install("-r", "requirements.txt")

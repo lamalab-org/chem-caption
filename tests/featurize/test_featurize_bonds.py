@@ -11,6 +11,8 @@ from chemcaption.featurize.bonds import (
     DipoleMomentsFeaturizer,
     RotableBondCountFeaturizer,
     RotableBondProportionFeaturizer,
+    DipoleMomentsFeaturizer,
+    BondOrderFeaturizer,
 )
 from chemcaption.featurize.text import Prompt
 from chemcaption.molecules import SMILESMolecule
@@ -148,7 +150,7 @@ def test_rotable_bond_count_featurizer():
     try:
         rbcf.text_featurize_many(pos_keys=["hehe"], molecules=mols)
         assert False
-    except:
+    except Exception:
         assert True
 
 

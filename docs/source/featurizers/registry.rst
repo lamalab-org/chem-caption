@@ -7,8 +7,8 @@ Implementations for utlity functions to generate all comparators in a submodule.
 
 .. autofunction:: chemcaption.featurize.registry.init_all_comparators
 
-Featurizers
-------------
+Registered featurizers
+-----------------------
 
 * BONDS_FEATURIZERS
 * COMPOSITION_FEATURIZERS
@@ -21,7 +21,7 @@ Featurizers
 * SUBSTRUCTURE_FEATURIZERS
 * SYMMETRY_FEATURIZERS
 
-Comparators
-------------
+Registered comparators
+-----------------------
 
 * COMPARATORS

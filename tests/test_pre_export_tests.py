@@ -7,6 +7,10 @@ from chemcaption.featurize.base import MultipleFeaturizer
 from chemcaption.featurize.bonds import BondTypeCountFeaturizer, BondTypeProportionFeaturizer
 from chemcaption.featurize.substructure import FragmentSearchFeaturizer
 
+from chemcaption.featurize.bonds import BondTypeCountFeaturizer, BondTypeProportionFeaturizer
+
+from chemcaption.featurize.base import MultipleFeaturizer
+
 __all__ = ["test_pre_export_test"]
 
 

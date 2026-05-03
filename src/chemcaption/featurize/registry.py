@@ -12,6 +12,7 @@ from chemcaption.featurize.base import (
     MultipleComparator,
     MultipleFeaturizer,
 )
+
 from chemcaption.molecules import SMILESMolecule
 
 
@@ -26,7 +27,7 @@ def init_all_featurizers(module) -> list:
 
             try:
                 f = item()
-            except:
+            except Exception:
                 continue
 
             if isinstance(f, MultipleFeaturizer):
@@ -53,7 +54,7 @@ def init_all_comparators(module) -> list:
 
             try:
                 f = item()
-            except:
+            except Exception:
                 continue
 
             if isinstance(f, MultipleComparator):
