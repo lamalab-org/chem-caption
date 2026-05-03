@@ -51,6 +51,7 @@ def mypy(session):
 # docs
 @nox.session
 def docs(session):
+    session.install("-r", "requirements.txt")
     session.install("-r", "test_requirements.txt")
     session.run(
         "python",
@@ -81,6 +82,7 @@ def docstr(session):
 # docs-test
 @nox.session
 def doctest(session):
+    session.install("-r", "requirements.txt")
     session.install("-r", "test_requirements.txt")
     session.install("coverage")
 
@@ -115,8 +117,13 @@ def doctest(session):
 
 
 # py
+<<<<<<< HEAD
 @nox.session(venv_backend="conda", python="3.12")
+=======
+@nox.session(venv_backend="conda", python=["3.12"])
+>>>>>>> origin/main
 def test(session):
+    session.install("-r", "requirements.txt")
     session.install("-r", "test_requirements.txt")
     session.install("coverage")
     session.install("git+https://github.com/kjappelbaum/givemeconformer.git")

@@ -22,7 +22,7 @@ To install in development mode, use the following:
     $ pip install -e .
 
 Dependencies
-=============
+-------------
 
 Some of the featurizers might require additional dependencies. This includes ``morfeus-ml`` and
 its optional dependencies. Please visit the `morfeus`_ for more information.

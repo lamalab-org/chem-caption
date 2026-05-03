@@ -2,14 +2,14 @@ beautifulsoup4==4.13.4
 frozendict==2.4.6
 givemeconformer==0.0.1
 morfeus==0.3
-networkx==3.5
-numpy==2.3.1
+networkx>=3.4.2
+numpy>=2.2.6
 pandas==2.3.0
 PubChemPy==1.0.4
 pymatgen==2025.5.28
 pytest==8.4.0
 rdkit==2025.3.2
-scipy==1.16.0
+scipy>=1.15.3
 selfies==2.2.0
 tqdm==4.67.1
 typing_extensions==4.14.1

@@ -1,9 +1,6 @@
-<!-- [![Tests](https://github.com/lamalab-org/chem-caption/actions/workflows/tests.yml/badge.svg)](https://github.com/lamalab-org/chem-caption/actions/workflows/tests.yml) -->
-
-<h1 align="center">
-  <!-- ![icon](docs/source/_static/logo.png) -->
-  <img style="vertical-align:middle" src="docs/source/_static/logo.png" width=75> 
-  <span > ChemCaption </span>
+<h1 align="center" display="inline-block">
+  <img align="center" src="docs/source/_static/logo.png" width=75> 
+  <span> ChemCaption </span>
 </h1>
 
 <p align="center">
@@ -56,7 +53,7 @@ molecule = SMILESMolecule("C1(Br)=CC=CC=C1Br")
 el_count_name = ElementCountFeaturizer(['carbon', 'hydrogen', 'oxygen', 'bromine'])
 
 # Featurize the molecule
-prompt = el_count_symbol.text_featurize(molecule=molecule)
+prompt = el_count_name.text_featurize(molecule=molecule)
 ```
 
 The generate prompt has the following QA pair.
@@ -79,7 +76,7 @@ pip install chemcaption
 The most recent code and data can be installed directly from GitHub with:
 
 ```bash
-pip install git+https://github.com/kjappelbaum/chem-caption.git
+pip install git+https://github.com/lamalab-org/chem-caption
 ```
 
 Some of the ChemCaption featurizers are dependent on [morfeus](https://digital-chemistry-laboratory.github.io/morfeus/index.html) and might require additional dependencies to be installed. You can see all the optional dependencies for morfeus-ml [here](https://digital-chemistry-laboratory.github.io/morfeus/installation.html)
@@ -113,7 +110,7 @@ The final section of the README is for if you want to get involved by making a c
 To install in development mode, use the following:
 
 ```bash
-$ git clone git+https://github.com/kjappelbaum/chem-caption.git
+$ git clone git+https://github.com/lamalab-org/chem-caption
 $ cd chem-caption
 $ pip install -e .
 ```
@@ -134,7 +131,7 @@ Additionally, these tests are automatically re-run with each commit in a [GitHub
 The documentation can be built locally using the following:
 
 ```shell
-$ git clone git+https://github.com/kjappelbaum/chem-caption.git
+$ git clone git+https://github.com/lamalab-org/chem-caption
 $ cd chem-caption
 $ nox --session docs
 $ open docs/build/html/index.html
@@ -166,3 +163,4 @@ This script does the following:
 5. Bump the version to the next patch. If you made big changes and want to bump the version by minor, you can
    use `nox -e bumpversion -- minor` after.
 </details>
+
