@@ -26,6 +26,7 @@ def lint(session):
     session.run("nbqa", "isort", "./src/")
 
 
+
 # manifest
 @nox.session
 def manifest(session):
@@ -79,6 +80,7 @@ def docstr(session):
     session.install("docstr-coverage")
     session.run("docstr-coverage", "src/", "tests/", "--skip-private", "--skip-magic")
 
+
 # docs-test
 @nox.session
 def doctest(session):
@@ -117,12 +119,9 @@ def doctest(session):
 
 
 # py
-<<<<<<< HEAD
 @nox.session(venv_backend="conda", python="3.12")
-=======
-@nox.session(venv_backend="conda", python=["3.12"])
->>>>>>> origin/main
 def test(session):
+    session.install("setuptools<80")
     session.install("-r", "requirements.txt")
     session.install("-r", "test_requirements.txt")
     session.install("coverage")

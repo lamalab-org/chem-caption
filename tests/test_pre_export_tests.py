@@ -2,8 +2,9 @@
 
 """Unit tests for chemcaption.export.pre_export_tests submodule."""
 
-from chemcaption.export.pre_export_tests import get_smarts_featurizers, get_repetitive_labels
-
+from chemcaption.export.pre_export_tests import get_repetitive_labels, get_smarts_featurizers
+from chemcaption.featurize.base import MultipleFeaturizer
+from chemcaption.featurize.bonds import BondTypeCountFeaturizer, BondTypeProportionFeaturizer
 from chemcaption.featurize.substructure import FragmentSearchFeaturizer
 
 from chemcaption.featurize.bonds import BondTypeCountFeaturizer, BondTypeProportionFeaturizer

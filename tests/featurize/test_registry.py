@@ -3,9 +3,7 @@
 """Unit tests for chemcaption.featurize.registry submodule."""
 
 import chemcaption
-
-from chemcaption.featurize.base import AbstractFeaturizer, AbstractComparator
-
+from chemcaption.featurize.base import AbstractComparator, AbstractFeaturizer
 from chemcaption.featurize.registry import init_all_comparators, init_all_featurizers
 
 __all__ = [

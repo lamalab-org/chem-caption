@@ -2,7 +2,6 @@
 
 """Unit tests for chemcaption.featurize.stereochemistry classes."""
 
-
 import numpy as np
 
 from chemcaption.featurize.stereochemistry import ChiralCenterCountFeaturizer

@@ -3,7 +3,7 @@
 """Utility imports."""
 
 from abc import ABC, abstractmethod
-from typing import List, Union
+from typing import Generator, List, Union
 
 import networkx as nx
 import rdkit
@@ -270,8 +270,6 @@ class MoleculeCollection:
     """
 
     def __init__(self, molecules: List[str], representation: Molecule) -> None:
-        """Instantiate class."""
-        
         self.molecules = molecules
         self.representation = representation
 

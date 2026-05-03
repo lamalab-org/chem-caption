@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """Unit tests for chemcaption.featurize.comparator submodule."""
+
 import numpy as np
 
 from chemcaption.featurize.comparator import (

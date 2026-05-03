@@ -5,8 +5,10 @@
 import numpy as np
 
 from chemcaption.featurize.bonds import (
+    BondOrderFeaturizer,
     BondTypeCountFeaturizer,
     BondTypeProportionFeaturizer,
+    DipoleMomentsFeaturizer,
     RotableBondCountFeaturizer,
     RotableBondProportionFeaturizer,
     DipoleMomentsFeaturizer,
