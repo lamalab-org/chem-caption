@@ -18,7 +18,7 @@ MOLECULE = DISPATCH_MAP[KIND]
 
 # SMARTS substructure search-related presets
 SMARTS_PRESET = "amino"
-PRESET_BASE_LABELS = SMARTS_MAP[SMARTS_PRESET]["names"]
+PRESET_BASE_LABELS = list(SMARTS_MAP[SMARTS_PRESET].keys())
 
 # Topology-related presets
 REFERENCE_ATOMIC_NUMBERS = [6, 1, 7, 8, 15, 16, 9, 17, 35, 53]

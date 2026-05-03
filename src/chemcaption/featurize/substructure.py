@@ -91,13 +91,16 @@ class FragmentSearchFeaturizer(AbstractFeaturizer):
         Args:
             preset (str): Preset name of the substructures encoded by the SMARTS strings.
                 Predefined presets can be specified as strings, and can be one of:
-                * `heterocyclic`,
-                * `rings`,
-                * `amino`,
-                * `scaffolds`,
-                * `warheads` or
-                * `organic`.
-                * `all`
+                * `core`
+                * `branches`
+                * `main_group`
+                * `homoaromatics`
+                * `heteroaromatics`
+                * `aliphatic_rings`
+                * `heteroaliphatic_rings`
+                * `oxo_rings`
+                * `thioxo_rings`
+                * `biomolecules`
 
             count (bool): If set to True, count pattern frequency.
         """
@@ -109,8 +112,9 @@ class FragmentSearchFeaturizer(AbstractFeaturizer):
             )
 
         smarts_set = SMARTS_MAP[preset]
+        names, smarts = zip(*smarts_set.items())
         return cls(
-            smarts=smarts_set["smarts"], names=smarts_set["names"], count=count, preset_name=preset
+            smarts=list(smarts), names=list(names), count=count, preset_name=preset
         )
 
     def featurize(self, molecule: Molecule) -> np.array:
