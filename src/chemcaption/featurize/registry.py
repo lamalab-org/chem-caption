@@ -2,28 +2,28 @@
 
 """Implementations for utlity functions to generate all comparators in a submodule."""
 
-import chemcaption
-
 from abc import ABCMeta
-from chemcaption.featurize.base import (
-    AbstractFeaturizer,
-    MultipleFeaturizer,
-    AbstractComparator,
-    Comparator,
-    MultipleComparator
-)
 
+import chemcaption
+from chemcaption.featurize.base import (
+    AbstractComparator,
+    AbstractFeaturizer,
+    Comparator,
+    MultipleComparator,
+    MultipleFeaturizer,
+)
 from chemcaption.molecules import SMILESMolecule
+
 
 def init_all_featurizers(module) -> list:
     """Returns a list of initialized featurizers per chemcaption submodule."""
-    
+
     classes = []
     for item in module.__dict__.values():
         if isinstance(item, ABCMeta):
             if not issubclass(item, AbstractFeaturizer):
                 continue
-                
+
             try:
                 f = item()
             except:
@@ -33,7 +33,7 @@ def init_all_featurizers(module) -> list:
                 continue
 
             try:
-                f.featurize(SMILESMolecule('O'))
+                f.featurize(SMILESMolecule("O"))
             except NotImplementedError:
                 continue
 
@@ -41,15 +41,16 @@ def init_all_featurizers(module) -> list:
 
     return classes
 
+
 def init_all_comparators(module) -> list:
     """Returns a list of initialized comparators per chemcaption submodule."""
-    
+
     classes = []
     for item in module.__dict__.values():
         if isinstance(item, ABCMeta):
             if not issubclass(item, AbstractComparator):
                 continue
-                
+
             try:
                 f = item()
             except:
@@ -64,6 +65,7 @@ def init_all_comparators(module) -> list:
             classes.append(f)
 
     return classes
+
 
 """Featurizers"""
 

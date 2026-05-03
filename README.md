@@ -42,7 +42,7 @@ ChemCaption is a tool designed to generate prompts for molecular features to tra
 Here is a quick example of one of the featurizers designed to count the number of elements in a molecule.
 
 ```python
-from chemcaption.presets import ORGANIC
+from chemcaption.presets import CORE
 from chemcaption.molecules import SMILESMolecule
 from chemcaption.featurize.composition import ElementCountFeaturizer
 

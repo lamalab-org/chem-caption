@@ -63,4 +63,3 @@ def test_molecule_collection():
 
     for c in collection:
         assert isinstance(c, SMILESMolecule)
-
