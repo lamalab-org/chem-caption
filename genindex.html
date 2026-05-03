@@ -207,6 +207,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rephrasing.html">Rephrasing Questions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="howto.html">How to Guide</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="api.html">API Documentation</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of API Documentation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="featurizers/index.html">Featurizers</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Featurizers</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -229,6 +230,7 @@
 <li class="toctree-l2"><a class="reference internal" href="molecule.html">Molecules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="comparator.html">Comparator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="presets.html">Presets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rephraser.html">Rephraser</a></li>
 </ul>
 </li>
 </ul>
@@ -397,8 +399,6 @@
           <li><a href="featurizers/sterochemistry.html#module-chemcaption.featurize.stereochemistry">module</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     chemcaption.featurize.substructure
 
@@ -406,6 +406,8 @@
           <li><a href="featurizers/substructure.html#module-chemcaption.featurize.substructure">module</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     chemcaption.featurize.symmetry
 
@@ -425,6 +427,13 @@
 
         <ul>
           <li><a href="molecule.html#module-chemcaption.molecules">module</a>
+</li>
+        </ul></li>
+        <li>
+    chemcaption.rephraser
+
+        <ul>
+          <li><a href="rephraser.html#module-chemcaption.rephraser">module</a>
 </li>
         </ul></li>
         <li><a href="featurizers/sterochemistry.html#chemcaption.featurize.stereochemistry.ChiralCenterCountFeaturizer">ChiralCenterCountFeaturizer (class in chemcaption.featurize.stereochemistry)</a>
@@ -491,14 +500,22 @@
 </li>
         <li><a href="featurizers/composition.html#chemcaption.featurize.composition.ElementCountFeaturizer">ElementCountFeaturizer (class in chemcaption.featurize.composition)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="featurizers/composition.html#chemcaption.featurize.composition.ElementCountProportionFeaturizer">ElementCountProportionFeaturizer (class in chemcaption.featurize.composition)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="featurizers/composition.html#chemcaption.featurize.composition.ElementMassFeaturizer">ElementMassFeaturizer (class in chemcaption.featurize.composition)</a>
 </li>
         <li><a href="featurizers/composition.html#chemcaption.featurize.composition.ElementMassProportionFeaturizer">ElementMassProportionFeaturizer (class in chemcaption.featurize.composition)</a>
 </li>
+        <li><a href="rephraser.html#chemcaption.rephraser.LLama2RePhraser.extract_questions">extract_questions() (LLama2RePhraser method)</a>
+
+        <ul>
+          <li><a href="rephraser.html#chemcaption.rephraser.RePhraserBase.extract_questions">(RePhraserBase method)</a>
+</li>
+          <li><a href="rephraser.html#chemcaption.rephraser.SmolLMInstructRePhraser.extract_questions">(SmolLMInstructRePhraser method)</a>
+</li>
+        </ul></li>
     </ul></td>
   </tr></table>
 </section>
@@ -761,6 +778,8 @@
         </ul></li>
         <li><a href="text.html#chemcaption.featurize.text.Prompt.fill_template">fill_template() (Prompt method)</a>
 </li>
+        <li><a href="rephraser.html#chemcaption.rephraser.RePhraserBase.filter_questions">filter_questions() (RePhraserBase method)</a>
+</li>
         <li><a href="featurizers/composition.html#chemcaption.featurize.composition.ElementMassFeaturizer.fit">fit() (ElementMassFeaturizer method)</a>
 </li>
         <li><a href="featurizers/base.html#chemcaption.featurize.base.MorfeusFeaturizer.fit_on_atom_counts">fit_on_atom_counts() (MorfeusFeaturizer static method)</a>
@@ -792,6 +811,8 @@
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="featurizers/base.html#chemcaption.featurize.base.MultipleFeaturizer.generate_data">generate_data() (MultipleFeaturizer method)</a>
+</li>
+        <li><a href="rephraser.html#chemcaption.rephraser.RePhraserBase.generate_template">generate_template() (RePhraserBase method)</a>
 </li>
         <li><a href="molecule.html#chemcaption.molecules.AbstractMolecule.get_atoms">get_atoms() (AbstractMolecule method)</a>
 </li>
@@ -1039,6 +1060,8 @@
 </li>
         <li><a href="featurizers/rules.html#chemcaption.featurize.rules.LipinskiFilterFeaturizer">LipinskiFilterFeaturizer (class in chemcaption.featurize.rules)</a>
 </li>
+        <li><a href="rephraser.html#chemcaption.rephraser.LLama2RePhraser">LLama2RePhraser (class in chemcaption.rephraser)</a>
+</li>
         <li><a href="featurizers/electronic.html#chemcaption.featurize.electronicity.LUMOEnergyFeaturizer">LUMOEnergyFeaturizer (class in chemcaption.featurize.electronicity)</a>
 </li>
     </ul></td>
@@ -1082,6 +1105,8 @@
           <li><a href="text.html#module-chemcaption.featurize.text">chemcaption.featurize.text</a>
 </li>
           <li><a href="molecule.html#module-chemcaption.molecules">chemcaption.molecules</a>
+</li>
+          <li><a href="rephraser.html#module-chemcaption.rephraser">chemcaption.rephraser</a>
 </li>
         </ul></li>
     </ul></td>
@@ -1164,10 +1189,14 @@
 </li>
         <li><a href="featurizers/adaptor.html#chemcaption.featurize.adaptor.RDKitAdaptor">RDKitAdaptor (class in chemcaption.featurize.adaptor)</a>
 </li>
-        <li><a href="text.html#chemcaption.featurize.text.Prompt.representation">representation (Prompt attribute)</a>
+        <li><a href="rephraser.html#chemcaption.rephraser.RePhraserBase.rephrase">rephrase() (RePhraserBase method)</a>
+</li>
+        <li><a href="rephraser.html#chemcaption.rephraser.RePhraserBase">RePhraserBase (class in chemcaption.rephraser)</a>
 </li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="text.html#chemcaption.featurize.text.Prompt.representation">representation (Prompt attribute)</a>
+</li>
         <li><a href="text.html#chemcaption.featurize.text.Prompt.representation_type">representation_type (Prompt attribute)</a>
 </li>
         <li><a href="molecule.html#chemcaption.molecules.AbstractMolecule.reveal_hydrogens">reveal_hydrogens() (AbstractMolecule method)</a>
@@ -1190,12 +1219,14 @@
 </li>
         <li><a href="molecule.html#chemcaption.molecules.SMILESMolecule">SMILESMolecule (class in chemcaption.molecules)</a>
 </li>
-        <li><a href="featurizers/reaction.html#chemcaption.featurize.reaction.SolventAccessibleAtomAreaFeaturizer">SolventAccessibleAtomAreaFeaturizer (class in chemcaption.featurize.reaction)</a>
+        <li><a href="rephraser.html#chemcaption.rephraser.SmolLMInstructRePhraser">SmolLMInstructRePhraser (class in chemcaption.rephraser)</a>
 </li>
-        <li><a href="featurizers/reaction.html#chemcaption.featurize.reaction.SolventAccessibleSurfaceAreaFeaturizer">SolventAccessibleSurfaceAreaFeaturizer (class in chemcaption.featurize.reaction)</a>
+        <li><a href="featurizers/reaction.html#chemcaption.featurize.reaction.SolventAccessibleAtomAreaFeaturizer">SolventAccessibleAtomAreaFeaturizer (class in chemcaption.featurize.reaction)</a>
 </li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="featurizers/reaction.html#chemcaption.featurize.reaction.SolventAccessibleSurfaceAreaFeaturizer">SolventAccessibleSurfaceAreaFeaturizer (class in chemcaption.featurize.reaction)</a>
+</li>
         <li><a href="featurizers/reaction.html#chemcaption.featurize.reaction.SolventAccessibleVolumeFeaturizer">SolventAccessibleVolumeFeaturizer (class in chemcaption.featurize.reaction)</a>
 </li>
         <li><a href="featurizers/3d.html#chemcaption.featurize.spatial.SpatialFeaturizer">SpatialFeaturizer (class in chemcaption.featurize.spatial)</a>

@@ -225,7 +225,7 @@ This us with a combined output consisting of features from both featurizers.
      'num_zero_bonds': 0,
      'num_bonds': 12}
 
-Additionally, we provide a registry as well as registry functions to initialize all the 
+Additionally, we provide a registry as well as registry functions to initialize all the
 featurizers and comparators from a submodule :ref:`Registry`.
 
 Prompts

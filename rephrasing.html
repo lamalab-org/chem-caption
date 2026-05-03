@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Featurizers" href="featurizers/index.html" /><link rel="prev" title="How to Guide" href="howto.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="How to Guide" href="howto.html" /><link rel="prev" title="Tutorial" href="tutorial.html" />
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
-        <title>API Documentation - ChemCaption 1.0.0 documentation</title>
+        <title>Rephrasing Questions - ChemCaption 1.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -209,9 +209,9 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
-<li class="toctree-l1"><a class="reference internal" href="rephrasing.html">Rephrasing Questions</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Rephrasing Questions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="howto.html">How to Guide</a></li>
-<li class="toctree-l1 current has-children current-page"><a class="current reference internal" href="#">API Documentation</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of API Documentation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="api.html">API Documentation</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of API Documentation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="featurizers/index.html">Featurizers</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Featurizers</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="featurizers/3d.html">3D structure</a></li>
 <li class="toctree-l3"><a class="reference internal" href="featurizers/adaptor.html">Adaptor</a></li>
@@ -255,7 +255,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="_sources/api.rst.txt" title="View this page">
+  <a class="muted-link" href="_sources/rephrasing.rst.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -275,72 +275,18 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="api-documentation">
-<h1>API Documentation<a class="headerlink" href="#api-documentation" title="Link to this heading">¶</a></h1>
-<div class="toctree-wrapper compound" id="api">
-<p class="caption" role="heading"><span class="caption-text">Api Documentation</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="featurizers/index.html">Featurizers</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="featurizers/3d.html">3D structure</a></li>
-<li class="toctree-l2"><a class="reference internal" href="featurizers/adaptor.html">Adaptor</a></li>
-<li class="toctree-l2"><a class="reference internal" href="featurizers/base.html">Base Featurizers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="featurizers/bonds.html">Bonds</a></li>
-<li class="toctree-l2"><a class="reference internal" href="featurizers/composition.html">Composition</a></li>
-<li class="toctree-l2"><a class="reference internal" href="featurizers/electronic.html">Electronic properties</a></li>
-<li class="toctree-l2"><a class="reference internal" href="featurizers/miscellaneous.html">Miscellaneous Featurizers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="featurizers/reaction.html">Reactions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="featurizers/registry.html">Registry</a></li>
-<li class="toctree-l2"><a class="reference internal" href="featurizers/rules.html">Rules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="featurizers/simmetry.html">Symmetry</a></li>
-<li class="toctree-l2"><a class="reference internal" href="featurizers/sterochemistry.html">Sterochemistry</a></li>
-<li class="toctree-l2"><a class="reference internal" href="featurizers/substructure.html">Substructure</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="text.html">Prompt</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="text.html#chemcaption.featurize.text.Prompt"><code class="docutils literal notranslate"><span class="pre">Prompt</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="text.html#chemcaption.featurize.text.PromptCollection"><code class="docutils literal notranslate"><span class="pre">PromptCollection</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="molecule.html">Molecules</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="molecule.html#chemcaption.molecules.Molecule"><code class="docutils literal notranslate"><span class="pre">Molecule</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="molecule.html#chemcaption.molecules.MoleculeGraph"><code class="docutils literal notranslate"><span class="pre">MoleculeGraph</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="molecule.html#chemcaption.molecules.AbstractMolecule"><code class="docutils literal notranslate"><span class="pre">AbstractMolecule</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="molecule.html#chemcaption.molecules.SMILESMolecule"><code class="docutils literal notranslate"><span class="pre">SMILESMolecule</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="molecule.html#chemcaption.molecules.SELFIESMolecule"><code class="docutils literal notranslate"><span class="pre">SELFIESMolecule</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="molecule.html#chemcaption.molecules.InChIMolecule"><code class="docutils literal notranslate"><span class="pre">InChIMolecule</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="molecule.html#chemcaption.molecules.DISPATCH_MAP"><code class="docutils literal notranslate"><span class="pre">DISPATCH_MAP</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="molecule.html#chemcaption.molecules.PERIODIC_TABLE"><code class="docutils literal notranslate"><span class="pre">PERIODIC_TABLE</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="comparator.html">Comparator</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="comparator.html#chemcaption.featurize.comparator.ValenceElectronCountComparator"><code class="docutils literal notranslate"><span class="pre">ValenceElectronCountComparator</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="comparator.html#chemcaption.featurize.comparator.LipinskiFilterComparator"><code class="docutils literal notranslate"><span class="pre">LipinskiFilterComparator</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="comparator.html#chemcaption.featurize.comparator.GhoseFilterComparator"><code class="docutils literal notranslate"><span class="pre">GhoseFilterComparator</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="comparator.html#chemcaption.featurize.comparator.LeadLikenessFilterComparator"><code class="docutils literal notranslate"><span class="pre">LeadLikenessFilterComparator</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="comparator.html#chemcaption.featurize.comparator.AtomCountComparator"><code class="docutils literal notranslate"><span class="pre">AtomCountComparator</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="comparator.html#chemcaption.featurize.comparator.IsomerismComparator"><code class="docutils literal notranslate"><span class="pre">IsomerismComparator</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="comparator.html#chemcaption.featurize.comparator.IsomorphismComparator"><code class="docutils literal notranslate"><span class="pre">IsomorphismComparator</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="comparator.html#chemcaption.featurize.comparator.IsoelectronicComparator"><code class="docutils literal notranslate"><span class="pre">IsoelectronicComparator</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="comparator.html#chemcaption.featurize.comparator.DrugLikenessComparator"><code class="docutils literal notranslate"><span class="pre">DrugLikenessComparator</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="presets.html">Presets</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="presets.html#heterocyclic">HETEROCYCLIC</a></li>
-<li class="toctree-l2"><a class="reference internal" href="presets.html#scaffolds">SCAFFOLDS</a></li>
-<li class="toctree-l2"><a class="reference internal" href="presets.html#rings">RINGS</a></li>
-<li class="toctree-l2"><a class="reference internal" href="presets.html#amino-protectors">AMINO_PROTECTORS</a></li>
-<li class="toctree-l2"><a class="reference internal" href="presets.html#warheads">WARHEADS</a></li>
-<li class="toctree-l2"><a class="reference internal" href="presets.html#organic">ORGANIC</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="rephraser.html">Rephraser</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="rephraser.html#chemcaption.rephraser.RePhraserBase"><code class="docutils literal notranslate"><span class="pre">RePhraserBase</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="rephraser.html#chemcaption.rephraser.SmolLMInstructRePhraser"><code class="docutils literal notranslate"><span class="pre">SmolLMInstructRePhraser</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="rephraser.html#chemcaption.rephraser.LLama2RePhraser"><code class="docutils literal notranslate"><span class="pre">LLama2RePhraser</span></code></a></li>
-</ul>
-</li>
-</ul>
-</div>
+          <section id="rephrasing-questions">
+<h1>Rephrasing Questions<a class="headerlink" href="#rephrasing-questions" title="Link to this heading">¶</a></h1>
+<p>To increase the diversity of chemical ception we provide an additional
+moduel designed to rephrase the questions.</p>
+<p>The <a class="reference internal" href="rephraser.html#module-chemcaption.rephraser"><span class="std std-ref">Rephraser</span></a> accepts a list of <a class="reference internal" href="text.html#chemcaption.featurize.text.Prompt" title="chemcaption.featurize.text.Prompt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">chemcaption.featurize.text.Prompt</span></code></a>
+objects and rephrases every question. Each question is rephrased 3 times
+and samples as many times as you want.</p>
+<p>Before rephrasing, we first have to generate some prompts:</p>
+<p>We then rephrase these prompts using the <a class="reference external" href="https://huggingface.co/blog/smollm">SmolLM</a>:</p>
+<p>This will then generate a list of dictionaries, containing the original
+questions, answers and alternative rephrased questions.</p>
+<p>To learn more, visit the API documentation <a class="reference internal" href="rephraser.html#module-chemcaption.rephraser"><span class="std std-ref">Rephraser</span></a>.</p>
 </section>
 
         </article>
@@ -348,23 +294,23 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="featurizers/index.html">
+          <a class="next-page" href="howto.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Featurizers</div>
+                <div class="title">How to Guide</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="howto.html">
+          <a class="prev-page" href="tutorial.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">How to Guide</div>
+                <div class="title">Tutorial</div>
                 
               </div>
             </a>
