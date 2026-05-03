@@ -364,13 +364,16 @@
 <span class="sd">        Args:</span>
 <span class="sd">            preset (str): Preset name of the substructures encoded by the SMARTS strings.</span>
 <span class="sd">                Predefined presets can be specified as strings, and can be one of:</span>
-<span class="sd">                * `heterocyclic`,</span>
-<span class="sd">                * `rings`,</span>
-<span class="sd">                * `amino`,</span>
-<span class="sd">                * `scaffolds`,</span>
-<span class="sd">                * `warheads` or</span>
-<span class="sd">                * `organic`.</span>
-<span class="sd">                * `all`</span>
+<span class="sd">                * `core`</span>
+<span class="sd">                * `branches`</span>
+<span class="sd">                * `main_group`</span>
+<span class="sd">                * `homoaromatics`</span>
+<span class="sd">                * `heteroaromatics`</span>
+<span class="sd">                * `aliphatic_rings`</span>
+<span class="sd">                * `heteroaliphatic_rings`</span>
+<span class="sd">                * `oxo_rings`</span>
+<span class="sd">                * `thioxo_rings`</span>
+<span class="sd">                * `biomolecules`</span>
 
 <span class="sd">            count (bool): If set to True, count pattern frequency.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -382,8 +385,9 @@
             <span class="p">)</span>
 
         <span class="n">smarts_set</span> <span class="o">=</span> <span class="n">SMARTS_MAP</span><span class="p">[</span><span class="n">preset</span><span class="p">]</span>
+        <span class="n">names</span><span class="p">,</span> <span class="n">smarts</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">smarts_set</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span>
-            <span class="n">smarts</span><span class="o">=</span><span class="n">smarts_set</span><span class="p">[</span><span class="s2">&quot;smarts&quot;</span><span class="p">],</span> <span class="n">names</span><span class="o">=</span><span class="n">smarts_set</span><span class="p">[</span><span class="s2">&quot;names&quot;</span><span class="p">],</span> <span class="n">count</span><span class="o">=</span><span class="n">count</span><span class="p">,</span> <span class="n">preset_name</span><span class="o">=</span><span class="n">preset</span>
+            <span class="n">smarts</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">smarts</span><span class="p">),</span> <span class="n">names</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">names</span><span class="p">),</span> <span class="n">count</span><span class="o">=</span><span class="n">count</span><span class="p">,</span> <span class="n">preset_name</span><span class="o">=</span><span class="n">preset</span>
         <span class="p">)</span></div>
 
 
@@ -682,7 +686,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2025, Kevin Maik Jablonka and Benedict Oshomah Emoekabu
+                Copyright &#169; 2026, Kevin Maik Jablonka and Benedict Oshomah Emoekabu
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
