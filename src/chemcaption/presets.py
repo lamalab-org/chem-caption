@@ -706,6 +706,8 @@ MAIN_GROUP: Dict[str, Dict] = {
         "sulfonyl_halide": "[#6]-[$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])]-[F,Cl,Br,IX1]",
         "thiosulfonate": "[#6]-[$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])]-[SX2]",
         "sulfonamide": "[#6]-[$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])]-[#7X3;!$(NC(=O)N);!$([#7]([$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])])-[$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])])]",  # excludes sulfonimide, sulfonylurea
+        "β-sultam": "[$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])]1-[NX3]-[#6]~[#6]1",
+        "γ-sultam": "[$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])]1-[NX3]-[#6]~[#6]~[#6]1",
         "N-sulfonyl_imine": "[#6]-[$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])]-[NX2]=[CX3]",
         "N-sulfonyl_iminophosphorane": "[#6]-[$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])]-[NX2]=[PX4]",
         "N-sulfonate": "[#6]-[$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])]-O-[#7]",
