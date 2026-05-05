@@ -122,6 +122,7 @@ CORE: Dict[str, str] = {
     "acyl_azide": "O=C-[$([NX2]=[NX2+]=[NX1-]),$([NX2-]-[NX2+]#[NX1])]",
     "triazene": "N=N-[NX3]",
     "guanidine": "[NX3]-C(=[NX2,NX3H+,NH2+])-[NX3]",
+    "N-amino_guanidine": "[NX3]-C(-[NX3])=[NX2,NX3H+]-[NX3]",
     "guanidinium": "[NX3]-C(=[NX3H0+])-[NX3]",
     "amidrazone": "[#6,#1]-[CX3](-,=N-[NX3])-,=N",
     "orthoamide": "[#6,#1]-C(-[#7])(-[#7])-[#7]",
