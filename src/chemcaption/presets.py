@@ -57,7 +57,7 @@ CORE: Dict[str, str] = {
     "hydroperoxy": "[!#1;!$(C=O)]-O-[O-,OH,OH2+]",  # excludes peracids
     "aliphatic_carboxylic_acid": "C-C(=O)-[OH,O-,OH2+]",
     "aromatic_carboxylic_acid": "c-C(=O)-[OH,O-,OH2+]",
-    "carboxylate_ester": "[#1,#6]-C(=O)-[O;!$(O1[#6](=O)[#6]1);!$(O1[#6](=O)[#6]~[#6]1);!$(O1[#6](=O)[#6]~[#6]~[#6]1);!$(O1[#6](=O)[#6]~[#6]~[#6]~[#6]1)]-[#6;!$(C=[O,S])]",  # excludes lactones upto delta
+    "carboxylate_ester": "[#1,#6]-C(=O)-O-[#6;!$(C=[O,S])]",
     "hemiacetal": "[O-,OH,OH2+]-[CX4;!$(C(O)(O)[O,S,N,n])]-O-[!#1;!$(C=O)]",  # including hemiketals
     "acetal": "[!#1;!$(C=O)]-O-[CX4;!$(C(O)(O)([O,S,N,n]));!H2;!$([CX4]1Oc2ccccc2O1)]-O-[!#1;!$(C=O)]",  # including ketals, excluding acylals, methylenedioxy
     "ketene_acetal": "C=C(-O)-O",
@@ -2610,3 +2610,24 @@ SMARTS_MAP: Dict[str, Dict[str, str]] = dict(
     biomolecules=BIOMOLECULES,
     all=ALL_SMARTS,
 )
+
+
+from rdkit import Chem
+def get_counts(smiles):
+    
+    def _get_counts(mol, smarts_dict):
+        counts = dict()
+        first_entry = next(iter(smarts_dict.values()))
+        if isinstance(first_entry, str):
+            for name, smart in smarts_dict.items():
+                sub = Chem.MolFromSmarts(smart)
+                if (count := len(mol.GetSubstructMatches(sub, useChirality=True))) > 0:
+                    counts[name] = count
+        else:
+            for name, subdict in smarts_dict.items():
+                if (count_dict := _get_counts(mol, subdict)):
+                    counts[name] = count_dict
+        return counts
+
+    mol = Chem.AddHs(Chem.MolFromSmiles(smiles))
+    return _get_counts(mol, ALL)
