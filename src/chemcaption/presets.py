@@ -699,8 +699,8 @@ MAIN_GROUP: Dict[str, Dict] = {
         "imidothionyl_halide": "[F,Cl,Br,IX1]-[$([SX3]=[NX2]),$([SX3+]-[NX2-])]-[F,Cl,Br,IX1]",
         ### tetravalent
         "λ4-sulfane": "[SX4](-[*])(-[*])(-[*])-[*]",
-        "sulfone": "[#6]-[$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])]-[#6]",
-        "sulfone": "[#6]-[$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])]-[#6]",
+        "sulfone": "[#6;!$(C#N)]-[$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])]-[#6;!$(C#N)]",
+        "sulfonyl_cyanide": "[$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])]-[CX2]#[NX1,NX2H+]",
         "sulfonic_acid": "[#6]-[$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])]-[OH,O-,OH2+]",
         "sulfonate": "[#6]-[$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])]-O-[!#1;!#7]",
         "sulfonyl_halide": "[#6]-[$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])]-[F,Cl,Br,IX1]",
