@@ -170,7 +170,7 @@ CORE: Dict[str, str] = {
     "nitrite": "[*]-O-[NX2]=O",
     "nitrosamine": "[#7]-[NX2]=O",
     "imide": "[$(C(=O)-[#6,#1])]-N(-[!O;!#7;!$(C=O)])-[$(C(=O)-[#6,#1])]",
-    "urea": "[#7X3,$([NX2]=[CX3,PX4]);!$(N-[$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])]-[#6])]-[C;!$(C1(=O)NCCN1)](=[O;!$(O=C1[#7]~[#6]C(=O)N1)])-[#7X3,$([NX2]=[CX3,PX4]);!$(N-[$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])]-[#6])]",  # excludes ureido ring, hydantoin, sulfonylurea
+    "urea": "[#7X3,$([NX2]=[CX3,PX4]);!$([NX3]-[#7X3,$([NX2]=[CX3,PX4])]);!$(N-[$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])]-[#6])]-[C;!$([#6]1(=O)[#7]~[#6]~[#6]~[#7]1)](=O)-[#7X3,$([NX2]=[CX3,PX4]);!$([NX3]-[#7X3,$([NX2]=[CX3,PX4])]);!$(N-[$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])]-[#6])]",  # excludes ureido ring, hydantoin, sulfonylurea, (semi)carbazide, semicarbazone
     "ureido_ring": "O=C1NCCN1",
     "sulfonylurea": "[#7X3,$([NX2]=[CX3,PX4])]-C(=O)-N-[$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])]-[#6]",
     "isourea": "[NX3]-C(=[NX2,NX3+])-O-[*]",
@@ -183,6 +183,9 @@ CORE: Dict[str, str] = {
     "deltic_monoamide": "O=c1c(O)c1([N;!+])",
     "deltamide": "O=c1c([N;!+])c1([N;!+])",
     ## 4+ hetero atoms
+    "semicarbazide": "[#7X3,$([NX2]=[CX3,PX4])]-C(=O)-[NX3]-[#7X3,$([NX2]=[PX4])]", # excludes semicarbazones
+    "carbazide": "[#7X3,$([NX2]=[CX3,PX4])]-[NX3]-C(=O)-[NX3]-[#7X3,$([NX2]=[CX3,PX4])]",
+    "semicarbazone": "[#7X3,$([NX2]=[CX3,PX4])]-C(=O)-[NX3]-[NX2]=[CX3]",
     "oxime-ester": "[#6,#1]-C(=[NX2,NX3H+]-O-C(=O))-[!#7;!#8]",
     "orthocarbamate": "[#7]-[CX4](-O)(-O)-O",
     "monothio_orthocarbamate": "[#7]-[CX4](-O)(-O)-[SX2]",
@@ -621,7 +624,10 @@ MAIN_GROUP: Dict[str, Dict] = {
         "thiohydroxamic_acid": "[#6,#1]-C(=[SX1])-[NX3]-[OH]",
         "thiohydroxamate": "[#6,#1]-C(=[SX1])-[NX3]-O-[!$(C=O)]",
         "O-acyl_thiohydroxamate": "[#6,#1]-C(=[SX1])-[NX3]-O-C(=O)",
-        "thiourea[": "[#7X3,$([NX2]=[CX3,PX4])]-[C;!$(C1(=[SX1])NCCN1)](=[SX1])-[#7X3,$([NX2]=[CX3,PX4])]",  # excludes thioureido ring
+        "thiourea": "[#7X3,$([NX2]=[CX3,PX4]);!$([NX3]-[#7X3,$([NX2]=[CX3,PX4])])]-[C;!$(C1(=[SX1])NCCN1)](=[SX1])-[#7X3,$([NX2]=[CX3,PX4]);!$([NX3]-[#7X3,$([NX2]=[CX3,PX4])])]",  # excludes thioureido ring, thio(semi)carbazide, thiosemicarbazone
+        "thiosemicarbazide": "[#7X3,$([NX2]=[CX3,PX4])]-C(=[SX1])-[NX3]-[#7X3,$([NX2]=[PX4])]", # excludes semicarbazones
+        "thiocarbazide": "[#7X3,$([NX2]=[CX3,PX4])]-[NX3]-C(=[SX1])-[NX3]-[#7X3,$([NX2]=[CX3,PX4])]",
+        "thiosemicarbazone": "[#7X3,$([NX2]=[CX3,PX4])]-C(=[SX1])-[NX3]-[NX2]=[CX3]",
         "thioureido_ring": "[SX1]=C1NCCN1",
         "isothiourea": "[NX2,NX3H+]=C(-[SX2])-[#7X3,$([NX2]=[CX3,PX4])]",
         "thiocarbamate": "[#7;X3,X2]-C(=O)-[SX2]",
