@@ -593,7 +593,6 @@ MAIN_GROUP: Dict[str, Dict] = {
         "imino-thiophosphate_di_ester_mono_thioester": "[$([PX4]=[NX2]),$([PX4+]-[NX2-])](-O-[!#1])(-O-[!#1])-[SX2]-[!#1]",
         "imino-dithiophosphate_mono_ester_di_thioester": "[$([PX4]=[NX2]),$([PX4+]-[NX2-])](-O-[!#1])(-[SX2]-[!#1])-[SX2]-[!#1]",
         "imino-trithiophosphate_tri_thioester": "[$([PX4]=[NX2]),$([PX4+]-[NX2-])](-[SX2]-[!#1])(-[SX2]-[!#1])-[SX2]-[!#1]",
-        "iminophosphoramidate_di_ester": "[$([PX4]=[NX2]),$([PX4+]-[NX2-])](-O-[!#1])(-O-[!#1])-[#7X3,$([NX2]=[CX3,PX4])]",
         "imino-thiophosphoramidate_mono_ester_mono_thioester": "[$([PX4]=[NX2]),$([PX4+]-[NX2-])](-O-[!#1])(-[SX2]-[!#1])-[#7X3,$([NX2]=[CX3,PX4])]",
         "imino-dithiophosphoramidate_di_thioester": "[$([PX4]=[NX2]),$([PX4+]-[NX2-])](-[SX2]-[!#1])(-[SX2]-[!#1])-[#7X3,$([NX2]=[CX3,PX4])]",
         "iminophosphorodiamidate": "[$([PX4]=[NX2]),$([PX4+]-[NX2-])](-O-[!#1])(-[#7X3,$([NX2]=[CX3,PX4])])-[#7X3,$([NX2]=[CX3,PX4])]",
