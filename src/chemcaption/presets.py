@@ -973,9 +973,9 @@ HOMOAROMATICS: Dict[str, str] = {
         "m-hydroxyphenyl": "[!#1;!O]-[cH0]1:[cH]:[cH0](-[OH]):[cH]:[cH]:[cH]:1",  # excludes resorcinol
         "p-hydroxyphenyl": "[!$([CH]=[CH]-C=O);!O]-[cH0]1:[cH]:[cH]:[cH0](-[OH]):[cH]:[cH]:1",  # excludes hydroquinone, coumaroyl
         "coumaroyl": "[*]-C(=O)-[CH]=[CH]-[cH0]1:[cH]:[cH]:[cH0](-O):[cH]:[cH]:1",
-        "o-methoxyphenyl": "[!#1;!O]-[cH0]1:[cH0](-O-[CH3]):[cH]:[cH]:[cH]:[cH]:1",  # excludes catechol
-        "m-methoxyphenyl": "[!#1;!O]-[cH0]1:[cH]:[cH0](-O-[CH3]):[cH]:[cH]:[cH]:1",  # excludes resorcinol
-        "p-methoxyphenyl": "[!#1;!O]-[cH0]1:[cH]:[cH]:[cH0](-O-[CH3]):[cH]:[cH]:1",  # excludes hydroquinone
+        "o-methoxyphenyl": "[!#1]-[cH0]1:[cH0](-O-[CH3]):[cH]:[cH]:[cH]:[cH]:1",
+        "m-methoxyphenyl": "[!#1]-[cH0]1:[cH]:[cH0](-O-[CH3]):[cH]:[cH]:[cH]:1",
+        "p-methoxyphenyl": "[!#1]-[cH0]1:[cH]:[cH]:[cH0](-O-[CH3]):[cH]:[cH]:1",
         ## di-sub
         "catechol": "O-[cH0;!$(c1cOBO1)]1:[cH0](-O):[cH]:[cH]:[cH]:[cH]:1",  # excludes catecholborane
         "resorcinol": "O-[cH0]1:[cH]:[cH0](-O):[cH]:[cH]:[cH]:1",
