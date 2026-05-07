@@ -685,7 +685,6 @@ MAIN_GROUP: Dict[str, Dict] = {
         "sulfinic_acid": "[#6]-[$([SX3]=O),$([SX3+]-[O-])]-[OH,O-,OH2+]",
         "sulfinate": "[#6]-[$([SX3]=O),$([SX3+]-[O-])]-O-[!#1]",
         "sulfinyl_halide": "[#6]-[$([SX3]=O),$([SX3+]-[O-])]-[F,Cl,Br,IX1]",
-        "sulfinamide": "[#6]-[$([SX3]=O),$([SX3+]-[O-])]-[#7X3]",
         "N-sulfinyl_imine": "[#6]-[$([SX3]=O),$([SX3+]-[O-])]-[NX2]=C",
         "sulfite": "O-[$([SX3]=O),$([SX3+]-[O-])]-O",
         "amidosulfite": "O-[$([SX3]=O),$([SX3+]-[O-])]-[#7X3,$([NX2]=[CX3,PX4])]",
