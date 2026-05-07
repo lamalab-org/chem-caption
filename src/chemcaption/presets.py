@@ -655,6 +655,8 @@ MAIN_GROUP: Dict[str, Dict] = {
         "dithiono_anhydride": "[#6,#1]-C(=[SX1])-O-C(=[SX1])-[#6,#1]",
         "trithio_anhydride": "[#6,#1]-C(=[SX1])-[SX2]-C(=[SX1])-[#6,#1]",
         "sulfonium": "[!-]-[SX3+](-[!-])-[!-]",
+        "monothio_deltate": "O=c1c(O)c1[SX2]",
+        "dithio_deltate": "O=c1c([SX2])c1[SX2]",
         "monothio_squarate": "O=c1c(=O)c(O)c1[SX2]",
         "dithio_squarate": "O=c1c(=O)c([SX2])c1[SX2]",
         ## S=C ylides
