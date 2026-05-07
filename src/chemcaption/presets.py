@@ -669,7 +669,7 @@ MAIN_GROUP: Dict[str, Dict] = {
         "sulfenate": "[#6]-[SX2]-O-[!#1]",
         "sulfenyl_halide": "[#6]-[SX2]-[F,Cl,Br,IX1]",
         "sulfoxylate": "O-[SX2]-O",
-        "sulfenamide": "[#6]-[SX2]-[NX3]",
+        "sulfenamide": "[#6]-[SX2]-[#7]",
         "thioxime": "[#6,#1]-C(=[NX2,NX3H+]-[SX2])-[#6,#1]",
         "thiocyanate": "[*]-[SX2]-C#[NX1]",
         "isothiocyanate": "[*]-[NX2]=C=[SX1]",
