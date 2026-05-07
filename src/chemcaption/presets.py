@@ -287,7 +287,7 @@ BRANCHES: Dict[str, str] = {
     "t-Boc": "[CH3]-C(-[CH3])(-[CH3])-O-C(=O)-[!#1;!#6]",
     "Fmoc": "[cH0]12[cH][cH][cH][cH][cH0]2-[cH0]2[cH][cH][cH][cH][cH0]2-[CH]1-[CH2]-O-C(=O)-[!#1;!#6]",
     # common diacyls
-    "oxalyl": "[!C;!#1]~[#6](=O)-,:[#6](=O)~[!C;!#1]",
+    "oxalyl": "[!$(C=O)]~[#6](=O)~[#6](=O)~[!$(C=O)]",
     "pyruvyl": "[CH3]-C(=O)-C(=O)-[!#6;!#1]",
     "malonyl": "[!#6;!#1]-C(=O)-C-C(=O)-[!#6;!#1]",
     "acetoacetyl": "[CH3]-C(=O)-C-C(=O)-[!#1;!$([CH3])]",
