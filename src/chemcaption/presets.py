@@ -837,7 +837,7 @@ MAIN_GROUP: Dict[str, Dict] = {
         "perfluoro-pentylene": "[!F;!$(C(F)(F))]-C(F)(F)-C(F)(F)-C(F)(F)-C(F)(F)-C(F)(F)-[!F;!$(C(F)(F))]",
         "perfluoro-hexyl": "[!$(C(F)(F))]-C(F)(F)-C(F)(F)-C(F)(F)-C(F)(F)-C(F)(F)-C(F)(F)F",
         "perfluoro-hexylene": "[!F;!$(C(F)(F))]-C(F)(F)-C(F)(F)-C(F)(F)-C(F)(F)-C(F)(F)-C(F)(F)-[!F;!$(C(F)(F))]",
-        "perfluoro-cyclohexyl": "[*]-C1-C(F)(F)-C(F)(F)-C(F)(F)-C(F)(F)-C(F)(F)1",
+        "perfluoro-cyclohexyl": "[*]-C1(F)-C(F)(F)-C(F)(F)-C(F)(F)-C(F)(F)-C(F)(F)1",
         "perfluoro-heptyl": "[!$(C(F)(F))]-C(F)(F)-C(F)(F)-C(F)(F)-C(F)(F)-C(F)(F)-C(F)(F)-C(F)(F)F",
         "perfluoro-octyl": "[*]-C(F)(F)-C(F)(F)-C(F)(F)-C(F)(F)-C(F)(F)-C(F)(F)-C(F)(F)-C(F)(F)F",
         ## O-X, N-X
