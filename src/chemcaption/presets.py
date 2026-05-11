@@ -263,9 +263,13 @@ BRANCHES: Dict[str, str] = {
     "cyclopropylidene": "[!O;!S]=[CX3]1-[CX4]-[CX4]-1",
     "1,1-cyclopropandiyl": "[*]-[CH0](-[*])1-[CH2]-[CH2]-1",
     "cyclobutyl": "[!#1]-[CX4;H1]1-[CH2]-[CH2]-[CH2]-1",
+    "cyclobutylidene": "[!O;!S]=[CX3]1-[CX4]-[CX4]-[CX4]-1",
+    "1,1-cyclobutandiyl": "[*]-[CH0](-[*])1-[CH2]-[CH2]-[CH2]-1",
     "cyclopentyl": "[!#1]-[CX4;H1]1-[CH2]-[CH2]-[CH2]-[CH2]-1",
+    "cyclopentylidene": "[!O;!S]=[CX3]1-[CX4]-[CX4]-[CX4]-[CX4]-1",
     "cyclohexyl": "[!#1]-[CX4;H1]1-[CH2]-[CH2]-[CH2]-[CH2]-[CH2]-1",
     "1-adamantyl": "[!#1]-[CX4;H0]1(-[CH2]2)-[CH2]-[CH](-[CH2]3)-[CH2]-[CH](-[CH2]-1)-[CH2]-[CH]-2-3",
+    "cyclohexylidene": "[!O;!S]=[CX3]1-[CX4]-[CX4]-[CX4]-[CX4]-[CX4]-1",
     "2-adamantyl": "[CH]1(-[CH2]2)-[CX4;H1](-[!#1])-[CH](-[CH2]3)-[CH2]-[CH](-[CH2]-1)-[CH2]-[CH]-2-3",
     ## unsaturated
     "vinyl": "[CH2]=[CH]-[!$([CH2]);!$(C=O);!#1]",  # excludes acryloyl
