@@ -99,6 +99,7 @@ CORE: Dict[str, str] = {
     "iminium": "[CX3;!$([CX3](-[#7]))]=[NX3+;H0;!$([NX3+](-[O-])-[#6,O]);!$([NX3+](-[NX2-]));!$([NX3+]-[C-])]",  # excludes nitrones, nitronates, azomethine ylides, azomethine imides
     "enamine": "C=[C;!$(C(-N)-N)]-[NX3,NX4H+,NX4H2+,NH3+;!$(N1~[#6;X3]~[#6;X3]~[O,S]~[#6;X3]~[#6;X3]-1)](-[#6,#1;!$(C=[O,S,N])])-[#6,#1;!$(C=[O,S,N])]",  # excludes enediamines, oxazines, thiazines
     "nitrile": "[#6,#1;!$(C=O)]-[CX2]#[NX1H0,NX2H+]",  # excludes cyanates, cyanamides, acyl cyanide
+    "isonitrile": "[!O]-[NX2+]#[CX1-]", # excludes fulminate
     "dicyanomethylidene": "[NX1]#[CX2]-[CX3](=[*])-[CX2]#[NX1]",
     "acyl_cyanide": "O=C-[CX2]#[NX1H0,NX2H+]",
     "azomethine_ylide": "[CX3-]-[NX3+](-[!#1])=[CX3]",
@@ -2553,7 +2554,7 @@ BIOMOLECULES: Dict[str, str] = {
         "taurine": "O-[$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])]-[CH2]-[CH2]-N",
         "biotinyl": "O=C1-N-[CH]2-[CH](-[CH2]-[CH2]-[CH2]-[CH2]-C=O)-S-[CH2]-[CH]2-N1",
         "GABA": "N-[CH2;!r5]-[CH2;!r5]-[CH2;!r5]-[C;!$(C1(=O)CCCN1)](=O)-[!#1;!#6]",
-        "carnithine_core": "[!#1;!#6]-C(=O)-[CH2]-[CH](-O)-[CH2]-[N+](-[CH3])(-[CH3])-[CH3]",
+        "carnitine_core": "[!#1;!#6]-C(=O)-[CH2]-[CH](-O)-[CH2]-[N+](-[CH3])(-[CH3])-[CH3]",
         "pantothenic_core": "O-[CH2]-C(-[CH3])(-[CH3])-[CH](-O)-C(=O)-N-[CH2]-[CH2]-C(=O)-[!#1;!#6]",
         "mevalonic_core": "O-[CH2]-[CH2]-C(-O)(-[CH3])-[CH2]-C=O-[!#1;!#6]",
         "ascorbic_core": "O1-[$(C=[O,N]),$(C(-[O,S,N,n])-[O,S,N,n])]-[CX3H0](~O)~[CX3H0](~O)-[CH]1-[CH](-O)-[CH2]-O",
