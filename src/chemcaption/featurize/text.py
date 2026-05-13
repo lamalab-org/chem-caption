@@ -8,7 +8,7 @@ from typing import Any, Dict, List, Optional, Sized, Union
 import numpy as np
 
 from chemcaption.featurize.text_utils import inspect_info
-from chemcaption.featurize.utils import join_list_elements2
+from chemcaption.featurize.utils import answer_generation
 
 # Implemented text-related classes
 
@@ -89,7 +89,7 @@ class Prompt:
             PROPERTY_NAME=self.completion_names,
             REPR_SYSTEM=self.representation_type,
             REPR_STRING=self.representation,
-            PROPERTY_VALUE=join_list_elements2(self.smart_names, self.completion),
+            PROPERTY_VALUE=answer_generation(self.smart_names, self.completion),
             PRECISION=4,
             PRECISION_TYPE=precision_type,
             COMPLETION=self.completion,
