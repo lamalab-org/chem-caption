@@ -23,13 +23,25 @@ __all__ = [
 ]
 
 
-def join_list_elements(elements: Any) -> str:
-    """Join list elements into a string. First elements separated by comma, last element separated by `and`."""
-    if len(elements) == 1:
-        return str(elements[0])
 
-    return ", ".join([str(e) for e in elements[:-1]]) + ", and " + str(elements[-1])
+def join_list_elements(names: List[str], elements: Any) -> str:
+    """Join list elements into a string. All elements separated by comma."""
+    
+    parts = []
 
+    for name, amount in zip(names, elements):
+        
+        if amount == 1:
+            parts.append(f"{amount} {name}")
+        else:
+            parts.append(f"{amount} {name}s")
+
+    if len(parts) == 0:
+        return ""
+    elif len(parts) == 1:
+        return parts[0]
+    else:
+        return ", ".join(parts[:-1]) + ", and " + parts[-1]
 
 @lru_cache(maxsize=128)
 def _rdkit_to_pymatgen(mol):

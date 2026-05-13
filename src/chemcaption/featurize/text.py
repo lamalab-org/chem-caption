@@ -28,6 +28,7 @@ class Prompt:
     prompt_template: Optional[str] = None
     completion_template: Optional[str] = None
     constraint: Optional[str] = None
+    smart_names: Optional[List[str]] = None
 
     def to_dict(self) -> Dict[str, Any]:
         """Return dictionary representation of object.
@@ -88,7 +89,7 @@ class Prompt:
             PROPERTY_NAME=self.completion_names,
             REPR_SYSTEM=self.representation_type,
             REPR_STRING=self.representation,
-            PROPERTY_VALUE=join_list_elements(self.completion),
+            PROPERTY_VALUE=join_list_elements2(self.smart_names, self.completion),
             PRECISION=4,
             PRECISION_TYPE=precision_type,
             COMPLETION=self.completion,

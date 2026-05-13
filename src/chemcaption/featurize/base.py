@@ -41,7 +41,7 @@ class AbstractFeaturizer(ABC):
             "Question: What {VERB} the {PROPERTY_NAME} of the molecule with {REPR_SYSTEM} "
             "{REPR_STRING}?"
         )
-        self.completion_template = "Answer: {COMPLETION}"
+        self.completion_template = "Answer: {PROPERTY_VALUE}"
         self._names = []
         self.constraint = None
 
@@ -97,7 +97,6 @@ class AbstractFeaturizer(ABC):
         dtype = completion.dtype
 
         completion = completion.flatten().tolist()
-
         if set(completion) == {0, 1} and dtype == "int":
             completion = [bool(i) for i in completion]
 
@@ -122,6 +121,7 @@ class AbstractFeaturizer(ABC):
             prompt_template=self.prompt_template,
             completion_template=self.completion_template,
             constraint=self.constraint,
+            smart_names=self.smart_names,
         )
 
     def text_featurize_many(
