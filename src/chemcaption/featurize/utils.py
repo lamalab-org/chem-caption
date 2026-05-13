@@ -43,7 +43,7 @@ def answer_generation(names: List[str], elements: Any=None) -> str:
     for name, amount in zip(names, elements):
         
         if amount == 1:
-            parts.append(f"{amount} {name}")
+            parts.append(f"{int(amount)} {name}")
         elif amount == 0:
             parts.append(f"no {name}s")
         else:
