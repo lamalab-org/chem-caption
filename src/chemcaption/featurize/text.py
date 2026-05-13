@@ -89,7 +89,7 @@ class Prompt:
             PROPERTY_NAME=self.completion_names,
             REPR_SYSTEM=self.representation_type,
             REPR_STRING=self.representation,
-            PROPERTY_VALUE=join_list_elements2(self.smart_names, self.completion),
+            PROPERTY_VALUE=join_list_elements(self.smart_names, self.completion),
             PRECISION=4,
             PRECISION_TYPE=precision_type,
             COMPLETION=self.completion,
