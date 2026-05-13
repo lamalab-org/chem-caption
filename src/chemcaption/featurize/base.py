@@ -44,6 +44,7 @@ class AbstractFeaturizer(ABC):
         self.completion_template = "Answer: {PROPERTY_VALUE}"
         self._names = []
         self.constraint = None
+        self.smart_names = None
 
     @property
     def get_names(self) -> List[Dict[str, str]]:
