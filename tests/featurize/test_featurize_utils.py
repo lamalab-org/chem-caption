@@ -10,6 +10,7 @@ __all__ = [
     "test_answer_generation_basic",
     "test_answer_generation_mismatched_lengths_raises",
     "test_answer_generation_none_elements_raises",
+    "test_answer_generation_none_partial_elements_raises",
     "test_answer_generation_none_names_fallback",
     "test_answer_generation_pluralization",
     "test_answer_generation_single_element",
@@ -23,7 +24,7 @@ __all__ = [
 def test_answer_generation_basic():
     """Test answer_generation with multiple names and counts."""
     result = answer_generation(["carbon", "hydrogen"], [6, 12])
-    assert result == "6 carbons, and 12 hydrogens"
+    assert result == "6 carbons and 12 hydrogens"
 
 
 def test_answer_generation_single_element():
@@ -70,6 +71,15 @@ def test_answer_generation_none_elements_raises():
     with pytest.raises((ValueError, TypeError)):
         answer_generation(["carbon"], None)
 
+def test_answer_generation_none_partial_elements_raises():
+    """Test that non-None names with partial None elements ignores None value."""
+    result = answer_generation(["carbon", None], [6, 12])
+    print(result)
+    #assert result == "6 carbons and 12 unspecified atoms"
+    
+    result = answer_generation(["carbon", "hydrogen"], [6, None])
+    print(result)
+    assert result == "6 carbons and 12 unspecified atoms"
 
 def test_join_list_elements_single():
     """Test join_list_elements with a single element."""

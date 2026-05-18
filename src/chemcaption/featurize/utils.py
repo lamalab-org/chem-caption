@@ -38,7 +38,7 @@ def answer_generation(names: List[str] = None, elements: List = None) -> str:
 
     # If no names supplied, use empty strings
     if names is None:
-        names = [""] * len(elements)
+        names = [None] * len(elements)
 
     if len(names) != len(elements):
         raise ValueError(
@@ -49,11 +49,11 @@ def answer_generation(names: List[str] = None, elements: List = None) -> str:
 
     for name, amount in zip(names, elements):
 
-        # switching bool to int
+        # switching bool to int for output
         if isinstance(amount, bool):
             amount = int(amount)
 
-        # missing value handling
+        # missing value handling for elements
         if amount is None:
             if name:
                 parts.append(f"unspecified {name}(s)")
@@ -61,8 +61,11 @@ def answer_generation(names: List[str] = None, elements: List = None) -> str:
                 parts.append("unspecified atom(s)")
             continue
 
-        if not name:
-            parts.append(str(amount))
+        if name is None:
+            if amount == 1:
+                parts.append(f"{amount} unspecified atom")
+            else:
+                parts.append(f"{amount} unspecified atoms")
             continue
 
         if amount == 1:
@@ -72,10 +75,15 @@ def answer_generation(names: List[str] = None, elements: List = None) -> str:
         else:
             parts.append(f"{amount} {name}s")
 
+    test = " and ".join(parts)
+    print(test)
+    
     if len(parts) == 0:
         return ""
     elif len(parts) == 1:
         return parts[0]
+    elif len(parts) == 2:
+        return " and ".join(parts)
     else:
         return ", ".join(parts[:-1]) + ", and " + parts[-1]
 
