@@ -8,14 +8,15 @@ from chemcaption.featurize.utils import answer_generation, join_list_elements
 
 __all__ = [
     "test_answer_generation_basic",
-    "test_answer_generation_single_element",
-    "test_answer_generation_pluralization",
-    "test_answer_generation_zero_amount",
-    "test_answer_generation_none_names_fallback",
     "test_answer_generation_mismatched_lengths_raises",
     "test_answer_generation_none_elements_raises",
-    "test_join_list_elements_single",
+    "test_answer_generation_none_names_fallback",
+    "test_answer_generation_pluralization",
+    "test_answer_generation_single_element",
+    "test_answer_generation_three_elements",
+    "test_answer_generation_zero_amount",
     "test_join_list_elements_multiple",
+    "test_join_list_elements_single",
 ]
 
 

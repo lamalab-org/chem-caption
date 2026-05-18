@@ -42,8 +42,7 @@ def answer_generation(names: List[str] = None, elements: List = None) -> str:
 
     if len(names) != len(elements):
         raise ValueError(
-            f"Length mismatch: names has {len(names)} items "
-            f"but elements has {len(elements)} items"
+            f"Length mismatch: names has {len(names)} items but elements has {len(elements) if elements is not None else 0} items"
         )
 
     parts = []
