@@ -75,11 +75,11 @@ def test_answer_generation_none_partial_elements_raises():
     """Test that non-None names with partial None elements ignores None value."""
     result = answer_generation(["carbon", None], [6, 12])
     print(result)
-    #assert result == "6 carbons and 12 unspecified atoms"
+    assert result == "6 carbons and 12 unspecified atoms"
     
     result = answer_generation(["carbon", "hydrogen"], [6, None])
     print(result)
-    assert result == "6 carbons and 12 unspecified atoms"
+    assert result == "6 carbons and unspecified hydrogen(s)"
 
 def test_join_list_elements_single():
     """Test join_list_elements with a single element."""
