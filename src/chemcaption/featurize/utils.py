@@ -3,7 +3,7 @@
 """Utilities for `featurize` module."""
 
 from functools import lru_cache
-from typing import Any, List, Tuple
+from typing import Any, List, Optional, Tuple
 
 import numpy as np
 from pymatgen.core import IMolecule  # use immutable for caching
@@ -30,12 +30,17 @@ def join_list_elements(elements: Any) -> str:
 
     return ", ".join([str(e) for e in elements[:-1]]) + ", and " + str(elements[-1])
 
-def answer_generation(names: List[str], elements: Any=None) -> str:
-    """Join list elements into a string. All elements separated by comma."""
-    
-    if len(names) != len(elements):
+def answer_generation(names: Optional[List[str]], elements: Any = None) -> str:
+    """Join list elements into a string. All elements separated by comma.
+
+    If names is None, falls back to joining elements directly (like join_list_elements).
+    """
+    if names is None:
+        return join_list_elements(elements)
+
+    if elements is None or len(names) != len(elements):
         raise ValueError(
-            f"Length mismatch: names has {len(names)} items but elements has {len(elements)} items"
+            f"Length mismatch: names has {len(names)} items but elements has {len(elements) if elements is not None else 0} items"
         )
 
     parts = []
