@@ -30,17 +30,10 @@ def join_list_elements(elements: Any) -> str:
 
     return ", ".join([str(e) for e in elements[:-1]]) + ", and " + str(elements[-1])
 
-<<<<<<< HEAD
-def answer_generation(names: List[str], elements: List = None) -> str:
-    """Join list elements into a string. All elements separated by comma."""
-    
-    if len(names) != len(elements):
-=======
 def answer_generation(names: List[str], elements: List=None) -> str:
     """Join list elements into a string. All elements separated by comma."""
     
     if len(names) != len(elements):
->>>>>>> 5e8990e (smaller bugfixes from previous changes)
         raise ValueError(
             f"Length mismatch: names has {len(names)} items but elements has {len(elements) if elements is not None else 0} items"
         )
