@@ -33,6 +33,9 @@ def join_list_elements(elements: Any) -> str:
 def answer_generation(names: List[str], elements: List=None) -> str:
     """Join list elements into a string. All elements separated by comma."""
     
+    if names is None:
+        raise ValueError("names cannot be None")
+        
     if len(names) != len(elements):
         raise ValueError(
             f"Length mismatch: names has {len(names)} items but elements has {len(elements) if elements is not None else 0} items"
@@ -41,6 +44,9 @@ def answer_generation(names: List[str], elements: List=None) -> str:
     parts = []
 
     for name, amount in zip(names, elements):
+        
+        if isinstance(amount, bool):
+            amount = int(amount)
         
         if amount == 1:
             parts.append(f"{int(amount)} {name}")
