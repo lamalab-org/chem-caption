@@ -30,26 +30,44 @@ def join_list_elements(elements: Any) -> str:
 
     return ", ".join([str(e) for e in elements[:-1]]) + ", and " + str(elements[-1])
 
-def answer_generation(names: List[str], elements: List=None) -> str:
-    """Join list elements into a string. All elements separated by comma."""
-    
+def answer_generation(names: List[str] = None, elements: List = None) -> str:
+    """Join list elements into a readable string."""
+
+    if elements is None:
+        elements = []
+
+    # If no names supplied, use empty strings
     if names is None:
-        raise ValueError("names cannot be None")
-        
+        names = [""] * len(elements)
+
     if len(names) != len(elements):
         raise ValueError(
-            f"Length mismatch: names has {len(names)} items but elements has {len(elements) if elements is not None else 0} items"
+            f"Length mismatch: names has {len(names)} items "
+            f"but elements has {len(elements)} items"
         )
 
     parts = []
 
     for name, amount in zip(names, elements):
-        
+
+        # switching bool to int
         if isinstance(amount, bool):
             amount = int(amount)
-        
+
+        # missing value handling
+        if amount is None:
+            if name:
+                parts.append(f"unspecified {name}(s)")
+            else:
+                parts.append("unspecified atom(s)")
+            continue
+
+        if not name:
+            parts.append(str(amount))
+            continue
+
         if amount == 1:
-            parts.append(f"{int(amount)} {name}")
+            parts.append(f"{amount} {name}")
         elif amount == 0:
             parts.append(f"no {name}s")
         else:
