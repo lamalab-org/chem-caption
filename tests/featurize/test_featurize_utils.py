@@ -13,7 +13,6 @@ __all__ = [
     "test_answer_generation_pluralization",
     "test_answer_generation_zero_amount",
     "test_answer_generation_three_elements",
-    "test_answer_generation_none_names_fallback",
     "test_answer_generation_mismatched_lengths_raises",
     "test_join_list_elements_single",
     "test_join_list_elements_multiple",
