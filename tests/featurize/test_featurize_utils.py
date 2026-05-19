@@ -9,16 +9,14 @@ from chemcaption.featurize.utils import answer_generation, join_list_elements
 __all__ = [
     "test_answer_generation_basic",
     "test_answer_generation_wrong_input",
-    "test_answer_generation_mismatched_lengths_raises",
-    "test_answer_generation_none_elements_raises",
-    "test_answer_generation_none_partial_elements_raises",
-    "test_answer_generation_none_names_fallback",
-    "test_answer_generation_pluralization",
     "test_answer_generation_single_element",
-    "test_answer_generation_three_elements",
+    "test_answer_generation_pluralization",
     "test_answer_generation_zero_amount",
-    "test_join_list_elements_multiple",
+    "test_answer_generation_three_elements",
+    "test_answer_generation_none_names_fallback",
+    "test_answer_generation_mismatched_lengths_raises",
     "test_join_list_elements_single",
+    "test_join_list_elements_multiple",
 ]
 
 
@@ -28,12 +26,19 @@ def test_answer_generation_basic():
     assert result == "6 carbons and 12 hydrogens"
     
 def test_answer_generation_wrong_input():
-    """Test answer_generation with wrong input type or accidentially swapped arguments."""
-    result = answer_generation(6, "carbon")
-    assert result == "find reasonable solution for 'wrong input' case"
-    
-    result = answer_generation([6, 12], ["carbon", "hydrogen"])
-    assert result == "find reasonable solution for 'accidental switch' case"
+    """Test answer_generation with wrong input type."""
+    with pytest.raises(ValueError, match="elements"):
+        answer_generation(["carbon", "hydrogen"], None)
+    with pytest.raises(ValueError, match="names"):
+        answer_generation(None, ["carbon", "hydrogen"])
+    with pytest.raises(TypeError, match="elements"):
+        answer_generation(["carbon", "hydrogen"], [6, None])
+    with pytest.raises(TypeError, match="elements"):
+        answer_generation(["carbon", "hydrogen"], [6, "string"])
+    with pytest.raises(TypeError, match="names"):
+        answer_generation([None, 42], [6, 12])
+    with pytest.raises(TypeError, match="names"):
+        answer_generation(["string", 42], [6, 12])
 
 
 def test_answer_generation_single_element():
@@ -60,35 +65,10 @@ def test_answer_generation_three_elements():
     assert result == "6 carbons, 12 hydrogens, and 1 oxygen"
 
 
-def test_answer_generation_none_names_fallback():
-    """Test that None names falls back to join_list_elements behaviour."""
-    result = answer_generation(None, [6, 12])
-    assert result == "6 and 12"
-
-    result_single = answer_generation(None, [42])
-    assert result_single == "42"
-
-
 def test_answer_generation_mismatched_lengths_raises():
     """Test that mismatched names and elements lengths raise ValueError."""
     with pytest.raises(ValueError, match="Length mismatch"):
         answer_generation(["carbon", "hydrogen"], [6])
-
-
-def test_answer_generation_none_elements_raises():
-    """Test that non-None names with None elements raises ValueError."""
-    with pytest.raises((ValueError, TypeError)):
-        answer_generation(["carbon"], None)
-
-def test_answer_generation_none_partial_elements_raises():
-    """Test that non-None names with partial None elements ignores None value."""
-    result = answer_generation(["carbon", None], [6, 12])
-    print(result)
-    assert result == "6 carbons and 12 unspecified atoms"
-    
-    result = answer_generation(["carbon", "hydrogen"], [6, None])
-    print(result)
-    assert result == "6 carbons and unspecified hydrogen(s)"
 
 def test_join_list_elements_single():
     """Test join_list_elements with a single element."""

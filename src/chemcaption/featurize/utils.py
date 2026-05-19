@@ -32,22 +32,38 @@ def join_list_elements(elements: Any) -> str:
 
 def answer_generation(names: List[str] = None, elements: List = None) -> str:
     """Join list elements into a readable string."""
-    
-    if names or elements is not List:
-        raise ValueError("Input must be lists of names and elements, or None.")
-    
-    
-    if elements is None:
-        elements = []
 
-    # If no names supplied, use empty strings
+    # VALIDATION PROCESS DEPTH
+    
+    # 1. parameter None
+    
     if names is None:
-        names = [None] * len(elements)
+        raise ValueError("Value Error: No input provided for names.")
+    if elements is None:
+        raise ValueError("Value Error: No input provided for elements.")
+    
+    # 2. parameter types - what if not list
+    
+    if not isinstance(names, list):
+        raise TypeError(f"Type Error: Expected 'names' to be a list but got {type(names).__name__} instead.")
+    if not isinstance(elements, list):
+        raise TypeError(f"Type Error: Expected 'elements' to be a list but got {type(elements).__name__} instead.")
 
+    # 3. validate list element types - what if not string or int
+    
+    if not all(isinstance(name, str) for name in names):
+        raise TypeError("Type Error: All items in 'names' list must be strings.")
+    if not all(isinstance(element, int) for element in elements):
+        raise TypeError("Type Error: All items in 'elements' list must be integers.")
+    
+    # 4. validate equal lengths
+    
     if len(names) != len(elements):
         raise ValueError(
             f"Length mismatch: names has {len(names)} items but elements has {len(elements) if elements is not None else 0} items"
         )
+    
+    # 5. Process values
 
     parts = []
 
@@ -78,10 +94,7 @@ def answer_generation(names: List[str] = None, elements: List = None) -> str:
             parts.append(f"no {name}s")
         else:
             parts.append(f"{amount} {name}s")
-
-    test = " and ".join(parts)
-    print(test)
-    
+            
     if len(parts) == 0:
         return ""
     elif len(parts) == 1:
