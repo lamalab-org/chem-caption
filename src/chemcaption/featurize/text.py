@@ -8,7 +8,7 @@ from typing import Any, Dict, List, Optional, Sized, Union
 import numpy as np
 
 from chemcaption.featurize.text_utils import inspect_info
-from chemcaption.featurize.utils import answer_generation, join_list_elements
+from chemcaption.featurize.utils import answer_generation
 
 # Implemented text-related classes
 
