@@ -28,7 +28,7 @@ def join_list_elements(elements: Any) -> str:
     """Join list elements into a string. First elements separated by comma, last element separated by `and`."""
     if len(elements) == 1:
         return str(elements[0])
-
+    
     return ", ".join([str(e) for e in elements[:-1]]) + ", and " + str(elements[-1])
 
 def answer_generation(elements: List = None, names: List[str] = None) -> str:
@@ -41,6 +41,8 @@ def answer_generation(elements: List = None, names: List[str] = None) -> str:
     if names is None:
         if len(elements) == 1:
             return str(elements[0])
+        elif len(elements) == 2:
+            return " and ".join(elements)
         return ", ".join([str(e) for e in elements[:-1]]) + ", and " + str(elements[-1])
 
     if elements is None:
