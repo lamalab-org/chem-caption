@@ -8,6 +8,7 @@ from chemcaption.featurize.utils import answer_generation, join_list_elements
 
 __all__ = [
     "test_answer_generation_basic",
+    "test_answer_generation_wrong_input",
     "test_answer_generation_mismatched_lengths_raises",
     "test_answer_generation_none_elements_raises",
     "test_answer_generation_none_partial_elements_raises",
@@ -25,6 +26,14 @@ def test_answer_generation_basic():
     """Test answer_generation with multiple names and counts."""
     result = answer_generation(["carbon", "hydrogen"], [6, 12])
     assert result == "6 carbons and 12 hydrogens"
+    
+def test_answer_generation_wrong_input():
+    """Test answer_generation with wrong input type or accidentially swapped arguments."""
+    result = answer_generation(6, "carbon")
+    assert result == "find reasonable solution for 'wrong input' case"
+    
+    result = answer_generation([6, 12], ["carbon", "hydrogen"])
+    assert result == "find reasonable solution for 'accidental switch' case"
 
 
 def test_answer_generation_single_element():
@@ -54,7 +63,7 @@ def test_answer_generation_three_elements():
 def test_answer_generation_none_names_fallback():
     """Test that None names falls back to join_list_elements behaviour."""
     result = answer_generation(None, [6, 12])
-    assert result == "6, and 12"
+    assert result == "6 and 12"
 
     result_single = answer_generation(None, [42])
     assert result_single == "42"
