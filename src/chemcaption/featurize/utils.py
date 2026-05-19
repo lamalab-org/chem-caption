@@ -32,7 +32,11 @@ def join_list_elements(elements: Any) -> str:
 
 def answer_generation(names: List[str] = None, elements: List = None) -> str:
     """Join list elements into a readable string."""
-
+    
+    if names or elements is not List:
+        raise ValueError("Input must be lists of names and elements, or None.")
+    
+    
     if elements is None:
         elements = []
 
