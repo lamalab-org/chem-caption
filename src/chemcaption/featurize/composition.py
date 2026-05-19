@@ -9,7 +9,7 @@ import numpy as np
 from rdkit.Chem import Descriptors
 
 from chemcaption.featurize.base import PERIODIC_TABLE, AbstractFeaturizer
-from chemcaption.featurize.utils import join_list_elements
+from chemcaption.featurize.utils import answer_generation
 from chemcaption.molecules import Molecule
 
 # Implemented composition-related featurizers
@@ -224,7 +224,7 @@ class ElementMassFeaturizer(AbstractFeaturizer):
             (List[Dict[str, str]]): List of names for extracted features according to parts-of-speech.
         """
         noun = "masses" if len(self.preset) > 1 else "mass"
-        return [{"noun": f"total {noun} of " + join_list_elements(self.preset)}]
+        return [{"noun": f"total {noun} of " + answer_generation(self.preset)}]
 
     @property
     def feature_labels(self) -> List[str]:

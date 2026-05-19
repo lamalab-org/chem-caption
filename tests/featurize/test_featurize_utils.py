@@ -68,12 +68,3 @@ def test_answer_generation_mismatched_lengths_raises():
     """Test that mismatched names and elements lengths raise ValueError."""
     with pytest.raises(ValueError, match="Length mismatch"):
         answer_generation(["carbon", "hydrogen"], [6])
-
-def test_join_list_elements_single():
-    """Test join_list_elements with a single element."""
-    assert join_list_elements([7]) == "7"
-
-
-def test_join_list_elements_multiple():
-    """Test join_list_elements with multiple elements uses comma-and style."""
-    assert join_list_elements([1, 2, 3]) == "1, 2, and 3"

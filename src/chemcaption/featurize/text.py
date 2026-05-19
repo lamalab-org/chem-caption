@@ -75,13 +75,14 @@ class Prompt:
     def __dict__(self, value):
         raise NotImplementedError
 
-    def fill_template(self, template: Any, precision_type: str = "decimal") -> str:
+    def fill_template(self, template: Any, precision_type: str = "decimal", usenames: bool = False) -> str:
         """Fill up the prompt template with appropriate values.
 
         Args:
             template (str): Prompt template.
             precision_type (str, optional): Level of precision for approximation purposes.
             Can be `decimal` or `significant`. Defaults to `decimal`.
+            usenames (bool, optional): Whether to use names in the template. Defaults to False.
 
         Returns:
             str: Appropriately formatted template.
@@ -91,9 +92,9 @@ class Prompt:
             REPR_SYSTEM=self.representation_type,
             REPR_STRING=self.representation,
             PROPERTY_VALUE=(
-                answer_generation(self.smart_names, self.completion)
-                if self.smart_names is not None
-                else join_list_elements(self.completion)
+                answer_generation(self.completion, self.smart_names)
+                if usenames
+                else answer_generation(self.completion)
             ),
             PRECISION=4,
             PRECISION_TYPE=precision_type,

@@ -8,7 +8,7 @@ import numpy as np
 from rdkit.Chem import rdMolDescriptors
 
 from chemcaption.featurize.base import AbstractFeaturizer, MorfeusFeaturizer
-from chemcaption.featurize.utils import join_list_elements
+from chemcaption.featurize.utils import answer_generation
 from chemcaption.molecules import Molecule
 
 # Implemented bond-related featurizers
@@ -388,7 +388,7 @@ class BondTypeCountFeaturizer(AbstractFeaturizer):
         beginning = np.random.choice(beginning, 1).item()
         end = np.random.choice(end, 1).item()
 
-        return [{"noun": beginning + join_list_elements(mapped_names) + end}]
+        return [{"noun": beginning + answer_generation(mapped_names) + end}]
 
     @staticmethod
     def _get_bonds(
