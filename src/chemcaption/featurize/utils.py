@@ -29,11 +29,13 @@ def answer_generation(elements: List = None, names: List[str] = None) -> str:
     
     # 1. parameter None
     
+    print(names)
+    print(elements)
     if names is None:
         if len(elements) == 1:
             return str(elements[0])
         elif len(elements) == 2:
-            return " and ".join(elements)
+            return f"{elements[0]} and {elements[1]}"
         else:
             return ", ".join([str(e) for e in elements[:-1]]) + ", and " + str(elements[-1])
 

@@ -9,7 +9,7 @@ import rdkit
 from rdkit.Chem import GetPeriodicTable, PeriodicTable
 
 from chemcaption.featurize.base import AbstractFeaturizer
-from chemcaption.featurize.utils import join_list_elements
+from chemcaption.featurize.utils import answer_generation
 from chemcaption.molecules import Molecule
 from chemcaption.presets import SMARTS_MAP
 
@@ -75,12 +75,12 @@ class FragmentSearchFeaturizer(AbstractFeaturizer):
             noun = "counts"
 
         if self.count:
-            name = f"Question: What {name.lower()} the {noun} of " + join_list_elements(
+            name = f"Question: What {name.lower()} the {noun} of " + answer_generation(
                 self.smart_names
             )
 
         else:
-            name = f"Question: {name} " + join_list_elements(self.smart_names)
+            name = f"Question: {name} " + answer_generation(self.smart_names)
 
         return [{"noun": name}]
 
@@ -295,7 +295,7 @@ class TopologyCountFeaturizer(AbstractFeaturizer):
 
         noun = "numbers" if len(self.reference_atomic_numbers) > 1 else "number"
         return [
-            {"noun": f"{noun} of topologically unique environments of {join_list_elements(names)}"}
+            {"noun": f"{noun} of topologically unique environments of {answer_generation(names)}"}
         ]
 
     @classmethod

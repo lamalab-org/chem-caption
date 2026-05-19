@@ -514,7 +514,7 @@ class BondTypeProportionFeaturizer(BondTypeCountFeaturizer):
         beginning = np.random.choice(beginning, 1).item()
         end = np.random.choice(end, 1).item()
 
-        return [{"noun": beginning + join_list_elements(mapped_names) + end}]
+        return [{"noun": beginning + answer_generation(mapped_names) + end}]
 
     def _get_bond_distribution(self, molecule: Molecule) -> List[float]:
         """Return a frequency distribution for the bonds present in a molecule.

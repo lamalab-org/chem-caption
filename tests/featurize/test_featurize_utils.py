@@ -4,7 +4,7 @@
 
 import pytest
 
-from chemcaption.featurize.utils import answer_generation, join_list_elements
+from chemcaption.featurize.utils import answer_generation
 
 __all__ = [
     "test_answer_generation_basic",
@@ -14,8 +14,6 @@ __all__ = [
     "test_answer_generation_zero_amount",
     "test_answer_generation_three_elements",
     "test_answer_generation_mismatched_lengths_raises",
-    "test_join_list_elements_single",
-    "test_join_list_elements_multiple",
 ]
 
 
