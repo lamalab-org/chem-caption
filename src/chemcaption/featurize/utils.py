@@ -28,16 +28,20 @@ def answer_generation(elements: List = None, names: List[str] = None) -> str:
     # VALIDATION PROCESS DEPTH
     
     # 1. parameter None
-    
-    print(names)
-    print(elements)
+
     if names is None:
+        elements = [
+            int(element) if isinstance(element, (bool, np.bool_)) else element
+            for element in elements
+        ]
+        print(elements)
         if len(elements) == 1:
             return str(elements[0])
         elif len(elements) == 2:
             return f"{elements[0]} and {elements[1]}"
         else:
-            return ", ".join([str(e) for e in elements[:-1]]) + ", and " + str(elements[-1])
+            sep = ", and " if isinstance(elements[0], str) else " and "
+            return ", ".join([str(e) for e in elements[:-1]]) + sep + str(elements[-1])
 
     if elements is None:
         raise ValueError("Value Error: No input provided for elements.")
