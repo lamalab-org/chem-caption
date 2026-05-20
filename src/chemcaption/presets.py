@@ -225,7 +225,7 @@ BRANCHES: Dict[str, str] = {
     "dimethylamino": "[CH3]-[NX3]-[CH3]",
     "diethylamino": "[CH3]-[CH2]-[NX3]-[CH2]-[CH3]",
     "methoxymethyl": "[CH3]-O-[CH2]-[!C,$([C;!X4,R]);!#1]",
-    "ethyl": "[CH3]-[CH2]-[!C,$([C;!X4,R,X4H0;!$(C(-[CH3])(-[CH3]))]);!$([Si]([CH2][CH3])([CH2][CH3])[CH2][CH3]);!$([NX3](-[CH2][CH3])-[CH2][CH3]);!O;!#1]",  # excludes ethoxy, diethylamino, ethyls on TES and the ethyl on t-pentyl
+    "ethyl": "[CH3]-[CH2]-[!C,$([C;!X4,R,X4H0;!$(C(-[CH3])(-[CH3]))]);!$([$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])]);!$([Si]([CH2][CH3])([CH2][CH3])[CH2][CH3]);!$([NX3](-[CH2][CH3])-[CH2][CH3]);!O;!#1]",  # excludes ethoxy, diethylamino, ethyls on TES and the ethyl on t-pentyl, esyl
     "ethylene": "[!#1;!C,$([C;!X4,H0])]-[CH2]-[CH2]-[!#1;!C,$([C;!X4,H0])]",
     "ethoxy": "[CH3]-[CH2]-O-[!$(C=O)]",  # excludes carboethoxy
     "n-propyl": "[CH3]-[CH2]-[CH2]-[!C,$([C;!X4,R,X4H0]);!O;!#1]",  # excludes propoxy
@@ -308,7 +308,7 @@ BRANCHES: Dict[str, str] = {
     "isophthaloyl": "[!#6;!#1]-C(=O)-c1cc(-C(=O)-[!#6;!#1])ccc1",
     "terephthaloyl": "[!#6;!#1]-C(=O)-c1ccc(-C(=O)-[!#6;!#1])cc1",
     # aromatic
-    "phenyl": "[cH]1:[cH]:[cH]:[cH]:[cH]:[cH0]:1-[!O;!$(C=O);!C,$([C;!H2]),$([CH2]-[C;!R;!H0]);!$([CH]=[CH]-[CH2,$(C=O)]);!$([Si](-[cH0]1[cH][cH][cH][cH][cH]1)([CH3])[CH3]);!$([Si](-[cH0]1[cH][cH][cH][cH][cH]1)(-[cH0]1[cH][cH][cH][cH][cH]1)-[$([cH0]1[cH][cH][cH][cH][cH]1),$(C([CH3])([CH3])[CH3])])]",  # excludes benzyl, phenoxy, cinnamyl, cinnamoyl, phenyls on common silyls
+    "phenyl": "[cH]1:[cH]:[cH]:[cH]:[cH]:[cH0]:1-[!O;!$(C=O);!C,$([C;!H2]),$([CH2]-[C;!R;!H0]);!$([$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])]);!$([CH]=[CH]-[CH2,$(C=O)]);!$([Si](-[cH0]1[cH][cH][cH][cH][cH]1)([CH3])[CH3]);!$([Si](-[cH0]1[cH][cH][cH][cH][cH]1)(-[cH0]1[cH][cH][cH][cH][cH]1)-[$([cH0]1[cH][cH][cH][cH][cH]1),$(C([CH3])([CH3])[CH3])])]",  # excludes benzyl, phenoxy, cinnamyl, cinnamoyl, phenyls on common silyls, besyl
     "phenoxy": "[*]-O-[cH0]1:[cH]:[cH]:[cH]:[cH]:[cH]:1",
     "benzyl": "[!C,$([C;!X4,R,X4H0]);!#1;!O]-[CH2]-[cH0]1:[cH]:[cH]:[cH]:[cH]:[cH]:1",  # excludes benzoxy
     "benzoxy": "[*]-O-[CH2]-[cH0]1:[cH]:[cH]:[cH]:[cH]:[cH]:1",
@@ -759,13 +759,16 @@ MAIN_GROUP: Dict[str, Dict] = {
         "trifluorosulfanyl": "[*]-[SX4](-F)(-F)-F",
         "sulfoxonium": "[#6;!-]-[$([SX4+]=O),$([SX4+2]-[O-])](-[#6;!-])-[#6;!-]",  # excludes sulfoxonium ylides
         ### common sulfonyls
-        "mesyl": "[*]-[$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])]-[CH3]",
+        "mesyl": "[!O-]-[$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])]-[CH3]",
+        "esyl": "[*]-[$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])]-[CH2][CH3]",
+        "besyl": "[!O-]-[$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])]-[cH0]1:[cH]:[cH]:[cH]:[cH]:[cH1]:1",
+        "edisyl": "[*]-[$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])]-[CH2]-[CH2]-[$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])]-[*]",
         "o-tosyl": "[*]-[$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])]-[cH0]1:[cH]:[cH]:[cH]:[cH]:[cH0](-[CH3]):1",
         "p-tosyl": "[*]-[$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])]-[cH0]1:[cH]:[cH]:[cH0](-[CH3]):[cH]:[cH]:1",
         "o-nosyl": "[*]-[$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])]-[cH0]1:[cH0](-[N+](=O)(-[O-])):[cH]:[cH1]:[cH]:[cH]:1",
         "p-nosyl": "[*]-[$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])]-[cH0]1:[cH]:[cH]:[cH0](-[N+](=O)(-[O-])):[cH]:[cH]:1",
         "bresyl": "[*]-[$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])]-[cH0]1:[cH]:[cH]:[cH0](-Br):[cH]:[cH]:1",
-        "triflyl": "[*]-[$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])]-C(F)(F)F",
+        "triflyl": "[!O-]-[$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])]-C(F)(F)F",
         "dansyl": "[*]-[$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])]-[cH0]1:[cH]:[cH]:[cH]:[cH0]2:[cH0](-[NX3](-[CH3])-[CH3]):[cH]:[cH]:[cH]:[cH0]:1:2",  # 5-dimethylaminonaphthalene
         "nonaflyl": "[*]-[$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])]-C(F)(F)-C(F)(F)-C(F)(F)-C(F)(F)F",  # C4F9
         ### hexavalent
@@ -2338,6 +2341,7 @@ BIOMOLECULES: Dict[str, str] = {
             "2-deoxy-aldopentose": "[$([CH]=O),$([CH](-[O,S,N,n])-[O,S,N,n])][CH2][CH](O)[CH](O)[CH2]O",
             "6-deoxy-aldohexose": "[$([CH]=O),$([CH](-[O,S,N,n])-[O,S,N,n])][CH](O)[CH](O)[CH](O)[CH](O)[CH3]",
             "hexosamine": "[$([CH]=O),$([CH](-[O,S,N,n])-[O,S,N,n])][CH](N)[CH](O)[CH](O)[CH](O)[CH2](O)",
+            "meglumine": "[CH3]-[NX3]-[CH2]-[CH](O)-[CH](O)-[CH](O)-[CH](O)-[CH2]-O",
             "6-deoxy-hexosamine": "[$([CH]=O),$([CH](-[O,S,N,n])-[O,S,N,n])][CH](N)[CH](O)[CH](O)[CH](O)[CH3]",
             "3-deoxy-octulosonic_acid": "[!#1;!#6]-C(=O)-[$(C=[O,N]),$(C(-[O,S,N,n])-[O,S,N,n])][CH2][CH](O)[CH](O)[CH](O)[CH](O)[CH2](O)",
             "neuraminic_acid": "[!#1;!#6]-C(=O)-[$(C=[O,N]),$(C(-[O,S,N,n])-[O,S,N,n])][CH2][CH](O)[CH](N)[CH](O)[CH](O)[CH](O)[CH2](O)",
@@ -2567,6 +2571,59 @@ BIOMOLECULES: Dict[str, str] = {
     },
 }
 
+IONS = {
+    # cations
+    "lithium_ion": "[Li+]",
+    "sodium_ion": "[Na+]",
+    "potassium_ion": "[K+]",
+    "rubidium_ion": "[Rb+]",
+    "cesium_ion": "[Cs+]",
+    "magnesium_ion": "[Mg+2]",
+    "calcium_ion": "[Ca+2]",
+    "strontium_ion": "[Sr+2]",
+    "barium_ion": "[Ba+2]",
+    "aluminum_ion": "[Al+3]",
+    "iron(II)_ion": "[Fe+2]",
+    "iron(III)_ion": "[Fe+3]",
+    "copper(I)_ion": "[Cu+]",
+    "copper(II)_ion": "[Cu+2]",
+    "nickel(II)_ion": "[Ni+2]",
+    "mercury(II)_ion": "[Hg+2]",
+    "silver_ion": "[Ag+]",
+    "zinc_ion": "[Zn+2]",
+    "ammonium_ion": "[NH4+]",
+    "tetramethylammonium_ion": "[CH3][N+]([CH3])([CH3])[CH3]",
+    "tetrabutylammonium_ion": "[CH3][CH2][CH2][CH2][N+]([CH2][CH2][CH2][CH3])([CH2][CH2][CH2][CH3])[CH2][CH2][CH2][CH3]",
+    # anions
+    "fluoride_ion": "[F-]",
+    "chloride_ion": "[Cl-]",
+    "bromide_ion": "[Br-]",
+    "iodide_ion": "[I-]",
+    "hydroxide_ion": "[OH-]",
+    "cyanide_ion": "[CX1-]#[NX1]",
+    "carbonate_ion": "[O-]-C(=O)-[OH,O-]",
+    "nitrate_ion": "[O-]-[N+](=O)-[O-]",
+    "nitrite_ion": "[O-]-[NX2]=O",
+    "sulfate_ion": "[O-]-[$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])]-[OH,O-]",
+    "sulfite_ion": "[O-]-[$([SX3]=O),$([SX3+]-[O-])]-[OH,O-]",
+    "phosphate_ion": "[O-]-[$([PX4]=O),$([PX4+]-[O-])](-[OH,O-])-[OH,O-]",
+    "oxalate_ion": "[O-]-C(=O)-C(=O)-[OH,O-]",
+    "acetate_ion": "[CH3]C(=O)[O-]",
+    "trifluoroacetate_ion": "FC(F)(F)C(=O)[O-]",
+    "tetrafluoroborate_ion": "F[B-](F)(F)F",
+    "hexafluorophosphate_ion": "F[P-](F)(F)(F)(F)F",
+    "mesylate_ion": "[CH3]-[$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])]-[O-]",
+    "besylate_ion": "[cH1]1[cH1][cH1][cH1][cH1][cH0]1-[$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])]-[O-]",
+    "triflate_ion": "FC(F)(F)-[$([SX4](=O)=O),$([SX4+](=O)-[O-]),$([SX4+2](-[O-])-[O-])]-[O-]",
+
+
+
+    
+
+
+
+}
+
 ALL = {
     "CORE": CORE,
     "BRANCHES": BRANCHES,
@@ -2578,6 +2635,7 @@ ALL = {
     "OXO_RINGS": OXO_RINGS,
     "THIOXO_RINGS": THIOXO_RINGS,
     "BIOMOLECULES": BIOMOLECULES,
+    "IONS": IONS,
 }
 
 ALLSMART_NAMES: List[str] = (
@@ -2590,6 +2648,7 @@ ALLSMART_NAMES: List[str] = (
     + list(OXO_RINGS.keys())
     + list(THIOXO_RINGS.keys())
     + list(BIOMOLECULES.keys())
+    + list(IONS.keys())
 )
 
 
@@ -2603,6 +2662,7 @@ ALLSMART_SMARTS: List[str] = (
     + list(OXO_RINGS.values())
     + list(THIOXO_RINGS.values())
     + list(BIOMOLECULES.values())
+    + list(IONS.values())
 )
 
 
@@ -2617,6 +2677,7 @@ ALL_SMARTS: Dict[str, str] = {
     **OXO_RINGS,
     **THIOXO_RINGS,
     **BIOMOLECULES,
+    **IONS,
 }
 
 
@@ -2631,6 +2692,7 @@ SMARTS_MAP: Dict[str, Dict[str, str]] = dict(
     oxo_rings=OXO_RINGS,
     thioxo_rings=THIOXO_RINGS,
     biomolecules=BIOMOLECULES,
+    ions=IONS,
     all=ALL_SMARTS,
 )
 
