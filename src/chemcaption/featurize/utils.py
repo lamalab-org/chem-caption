@@ -27,6 +27,13 @@ def answer_generation(elements: List = None, names: List[str] = None) -> str:
 
     # VALIDATION PROCESS DEPTH
     
+    elements = [
+        f"{float(e):.4f}" if isinstance(e, (float, np.floating))
+        else str(int(e)) if isinstance(e, (bool, np.bool_))
+        else str(e)
+        for e in elements
+    ]
+    
     # 1. parameter None
 
     if names is None:

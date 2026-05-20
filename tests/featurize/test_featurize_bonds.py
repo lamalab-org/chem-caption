@@ -56,7 +56,7 @@ def test_bond_type_count_featurizer():
 
     assert (
         text.to_dict()["filled_completion"]
-        == "Answer: 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, and 12"
+        == "Answer: 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0 and 12"
     )
 
     bt = BondTypeCountFeaturizer(count=False)
@@ -182,7 +182,7 @@ def test_bond_type_proportion_featurizer():
     )
     assert text.to_dict()["filled_completion"] == (
         "Answer: 0.0, 0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.5, "
-        "0.0, 0.0, 0.0, 0.0, 0.0, 0.0, and 0.0"
+        "0.0, 0.0, 0.0, 0.0, 0.0, 0.0 and 0.0"
     )
 
 

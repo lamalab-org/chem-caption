@@ -156,11 +156,14 @@ def test_npr_featurizer():
     assert len(featurizer.get_names) > 0
 
     text = featurizer.text_featurize(pos_key="noun", molecule=molecule)
+    
+    print("text: ", text)
     assert text.to_dict()["filled_prompt"] == (
-        "Question: What are the first, and second normalized principal moments ratio (NPR) of the molecule "
+        "Question: What are the first and second normalized principal moments ratio (NPR) of the molecule "
         "with SMILES O=C1C=CC(=O)C(C(=O)O)=C1?"
     )
-    assert text.to_dict()["filled_completion"][:-3] == "Answer: 0.3437 and 0.6"
+    print("text to dict: ", text.to_dict()["filled_completion"])
+    assert text.to_dict()["filled_completion"] == "Answer: 0.3437 and 0.6894"
 
     try:
         featurizer = NPRFeaturizer(variant=128)

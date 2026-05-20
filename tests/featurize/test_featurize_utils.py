@@ -21,7 +21,8 @@ def test_answer_generation_basic():
     """Test answer_generation with multiple names and counts."""
     result = answer_generation(["carbon", "hydrogen"], [6, 12])
     assert result == "6 carbons and 12 hydrogens"
-    
+
+# TODO - redo, since these are still old tests
 def test_answer_generation_wrong_input():
     """Test answer_generation with wrong input type."""
     with pytest.raises(ValueError, match="elements"):
@@ -33,9 +34,9 @@ def test_answer_generation_wrong_input():
     with pytest.raises(TypeError, match="elements"):
         answer_generation(["carbon", "hydrogen"], [6, "string"])
     with pytest.raises(TypeError, match="names"):
-        answer_generation([None, 42], [6, 12])
+        answer_generation([6, 12], [None, 42])
     with pytest.raises(TypeError, match="names"):
-        answer_generation(["string", 42], [6, 12])
+        answer_generation([6, 12], ["string", 42])
 
 
 def test_answer_generation_single_element():

@@ -10,7 +10,7 @@ from rdkit import Chem
 from rdkit.Chem import Descriptors3D
 
 from chemcaption.featurize.base import AbstractFeaturizer, MorfeusFeaturizer
-from chemcaption.featurize.utils import cached_conformer
+from chemcaption.featurize.utils import cached_conformer, answer_generation
 from chemcaption.molecules import Molecule
 
 # Implemented spatial featurizers
