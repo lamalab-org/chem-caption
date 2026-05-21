@@ -22,50 +22,48 @@ __all__ = [
     "cached_conformer",
 ]
 
+def _format_element(e):
+    """Format a single element to its display string."""
+    if isinstance(e, (bool, np.bool_)):
+        return str(int(e))           # True -> "1", False -> "0"
+    if isinstance(e, (float, np.floating)):
+        return f"{float(e):.4f}"
+    return str(e)
+
+def _join_readable(parts: List[str]) -> str:
+    """Join a list of strings as 'a', 'a and b', or 'a, b, and c'."""
+    if not parts:
+        return ""
+    if len(parts) == 1:
+        return parts[0]
+    if len(parts) == 2:
+        return f"{parts[0]} and {parts[1]}"
+    sep = " and "
+    return ", ".join(parts[:-1]) + sep + parts[-1]
+
 def answer_generation(elements: Optional[List] = None, names: Optional[List[str]] = None) -> str:
     """Join list elements into a readable string."""
 
-    # VALIDATION PROCESS DEPTH
-    
-    elements = [
-        f"{float(e):.4f}" if isinstance(e, (float, np.floating))
-        else str(int(e)) if isinstance(e, (bool, np.bool_))
-        else str(e)
-        for e in elements
-    ]
-    
-    # 1. parameter None
-
-    if names is None:
-        elements = [
-            int(element) if isinstance(element, (bool, np.bool_)) else element
-            for element in elements
-        ]
-        print(elements)
-        if len(elements) == 1:
-            return str(elements[0])
-        elif len(elements) == 2:
-            return f"{elements[0]} and {elements[1]}"
-        else:
-            sep = ", and " if isinstance(elements[0], str) else " and "
-            return ", ".join([str(e) for e in elements[:-1]]) + sep + str(elements[-1])
+    # VALIDATION PROCESS    
+    # 1. elements is None
 
     if elements is None:
         raise ValueError("Value Error: No input provided for elements.")
-    
-    # 2. parameter types - what if not list
-    
-    if not isinstance(names, list):
-        raise TypeError(f"Type Error: Expected 'names' to be a list but got {type(names).__name__} instead.")
     if not isinstance(elements, list):
         raise TypeError(f"Type Error: Expected 'elements' to be a list but got {type(elements).__name__} instead.")
 
+    # 2. names is None
+    
+    if names is None:
+        formatted = [_format_element(e) for e in elements]
+        return _join_readable(formatted)
+    
     # 3. validate list element types - what if not string or int
     
-    if not all(isinstance(name, str) for name in names):
-        raise TypeError("Type Error: All items in 'names' list must be strings.")
     if not all(isinstance(element, int) for element in elements):
         raise TypeError("Type Error: All items in 'elements' list must be integers.")
+    if not all(isinstance(name, str) for name in names):
+        raise TypeError("Type Error: All items in 'names' list must be strings.")
     
     # 4. validate equal lengths
     
@@ -76,28 +74,12 @@ def answer_generation(elements: Optional[List] = None, names: Optional[List[str]
     
     # 5. Process values
 
-    parts = []
+    parts: List[str] = []
 
     for name, amount in zip(names, elements):
-
         # switching bool to int for output
         if isinstance(amount, bool):
             amount = int(amount)
-
-        # missing value handling for elements
-        if amount is None:
-            if name:
-                parts.append(f"unspecified {name}(s)")
-            else:
-                parts.append("unspecified atom(s)")
-            continue
-
-        if name is None:
-            if amount == 1:
-                parts.append(f"{amount} unspecified atom")
-            else:
-                parts.append(f"{amount} unspecified atoms")
-            continue
 
         if amount == 1:
             parts.append(f"{amount} {name}")
@@ -105,15 +87,8 @@ def answer_generation(elements: Optional[List] = None, names: Optional[List[str]
             parts.append(f"no {name}s")
         else:
             parts.append(f"{amount} {name}s")
-            
-    if len(parts) == 0:
-        return ""
-    elif len(parts) == 1:
-        return parts[0]
-    elif len(parts) == 2:
-        return " and ".join(parts)
-    else:
-        return ", ".join(parts[:-1]) + ", and " + parts[-1]
+
+    return _join_readable(parts)
 
 @lru_cache(maxsize=128)
 def _rdkit_to_pymatgen(mol):
