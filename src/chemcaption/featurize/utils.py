@@ -22,7 +22,7 @@ __all__ = [
     "cached_conformer",
 ]
 
-def answer_generation(elements: List = None, names: List[str] = None) -> str:
+def answer_generation(elements: Optional[List] = None, names: Optional[List[str]] = None) -> str:
     """Join list elements into a readable string."""
 
     # VALIDATION PROCESS DEPTH
