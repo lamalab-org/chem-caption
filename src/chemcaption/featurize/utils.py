@@ -23,7 +23,15 @@ __all__ = [
 ]
 
 def _format_element(e):
-    """Format a single element to its display string."""
+    """Format a single element to its display string.
+
+    Args:
+        e (Any): Element to format.
+        
+    Returns:
+        str: Formatted string representation of the element.
+    """
+    
     if isinstance(e, (bool, np.bool_)):
         return str(int(e))           # True -> "1", False -> "0"
     if isinstance(e, (float, np.floating)):
@@ -31,7 +39,15 @@ def _format_element(e):
     return str(e)
 
 def _join_readable(parts: List[str]) -> str:
-    """Join a list of strings as 'a', 'a and b', or 'a, b, and c'."""
+    """Join a list of strings as 'a', 'a and b', or 'a, b, and c'.
+    
+    Args:
+        parts (list): List of strings to join.
+        
+    Returns:
+        str: Readable joined string.
+    """
+    
     if not parts:
         return ""
     if len(parts) == 1:
@@ -42,7 +58,15 @@ def _join_readable(parts: List[str]) -> str:
     return ", ".join(parts[:-1]) + sep + parts[-1]
 
 def answer_generation(elements: Optional[List] = None, names: Optional[List[str]] = None) -> str:
-    """Join list elements into a readable string."""
+    """Join list elements into a readable string.
+    
+    Args:
+        elements (list): List of element counts or values.
+        names (list): List of element names corresponding to counts.
+        
+    Returns:
+        str: Readable string of element counts and names.
+    """
 
     # VALIDATION PROCESS    
     # 1. elements is None
