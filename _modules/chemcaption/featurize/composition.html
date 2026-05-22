@@ -280,7 +280,7 @@
 <span class="kn">from</span> <span class="nn">rdkit.Chem</span> <span class="kn">import</span> <span class="n">Descriptors</span>
 
 <span class="kn">from</span> <span class="nn">chemcaption.featurize.base</span> <span class="kn">import</span> <span class="n">PERIODIC_TABLE</span><span class="p">,</span> <span class="n">AbstractFeaturizer</span>
-<span class="kn">from</span> <span class="nn">chemcaption.featurize.utils</span> <span class="kn">import</span> <span class="n">join_list_elements</span>
+<span class="kn">from</span> <span class="nn">chemcaption.featurize.utils</span> <span class="kn">import</span> <span class="n">answer_generation</span>
 <span class="kn">from</span> <span class="nn">chemcaption.molecules</span> <span class="kn">import</span> <span class="n">Molecule</span>
 
 <span class="c1"># Implemented composition-related featurizers</span>
@@ -524,7 +524,7 @@
 <span class="sd">            (List[Dict[str, str]]): List of names for extracted features according to parts-of-speech.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">noun</span> <span class="o">=</span> <span class="s2">&quot;masses&quot;</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">preset</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="s2">&quot;mass&quot;</span>
-        <span class="k">return</span> <span class="p">[{</span><span class="s2">&quot;noun&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;total </span><span class="si">{</span><span class="n">noun</span><span class="si">}</span><span class="s2"> of &quot;</span> <span class="o">+</span> <span class="n">join_list_elements</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">preset</span><span class="p">)}]</span>
+        <span class="k">return</span> <span class="p">[{</span><span class="s2">&quot;noun&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;total </span><span class="si">{</span><span class="n">noun</span><span class="si">}</span><span class="s2"> of &quot;</span> <span class="o">+</span> <span class="n">answer_generation</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">preset</span><span class="p">)}]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">feature_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
@@ -697,7 +697,7 @@
 <span class="sd">            (List[Dict[str, str]]): List of names for extracted features according to parts-of-speech.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">proportion</span> <span class="o">=</span> <span class="s2">&quot;proportions&quot;</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">preset</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="s2">&quot;proportion&quot;</span>
-        <span class="k">return</span> <span class="p">[{</span><span class="s2">&quot;noun&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;mass </span><span class="si">{</span><span class="n">proportion</span><span class="si">}</span><span class="s2"> of &quot;</span> <span class="o">+</span> <span class="n">join_list_elements</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">preset</span><span class="p">)}]</span>
+        <span class="k">return</span> <span class="p">[{</span><span class="s2">&quot;noun&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;mass </span><span class="si">{</span><span class="n">proportion</span><span class="si">}</span><span class="s2"> of &quot;</span> <span class="o">+</span> <span class="n">answer_generation</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">preset</span><span class="p">)}]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">feature_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
@@ -777,7 +777,7 @@
 <span class="sd">            (List[Dict[str, str]]): List of names for extracted features according to parts-of-speech.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">count</span> <span class="o">=</span> <span class="s2">&quot;counts&quot;</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">preset</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="s2">&quot;count&quot;</span>
-        <span class="k">return</span> <span class="p">[{</span><span class="s2">&quot;noun&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;atom </span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s2"> of &quot;</span> <span class="o">+</span> <span class="n">join_list_elements</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">preset</span><span class="p">)}]</span>
+        <span class="k">return</span> <span class="p">[{</span><span class="s2">&quot;noun&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;atom </span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s2"> of &quot;</span> <span class="o">+</span> <span class="n">answer_generation</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">preset</span><span class="p">)}]</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_get_atom_count</span><span class="p">(</span><span class="n">element</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">molecule</span><span class="p">:</span> <span class="n">Molecule</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
@@ -874,7 +874,7 @@
 <span class="sd">            (List[Dict[str, str]]): List of names for extracted features according to parts-of-speech.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">count</span> <span class="o">=</span> <span class="s2">&quot;counts&quot;</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">preset</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="s2">&quot;count&quot;</span>
-        <span class="k">return</span> <span class="p">[{</span><span class="s2">&quot;noun&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;relative atom </span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s2"> of &quot;</span> <span class="o">+</span> <span class="n">join_list_elements</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">preset</span><span class="p">)}]</span>
+        <span class="k">return</span> <span class="p">[{</span><span class="s2">&quot;noun&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;relative atom </span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s2"> of &quot;</span> <span class="o">+</span> <span class="n">answer_generation</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">preset</span><span class="p">)}]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">feature_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
