@@ -8,7 +8,7 @@ from typing import Any, Dict, List, Optional, Sized, Union
 import numpy as np
 
 from chemcaption.featurize.text_utils import inspect_info
-from chemcaption.featurize.utils import join_list_elements
+from chemcaption.featurize.utils import answer_generation
 
 # Implemented text-related classes
 
@@ -28,6 +28,7 @@ class Prompt:
     prompt_template: Optional[str] = None
     completion_template: Optional[str] = None
     constraint: Optional[str] = None
+    smart_names: Optional[List[str]] = None
 
     def to_dict(self) -> Dict[str, Any]:
         """Return dictionary representation of object.
@@ -67,19 +68,21 @@ class Prompt:
                 else self.fill_template(self.prompt_template)
             ),
             "filled_completion": self.fill_template(self.completion_template),
+            "smart_names": self.smart_names,
         }
 
     @__dict__.setter
     def __dict__(self, value):
         raise NotImplementedError
 
-    def fill_template(self, template: Any, precision_type: str = "decimal") -> str:
+    def fill_template(self, template: Any, precision_type: str = "decimal", usenames: bool = False) -> str:
         """Fill up the prompt template with appropriate values.
 
         Args:
             template (str): Prompt template.
             precision_type (str, optional): Level of precision for approximation purposes.
             Can be `decimal` or `significant`. Defaults to `decimal`.
+            usenames (bool, optional): Whether to use names in the template. Defaults to False.
 
         Returns:
             str: Appropriately formatted template.
@@ -88,7 +91,11 @@ class Prompt:
             PROPERTY_NAME=self.completion_names,
             REPR_SYSTEM=self.representation_type,
             REPR_STRING=self.representation,
-            PROPERTY_VALUE=join_list_elements(self.completion),
+            PROPERTY_VALUE=(
+                answer_generation(list(self.completion), self.smart_names)
+                if usenames
+                else answer_generation(list(self.completion))
+            ),
             PRECISION=4,
             PRECISION_TYPE=precision_type,
             COMPLETION=self.completion,

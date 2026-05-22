@@ -9,7 +9,7 @@ import numpy as np
 from rdkit.Chem import Descriptors
 
 from chemcaption.featurize.base import PERIODIC_TABLE, AbstractFeaturizer
-from chemcaption.featurize.utils import join_list_elements
+from chemcaption.featurize.utils import answer_generation
 from chemcaption.molecules import Molecule
 
 # Implemented composition-related featurizers
@@ -224,7 +224,7 @@ class ElementMassFeaturizer(AbstractFeaturizer):
             (List[Dict[str, str]]): List of names for extracted features according to parts-of-speech.
         """
         noun = "masses" if len(self.preset) > 1 else "mass"
-        return [{"noun": f"total {noun} of " + join_list_elements(self.preset)}]
+        return [{"noun": f"total {noun} of " + answer_generation(self.preset)}]
 
     @property
     def feature_labels(self) -> List[str]:
@@ -385,7 +385,7 @@ class ElementMassProportionFeaturizer(ElementMassFeaturizer):
             (List[Dict[str, str]]): List of names for extracted features according to parts-of-speech.
         """
         proportion = "proportions" if len(self.preset) > 1 else "proportion"
-        return [{"noun": f"mass {proportion} of " + join_list_elements(self.preset)}]
+        return [{"noun": f"mass {proportion} of " + answer_generation(self.preset)}]
 
     @property
     def feature_labels(self) -> List[str]:
@@ -456,7 +456,7 @@ class ElementCountFeaturizer(ElementMassFeaturizer):
             (List[Dict[str, str]]): List of names for extracted features according to parts-of-speech.
         """
         count = "counts" if len(self.preset) > 1 else "count"
-        return [{"noun": f"atom {count} of " + join_list_elements(self.preset)}]
+        return [{"noun": f"atom {count} of " + answer_generation(self.preset)}]
 
     @staticmethod
     def _get_atom_count(element: str, molecule: Molecule) -> int:
@@ -544,7 +544,7 @@ class ElementCountProportionFeaturizer(ElementCountFeaturizer):
             (List[Dict[str, str]]): List of names for extracted features according to parts-of-speech.
         """
         count = "counts" if len(self.preset) > 1 else "count"
-        return [{"noun": f"relative atom {count} of " + join_list_elements(self.preset)}]
+        return [{"noun": f"relative atom {count} of " + answer_generation(self.preset)}]
 
     @property
     def feature_labels(self) -> List[str]:

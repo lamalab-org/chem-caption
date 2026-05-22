@@ -10,7 +10,7 @@ from rdkit import Chem
 from rdkit.Chem import Descriptors3D
 
 from chemcaption.featurize.base import AbstractFeaturizer, MorfeusFeaturizer
-from chemcaption.featurize.utils import cached_conformer, join_list_elements
+from chemcaption.featurize.utils import cached_conformer, answer_generation
 from chemcaption.molecules import Molecule
 
 # Implemented spatial featurizers
@@ -394,7 +394,7 @@ class NPRFeaturizer(SpatialFeaturizer):
                 names.append("third")
         name = " normalized principal moments ratio (NPR)"
 
-        return [{"noun": join_list_elements(names) + name}]
+        return [{"noun": answer_generation(names) + name}]
 
     def _parse_labels(self) -> List[str]:
         """
@@ -540,7 +540,7 @@ class PMIFeaturizer(SpatialFeaturizer):
             if len(names) == 1
             else " principal moments of inertia (PMI)"
         )
-        return [{"noun": join_list_elements(names) + name}]
+        return [{"noun": answer_generation(names) + name}]
 
     def featurize(self, molecule: Molecule) -> np.array:
         """

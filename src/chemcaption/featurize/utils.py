@@ -3,7 +3,7 @@
 """Utilities for `featurize` module."""
 
 from functools import lru_cache
-from typing import Any, List, Tuple
+from typing import Any, List, Optional, Tuple
 
 import numpy as np
 from pymatgen.core import IMolecule  # use immutable for caching
@@ -13,7 +13,7 @@ from rdkit import Chem
 # Implemented helper functions.
 
 __all__ = [
-    "join_list_elements",  # Helper function
+    "answer_generation",  # Helper function
     "_rdkit_to_pymatgen",  # Helper function
     "_pmg_mol_to_pointgroup_analyzer",  # Helper function
     "get_atom_symbols_and_positions",  # Helper function
@@ -22,14 +22,99 @@ __all__ = [
     "cached_conformer",
 ]
 
+def _format_element(e):
+    """Format a single element to its display string.
 
-def join_list_elements(elements: Any) -> str:
-    """Join list elements into a string. First elements separated by comma, last element separated by `and`."""
-    if len(elements) == 1:
-        return str(elements[0])
+    Args:
+        e (Any): Element to format.
+        
+    Returns:
+        str: Formatted string representation of the element.
+    """
+    
+    if isinstance(e, (bool, np.bool_)):
+        return str(int(e))
+    if isinstance(e, (float, np.floating)):
+        formatted = f"{float(e):.4f}".rstrip('0')
+        if formatted.endswith('.'):
+            formatted += '0'
+        return formatted
+    return str(e)
 
-    return ", ".join([str(e) for e in elements[:-1]]) + ", and " + str(elements[-1])
+def _join_readable(parts: List[str], oxford: bool = True) -> str:
+    """Join a list of strings as:
+    - 'a'
+    - 'a and b'
+    - 'a, b, and c'  (Oxford comma)
+    - 'a, b and c'   (No Oxford comma)
+    
+    Args:
+        parts (list): List of strings to join.
+        oxford_comma (bool): Whether to use Oxford comma.
+        
+    Returns:
+        str: Readable joined string.
+    """
+    
+    if not parts:
+        return ""
+    if len(parts) == 1:
+        return parts[0]
+    if len(parts) == 2:
+        return f"{parts[0]} and {parts[1]}"
+    sep = ", and " if oxford else " and "
+    return ", ".join(parts[:-1]) + sep + parts[-1]
 
+def answer_generation(elements: Optional[List] = None, names: Optional[List[str]] = None) -> str:
+    """Join list elements into a readable string.
+    
+    Args:
+        elements (list): List of element counts or values.
+        names (list): List of element names corresponding to counts.
+        
+    Returns:
+        str: Readable string of element counts and names.
+    """
+
+    # VALIDATION PROCESS    
+    # 1. checking for None values and validating types
+    if elements is None:
+        raise ValueError("Value Error: No input provided for elements.")
+    if not isinstance(elements, list):
+        raise TypeError(f"Type Error: Expected 'elements' to be a list but got {type(elements).__name__} instead.")
+
+    if names is None:
+        formatted = [_format_element(e) for e in elements]
+        return _join_readable(formatted)
+    
+    # 2. validate list element types - what if not string or int
+    if not all(isinstance(element, int) for element in elements):
+        raise TypeError("Type Error: All items in 'elements' list must be integers.")
+    if not all(isinstance(name, str) for name in names):
+        raise TypeError("Type Error: All items in 'names' list must be strings.")
+    
+    # 3. validate equal lengths
+    if len(names) != len(elements):
+        raise ValueError(
+            f"Length mismatch: names has {len(names)} items but elements has {len(elements) if elements is not None else 0} items"
+        )
+    
+    # 4. Process values
+    parts: List[str] = []
+
+    for name, amount in zip(names, elements):
+        # switching bool to int for output
+        if isinstance(amount, bool):
+            amount = int(amount)
+
+        if amount == 1:
+            parts.append(f"{amount} {name}")
+        elif amount == 0:
+            parts.append(f"no {name}s")
+        else:
+            parts.append(f"{amount} {name}s")
+
+    return _join_readable(parts, oxford=True)
 
 @lru_cache(maxsize=128)
 def _rdkit_to_pymatgen(mol):
