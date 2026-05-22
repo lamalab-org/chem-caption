@@ -92,9 +92,9 @@ class Prompt:
             REPR_SYSTEM=self.representation_type,
             REPR_STRING=self.representation,
             PROPERTY_VALUE=(
-                answer_generation(self.completion, self.smart_names)
+                answer_generation(list(self.completion), self.smart_names)
                 if usenames
-                else answer_generation(self.completion)
+                else answer_generation(list(self.completion))
             ),
             PRECISION=4,
             PRECISION_TYPE=precision_type,
