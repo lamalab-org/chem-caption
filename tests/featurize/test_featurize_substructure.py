@@ -52,7 +52,7 @@ def test_topology_count_featurizer():
         "Question: What are the numbers of topologically unique environments of C, H, N, O, P, "
         "S, F, Cl, Br, and I of the molecule with SMILES c1ccccc1?"
     )
-    assert text.to_dict()["filled_completion"] == "Answer: 1, 1, 0, 0, 0, 0, 0, 0, 0 and 0"
+    assert text.to_dict()["filled_completion"] == "Answer: 1, 1, 0, 0, 0, 0, 0, 0, 0, and 0"
 
 
 def test_fragment_search_featurizer():

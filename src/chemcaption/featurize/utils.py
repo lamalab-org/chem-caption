@@ -33,9 +33,12 @@ def _format_element(e):
     """
     
     if isinstance(e, (bool, np.bool_)):
-        return str(int(e))           # True -> "1", False -> "0"
+        return str(int(e))
     if isinstance(e, (float, np.floating)):
-        return f"{float(e):.4f}"
+        formatted = f"{float(e):.4f}".rstrip('0')
+        if formatted.endswith('.'):
+            formatted += '0'
+        return formatted
     return str(e)
 
 def _join_readable(parts: List[str], oxford: bool = True) -> str:
