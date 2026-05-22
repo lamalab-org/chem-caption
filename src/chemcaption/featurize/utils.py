@@ -38,11 +38,16 @@ def _format_element(e):
         return f"{float(e):.4f}"
     return str(e)
 
-def _join_readable(parts: List[str]) -> str:
-    """Join a list of strings as 'a', 'a and b', or 'a, b, and c'.
+def _join_readable(parts: List[str], oxford: bool = True) -> str:
+    """Join a list of strings as:
+    - 'a'
+    - 'a and b'
+    - 'a, b, and c'  (Oxford comma)
+    - 'a, b and c'   (No Oxford comma)
     
     Args:
         parts (list): List of strings to join.
+        oxford_comma (bool): Whether to use Oxford comma.
         
     Returns:
         str: Readable joined string.
@@ -54,7 +59,7 @@ def _join_readable(parts: List[str]) -> str:
         return parts[0]
     if len(parts) == 2:
         return f"{parts[0]} and {parts[1]}"
-    sep = " and "
+    sep = ", and " if oxford else " and "
     return ", ".join(parts[:-1]) + sep + parts[-1]
 
 def answer_generation(elements: Optional[List] = None, names: Optional[List[str]] = None) -> str:
@@ -69,35 +74,29 @@ def answer_generation(elements: Optional[List] = None, names: Optional[List[str]
     """
 
     # VALIDATION PROCESS    
-    # 1. elements is None
-
+    # 1. checking for None values and validating types
     if elements is None:
         raise ValueError("Value Error: No input provided for elements.")
     if not isinstance(elements, list):
         raise TypeError(f"Type Error: Expected 'elements' to be a list but got {type(elements).__name__} instead.")
 
-    # 2. names is None
-    
     if names is None:
         formatted = [_format_element(e) for e in elements]
         return _join_readable(formatted)
     
-    # 3. validate list element types - what if not string or int
-    
+    # 2. validate list element types - what if not string or int
     if not all(isinstance(element, int) for element in elements):
         raise TypeError("Type Error: All items in 'elements' list must be integers.")
     if not all(isinstance(name, str) for name in names):
         raise TypeError("Type Error: All items in 'names' list must be strings.")
     
-    # 4. validate equal lengths
-    
+    # 3. validate equal lengths
     if len(names) != len(elements):
         raise ValueError(
             f"Length mismatch: names has {len(names)} items but elements has {len(elements) if elements is not None else 0} items"
         )
     
-    # 5. Process values
-
+    # 4. Process values
     parts: List[str] = []
 
     for name, amount in zip(names, elements):
@@ -112,7 +111,7 @@ def answer_generation(elements: Optional[List] = None, names: Optional[List[str]
         else:
             parts.append(f"{amount} {name}s")
 
-    return _join_readable(parts)
+    return _join_readable(parts, oxford=True)
 
 @lru_cache(maxsize=128)
 def _rdkit_to_pymatgen(mol):

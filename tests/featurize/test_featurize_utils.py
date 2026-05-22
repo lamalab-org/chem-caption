@@ -36,13 +36,6 @@ def test_answer_generation_wrong_input():
     with pytest.raises(TypeError, match="elements"):
         answer_generation(["string", 42], [6, 12])
 
-
-def test_answer_generation_single_element():
-    """Test answer_generation returns unprefixed string for a single name/count pair."""
-    result = answer_generation([2], ["oxygen"])
-    assert result == "2 oxygens"
-
-
 def test_answer_generation_pluralization():
     """Test that amount == 1 uses singular form without trailing 's'."""
     result = answer_generation([1], ["nitrogen"])
@@ -54,11 +47,20 @@ def test_answer_generation_zero_amount():
     result = answer_generation([0], ["sulfur"])
     assert result == "no sulfurs"
 
+def test_answer_generation_single_element():
+    """Test answer_generation returns unprefixed string for a single name/count pair."""
+    result = answer_generation([2], ["oxygen"])
+    assert result == "2 oxygens"
+
+def test_answer_generation_double_element():
+    """Test answer_generation returns unprefixed string for a single name/count pair."""
+    result = answer_generation([2, 1], ["hydrogen", "oxygen"])
+    assert result == "2 hydrogens and 1 oxygen"
 
 def test_answer_generation_three_elements():
     """Test answer_generation with three elements uses comma-and style."""
     result = answer_generation([6, 12, 1], ["carbon", "hydrogen", "oxygen"])
-    assert result == "6 carbons, 12 hydrogens and 1 oxygen"
+    assert result == "6 carbons, 12 hydrogens, and 1 oxygen"
 
 
 def test_answer_generation_mismatched_lengths_raises():
