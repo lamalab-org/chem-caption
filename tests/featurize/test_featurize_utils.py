@@ -67,3 +67,10 @@ def test_answer_generation_mismatched_lengths_raises():
         answer_generation([6, 12], ["carbon"])
     with pytest.raises(ValueError, match="Length mismatch"):
         answer_generation([6], ["carbon", "hydrogen"])
+        
+def test_answer_generation_verbose():
+    """Test answer_generation regarding output with verbose_statement  flag set to True or False."""
+    result = answer_generation([6, 0], ["carbon", "oxygen"], True)
+    assert result == "6 carbons and no oxygens present"
+    result = answer_generation([6, 0], ["carbon", "oxygen"], False)
+    assert result == "6 carbons and no oxygen"
