@@ -65,12 +65,18 @@ def _join_readable(parts: List[str], oxford: bool = True) -> str:
     sep = ", and " if oxford else " and "
     return ", ".join(parts[:-1]) + sep + parts[-1]
 
-def answer_generation(elements: Optional[List] = None, names: Optional[List[str]] = None) -> str:
+def answer_generation(elements: Optional[List] = None, names: Optional[List[str]] = None, verbose_absent: bool = False, skip_zero: bool = False) -> str:
     """Join list elements into a readable string.
     
     Args:
         elements (list): List of element counts or values.
         names (list): List of element names corresponding to counts.
+        verbose_absent: Controls phrasing for count-0 elements.
+            False -> "no {name}s"
+            True  -> "no {name}s present"
+        skip_zero: emits count-0 elements completely.
+            False -> "2 {name}s and no {name}s present"
+            True  -> "2 {name}s"
         
     Returns:
         str: Readable string of element counts and names.
@@ -107,11 +113,11 @@ def answer_generation(elements: Optional[List] = None, names: Optional[List[str]
         if isinstance(amount, bool):
             amount = int(amount)
 
-        if amount == 1:
+        if amount == 0 and not skip_zero:
+            parts.append(f"no {name}s present" if verbose_absent else f"no {name}s")
+        elif amount == 1:
             parts.append(f"{amount} {name}")
-        elif amount == 0:
-            parts.append(f"no {name}s")
-        else:
+        elif amount > 1:
             parts.append(f"{amount} {name}s")
 
     return _join_readable(parts, oxford=True)

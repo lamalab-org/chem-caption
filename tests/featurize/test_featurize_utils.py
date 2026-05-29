@@ -67,3 +67,14 @@ def test_answer_generation_mismatched_lengths_raises():
         answer_generation([6, 12], ["carbon"])
     with pytest.raises(ValueError, match="Length mismatch"):
         answer_generation([6], ["carbon", "hydrogen"])
+        
+def test_answer_generation_flag():
+    """Test answer_generation flag statments."""
+    result = answer_generation([6, 6, 0], ["carbon", "hydrogen", "oxygen"], True, False)
+    assert result == "6 carbons, 6 hydrogens, and no oxygens present"
+    result = answer_generation([6, 6, 0], ["carbon", "hydrogen", "oxygen"], False, False)
+    assert result == "6 carbons, 6 hydrogens, and no oxygens"
+    result = answer_generation([6, 6, 0], ["carbon", "hydrogen", "oxygen"], True, True)
+    assert result == "6 carbons and 6 hydrogens"
+    result = answer_generation([6, 6, 0], ["carbon", "hydrogen", "oxygen"], False, True)
+    assert result == "6 carbons and 6 hydrogens"
