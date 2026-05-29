@@ -74,6 +74,9 @@ def answer_generation(elements: Optional[List] = None, names: Optional[List[str]
         verbose_absent: Controls phrasing for count-0 elements.
             False -> "no {name}s"
             True  -> "no {name}s present"
+        skip_zero: emits count-0 elements completely.
+            False -> "2 {name}s and no {name}s present"
+            True  -> "2 {name}s"
         
     Returns:
         str: Readable string of element counts and names.

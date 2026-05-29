@@ -70,7 +70,11 @@ def test_answer_generation_mismatched_lengths_raises():
         
 def test_answer_generation_flag():
     """Test answer_generation flag statments."""
-    result = answer_generation([6, 0], ["carbon", "oxygen"], True)
-    assert result == "6 carbons and no oxygens present"
-    result = answer_generation([6, 0], ["carbon", "oxygen"], False)
-    assert result == "6 carbons and no oxygens"
+    result = answer_generation([6, 6, 0], ["carbon", "hydrogen", "oxygen"], True, False)
+    assert result == "6 carbons, 6 hydrogens, and no oxygens present"
+    result = answer_generation([6, 6, 0], ["carbon", "hydrogen", "oxygen"], False, False)
+    assert result == "6 carbons, 6 hydrogens, and no oxygens"
+    result = answer_generation([6, 6, 0], ["carbon", "hydrogen", "oxygen"], True, True)
+    assert result == "6 carbons and 6 hydrogens"
+    result = answer_generation([6, 6, 0], ["carbon", "hydrogen", "oxygen"], False, True)
+    assert result == "6 carbons and 6 hydrogens"
