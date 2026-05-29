@@ -65,7 +65,7 @@ def _join_readable(parts: List[str], oxford: bool = True) -> str:
     sep = ", and " if oxford else " and "
     return ", ".join(parts[:-1]) + sep + parts[-1]
 
-def answer_generation(elements: Optional[List] = None, names: Optional[List[str]] = None, verbose_absent: bool = False) -> str:
+def answer_generation(elements: Optional[List] = None, names: Optional[List[str]] = None, verbose_absent: bool = False, skip_zero: bool = False) -> str:
     """Join list elements into a readable string.
     
     Args:
@@ -110,11 +110,11 @@ def answer_generation(elements: Optional[List] = None, names: Optional[List[str]
         if isinstance(amount, bool):
             amount = int(amount)
 
-        if amount == 1:
-            parts.append(f"{amount} {name}")
-        elif amount == 0:
+        if amount == 0 and not skip_zero:
             parts.append(f"no {name}s present" if verbose_absent else f"no {name}s")
-        else:
+        elif amount == 1:
+            parts.append(f"{amount} {name}")
+        elif amount > 1:
             parts.append(f"{amount} {name}s")
 
     return _join_readable(parts, oxford=True)
