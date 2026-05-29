@@ -128,7 +128,7 @@ def test(session):
     session.install("git+https://github.com/kjappelbaum/givemeconformer.git")
     session.conda_install("xtb-python", channel="conda-forge")
     session.conda_install("libblas=*=*mkl", channel="conda-forge")
-    session.conda_install("qcengine", channel="conda-forge")
+    session.conda_install("qcengine<0.30", channel="conda-forge")
     session.conda_install("spyrmsd", channel="conda-forge")
     session.install("geometric")
     session.install("pyberny")
