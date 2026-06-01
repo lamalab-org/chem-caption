@@ -35,13 +35,16 @@ PERIODIC_TABLE = rdkit.Chem.GetPeriodicTable()  # Periodic table
 class AbstractFeaturizer(ABC):
     """Abstract base class for lower level Featurizers."""
 
-    def __init__(self):
+    def __init__(self, completion_template: Optional[str] = None):
         """Initialize class. Initialize periodic table."""
         self.prompt_template = (
             "Question: What {VERB} the {PROPERTY_NAME} of the molecule with {REPR_SYSTEM} "
             "{REPR_STRING}?"
         )
-        self.completion_template = "Answer: {PROPERTY_VALUE}"
+        if completion_template is not None:
+            self.completion_template = completion_template
+        else:
+            self.completion_template = "Answer: {PROPERTY_VALUE}"
         self._names = []
         self.constraint = None
         self.smart_names = None

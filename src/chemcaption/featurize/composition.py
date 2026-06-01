@@ -194,13 +194,18 @@ class MonoisotopicMolecularMassFeaturizer(AbstractFeaturizer):
 class ElementMassFeaturizer(AbstractFeaturizer):
     """Obtain mass for elements in a molecule."""
 
-    def __init__(self, preset: Optional[Union[List[str], Dict[str, str]]] = None):
+    def __init__(
+        self,
+        preset: Optional[Union[List[str], Dict[str, str]]] = None,
+        completion_template: Optional[str] = None,
+    ):
         """Get the total mass component of an element in a molecule.
 
         Args:
             preset (Optional[Union[List[str], Dict[str, str]]]): Preset containing substances or elements of interest.
+            completion_template (Optional[str]): Custom completion template. Defaults to base class template.
         """
-        super().__init__()
+        super().__init__(completion_template="The molecule with the smiles string {REPR_STRING} contains {PROPERTY_VALUE}")
 
         self._preset: Union[List[str], Dict[str, str]] = []
 
