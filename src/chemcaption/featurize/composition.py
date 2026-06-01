@@ -194,18 +194,13 @@ class MonoisotopicMolecularMassFeaturizer(AbstractFeaturizer):
 class ElementMassFeaturizer(AbstractFeaturizer):
     """Obtain mass for elements in a molecule."""
 
-    def __init__(
-        self,
-        preset: Optional[Union[List[str], Dict[str, str]]] = None,
-        completion_template: Optional[str] = None,
-    ):
+    def __init__(self, preset: Optional[Union[List[str], Dict[str, str]]] = None):
         """Get the total mass component of an element in a molecule.
 
         Args:
             preset (Optional[Union[List[str], Dict[str, str]]]): Preset containing substances or elements of interest.
-            completion_template (Optional[str]): Custom completion template. Defaults to base class template.
         """
-        super().__init__(completion_template="The molecule with the smiles string {REPR_STRING} contains {PROPERTY_VALUE}")
+        super().__init__()
 
         self._preset: Union[List[str], Dict[str, str]] = []
 
@@ -434,9 +429,23 @@ class ElementMassProportionFeaturizer(ElementMassFeaturizer):
 class ElementCountFeaturizer(ElementMassFeaturizer):
     """Get the total mass component of an element in a molecule."""
 
-    def __init__(self, preset: Optional[List[str]] = None):
-        """Initialize class."""
+    def __init__(
+        self,
+        preset: Optional[List[str]] = None,
+        verbose_absent: bool = False,
+        skip_zero: bool = False,
+    ):
+        """
+        Get the count for each element in a molecule.
+
+        Args:
+            preset (Optional[List[str]]): Elements of interest. Defaults to None.
+            verbose_absent (bool): If True, render absent elements as "no Xs present". Defaults to False.
+            skip_zero (bool): If True, omit elements with zero count from the description. Defaults to False.
+        """
         super().__init__(preset=preset)
+        self.verbose_absent = verbose_absent
+        self.skip_zero = skip_zero
         self.smart_names = self.preset
 
     @property
@@ -462,7 +471,9 @@ class ElementCountFeaturizer(ElementMassFeaturizer):
             (List[Dict[str, str]]): List of names for extracted features according to parts-of-speech.
         """
         count = "counts" if len(self.preset) > 1 else "count"
-        return [{"noun": f"atom {count} of " + answer_generation(self.preset)}]
+        return [{"noun": f"atom {count} of " + answer_generation(
+            self.preset, verbose_absent=self.verbose_absent, skip_zero=self.skip_zero
+        )}]
 
     @staticmethod
     def _get_atom_count(element: str, molecule: Molecule) -> int:
@@ -551,7 +562,9 @@ class ElementCountProportionFeaturizer(ElementCountFeaturizer):
             (List[Dict[str, str]]): List of names for extracted features according to parts-of-speech.
         """
         count = "counts" if len(self.preset) > 1 else "count"
-        return [{"noun": f"relative atom {count} of " + answer_generation(self.preset)}]
+        return [{"noun": f"relative atom {count} of " + answer_generation(
+            self.preset, verbose_absent=self.verbose_absent, skip_zero=self.skip_zero
+        )}]
 
     @property
     def feature_labels(self) -> List[str]:
