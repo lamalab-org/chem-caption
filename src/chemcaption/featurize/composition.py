@@ -432,6 +432,7 @@ class ElementCountFeaturizer(ElementMassFeaturizer):
     def __init__(self, preset: Optional[List[str]] = None):
         """Initialize class."""
         super().__init__(preset=preset)
+        self.smart_names = self.preset
 
     @property
     def feature_labels(self) -> List[str]:
@@ -532,6 +533,7 @@ class ElementCountProportionFeaturizer(ElementCountFeaturizer):
                 Defaults to `None`.
         """
         super().__init__(preset=preset)
+        self.smart_names = None
 
     @property
     def get_names(self):
@@ -590,6 +592,7 @@ class AtomCountFeaturizer(ElementCountFeaturizer):
     def __init__(self):
         """Initialize instance."""
         super().__init__()
+        self.smart_names = None
         self._names = [
             {
                 "noun": "total number of atoms",

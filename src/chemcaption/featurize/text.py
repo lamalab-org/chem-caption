@@ -67,7 +67,7 @@ class Prompt:
                 if self.constraint
                 else self.fill_template(self.prompt_template)
             ),
-            "filled_completion": self.fill_template(self.completion_template),
+            "filled_completion": self.fill_template(self.completion_template, usenames=self.smart_names is not None),
             "smart_names": self.smart_names,
         }
 
