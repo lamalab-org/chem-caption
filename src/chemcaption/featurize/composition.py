@@ -194,13 +194,18 @@ class MonoisotopicMolecularMassFeaturizer(AbstractFeaturizer):
 class ElementMassFeaturizer(AbstractFeaturizer):
     """Obtain mass for elements in a molecule."""
 
-    def __init__(self, preset: Optional[Union[List[str], Dict[str, str]]] = None):
+    def __init__(
+        self,
+        preset: Optional[Union[List[str], Dict[str, str]]] = None,
+        completion_template: Optional[str] = None,
+    ):
         """Get the total mass component of an element in a molecule.
 
         Args:
             preset (Optional[Union[List[str], Dict[str, str]]]): Preset containing substances or elements of interest.
+            completion_template (Optional[str]): Custom completion template. Defaults to base class template.
         """
-        super().__init__()
+        super().__init__(completion_template=completion_template)
 
         self._preset: Union[List[str], Dict[str, str]] = []
 
@@ -432,6 +437,7 @@ class ElementCountFeaturizer(ElementMassFeaturizer):
     def __init__(
         self,
         preset: Optional[List[str]] = None,
+        completion_template: Optional[str] = "This molecule with SMILES string {REPR_STRING} contains {PROPERTY_VALUE}.",
         verbose_absent: bool = False,
         skip_zero: bool = False,
     ):
@@ -440,10 +446,11 @@ class ElementCountFeaturizer(ElementMassFeaturizer):
 
         Args:
             preset (Optional[List[str]]): Elements of interest. Defaults to None.
+            completion_template (Optional[str]): Custom completion template.
             verbose_absent (bool): If True, render absent elements as "no Xs present". Defaults to False.
             skip_zero (bool): If True, omit elements with zero count from the description. Defaults to False.
         """
-        super().__init__(preset=preset)
+        super().__init__(preset=preset, completion_template=completion_template)
         self.verbose_absent = verbose_absent
         self.skip_zero = skip_zero
         self.smart_names = self.preset
