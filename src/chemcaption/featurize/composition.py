@@ -80,9 +80,9 @@ class MolecularFormulaFeaturizer(AbstractFeaturizer):
 class MolecularMassFeaturizer(AbstractFeaturizer):
     """Get the molecular mass of a molecule."""
 
-    def __init__(self):
+    def __init__(self, completion_template: Optional[str] = None):
         """Get the molecular mass of a molecule."""
-        super().__init__()
+        super().__init__(completion_template="The {PROPERTY_NAME} of the molecule with the SMILES string {REPR_STRING} {VERB} {PROPERTY_VALUE}.")
 
         self.template = (
             "What {VERB} the {PROPERTY_NAME} of the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
