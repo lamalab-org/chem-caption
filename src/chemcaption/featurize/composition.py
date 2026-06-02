@@ -471,15 +471,8 @@ class ElementCountFeaturizer(ElementMassFeaturizer):
         self.skip_zero = skip_zero
         self.smart_names = self.preset
         
-        if verbose_absent and skip_zero:
-            completion_template = "The molecule with SMILES string {REPR_STRING} contains {PROPERTY_VALUE}."
-        elif verbose_absent and not skip_zero:
-            completion_template = "The molecule with SMILES string {REPR_STRING} has {PROPERTY_VALUE}."
-        elif not verbose_absent and skip_zero:
-            completion_template = "The molecule with SMILES string {REPR_STRING} contains {PROPERTY_VALUE}."
-        elif not verbose_absent and not skip_zero:
-            completion_template = "The molecule with SMILES string {REPR_STRING} contains {PROPERTY_VALUE}."
-
+        completion_template = "The molecule with SMILES string {REPR_STRING} contains {PROPERTY_VALUE}."
+        
     @property
     def feature_labels(self) -> List[str]:
         """Return feature label(s).
