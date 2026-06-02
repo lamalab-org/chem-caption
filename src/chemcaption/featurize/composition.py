@@ -205,7 +205,13 @@ class ElementMassFeaturizer(AbstractFeaturizer):
             preset (Optional[Union[List[str], Dict[str, str]]]): Preset containing substances or elements of interest.
             completion_template (Optional[str]): Custom completion template. Defaults to base class template.
         """
-        super().__init__(completion_template=completion_template)
+        if completion_template is None:
+            super().__init__(completion_template=
+                             "The {PROPERTY_NAME} in the molecule with the SMILES string {REPR_STRING} {VERB} {PROPERTY_VALUE}."
+            )
+            print("hi")
+        else:
+            super().__init__(completion_template=completion_template)
 
         self._preset: Union[List[str], Dict[str, str]] = []
 
