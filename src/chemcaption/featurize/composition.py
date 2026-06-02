@@ -219,7 +219,7 @@ class ElementMassFeaturizer(AbstractFeaturizer):
             super().__init__(completion_template=
                              "The {PROPERTY_NAME} in the molecule with the SMILES string {REPR_STRING} {VERB} {PROPERTY_VALUE}."
             )
-            print("hi")
+
         else:
             super().__init__(completion_template=completion_template)
 
@@ -701,13 +701,13 @@ class AtomCountFeaturizer(ElementCountFeaturizer):
 class DegreeOfUnsaturationFeaturizer(AbstractFeaturizer):
     """Return the degree of unsaturation."""
 
-    def __init__(self):
+    def __init__(self, completion_template: Optional[str] = None):
         """Instantiate class.
 
         Args:
-            None.
+            completion_template (Optional[str]): Custom completion template. Defaults to base class template.
         """
-        super().__init__()
+        super().__init__(completion_template = "The {PROPERTY_NAME} of the molecule with the SMILES string {REPR_STRING} {VERB} {PROPERTY_VALUE}.")
 
         self._names = [
             {
