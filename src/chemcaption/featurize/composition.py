@@ -30,9 +30,14 @@ __all__ = [
 class MolecularFormulaFeaturizer(AbstractFeaturizer):
     """Get the molecular formula of a molecule."""
 
-    def __init__(self):
-        """Initialize class."""
-        super().__init__()
+    def __init__(self, completion_template: Optional[str] = None):
+        """
+        Initialize class.
+        
+        Args:
+            completion_template (Optional[str] = None): Custom completion template, Defaults to base class template.
+        """
+        super().__init__(completion_template = "The {PROPERTY_NAME} of the molecule with the SMILES string {REPR_STRING} {VERB} {PROPERTY_VALUE}.")
 
         self._names = [
             {
@@ -81,7 +86,12 @@ class MolecularMassFeaturizer(AbstractFeaturizer):
     """Get the molecular mass of a molecule."""
 
     def __init__(self, completion_template: Optional[str] = None):
-        """Get the molecular mass of a molecule."""
+        """
+        Get the molecular mass of a molecule.
+        
+        Args:
+            completion_template (Optional[str]): Custom completion template. Defaults to base class template.
+        """
         super().__init__(completion_template="The {PROPERTY_NAME} of the molecule with the SMILES string {REPR_STRING} {VERB} {PROPERTY_VALUE}.")
 
         self.template = (
