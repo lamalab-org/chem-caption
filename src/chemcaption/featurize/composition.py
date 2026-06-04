@@ -35,7 +35,7 @@ class MolecularFormulaFeaturizer(AbstractFeaturizer):
         Initialize class.
         
         Args:
-            completion_template (Optional[str] = None): Custom completion template, Defaults to base class template.
+            completion_template (Optional[str]): Custom completion template, Defaults to a descriptive template with SMILES and property name.
         """
         super().__init__(completion_template = "The {PROPERTY_NAME} of the molecule with the SMILES string {REPR_STRING} {VERB} {PROPERTY_VALUE}.")
 
@@ -90,7 +90,7 @@ class MolecularMassFeaturizer(AbstractFeaturizer):
         Get the molecular mass of a molecule.
         
         Args:
-            completion_template (Optional[str]): Custom completion template. Defaults to base class template.
+            completion_template (Optional[str]): Custom completion template. Defaults to descriptive template with SMILES and property name.
         """
         super().__init__(completion_template="The {PROPERTY_NAME} of the molecule with the SMILES string {REPR_STRING} {VERB} {PROPERTY_VALUE}.")
 
