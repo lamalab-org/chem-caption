@@ -29,6 +29,8 @@ class Prompt:
     completion_template: Optional[str] = None
     constraint: Optional[str] = None
     smart_names: Optional[List[str]] = None
+    verbose_absent: bool = False
+    skip_zero: bool = False
 
     def to_dict(self) -> Dict[str, Any]:
         """Return dictionary representation of object.
@@ -92,7 +94,7 @@ class Prompt:
             REPR_SYSTEM=self.representation_type,
             REPR_STRING=self.representation,
             PROPERTY_VALUE=(
-                answer_generation(list(self.completion), self.smart_names)
+                answer_generation(list(self.completion), self.smart_names, self.verbose_absent, self.skip_zero)
                 if usenames
                 else answer_generation(list(self.completion))
             ),

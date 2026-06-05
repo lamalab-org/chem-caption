@@ -698,10 +698,11 @@ class DegreeOfUnsaturationFeaturizer(AbstractFeaturizer):
         """Instantiate class.
 
         Args:
-            completion_template (Optional[str]): Custom completion template. Defaults to base class template.
+            completion_template (Optional[str]): Custom completion template. Defaults to a descriptive template with SMILES and property name.
         """
-        super().__init__(completion_template = "The {PROPERTY_NAME} of the molecule with the SMILES string {REPR_STRING} {VERB} {PROPERTY_VALUE}.")
-
+        if completion_template is None:
++           completion_template = "The {PROPERTY_NAME} of the molecule with the SMILES string {REPR_STRING} {VERB} {PROPERTY_VALUE}."  
++       super().__init__(completion_template=completion_template)  
         self._names = [
             {
                 "noun": "degree of unsaturation",

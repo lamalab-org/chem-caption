@@ -126,6 +126,8 @@ class AbstractFeaturizer(ABC):
             completion_template=self.completion_template,
             constraint=self.constraint,
             smart_names=self.smart_names,
+            verbose_absent=getattr(self, "verbose_absent", False),
+            skip_zero=getattr(self, "skip_zero", False),
         )
 
     def text_featurize_many(

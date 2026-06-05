@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """Utilities for `featurize` module."""
-
+ 
 from functools import lru_cache
 from typing import Any, List, Optional, Tuple
 
@@ -105,22 +105,25 @@ def answer_generation(elements: Optional[List] = None, names: Optional[List[str]
             f"Length mismatch: names has {len(names)} items but elements has {len(elements) if elements is not None else 0} items"
         )
     
-    # 4. Process values
-    parts: List[str] = []
+    # 4. Process values — non-zero elements first, zero elements at the end
+    nonzero_parts: List[str] = []
+    zero_parts: List[str] = []
 
     for name, amount in zip(names, elements):
-        # switching bool to int for output
         if isinstance(amount, bool):
             amount = int(amount)
 
         if amount == 0 and not skip_zero:
-            parts.append(f"no {name}s present" if verbose_absent else f"no {name}s")
+            zero_parts.append(f"no {name}s")
         elif amount == 1:
-            parts.append(f"{amount} {name}")
+            nonzero_parts.append(f"{amount} {name}")
         elif amount > 1:
-            parts.append(f"{amount} {name}s")
+            nonzero_parts.append(f"{amount} {name}s")
 
-    return _join_readable(parts, oxford=True)
+    if verbose_absent and zero_parts:
+        zero_parts[-1] += " present"
+
+    return _join_readable(nonzero_parts + zero_parts, oxford=True)
 
 @lru_cache(maxsize=128)
 def _rdkit_to_pymatgen(mol):
