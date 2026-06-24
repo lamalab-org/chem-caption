@@ -215,20 +215,13 @@ class ElementMassFeaturizer(AbstractFeaturizer):
             preset (Optional[Union[List[str], Dict[str, str]]]): Preset containing substances or elements of interest.
             completion_template (Optional[str]): Custom completion template. Defaults to base class template.
         """
+        if preset is None:
+            preset = ["Carbon", "Hydrogen", "Nitrogen", "Oxygen"]
+
         if completion_template is None:
-            super().__init__(completion_template=
-                             "The {PROPERTY_NAME} in the molecule with the SMILES string {REPR_STRING} {VERB} {PROPERTY_VALUE}."
-            )
+            completion_template = "The {PROPERTY_NAME} in the molecule {VERB} {PROPERTY_VALUE}."
 
-        else:
-            super().__init__(completion_template=completion_template)
-
-        self._preset: Union[List[str], Dict[str, str]] = []
-
-        if preset is not None:
-            self._preset = list(map(lambda x: x.capitalize(), preset))
-        else:
-            self._preset = ["Carbon", "Hydrogen", "Nitrogen", "Oxygen"]
+        super().__init__(preset=preset, completion_template=completion_template)
 
         self.template = (
             "What {VERB} the {PROPERTY_NAME} for the molecule with {REPR_SYSTEM} `{REPR_STRING}`?"
@@ -258,24 +251,6 @@ class ElementMassFeaturizer(AbstractFeaturizer):
             (List[str]): List of labels for extracted features.
         """
         return [element.lower() + "_mass" for element in self.preset]
-
-    @property
-    def preset(self) -> Union[List[str], Dict[str, str]]:
-        """Get molecular preset. Getter method."""
-        return self._preset
-
-    @preset.setter
-    def preset(self, new_preset: Union[List[str], Dict[str, str]]) -> None:
-        """Set molecular preset. Setter method.
-
-        Args:
-            new_preset (Union[List[str], Dict[str, str]]): List of chemical elements of interest.
-
-        Returns:
-            None.
-        """
-        self._preset = new_preset
-        return
 
     def fit(
         self,
@@ -701,7 +676,7 @@ class DegreeOfUnsaturationFeaturizer(AbstractFeaturizer):
             completion_template (Optional[str]): Custom completion template. Defaults to a descriptive template with SMILES and property name.
         """
         if completion_template is None:
-            completion_template = "The {PROPERTY_NAME} of the molecule with the SMILES string {REPR_STRING} {VERB} {PROPERTY_VALUE}."  
+            completion_template = "The {PROPERTY_NAME} of the molecule {VERB} {PROPERTY_VALUE}."  
         super().__init__(completion_template=completion_template)
         self._names = [
             {
