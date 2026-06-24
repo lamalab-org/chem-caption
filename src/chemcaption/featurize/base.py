@@ -35,22 +35,26 @@ PERIODIC_TABLE = rdkit.Chem.GetPeriodicTable()  # Periodic table
 class AbstractFeaturizer(ABC):
     """Abstract base class for lower level Featurizers."""
 
-    def __init__(self, completion_template: Optional[str] = None, preset: Optional[List[str]] = None):
+    def __init__(self, completion_template: Optional[str] = None, preset: Optional[List[str]] = None, version: int = 0):
         """Initialize class. Initialize periodic table."""
         self.prompt_template = (
             "Question: What {VERB} the {PROPERTY_NAME} of the molecule with {REPR_SYSTEM} "
             "{REPR_STRING}?"
         )
-        if completion_template is not None:
-            self.completion_template = completion_template
-        else:
-            self.completion_template = "Answer: {PROPERTY_VALUE}"
+        self.completion_template = (
+            completion_template if completion_template is not None
+            else self.get_completion_template(version)
+        )
+
         self._names = []
         self.constraint = None
         self.smart_names = None
         self._preset: List[str] = (
             [x.capitalize() for x in preset] if preset is not None else []
         )
+    
+    def get_completion_template(self, version: bool = 0) -> str:
+        return "Answer: {PROPERTY_VALUE}"
 
     @property
     def preset(self) -> List[str]:
