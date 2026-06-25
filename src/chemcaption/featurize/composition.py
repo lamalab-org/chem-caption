@@ -114,7 +114,7 @@ class MolecularMassFeaturizer(AbstractFeaturizer):
     def get_completion_template(self, version: bool = 0) -> str:
         templates = [
             "The {PROPERTY_NAME} of the molecule {VERB} {PROPERTY_VALUE}.",
-            "The molecule has a {PROPERTY_NAME} of {PROPERTY_VALUE}"
+            "The molecule has a {PROPERTY_NAME} of {PROPERTY_VALUE}."
         ]
         return templates[version]
 
@@ -177,8 +177,8 @@ class MonoisotopicMolecularMassFeaturizer(AbstractFeaturizer):
     
     def get_completion_template(self, version: bool = 0):
         template = [
-                "The {PROPERTY_NAME} of the molecule {VERB} {REPR_STRING}.",
-                "WARNING: REWRITE A NEW COMPETION TEMPLATE VERSION!."
+                "The {PROPERTY_NAME} of the molecule {VERB} {PROPERTY_VALUE}.",
+                "For this molecule, the {PROPERTY_NAME} {VERB} {PROPERTY_VALUE}."
             ]
         return template[version]
 
@@ -399,12 +399,9 @@ class ElementMassProportionFeaturizer(ElementMassFeaturizer):
         completion_template: Optional[str] = None,
         version: bool = 0):
         """Initialize instance."""
-        super().__init__(preset=preset)
+        super().__init__(preset=preset, completion_template=completion_template, version=version)
         self.prefix = ""
         self.suffix = "_mass_ratio"
-        version: bool = 0
-        
-        super().__init__(completion_template=completion_template, version=version)
     
     def get_completion_template(self, version: bool = 0) -> str:
         template = [
@@ -493,7 +490,7 @@ class ElementCountFeaturizer(ElementMassFeaturizer):
     def get_completion_template(self, version: bool = 0) -> str:
         template = [
             "The molecule has {PROPERTY_VALUE}.",
-            "WARNING: FIND ALTERNATIVE"
+            "There {VERB} {PROPERTY_VALUE} in the molecule."
         ]
         return template[version]
     
@@ -603,7 +600,7 @@ class ElementCountProportionFeaturizer(ElementCountFeaturizer):
     def get_completion_template(self, version: bool = 0) -> str:
         template = [
             "The {PROPERTY_NAME} of the molecule {VERB} {PROPERTY_VALUE}.",
-            "WARNING: FIND ALTERNATIVE"
+            "In this molecule, {PROPERTY_NAME} {VERB} {PROPERTY_VALUE}"
         ]
         return template[version]
     
@@ -665,7 +662,7 @@ class AtomCountFeaturizer(ElementCountFeaturizer):
 
     def __init__(self, completion_template: Optional[str] = None, preset: Optional[List[str]] = None, version: bool = 0):
         """Initialize instance."""
-        #super().__init__(completion_template=completion_template, preset=preset, version=version)
+        super().__init__(completion_template=completion_template, preset=preset, version=version)
         self.smart_names = None
         self._names = [
             {
@@ -675,8 +672,8 @@ class AtomCountFeaturizer(ElementCountFeaturizer):
 
     def get_completion_template(self, version: bool = 0) -> str:
         template = [
-            "The {PROPERTY_NAME} of the molecule {VERB} {PROPERTY_VALUE}.",
-            "WARNING: FIND ALTERNATIVE"
+            "The molecule has a total of {PROPERTY_VALUE} atoms.",
+            "The {PROPERTY_NAME} of the molecule {VERB} {PROPERTY_VALUE}."
         ]
         return template[version]
     
@@ -732,20 +729,26 @@ class AtomCountFeaturizer(ElementCountFeaturizer):
 class DegreeOfUnsaturationFeaturizer(AbstractFeaturizer):
     """Return the degree of unsaturation."""
 
-    def __init__(self, completion_template: Optional[str] = None):
+    def __init__(self, completion_template: Optional[str] = None, preset: Optional[List[str]] = None,  version: bool = 0):
         """Instantiate class.
 
         Args:
             completion_template (Optional[str]): Custom completion template. Defaults to a descriptive template with SMILES and property name.
         """
-        if completion_template is None:
-            completion_template = "The {PROPERTY_NAME} of the molecule {VERB} {PROPERTY_VALUE}."  
-        super().__init__(completion_template=completion_template)
+        
+        super().__init__(completion_template=completion_template, preset=preset, version=version)
         self._names = [
             {
                 "noun": "degree of unsaturation",
             }
         ]
+
+    def get_completion_template(self, version: bool = 0) -> str:
+        template = [
+            "The {PROPERTY_NAME} of the molecule {VERB} {PROPERTY_VALUE}.",
+            "The molecule contains {PROPERTY_VALUE} in total."
+        ]
+        return template[version]
 
     @property
     def feature_labels(self) -> List[str]:
