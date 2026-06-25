@@ -71,11 +71,11 @@ def answer_generation(elements: Optional[List] = None, names: Optional[List[str]
     Args:
         elements (list): List of element counts or values.
         names (list): List of element names corresponding to counts.
-        verbose_absent: Controls phrasing for count-0 elements.
-            False -> "no {name}s"
-            True  -> "no {name}s present"
+        verbose_absent: Controls phrasing by adding "present" at the end of a sentence.
+            False -> "{name}s"
+            True  -> "{name}s present"
         skip_zero: emits count-0 elements completely.
-            False -> "2 {name}s and no {name}s present"
+            False -> "2 {name}s and no {name}s"
             True  -> "2 {name}s"
         
     Returns:
@@ -119,11 +119,13 @@ def answer_generation(elements: Optional[List] = None, names: Optional[List[str]
             nonzero_parts.append(f"{amount} {name}")
         elif amount > 1:
             nonzero_parts.append(f"{amount} {name}s")
+    
+    answer = nonzero_parts + zero_parts
+    
+    if verbose_absent:
+        answer[-1] += " present"
 
-    if verbose_absent and zero_parts:
-        zero_parts[-1] += " present"
-
-    return _join_readable(nonzero_parts + zero_parts, oxford=True)
+    return _join_readable(answer, oxford=True)
 
 @lru_cache(maxsize=128)
 def _rdkit_to_pymatgen(mol):
