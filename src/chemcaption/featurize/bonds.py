@@ -23,7 +23,6 @@ __all__ = [
     "BondOrderFeaturizer",
 ]
 
-
 """Featurizer for counting rotatable bonds in molecule."""
 
 # compared to "all" implemented rdkit bond types we drop
@@ -56,15 +55,27 @@ _MAP_BOND_TYPE_TO_CLEAN_NAME = {
 class RotableBondCountFeaturizer(AbstractFeaturizer):
     """Obtain number of rotable (i.e., single, non-terminal, non-hydrogen) bonds in a molecule."""
 
-    def __init__(self):
-        """Initialize instance."""
-        super().__init__()
+    def __init__(self, completion_template: Optional[str] = None, version: int = 0):
+        """Initialize instance.
+
+        Args:
+            completion_template (Optional[str]): Custom completion template. Defaults to None.
+            version (int): Index into completion template list. Defaults to 0.
+        """
+        super().__init__(completion_template=completion_template, version=version)
 
         self._names = [
             {
                 "noun": "number of rotatable bonds",
             }
         ]
+
+    def get_completion_template(self, version: int = 0) -> str:
+        templates = [
+            "The molecule has {PROPERTY_VALUE} rotatable bond(s).",
+            "The {PROPERTY_NAME} of the molecule {VERB} {PROPERTY_VALUE}.",
+        ]
+        return templates[version]
 
     @property
     def feature_labels(self) -> List[str]:
@@ -111,15 +122,27 @@ class RotableBondCountFeaturizer(AbstractFeaturizer):
 class RotableBondProportionFeaturizer(AbstractFeaturizer):
     """Obtain distribution between rotable and non-rotable bonds in a molecule."""
 
-    def __init__(self):
-        """Initialize instance."""
-        super().__init__()
+    def __init__(self, completion_template: Optional[str] = None, version: int = 0):
+        """Initialize instance.
+
+        Args:
+            completion_template (Optional[str]): Custom completion template. Defaults to None.
+            version (int): Index into completion template list. Defaults to 0.
+        """
+        super().__init__(completion_template=completion_template, version=version)
 
         self._names = [
             {
                 "noun": "rotatable and non-rotatable",
             }
         ]
+
+    def get_completion_template(self, version: int = 0) -> str:
+        templates = [
+            "The {PROPERTY_NAME} of the molecule {VERB} {PROPERTY_VALUE}.",
+            "The molecule has {PROPERTY_NAME} of {PROPERTY_VALUE}.",
+        ]
+        return templates[version]
 
     @property
     def get_names(self) -> List[Dict[str, str]]:
@@ -205,7 +228,15 @@ class RotableBondProportionFeaturizer(AbstractFeaturizer):
 class BondTypeCountFeaturizer(AbstractFeaturizer):
     """Featurizer for bond type count (or presence) extraction."""
 
-    def __init__(self, count: bool = True, bond_type: Union[str, List[str]] = "all"):
+    def __init__(
+        self,
+        count: bool = True,
+        bond_type: Union[str, List[str]] = "all",
+        completion_template: Optional[str] = None,
+        version: int = 0,
+        verbose_absent: bool = False,
+        skip_zero: bool = False,
+    ):
         """
         Initialize class.
 
@@ -214,8 +245,13 @@ class BondTypeCountFeaturizer(AbstractFeaturizer):
                 Otherwise, only encode presence. Defaults to `True`.
             bond_type (Union[str, List[str]], optional): Type of bond to enumerate.
                 If `all`, enumerates all bonds irrespective of type. Defaults to `all`.
+            completion_template (Optional[str]): Custom completion template. Defaults to None.
+            version (int): Index into completion template list. Defaults to 0.
+            verbose_absent (bool): If True, append "present"/"not present" to each bond type count.
+                Defaults to False.
+            skip_zero (bool): If True, omit bond types with zero count. Defaults to False.
         """
-        super().__init__()
+        super().__init__(completion_template=completion_template, version=version)
 
         self.count = count
         self.prefix = "num_" if self.count else ""
@@ -236,6 +272,20 @@ class BondTypeCountFeaturizer(AbstractFeaturizer):
         self.bond_type = (
             [bond_type.upper()] if isinstance(bond_type, str) else [b.upper() for b in bond_type]
         )
+        self.verbose_absent = verbose_absent
+        self.skip_zero = skip_zero
+        self.smart_names = [
+            _MAP_BOND_TYPE_TO_CLEAN_NAME[bt]
+            for bt in self._get_bond_count_types()
+            if bt != "num_bonds"
+        ]
+
+    def get_completion_template(self, version: int = 0) -> str:
+        templates = [
+            "The molecule has {PROPERTY_VALUE}.",
+            "The {PROPERTY_NAME} of the molecule {VERB} {PROPERTY_VALUE}.",
+        ]
+        return templates[version]
 
     def _count_bonds(self, molecule: Molecule) -> List[int]:
         """
@@ -475,18 +525,44 @@ class BondTypeCountFeaturizer(AbstractFeaturizer):
 class BondTypeProportionFeaturizer(BondTypeCountFeaturizer):
     """Featurizer for bond type proportion extraction."""
 
-    def __init__(self, bond_type: Union[str, List[str]] = "all"):
+    def __init__(
+        self,
+        bond_type: Union[str, List[str]] = "all",
+        completion_template: Optional[str] = None,
+        version: int = 0,
+        verbose_absent: bool = False,
+        skip_zero: bool = False,
+    ):
         """
         Initialize class.
 
         Args:
             bond_type (Union[str, List[str]]): Type of bond to enumerate.
                 If `all`, enumerates all bonds irrespective of type. Default (ALL).
+            completion_template (Optional[str]): Custom completion template. Defaults to None.
+            version (int): Index into completion template list. Defaults to 0.
+            verbose_absent (bool): If True, append "present"/"not present" to each proportion.
+                Defaults to False.
+            skip_zero (bool): If True, omit bond types with zero proportion. Defaults to False.
         """
-        super().__init__(count=True, bond_type=bond_type)
+        super().__init__(
+            count=True,
+            bond_type=bond_type,
+            completion_template=completion_template,
+            version=version,
+            verbose_absent=verbose_absent,
+            skip_zero=skip_zero,
+        )
         self.constraint = "Constraint: Return a list of comma separated floats."
         self.prefix = ""
         self.suffix = "_bond_proportion"
+
+    def get_completion_template(self, version: int = 0) -> str:
+        templates = [
+            "The molecule has {PROPERTY_VALUE}.",
+            "The {PROPERTY_NAME} of the molecule {VERB} {PROPERTY_VALUE}.",
+        ]
+        return templates[version]
 
     @property
     def get_names(self) -> List[Dict[str, str]]:
