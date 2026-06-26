@@ -251,7 +251,7 @@ class ElementMassFeaturizer(AbstractFeaturizer):
     
     def get_completion_template(self, version: bool = 0):
         template = [
-                "The {PROPERTY_NAME} of the molecule {VERB} {PROPERTY_VALUE}.",
+                "The {PROPERTY_NAME} in the molecule {VERB} {PROPERTY_VALUE}.",
                 "The molecule has a {PROPERTY_NAME} of {PROPERTY_VALUE}."
             ]
         return template[version]
@@ -405,7 +405,7 @@ class ElementMassProportionFeaturizer(ElementMassFeaturizer):
     
     def get_completion_template(self, version: bool = 0) -> str:
         template = [
-            "The {PROPERTY_NAME} of the molecule {VERB} {PROPERTY_VALUE}.",
+            "The {PROPERTY_NAME} in the molecule {VERB} {PROPERTY_VALUE}.",
             "The molecule has a {PROPERTY_NAME} of {PROPERTY_VALUE}."
         ]
         return template[version]
