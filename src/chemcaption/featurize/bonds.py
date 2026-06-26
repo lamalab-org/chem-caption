@@ -556,6 +556,7 @@ class BondTypeProportionFeaturizer(BondTypeCountFeaturizer):
         self.constraint = "Constraint: Return a list of comma separated floats."
         self.prefix = ""
         self.suffix = "_bond_proportion"
+        self.smart_names = None
 
     def get_completion_template(self, version: int = 0) -> str:
         templates = [
@@ -639,6 +640,9 @@ class BondTypeProportionFeaturizer(BondTypeCountFeaturizer):
         labels = self._parse_bond_names([x.split("_")[1] for x in labels])
 
         return labels
+
+    def __iter__(self):
+        yield self
 
     def implementors(self) -> List[str]:
         """
