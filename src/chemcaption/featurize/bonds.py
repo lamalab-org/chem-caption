@@ -560,8 +560,8 @@ class BondTypeProportionFeaturizer(BondTypeCountFeaturizer):
 
     def get_completion_template(self, version: int = 0) -> str:
         templates = [
-            "The molecule has {PROPERTY_VALUE}.",
             "The {PROPERTY_NAME} of the molecule {VERB} {PROPERTY_VALUE}.",
+            "The molecule has {PROPERTY_NAME} of {PROPERTY_VALUE}."
         ]
         return templates[version]
 
