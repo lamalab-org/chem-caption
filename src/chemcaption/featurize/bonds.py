@@ -559,8 +559,8 @@ class BondTypeProportionFeaturizer(BondTypeCountFeaturizer):
 
     def get_completion_template(self, version: int = 0) -> str:
         templates = [
-            "The molecule has {PROPERTY_VALUE}.",
-            "There {VERB} {PROPERTY_VALUE} in the molecule."
+            "The {PROPERTY_NAME} of the molecule {VERB} {PROPERTY_VALUE}.",
+            "The molecule has {PROPERTY_NAME} of {PROPERTY_VALUE}."
         ]
         return templates[version]
 
@@ -577,6 +577,15 @@ class BondTypeProportionFeaturizer(BondTypeCountFeaturizer):
         bond_types = [label for label in super().feature_labels if label != "num_bonds"]
 
         mapped_names = [_MAP_BOND_TYPE_TO_CLEAN_NAME[bond_type] for bond_type in bond_types]
+
+        last_proportions = getattr(self, "_last_proportions", None)
+        if self.skip_zero and last_proportions is not None:
+            nonzero_names = [
+                name
+                for name, proportion in zip(mapped_names, last_proportions)
+                if proportion != 0
+            ]
+            mapped_names = nonzero_names or mapped_names
 
         if len(mapped_names) > 1:
             beginning = ["proportions of the ", "proportions of "]
@@ -623,7 +632,8 @@ class BondTypeProportionFeaturizer(BondTypeCountFeaturizer):
         Returns:
             np.array: Array containing bond type proportion(s).
         """
-        return np.array(self._get_bond_distribution(molecule=molecule)).reshape(1, -1)
+        self._last_proportions = self._get_bond_distribution(molecule=molecule)
+        return np.array(self._last_proportions).reshape(1, -1)
 
     @property
     def feature_labels(self) -> List[str]:
