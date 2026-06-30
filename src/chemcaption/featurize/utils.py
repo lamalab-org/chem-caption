@@ -93,9 +93,9 @@ def answer_generation(elements: Optional[List] = None, names: Optional[List[str]
         formatted = [_format_element(e) for e in elements]
         return _join_readable(formatted)
     
-    # 2. validate list element types - what if not string or int
-    if not all(isinstance(element, int) for element in elements):
-        raise TypeError("Type Error: All items in 'elements' list must be integers.")
+    # 2. validate list element types - what if not string, int, or float
+    if not all(isinstance(element, (int, float)) for element in elements):
+        raise TypeError("Type Error: All items in 'elements' list must be integers or floats.")
     if not all(isinstance(name, str) for name in names):
         raise TypeError("Type Error: All items in 'names' list must be strings.")
     
@@ -113,12 +113,17 @@ def answer_generation(elements: Optional[List] = None, names: Optional[List[str]
         if isinstance(amount, bool):
             amount = int(amount)
 
-        if amount == 0 and not skip_zero:
-            zero_parts.append(f"no {name}s")
-        elif amount == 1:
-            nonzero_parts.append(f"{amount} {name}")
-        elif amount > 1:
-            nonzero_parts.append(f"{amount} {name}s")
+        if amount == 0:
+            if not skip_zero:
+                zero_parts.append(f"no {name}s")
+            continue
+
+        display_amount = round(amount, 4) if isinstance(amount, float) else amount
+
+        if amount == 1:
+            nonzero_parts.append(f"{display_amount} {name}")
+        else:
+            nonzero_parts.append(f"{display_amount} {name}s")
     
     answer = nonzero_parts + zero_parts
     

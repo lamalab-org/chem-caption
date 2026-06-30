@@ -556,12 +556,11 @@ class BondTypeProportionFeaturizer(BondTypeCountFeaturizer):
         self.constraint = "Constraint: Return a list of comma separated floats."
         self.prefix = ""
         self.suffix = "_bond_proportion"
-        self.smart_names = None
 
     def get_completion_template(self, version: int = 0) -> str:
         templates = [
-            "The {PROPERTY_NAME} of the molecule {VERB} {PROPERTY_VALUE}.",
-            "The molecule has {PROPERTY_NAME} of {PROPERTY_VALUE}."
+            "The molecule has {PROPERTY_VALUE}.",
+            "There {VERB} {PROPERTY_VALUE} in the molecule."
         ]
         return templates[version]
 
