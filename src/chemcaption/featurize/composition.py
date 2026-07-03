@@ -746,7 +746,7 @@ class DegreeOfUnsaturationFeaturizer(AbstractFeaturizer):
     def get_completion_template(self, version: bool = 0) -> str:
         template = [
             "The {PROPERTY_NAME} of the molecule {VERB} {PROPERTY_VALUE}.",
-            "The molecule contains {PROPERTY_VALUE} {PROPERTY_NAME} in total."
+            "The molecule contains {PROPERTY_VALUE} unsaturated bond(s) in total."
         ]
         return template[version]
 
