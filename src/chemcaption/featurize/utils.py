@@ -126,7 +126,14 @@ def answer_generation(elements: Optional[List] = None, names: Optional[List[str]
             nonzero_parts.append(f"{display_amount} {name}s")
     
     answer = nonzero_parts + zero_parts
-    
+
+    # Failsafe: when every element is zero and `skip_zero` drops them all, `answer`
+    # is empty. Return a phrase so callers don't emit a blank {PROPERTY_VALUE}
+    # (e.g. "The molecule has .") and so the `verbose_absent` line below can't
+    # raise IndexError on an empty list.
+    if not answer:
+        return "no matching substructures"
+
     if verbose_absent:
         answer[-1] += " present"
 
