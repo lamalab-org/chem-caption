@@ -28,6 +28,9 @@ class FragmentSearchFeaturizer(AbstractFeaturizer):
         names: Optional[List[str]],
         count: bool = True,
         preset_name: str = "custom",
+        completion_template: Optional[str] = None,
+        version: int = 0,
+        skip_zero: bool = False,
     ):
         """
         Initialize class.
@@ -42,13 +45,18 @@ class FragmentSearchFeaturizer(AbstractFeaturizer):
                 Otherwise, only encode presence.
                 Defaults to `True`.
             preset_name (str): Name to give preset of interest. Defaults to `custom`.
+            completion_template (Optional[str]): Custom completion template. Defaults to None.
+            version (int): Index into completion template list. Defaults to 0.
+            skip_zero (bool): If True, omit fragments with zero count/absent from the answer.
+                Defaults to False.
         """
-        super().__init__()
+        super().__init__(completion_template=completion_template, version=version)
 
         self.smart_names = names if names is not None else smarts
         self.smarts = smarts
         self.count = count
         self.preset_name = preset_name
+        self.skip_zero = skip_zero
         self.constraint = (
             "Constraint: return a list of integers."
             if self.count
@@ -56,6 +64,13 @@ class FragmentSearchFeaturizer(AbstractFeaturizer):
         )
 
         self.prompt_template = "{PROPERTY_NAME} in the molecule with {REPR_SYSTEM} {REPR_STRING}?"
+
+    def get_completion_template(self, version: int = 0) -> str:
+        templates = [
+            "The molecule has {PROPERTY_VALUE}.",
+            "There {VERB} {PROPERTY_VALUE} in the molecule.",
+        ]
+        return templates[version]
 
     @property
     def get_names(self) -> List[Dict[str, str]]:
@@ -85,7 +100,7 @@ class FragmentSearchFeaturizer(AbstractFeaturizer):
         return [{"noun": name}]
 
     @classmethod
-    def from_preset(cls, preset: str, count: bool = True):
+    def from_preset(cls, preset: str, count: bool = True, completion_template: Optional[str] = None, version: int = 0, skip_zero: bool = False):
         """Generate class instance with atomic numbers of interest based on predefined presets.
 
         Args:
@@ -103,6 +118,10 @@ class FragmentSearchFeaturizer(AbstractFeaturizer):
                 * `biomolecules`
 
             count (bool): If set to True, count pattern frequency.
+            completion_template (Optional[str]): Custom completion template. Defaults to None.
+            version (int): Index into completion template list. Defaults to 0.
+            skip_zero (bool): If True, omit fragments with zero count/absent from the answer.
+                Defaults to False.
         """
 
         if preset not in SMARTS_MAP:
@@ -114,7 +133,13 @@ class FragmentSearchFeaturizer(AbstractFeaturizer):
         smarts_set = SMARTS_MAP[preset]
         names, smarts = zip(*smarts_set.items())
         return cls(
-            smarts=list(smarts), names=list(names), count=count, preset_name=preset
+            smarts=list(smarts),
+            names=list(names),
+            count=count,
+            preset_name=preset,
+            completion_template=completion_template,
+            version=version,
+            skip_zero=skip_zero,
         )
 
     def featurize(self, molecule: Molecule) -> np.array:
