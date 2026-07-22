@@ -113,9 +113,11 @@ def answer_generation(elements: Optional[List] = None, names: Optional[List[str]
         if isinstance(amount, bool):
             amount = int(amount)
 
+        plural = "" if name.endswith("s") else "s"
+
         if amount == 0:
             if not skip_zero:
-                zero_parts.append(f"no {name}s")
+                zero_parts.append(f"no {name}{plural}")
             continue
 
         display_amount = round(amount, 4) if isinstance(amount, float) else amount
@@ -123,7 +125,7 @@ def answer_generation(elements: Optional[List] = None, names: Optional[List[str]
         if amount == 1:
             nonzero_parts.append(f"{display_amount} {name}")
         else:
-            nonzero_parts.append(f"{display_amount} {name}s")
+            nonzero_parts.append(f"{display_amount} {name}{plural}")
     
     answer = nonzero_parts + zero_parts
 
