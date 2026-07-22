@@ -279,6 +279,8 @@ class BondTypeCountFeaturizer(AbstractFeaturizer):
             for bt in self._get_bond_count_types()
             if bt != "num_bonds"
         ]
+        if self.count and "ALL" in self.bond_type:
+            self.smart_names.append(_MAP_BOND_TYPE_TO_CLEAN_NAME["num_bonds"])
 
     def get_completion_template(self, version: int = 0) -> str:
         templates = [
@@ -438,7 +440,11 @@ class BondTypeCountFeaturizer(AbstractFeaturizer):
         beginning = np.random.choice(beginning, 1).item()
         end = np.random.choice(end, 1).item()
 
-        return [{"noun": beginning + answer_generation(mapped_names) + end}]
+        noun = beginning + answer_generation(mapped_names) + end
+        if self.count and "ALL" in self.bond_type:
+            noun += ", and the " + _MAP_BOND_TYPE_TO_CLEAN_NAME["num_bonds"]
+
+        return [{"noun": noun}]
 
     @staticmethod
     def _get_bonds(
@@ -556,6 +562,8 @@ class BondTypeProportionFeaturizer(BondTypeCountFeaturizer):
         self.constraint = "Constraint: Return a list of comma separated floats."
         self.prefix = ""
         self.suffix = "_bond_proportion"
+        if self.smart_names and self.smart_names[-1] == _MAP_BOND_TYPE_TO_CLEAN_NAME["num_bonds"]:
+            self.smart_names = self.smart_names[:-1]
 
     def get_completion_template(self, version: int = 0) -> str:
         templates = [
