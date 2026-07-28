@@ -29,6 +29,8 @@ class Prompt:
     completion_template: Optional[str] = None
     constraint: Optional[str] = None
     smart_names: Optional[List[str]] = None
+    verbose_absent: bool = False
+    skip_zero: bool = False
 
     def to_dict(self) -> Dict[str, Any]:
         """Return dictionary representation of object.
@@ -67,7 +69,7 @@ class Prompt:
                 if self.constraint
                 else self.fill_template(self.prompt_template)
             ),
-            "filled_completion": self.fill_template(self.completion_template),
+            "filled_completion": self.fill_template(self.completion_template, usenames=self.smart_names is not None),
             "smart_names": self.smart_names,
         }
 
@@ -92,7 +94,7 @@ class Prompt:
             REPR_SYSTEM=self.representation_type,
             REPR_STRING=self.representation,
             PROPERTY_VALUE=(
-                answer_generation(list(self.completion), self.smart_names)
+                answer_generation(list(self.completion), self.smart_names, self.verbose_absent, self.skip_zero)
                 if usenames
                 else answer_generation(list(self.completion))
             ),

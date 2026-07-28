@@ -203,31 +203,39 @@ class AbstractMolecule(ABC):
 class SMILESMolecule(AbstractMolecule):
     """Lower level molecular representation for SMILES string representation."""
 
-    def __init__(self, representation_string: str):
+    def __init__(self, representation_string: str, explicit_hydrogens: bool = False):
         """Initialize class."""
         super().__init__()
         self.representation_string = Chem.CanonSmiles(representation_string)
+        self.explicit_hydrogens = explicit_hydrogens
         self._rdkit_mol = self.get_rdkit_mol()
 
     def get_rdkit_mol(self) -> Chem.Mol:
         """Get rdkit molecular representation from SMILES string."""
-        return Chem.MolFromSmiles(self.representation_string)
+        mol = Chem.MolFromSmiles(self.representation_string)
+        if self.explicit_hydrogens:
+            mol = Chem.AddHs(mol)
+        return mol
 
 
 class SELFIESMolecule(AbstractMolecule):
     """Lower level molecular representation for SELFIES string representation."""
 
-    def __init__(self, representation_string: str):
+    def __init__(self, representation_string: str, explicit_hydrogens: bool = False):
         """Initialize class."""
         super().__init__()
         self.representation_string = representation_string
         self.smiles_rep = decoder(representation_string)
+        self.explicit_hydrogens = explicit_hydrogens
 
         self._rdkit_mol = self.get_rdkit_mol()
 
     def get_rdkit_mol(self) -> Chem.Mol:
         """Get rdkit molecular representation from SELFIES string."""
-        return Chem.MolFromSmiles(self.smiles_rep)
+        mol = Chem.MolFromSmiles(self.representation_string)
+        if self.explicit_hydrogens:
+            mol = Chem.AddHs(mol)
+        return mol
 
 
 class InChIMolecule(AbstractMolecule):

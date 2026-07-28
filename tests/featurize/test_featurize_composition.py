@@ -180,7 +180,7 @@ def test_element_count_featurizer():
         == "Question: What are the atom counts of Carbon, Hydrogen, Nitrogen, and Oxygen of the molecule with SMILES O?"
     )
 
-    assert text.to_dict()["filled_completion"] == "Answer: 0, 2, 0, and 1"
+    assert text.to_dict()["filled_completion"] == "Answer: no carbons, 2 hydrogens, no nitrogens, and 1 oxygen"
 
 
 def test_atom_count_featurizer():

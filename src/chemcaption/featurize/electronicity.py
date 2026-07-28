@@ -35,15 +35,27 @@ __all__ = [
 class HydrogenAcceptorCountFeaturizer(AbstractFeaturizer):
     """Obtain number of Hydrogen bond acceptors in a molecule."""
 
-    def __init__(self):
-        """Get the number of Hydrogen bond acceptors present in a molecule."""
-        super().__init__()
+    def __init__(self, completion_template: Optional[str] = None, version: int = 0):
+        """Get the number of Hydrogen bond acceptors present in a molecule.
+
+        Args:
+            completion_template (Optional[str]): Custom completion template. Defaults to None.
+            version (int): Index into completion template list. Defaults to 0.
+        """
+        super().__init__(completion_template=completion_template, version=version)
 
         self._names = [
             {
                 "noun": "number of hydrogen bond acceptors",
             }
         ]
+
+    def get_completion_template(self, version: int = 0) -> str:
+        templates = [
+            "The molecule has {PROPERTY_VALUE} hydrogen bond acceptor(s).",
+            "The {PROPERTY_NAME} of the molecule {VERB} {PROPERTY_VALUE}.",
+        ]
+        return templates[version]
 
     @property
     def feature_labels(self) -> List[str]:
@@ -88,15 +100,27 @@ class HydrogenAcceptorCountFeaturizer(AbstractFeaturizer):
 class HydrogenDonorCountFeaturizer(AbstractFeaturizer):
     """Obtain number of Hydrogen bond donors in a molecule."""
 
-    def __init__(self):
-        """Get the number of Hydrogen bond donors present in a molecule."""
-        super().__init__()
+    def __init__(self, completion_template: Optional[str] = None, version: int = 0):
+        """Get the number of Hydrogen bond donors present in a molecule.
+
+        Args:
+            completion_template (Optional[str]): Custom completion template. Defaults to None.
+            version (int): Index into completion template list. Defaults to 0.
+        """
+        super().__init__(completion_template=completion_template, version=version)
 
         self._names = [
             {
                 "noun": "number of hydrogen bond donors",
             }
         ]
+
+    def get_completion_template(self, version: int = 0) -> str:
+        templates = [
+            "The molecule has {PROPERTY_VALUE} hydrogen bond donor(s).",
+            "The {PROPERTY_NAME} of the molecule {VERB} {PROPERTY_VALUE}.",
+        ]
+        return templates[version]
 
     @property
     def feature_labels(self) -> List[str]:
@@ -141,13 +165,14 @@ class HydrogenDonorCountFeaturizer(AbstractFeaturizer):
 class ValenceElectronCountFeaturizer(AbstractFeaturizer):
     """A featurizer for extracting valence electron count."""
 
-    def __init__(self):
+    def __init__(self, completion_template: Optional[str] = None, version: int = 0):
         """Initialize class.
 
         Args:
-            None.
+            completion_template (Optional[str]): Custom completion template. Defaults to None.
+            version (int): Index into completion template list. Defaults to 0.
         """
-        super().__init__()
+        super().__init__(completion_template=completion_template, version=version)
 
         self._names = [
             {
@@ -157,6 +182,13 @@ class ValenceElectronCountFeaturizer(AbstractFeaturizer):
                 "noun": "valence electron count",
             },
         ]
+
+    def get_completion_template(self, version: int = 0) -> str:
+        templates = [
+            "The molecule has {PROPERTY_VALUE} valence electron(s).",
+            "The {PROPERTY_NAME} of the molecule {VERB} {PROPERTY_VALUE}.",
+        ]
+        return templates[version]
 
     @property
     def feature_labels(self) -> List[str]:

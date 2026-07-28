@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """Utilities for `featurize` module."""
-
+ 
 from functools import lru_cache
 from typing import Any, List, Optional, Tuple
 
@@ -71,11 +71,11 @@ def answer_generation(elements: Optional[List] = None, names: Optional[List[str]
     Args:
         elements (list): List of element counts or values.
         names (list): List of element names corresponding to counts.
-        verbose_absent: Controls phrasing for count-0 elements.
-            False -> "no {name}s"
-            True  -> "no {name}s present"
+        verbose_absent: Controls phrasing by adding "present" at the end of a sentence.
+            False -> "{name}s"
+            True  -> "{name}s present"
         skip_zero: emits count-0 elements completely.
-            False -> "2 {name}s and no {name}s present"
+            False -> "2 {name}s and no {name}s"
             True  -> "2 {name}s"
         
     Returns:
@@ -93,9 +93,9 @@ def answer_generation(elements: Optional[List] = None, names: Optional[List[str]
         formatted = [_format_element(e) for e in elements]
         return _join_readable(formatted)
     
-    # 2. validate list element types - what if not string or int
-    if not all(isinstance(element, int) for element in elements):
-        raise TypeError("Type Error: All items in 'elements' list must be integers.")
+    # 2. validate list element types - what if not string, int, or float
+    if not all(isinstance(element, (int, float)) for element in elements):
+        raise TypeError("Type Error: All items in 'elements' list must be integers or floats.")
     if not all(isinstance(name, str) for name in names):
         raise TypeError("Type Error: All items in 'names' list must be strings.")
     
@@ -105,22 +105,41 @@ def answer_generation(elements: Optional[List] = None, names: Optional[List[str]
             f"Length mismatch: names has {len(names)} items but elements has {len(elements) if elements is not None else 0} items"
         )
     
-    # 4. Process values
-    parts: List[str] = []
+    # 4. Process values — non-zero elements first, zero elements at the end
+    nonzero_parts: List[str] = []
+    zero_parts: List[str] = []
 
     for name, amount in zip(names, elements):
-        # switching bool to int for output
         if isinstance(amount, bool):
             amount = int(amount)
 
-        if amount == 0 and not skip_zero:
-            parts.append(f"no {name}s present" if verbose_absent else f"no {name}s")
-        elif amount == 1:
-            parts.append(f"{amount} {name}")
-        elif amount > 1:
-            parts.append(f"{amount} {name}s")
+        plural = "" if name.endswith("s") else "s"
 
-    return _join_readable(parts, oxford=True)
+        if amount == 0:
+            if not skip_zero:
+                zero_parts.append(f"no {name}{plural}")
+            continue
+
+        display_amount = round(amount, 4) if isinstance(amount, float) else amount
+
+        if amount == 1:
+            nonzero_parts.append(f"{display_amount} {name}")
+        else:
+            nonzero_parts.append(f"{display_amount} {name}{plural}")
+    
+    answer = nonzero_parts + zero_parts
+
+    # Failsafe: when every element is zero and `skip_zero` drops them all, `answer`
+    # is empty. Return a phrase so callers don't emit a blank {PROPERTY_VALUE}
+    # (e.g. "The molecule has .") and so the `verbose_absent` line below can't
+    # raise IndexError on an empty list.
+    if not answer:
+        return "no matching substructures"
+
+    if verbose_absent:
+        answer[-1] += " present"
+
+    return _join_readable(answer, oxford=True)
 
 @lru_cache(maxsize=128)
 def _rdkit_to_pymatgen(mol):

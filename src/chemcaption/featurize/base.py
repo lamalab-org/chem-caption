@@ -35,16 +35,36 @@ PERIODIC_TABLE = rdkit.Chem.GetPeriodicTable()  # Periodic table
 class AbstractFeaturizer(ABC):
     """Abstract base class for lower level Featurizers."""
 
-    def __init__(self):
+    def __init__(self, completion_template: Optional[str] = None, preset: Optional[List[str]] = None, version: int = 0):
         """Initialize class. Initialize periodic table."""
         self.prompt_template = (
             "Question: What {VERB} the {PROPERTY_NAME} of the molecule with {REPR_SYSTEM} "
             "{REPR_STRING}?"
         )
-        self.completion_template = "Answer: {PROPERTY_VALUE}"
+        self.completion_template = (
+            completion_template if completion_template is not None
+            else self.get_completion_template(version)
+        )
+
         self._names = []
         self.constraint = None
         self.smart_names = None
+        self._preset: List[str] = (
+            [x.capitalize() for x in preset] if preset is not None else []
+        )
+    
+    def get_completion_template(self, version: bool = 0) -> str:
+        return "Answer: {PROPERTY_VALUE}"
+
+    @property
+    def preset(self) -> List[str]:
+        """Get preset. Getter method."""
+        return self._preset
+
+    @preset.setter
+    def preset(self, new_preset: List[str]) -> None:
+        """Set preset. Setter method."""
+        self._preset = new_preset
 
     @property
     def get_names(self) -> List[Dict[str, str]]:
@@ -123,6 +143,8 @@ class AbstractFeaturizer(ABC):
             completion_template=self.completion_template,
             constraint=self.constraint,
             smart_names=self.smart_names,
+            verbose_absent=getattr(self, "verbose_absent", False),
+            skip_zero=getattr(self, "skip_zero", False),
         )
 
     def text_featurize_many(
