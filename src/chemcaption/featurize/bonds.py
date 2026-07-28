@@ -282,6 +282,11 @@ class BondTypeCountFeaturizer(AbstractFeaturizer):
         if self.count and "ALL" in self.bond_type:
             self.smart_names.append(_MAP_BOND_TYPE_TO_CLEAN_NAME["num_bonds"])
 
+        # Per-molecule bond-type counts, refreshed on every `_count_bonds` call.
+        # Lets `get_names` mirror the same skip_zero filtering already applied
+        # to PROPERTY_VALUE, instead of always listing every possible bond type.
+        self._last_bond_counts: Optional[List[int]] = None
+
     def get_completion_template(self, version: int = 0) -> str:
         templates = [
             "The molecule has {PROPERTY_VALUE}.",
@@ -313,6 +318,8 @@ class BondTypeCountFeaturizer(AbstractFeaturizer):
             num_bonds.append(len(all_bonds))
         else:
             num_bonds = [min(1, count) for count in num_bonds]
+
+        self._last_bond_counts = num_bonds
 
         return num_bonds
 
@@ -414,6 +421,16 @@ class BondTypeCountFeaturizer(AbstractFeaturizer):
             for bond_type in self._get_bond_count_types()
             if "num_bonds" != bond_type
         ]
+
+        if self.skip_zero and self._last_bond_counts:
+            # `_last_bond_counts` excludes the appended "total" count (if any),
+            # so it lines up positionally with `mapped_names`.
+            counts = self._last_bond_counts[: len(mapped_names)]
+            present_names = [
+                name for name, count in zip(mapped_names, counts) if count != 0
+            ]
+            if present_names:  # keep the full list if every count is zero
+                mapped_names = present_names
 
         if self.count:  # Recording bond counts
             if len(mapped_names) > 1:
